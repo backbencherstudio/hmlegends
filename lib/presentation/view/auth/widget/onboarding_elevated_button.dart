@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 
-class CustomElevatedButton extends StatelessWidget {
+class OnBoardingElevatedButton extends StatelessWidget {
   final String text;
   final IconData? suffixIcon;
   final VoidCallback onPressed;
@@ -13,7 +13,7 @@ class CustomElevatedButton extends StatelessWidget {
   final bool enabled;
   final double borderRadius;
 
-  const CustomElevatedButton({
+  const OnBoardingElevatedButton({
     Key? key,
     required this.text,
     this.suffixIcon,

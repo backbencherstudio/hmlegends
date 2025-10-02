@@ -47,6 +47,7 @@ class MyApp extends StatelessWidget {
   Widget _buildMaterialApp() {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(scaffoldBackgroundColor: Colors.white),
       initialRoute: RouteNames.splashScreen,
       routes: AppRoutes.routes,
       onUnknownRoute: (settings) {
