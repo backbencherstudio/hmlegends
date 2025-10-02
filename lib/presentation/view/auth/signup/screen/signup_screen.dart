@@ -9,8 +9,8 @@ import 'package:provider/provider.dart';
 import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/route/route_names.dart';
 import '../../widget/auth_button.dart';
-import '../../signup/widgets/level_text.dart';
-import '../../signup/widgets/social_auth_buttons.dart';
+import '../../widget/level_text.dart';
+import '../../widget/social_auth_buttons.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -243,7 +243,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
-                  // Navigator.pushNamed(context, RouteNames.loginScreen);
+                   Navigator.pushNamed(context, RouteNames.loginScreen);
                 },
             ),
           ],

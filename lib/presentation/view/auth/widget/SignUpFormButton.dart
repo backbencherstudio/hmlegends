@@ -40,8 +40,8 @@ class SignUpFormButton extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                color: Color(0xFF4A4C56),
-                fontWeight: FontWeight.w500,
+                color: AppColors.authBodyTextColor,
+                fontWeight: FontWeight.w400,
                 fontSize: 16.sp,
               ),
             ),

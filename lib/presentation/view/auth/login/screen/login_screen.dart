@@ -9,8 +9,8 @@ import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/route/route_names.dart';
 import '../../../../view_model/auth/login_viewmodel.dart';
 import '../../widget/auth_button.dart';
-import '../../signup/widgets/level_text.dart';
-import '../../signup/widgets/social_auth_buttons.dart';
+import '../../widget/level_text.dart';
+import '../../widget/social_auth_buttons.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
