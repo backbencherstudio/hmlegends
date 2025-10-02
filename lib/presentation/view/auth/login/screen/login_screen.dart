@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
-import 'package:hmlegends/presentation/view_model/auth/signup_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/route/route_names.dart';
+import '../../../../view_model/auth/login_viewmodel.dart';
 import '../../widget/auth_button.dart';
 import '../../signup/widgets/level_text.dart';
 import '../../signup/widgets/social_auth_buttons.dart';
 
-class SignUpScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,22 +31,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
               children: [
                 SizedBox(height: 10.h),
                 Center(
-                  child: Center(
-                    child: Image.asset(
-                      AssetPaths.authLogo,
-                      width: 100.w,
-                      height: 100.h,
-                    ),
+                  child: Image.asset(
+                    AssetPaths.authLogo,
+                    width: 100.w,
+                    height: 100.h,
                   ),
                 ),
                 SizedBox(height: 20.h),
                 Text(
-                  'Let\'s get you started!',
+                  'Let’s get you started!',
                   style: AppTextStyles.authHeadline,
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  'Enter info to create a new account.',
+                  'Please, enter email and password to sign in',
                   style: AppTextStyles.authBodyText,
                   textAlign: TextAlign.center,
                 ),
@@ -55,10 +53,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 8.h),
-                    RequiredLabel(labelText: 'Full Name'),
-                    SizedBox(height: 5.h),
-                    _buildTextField('Your name', Icons.person_outlined),
-                    SizedBox(height: 8.h),
                     RequiredLabel(labelText: 'Email'),
                     SizedBox(height: 5.h),
                     _buildTextField('Your email', Icons.email_outlined),
@@ -66,11 +60,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     RequiredLabel(labelText: 'Password'),
                     SizedBox(height: 5.h),
                     _buildPasswordField(),
+                    SizedBox(height: 5.h),
+                    _buildRememberMeRow(),
                     SizedBox(height: 10.h),
                   ],
                 ),
                 SizedBox(height: 10.h),
-                _buildSignUpButton(),
+                _buildSignInButton(),
                 SizedBox(height: 20.h),
                 _buildOrJoinWithDivider(),
                 SizedBox(height: 20.h),
@@ -87,7 +83,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildPasswordField() {
-    return Consumer<SignUpViewModel>(
+    return Consumer<LoginViewModel>(
       builder: (context, viewModel, child) {
         return TextField(
           obscureText: !viewModel.passwordVisible,
@@ -143,13 +139,117 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildSignUpButton() {
-    return Consumer<SignUpViewModel>(
+  // Widget _buildRememberMeRow() {
+  //   return Consumer<LoginViewModel>(
+  //     builder: (context, viewModel, child) {
+  //       return Row(
+  //         children: [
+  //           Transform.scale(
+  //             scale: 1,
+  //             child: Checkbox(
+  //               value: viewModel.rememberMe,
+  //               onChanged: (value) {
+  //                 viewModel.setRememberMe(value ?? false);
+  //               },
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(4.r),
+  //               ),
+  //               side: BorderSide(color: AppColors.primaryColor),
+  //               activeColor: AppColors.primaryColor,
+  //             ),
+  //           ),
+  //           Text(
+  //             'Remember me',
+  //             style: TextStyle(
+  //               fontSize: 12.sp,
+  //               letterSpacing: 0.5,
+  //               color: AppColors.authBodyTextColor,
+  //               fontWeight: FontWeight.w500,
+  //             ),
+  //           ),
+  //           Spacer(),
+  //           TextButton(
+  //             onPressed: () {
+  //               // Navigator.pushNamed(context, RouteNames.forgetPasswordScreen);
+  //             },
+  //             child: Text(
+  //               'Forgot Password?',
+  //               style: TextStyle(
+  //                 fontSize: 12.sp,
+  //                 letterSpacing: 0.5,
+  //                 color: AppColors.authHeaderTextColor,
+  //                 fontWeight: FontWeight.w500,
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  Widget _buildRememberMeRow() {
+    return Consumer<LoginViewModel>(
+      builder: (context, viewModel, child) {
+        return Row(
+          children: [
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: Checkbox(
+                value: viewModel.rememberMe,
+                onChanged: (value) {
+                  viewModel.setRememberMe(value ?? false);
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4.r),
+                ),
+                side: BorderSide(color: AppColors.primaryColor),
+                activeColor: AppColors.primaryColor,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+              ),
+            ),
+            SizedBox(width: 10.w), // Spacing
+            Text(
+              'Remember me',
+              style: TextStyle(
+                fontSize: 12.sp,
+                letterSpacing: 0.5,
+                color: AppColors.authBodyTextColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Spacer(),
+            TextButton(
+              onPressed: () {
+                // Navigator.pushNamed(context, RouteNames.forgetPasswordScreen);
+              },
+              child: Text(
+                'Forgot Password?',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  letterSpacing: 0.5,
+                  color: AppColors.authHeaderTextColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
+  Widget _buildSignInButton() {
+    return Consumer<LoginViewModel>(
       builder: (context, viewModel, child) {
         return AuthButton(
-          text: 'Sign Up',
+          text: 'Sign In',
           onPressed: () {
-             Navigator.pushNamed(context, RouteNames.loginScreen);
+            // Navigator.pushNamed(context, RouteNames.parentScreen);
           },
           color: AppColors.primaryColor,
         );
@@ -173,7 +273,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Text(
             'Or',
             textAlign: TextAlign.center,
-            style: TextStyle(color: const Color(0xFF777980), fontSize: 14.sp),
+            style: TextStyle(
+              color: const Color(0xFF777980),
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
         const Expanded(
@@ -233,9 +337,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       child: RichText(
         text: TextSpan(
           children: [
-            TextSpan(text: 'Have an account?', style: AppTextStyles.hintText),
             TextSpan(
-              text: ' Sign In',
+              text: 'Haven\’t an account?',
+              style: AppTextStyles.hintText,
+            ),
+            TextSpan(
+              text: ' Sign Up',
               style: TextStyle(
                 color: AppColors.primaryColor,
                 fontSize: 14.sp,
@@ -243,7 +350,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
-                  // Navigator.pushNamed(context, RouteNames.loginScreen);
+                  Navigator.pushNamed(context, RouteNames.signUpScreen);
                 },
             ),
           ],
