@@ -139,55 +139,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Widget _buildRememberMeRow() {
-  //   return Consumer<LoginViewModel>(
-  //     builder: (context, viewModel, child) {
-  //       return Row(
-  //         children: [
-  //           Transform.scale(
-  //             scale: 1,
-  //             child: Checkbox(
-  //               value: viewModel.rememberMe,
-  //               onChanged: (value) {
-  //                 viewModel.setRememberMe(value ?? false);
-  //               },
-  //               shape: RoundedRectangleBorder(
-  //                 borderRadius: BorderRadius.circular(4.r),
-  //               ),
-  //               side: BorderSide(color: AppColors.primaryColor),
-  //               activeColor: AppColors.primaryColor,
-  //             ),
-  //           ),
-  //           Text(
-  //             'Remember me',
-  //             style: TextStyle(
-  //               fontSize: 12.sp,
-  //               letterSpacing: 0.5,
-  //               color: AppColors.authBodyTextColor,
-  //               fontWeight: FontWeight.w500,
-  //             ),
-  //           ),
-  //           Spacer(),
-  //           TextButton(
-  //             onPressed: () {
-  //               // Navigator.pushNamed(context, RouteNames.forgetPasswordScreen);
-  //             },
-  //             child: Text(
-  //               'Forgot Password?',
-  //               style: TextStyle(
-  //                 fontSize: 12.sp,
-  //                 letterSpacing: 0.5,
-  //                 color: AppColors.authHeaderTextColor,
-  //                 fontWeight: FontWeight.w500,
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   Widget _buildRememberMeRow() {
     return Consumer<LoginViewModel>(
       builder: (context, viewModel, child) {
@@ -223,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Spacer(),
             TextButton(
               onPressed: () {
-                // Navigator.pushNamed(context, RouteNames.forgetPasswordScreen);
+                 Navigator.pushNamed(context, RouteNames.forgetPasswordScreen);
               },
               child: Text(
                 'Forgot Password?',

@@ -243,6 +243,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
+                // Navigate to login page
                    Navigator.pushNamed(context, RouteNames.loginScreen);
                 },
             ),
