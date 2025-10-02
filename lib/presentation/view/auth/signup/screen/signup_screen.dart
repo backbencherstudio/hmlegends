@@ -19,68 +19,65 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => SignUpViewModel(),
-      child: Scaffold(
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: 10.h),
-                  Center(
-                    child: Center(
-                      child: Image.asset(
-                        AssetPaths.authLogo,
-                        width: 100.w,
-                        height: 100.h,
-                      ),
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 10.h),
+                Center(
+                  child: Center(
+                    child: Image.asset(
+                      AssetPaths.authLogo,
+                      width: 100.w,
+                      height: 100.h,
                     ),
                   ),
-                  SizedBox(height: 20.h),
-                  Text(
-                    'Let’s get you started!',
-                    style: AppTextStyles.authHeadline,
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    'Enter info to create a new account.',
-                    style: AppTextStyles.authBodyText,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 20.h),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 8.h),
-                      RequiredLabel(labelText: 'Full Name'),
-                      SizedBox(height: 5.h),
-                      _buildTextField('Your name', Icons.person_outlined),
-                      SizedBox(height: 8.h),
-                      RequiredLabel(labelText: 'Email'),
-                      SizedBox(height: 5.h),
-                      _buildTextField('Your email', Icons.email_outlined),
-                      SizedBox(height: 8.h),
-                      RequiredLabel(labelText: 'Password'),
-                      SizedBox(height: 5.h),
-                      _buildPasswordField(),
-                      SizedBox(height: 10.h),
-                    ],
-                  ),
-                  SizedBox(height: 10.h),
-                  _buildSignUpButton(),
-                  SizedBox(height: 20.h),
-                  _buildOrJoinWithDivider(),
-                  SizedBox(height: 20.h),
-                  SocialAuthButtons(),
-                  SizedBox(height: 30.h),
-                  _buildSignUpLink(),
-                  SizedBox(height: 10.h),
-                ],
-              ),
+                ),
+                SizedBox(height: 20.h),
+                Text(
+                  'Let\'s get you started!',
+                  style: AppTextStyles.authHeadline,
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  'Enter info to create a new account.',
+                  style: AppTextStyles.authBodyText,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20.h),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 8.h),
+                    RequiredLabel(labelText: 'Full Name'),
+                    SizedBox(height: 5.h),
+                    _buildTextField('Your name', Icons.person_outlined),
+                    SizedBox(height: 8.h),
+                    RequiredLabel(labelText: 'Email'),
+                    SizedBox(height: 5.h),
+                    _buildTextField('Your email', Icons.email_outlined),
+                    SizedBox(height: 8.h),
+                    RequiredLabel(labelText: 'Password'),
+                    SizedBox(height: 5.h),
+                    _buildPasswordField(),
+                    SizedBox(height: 10.h),
+                  ],
+                ),
+                SizedBox(height: 10.h),
+                _buildSignUpButton(),
+                SizedBox(height: 20.h),
+                _buildOrJoinWithDivider(),
+                SizedBox(height: 20.h),
+                SocialAuthButtons(),
+                SizedBox(height: 30.h),
+                _buildSignUpLink(),
+                SizedBox(height: 10.h),
+              ],
             ),
           ),
         ),
@@ -151,7 +148,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return AuthButton(
           text: 'Sign Up',
           onPressed: () {
-            //Navigator.pushNamed(context, RouteNames.parentScreen);
+            // Navigator.pushNamed(context, RouteNames.parentScreen);
           },
           color: AppColors.primaryColor,
         );
@@ -245,7 +242,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
-                  //Navigator.pushNamed(context, RouteNames.loginScreen);
+                  // Navigator.pushNamed(context, RouteNames.loginScreen);
                 },
             ),
           ],
