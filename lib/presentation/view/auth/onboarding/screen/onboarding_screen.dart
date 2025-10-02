@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
-import '../../widget/custom_elevated_button.dart';
+import 'package:hmlegends/core/route/route_names.dart';
+import '../../widget/onboarding_elevated_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -16,9 +17,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _onGetStartedPressed() {
     // Navigate to main app from second screen
-    // Navigator.of(context).pushReplacement(
-    //   MaterialPageRoute(builder: (context) => const MainScreen()),
-    // );
+        Navigator.pushNamed(context, RouteNames.signUpScreen);
   }
 
   void _onButton1Pressed() {
@@ -117,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           SizedBox(height: 40.h),
 
           // Get Started Button below logo
-          CustomElevatedButton(
+          OnBoardingElevatedButton(
             text: 'Get Started',
             suffixIcon: Icons.arrow_forward,
             onPressed: _onNextPressed,
@@ -141,7 +140,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
           SizedBox(height: 40.h),
           // Button 1 - Admin
-          CustomElevatedButton(
+          OnBoardingElevatedButton(
             text: 'Start as Admin',
             suffixIcon: Icons.arrow_forward,
             onPressed: _onButton1Pressed,
@@ -153,7 +152,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           SizedBox(height: 20.h),
 
           // Button 2 - Branch Manager
-          CustomElevatedButton(
+          OnBoardingElevatedButton(
             text: 'Start as Branch manager',
             suffixIcon: Icons.arrow_forward,
             onPressed: _onButton2Pressed,
@@ -165,7 +164,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           SizedBox(height: 20.h),
 
           // Button 3 - Driver
-          CustomElevatedButton(
+          OnBoardingElevatedButton(
             text: 'Start as Driver',
             suffixIcon: Icons.arrow_forward,
             onPressed: _onButton3Pressed,

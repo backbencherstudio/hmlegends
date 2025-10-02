@@ -2,7 +2,7 @@
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:hmlegends/core/constant/asset_path.dart';
 //
-// import '../widget/custom_elevated_button.dart';
+// import '../widget/onboarding_elevated_button.dart';
 //
 // class SplashScreen extends StatefulWidget {
 //   const SplashScreen({super.key});
