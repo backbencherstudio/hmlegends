@@ -6,6 +6,7 @@ import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 
 import '../../../../../core/constant/app_colors.dart';
+import '../../../../../core/route/route_names.dart';
 import '../../widget/auth_button.dart';
 
 class OtpVerifyScreen extends StatelessWidget {
@@ -43,7 +44,7 @@ class OtpVerifyScreen extends StatelessWidget {
                   // OTP Field using Pinput
                   _buildOtpField(),
                   SizedBox(height: 20.h),
-                  _otpVerifyButton(),
+                  _otpVerifyButton(context),
                   SizedBox(height: 10.h,),
                   _buildOtpResendLink()
                 ],
@@ -82,13 +83,11 @@ class OtpVerifyScreen extends StatelessWidget {
     );
   }
 
-  Widget _otpVerifyButton() {
+  Widget _otpVerifyButton(context) {
     return AuthButton(
       text: 'Verify Code',
       onPressed: () {
-        // You can access the OTP value using _otpController.text
-        print("OTP Value: ${_otpController.text}");
-        // Navigator.pushNamed(context, RouteNames.parentScreen);
+         Navigator.pushNamed(context, RouteNames.setNewPasswordScreen);
       },
       color: AppColors.primaryColor,
     );

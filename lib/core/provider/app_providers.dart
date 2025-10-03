@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 import '../../presentation/view_model/auth/login_viewmodel.dart';
+import '../../presentation/view_model/auth/set_new_password_viewModel.dart';
 
 class AppProviders {
 
@@ -10,6 +11,7 @@ class AppProviders {
     // ChangeNotifierProvider(create: (_) => getIt<ParentScreensProvider>()),
      ChangeNotifierProvider(create: (_) => SignUpViewModel()),
     ChangeNotifierProvider(create: (_) => LoginViewModel()),
+    ChangeNotifierProvider(create: (_) => SetNewPasswordViewModel()),
 
 
 
