@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 
 import '../../../../../core/constant/app_colors.dart';
 
@@ -16,10 +17,8 @@ class ForgetPasswordScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 10.h),
+              SizedBox(height: 100.h),
               Center(
                 child: Image.asset(
                   AssetPaths.authLogo,
@@ -47,7 +46,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                   SizedBox(height: 8.h),
                   _buildTextField('Your email', Icons.email_outlined),
                   SizedBox(height: 20.h),
-                  _resetPasswordButton(),
+                  _resetPasswordButton(context),
                 ],
               ),
             ],
@@ -57,11 +56,11 @@ class ForgetPasswordScreen extends StatelessWidget {
     );
   }
 
-  Widget _resetPasswordButton() {
+  Widget _resetPasswordButton(context) {
     return AuthButton(
       text: 'Reset Password',
       onPressed: () {
-        // Navigator.pushNamed(context, RouteNames.parentScreen);
+         Navigator.pushNamed(context, RouteNames.otpVerifyScreen);
       },
       color: AppColors.primaryColor,
     );

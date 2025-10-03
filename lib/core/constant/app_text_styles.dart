@@ -5,6 +5,7 @@ import 'package:hmlegends/core/constant/app_colors.dart';
 class AppTextStyles {
   static TextStyle authHeadline = TextStyle(
     fontSize: 18.sp,
+    letterSpacing: 0.4,
     fontWeight: FontWeight.w500,
     color: AppColors.authHeaderTextColor,
   );
