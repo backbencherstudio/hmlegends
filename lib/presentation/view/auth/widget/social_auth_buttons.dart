@@ -21,14 +21,14 @@ class SocialAuthButtons extends StatelessWidget {
     return Column(
       children: [
         SignUpFormButton(
-          title: 'Sign Up With Google',
+          title: 'Continue With Google',
           image: AssetPaths.googleIcon,
           onTap: onGooglePressed,
         ),
 
         SizedBox(height: 10.h),
         SignUpFormButton(
-          title: 'Sign Up With Apple',
+          title: 'Continue With Apple',
           image: AssetPaths.appleIcon,
           onTap: onApplePressed,
         ),
