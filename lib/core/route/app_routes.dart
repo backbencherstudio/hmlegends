@@ -8,6 +8,7 @@ import '../../presentation/view/auth/onboarding/screen/onboarding_screen.dart';
 import '../../presentation/view/auth/otp_verify/screen/otp_verify_screen.dart';
 import '../../presentation/view/auth/set_new_password/screen/set_new_password_screen.dart';
 import '../../presentation/view/auth/signup/screen/signup_screen.dart';
+import '../../presentation/view/parent/home/screen/home_screen.dart';
 
 class AppRoutes{
 
@@ -20,6 +21,7 @@ class AppRoutes{
     RouteNames.forgetPasswordScreen  :(context)=>  ForgetPasswordScreen (),
     RouteNames.otpVerifyScreen  :(context)=>  OtpVerifyScreen(),
     RouteNames.setNewPasswordScreen   :(context)=>  SetNewPasswordScreen (),
+    RouteNames.homeScreen    :(context)=>  HomeScreen (),
 
 
   };
