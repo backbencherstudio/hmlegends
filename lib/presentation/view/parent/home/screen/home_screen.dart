@@ -14,11 +14,11 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      appBar: CustomAppBar(
-        title: '',
-        profileImage: AssetPaths.personIcon,
-        notificationCount: 4,
-      ),
+      // appBar: CustomAppBar(
+      //   title: '',
+      //   profileImage: AssetPaths.personIcon,
+      //   notificationCount: 4,
+      // ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         child: Column(
@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
             _stockCard(context),
             SizedBox(height: 16.h),
             _gridCards(),
-            SizedBox(height: 12.h),
+            SizedBox(height: 16.h),
             Text('Items Ordered (Last 7 Days)',
                 style: TextStyle(
                     fontWeight: FontWeight.w600,

@@ -69,7 +69,7 @@ class SetNewPasswordScreen extends StatelessWidget {
           text: 'Update Password',
           onPressed: viewModel.canUpdatePassword()
               ? () {
-            Navigator.pushNamed(context, RouteNames.otpVerifyScreen);
+            Navigator.pushNamed(context, RouteNames.mainWrapper);
           }
               : (){},
           color: AppColors.primaryColor,
