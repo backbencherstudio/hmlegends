@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
@@ -56,7 +57,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        Icon(Icons.notifications_outlined, size: 28.sp),
+                        Icon(CupertinoIcons.bell, size: 28.sp),
                         if (notificationCount > 0)
                           Positioned(
                             right: 1.w,
@@ -64,7 +65,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             child: Container(
                               padding: EdgeInsets.all(3.w),
                               decoration: const BoxDecoration(
-                                color: Colors.red,
+                                color: Color(0xFFB5050F),
                                 shape: BoxShape.circle,
                               ),
                               child: Text(

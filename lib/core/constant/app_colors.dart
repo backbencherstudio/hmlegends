@@ -11,5 +11,6 @@ class AppColors{
   static const Color otpVerifyColor = Color(0xFFE9E9EA);
   static const Color bgColor = Color(0xFFFFF6F7);
   static const Color headOfficeRadiusColor = Color(0xFFE20614);
+  static const Color headOfficeCardBorderColor = Color(0xFFECEFF3);
 
 }
