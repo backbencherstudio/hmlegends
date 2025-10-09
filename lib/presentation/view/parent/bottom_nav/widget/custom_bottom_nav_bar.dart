@@ -160,14 +160,14 @@ class CustomBottomNavBar extends StatelessWidget {
     return BottomNavigationBarItem(
       icon: SvgPicture.asset(
         iconPath,
-        width: 24.w,
-        height: 24.h,
+        width: 25.w,
+        height: 25.h,
         color: AppColors.authBodyTextColor, // Unselected color
       ),
       activeIcon: SvgPicture.asset(
         activeIconPath,
-        width: 24.w,
-        height: 24.h,
+        width: 25.w,
+        height: 25.h,
         color: AppColors.headOfficeRadiusColor, // Selected color
       ),
       label: label,
