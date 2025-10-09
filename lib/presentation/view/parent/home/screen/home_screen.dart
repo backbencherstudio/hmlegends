@@ -14,11 +14,10 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      // appBar: CustomAppBar(
-      //   title: '',
-      //   profileImage: AssetPaths.personIcon,
-      //   notificationCount: 4,
-      // ),
+      appBar: CustomAppBar(
+        profileImage: AssetPaths.personIcon,
+        notificationCount: 4,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         child: Column(
@@ -29,11 +28,14 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 16.h),
             _gridCards(),
             SizedBox(height: 16.h),
-            Text('Items Ordered (Last 7 Days)',
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.sp,
-                    color: AppColors.authHeaderTextColor)),
+            Text(
+              'Items Ordered (Last 7 Days)',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16.sp,
+                color: AppColors.authHeaderTextColor,
+              ),
+            ),
             SizedBox(height: 12.h),
             const WeeklyBarChart(),
           ],
@@ -45,45 +47,65 @@ class HomeScreen extends StatelessWidget {
   Widget _stockCard(BuildContext context) => Container(
     padding: EdgeInsets.all(16.w),
     decoration: BoxDecoration(
-        color: AppColors.headOfficeRadiusColor,
-        borderRadius: BorderRadius.circular(10.r)),
+      color: AppColors.headOfficeRadiusColor,
+      borderRadius: BorderRadius.circular(10.r),
+    ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Row(children: [
-            Icon(CupertinoIcons.calendar, color: Colors.white, size: 16.w),
-            SizedBox(width: 8.w),
-            Text('20 Sep, 2025',
-                style: TextStyle(color: Colors.white, fontSize: 14.sp))
-          ]),
-          _stockChip()
-        ]),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(CupertinoIcons.calendar, color: Colors.white, size: 16.w),
+                SizedBox(width: 8.w),
+                Text(
+                  '20 Sep, 2025',
+                  style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                ),
+              ],
+            ),
+            _stockChip(),
+          ],
+        ),
         SizedBox(height: 10.h),
-        Text('Stock Management',
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 18.sp)),
+        Text(
+          'Stock Management',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 18.sp,
+          ),
+        ),
         SizedBox(height: 10.h),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('Stock level',
-              style: TextStyle(color: Colors.white, fontSize: 14.sp)),
-          Text('15%',
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Stock level',
+              style: TextStyle(color: Colors.white, fontSize: 14.sp),
+            ),
+            Text(
+              '15%',
               style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w600)),
-        ]),
+                color: Colors.white,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
         SizedBox(height: 8.h),
         ClipRRect(
           borderRadius: BorderRadius.circular(10.r),
           child: LinearProgressIndicator(
-              value: 0.15,
-              backgroundColor: Colors.white24,
-              color: Colors.white,
-              minHeight: 12.h),
-        )
+            value: 0.15,
+            backgroundColor: Colors.white24,
+            color: Colors.white,
+            minHeight: 12.h,
+          ),
+        ),
       ],
     ),
   );
@@ -91,17 +113,28 @@ class HomeScreen extends StatelessWidget {
   Widget _stockChip() => Container(
     padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
     decoration: BoxDecoration(
-        color: Colors.white, borderRadius: BorderRadius.circular(16.r)),
-    child: Row(mainAxisSize: MainAxisSize.min, children: [
-      Icon(CupertinoIcons.exclamationmark_triangle_fill,
-          color: Colors.red, size: 17.sp),
-      SizedBox(width: 6.w),
-      Text('Stock Low',
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16.r),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          CupertinoIcons.exclamationmark_triangle_fill,
+          color: Colors.red,
+          size: 17.sp,
+        ),
+        SizedBox(width: 6.w),
+        Text(
+          'Stock Low',
           style: TextStyle(
-              color: AppColors.headOfficeRadiusColor,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w400))
-    ]),
+            color: AppColors.headOfficeRadiusColor,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
+    ),
   );
 
   Widget _gridCards() => GridView.count(
@@ -113,33 +146,37 @@ class HomeScreen extends StatelessWidget {
     childAspectRatio: 1.2,
     children: const [
       InfoCard(
-          title: 'Invoices',
-          subtitle: 'Status',
-          label1: 'Paid Invoices',
-          value1: '4/6',
-          iconPath: AssetPaths.invoiceIcon),
+        title: 'Invoices',
+        subtitle: 'Status',
+        label1: 'Paid Invoices',
+        value1: '4/6',
+        iconPath: AssetPaths.invoiceIcon,
+      ),
       InfoCard(
-          title: 'Manage',
-          subtitle: 'Branches',
-          label1: 'Active',
-          value1: '8',
-          label2: 'Locked',
-          value2: '0',
-          iconPath: AssetPaths.branchIcon),
+        title: 'Manage',
+        subtitle: 'Branches',
+        label1: 'Active',
+        value1: '8',
+        label2: 'Locked',
+        value2: '0',
+        iconPath: AssetPaths.branchIcon,
+      ),
       InfoCard(
-          title: 'Orders',
-          subtitle: 'Summery',
-          label1: 'Total Orders',
-          value1: '6/8',
-          iconPath: AssetPaths.orderIcon),
+        title: 'Orders',
+        subtitle: 'Summery',
+        label1: 'Total Orders',
+        value1: '6/8',
+        iconPath: AssetPaths.orderIcon,
+      ),
       InfoCard(
-          title: 'Manage',
-          subtitle: 'Delivery',
-          label1: "Today's Delivery",
-          value1: '08',
-          label2: 'Assigned Delivery',
-          value2: '00',
-          iconPath: AssetPaths.deliveryIcon),
+        title: 'Manage',
+        subtitle: 'Delivery',
+        label1: "Today's Delivery",
+        value1: '08',
+        label2: 'Assigned Delivery',
+        value2: '00',
+        iconPath: AssetPaths.deliveryIcon,
+      ),
     ],
   );
 }
