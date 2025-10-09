@@ -97,15 +97,48 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
         SizedBox(height: 8.h),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10.r),
-          child: LinearProgressIndicator(
-            value: 0.15,
-            backgroundColor: Colors.white24,
-            color: Colors.white,
-            minHeight: 12.h,
+        // ClipRRect(
+        //   borderRadius: BorderRadius.circular(10.r),
+        //   child: LinearProgressIndicator(
+        //     value: 0.15,
+        //     backgroundColor: Colors.white24,
+        //     color: Colors.white,
+        //     minHeight: 12.h,
+        //   ),
+        // ),
+
+        Container(
+          height: 12.h,
+          decoration: BoxDecoration(
+            color: Colors.white24,
+            borderRadius: BorderRadius.circular(12.r),
           ),
-        ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              double progress = 0.15;
+              return Stack(
+                children: [
+                  // Background bar
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white24,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                  // Foreground progress bar
+                  Container(
+                    width: constraints.maxWidth * progress,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        )
+
       ],
     ),
   );
