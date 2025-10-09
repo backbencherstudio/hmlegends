@@ -17,4 +17,13 @@ class AssetPaths {
 
 
 
+  static const String stockNavIcon ='$_iconUrl/nav_icon_2.svg';
+  static const String orderNavIcon ='$_iconUrl/orderNavIcon.svg';
+  static const String homeNavIcon ='$_iconUrl/nav_icon_1.svg';
+  static const String invoiceNavIcon ='$_iconUrl/nav_icon_4.svg';
+
+
+
+
+
 }

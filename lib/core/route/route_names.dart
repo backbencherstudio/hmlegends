@@ -8,6 +8,7 @@ class RouteNames{
   static const String otpVerifyScreen  = '/otpVerifyScreen';
   static const String setNewPasswordScreen   = '/setNewPasswordScreen';
   static const String homeScreen  = '/homeScreen';
+  static const String mainWrapper  = '/mainWrapper';
 
 
 }
