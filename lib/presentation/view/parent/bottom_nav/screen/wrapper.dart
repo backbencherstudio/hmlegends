@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
-import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/presentation/view/parent/stock/screen/stock_screen.dart';
 import 'package:hmlegends/presentation/view_model/parent/bottom_nav_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-import '../../../widget/custom_app_bar.dart';
 import '../../home/screen/home_screen.dart';
 import '../widget/custom_bottom_nav_bar.dart';
 
@@ -15,7 +14,7 @@ class MainWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> pages = const [
       HomeScreen(),
-      HomeScreen(),
+      StockScreen(),
       HomeScreen(),
       HomeScreen(),
     ];
@@ -24,11 +23,6 @@ class MainWrapper extends StatelessWidget {
       builder: (context, nav, child) {
         return Scaffold(
           backgroundColor: AppColors.bgColor,
-          // appBar: CustomAppBar(
-          //   title: '',
-          //   profileImage: AssetPaths.personIcon,
-          //   notificationCount: 5,
-          // ),
           body: pages[nav.currentIndex],
           bottomNavigationBar: const CustomBottomNavBar(),
         );

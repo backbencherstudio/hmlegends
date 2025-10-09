@@ -22,7 +22,6 @@ class AppRoutes{
     RouteNames.forgetPasswordScreen  :(context)=>  ForgetPasswordScreen (),
     RouteNames.otpVerifyScreen  :(context)=>  OtpVerifyScreen(),
     RouteNames.setNewPasswordScreen   :(context)=>  SetNewPasswordScreen (),
-    RouteNames.homeScreen    :(context)=>  HomeScreen (),
     RouteNames.mainWrapper   :(context)=>  MainWrapper(),
 
 

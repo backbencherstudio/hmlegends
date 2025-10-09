@@ -2,14 +2,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
-import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/constant/app_text_styles.dart';
+import 'package:hmlegends/presentation/view_model/parent/bottom_nav_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final String profileImage;
   final int notificationCount;
+  final Color colorMain;
+  final Color colorSpace;
   final VoidCallback? onProfileTap;
   final VoidCallback? onNotificationTap;
+  final VoidCallback? onBackTap;
+
 
   const CustomAppBarTwo({
     super.key,
@@ -18,12 +24,14 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
     required this.notificationCount,
     this.onProfileTap,
     this.onNotificationTap,
+    this.onBackTap, required this.colorMain, required this.colorSpace,
   });
 
   @override
   Widget build(BuildContext context) {
+
     return Material(
-      color: Colors.transparent,
+      color: colorMain,
       elevation: 1,
       shadowColor: Colors.black26,
       child: Column(
@@ -31,61 +39,34 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
         children: [
           // Main app bar content
           Container(
-            color: AppColors.bgColor,
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: SafeArea(
               bottom: false,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Left Section
+                  // Left Section with back arrow
                   Row(
                     children: [
-                      Image.asset(AssetPaths.headOfficeLogo, height: 38.h),
-                      SizedBox(width: 8.w),
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                      // Back arrow icon
+                      GestureDetector(
+                        onTap: onBackTap ?? () => _navigateToHome(context),
+                        child: Icon(
+                          Icons.arrow_back_ios,
+                          size: 20.sp,
+                          color: AppColors.authHeaderTextColor,
                         ),
                       ),
+                      SizedBox(width: 12.w),
+                      Text(title, style: AppTextStyles.appHeaderText),
                     ],
                   ),
                   // Right Section
                   Row(
                     children: [
-                      GestureDetector(
-                        onTap: onNotificationTap,
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Icon(CupertinoIcons.bell, size: 28.sp),
-                            if (notificationCount > 0)
-                              Positioned(
-                                right: 1.w,
-                                top: -7.h,
-                                child: Container(
-                                  padding: EdgeInsets.all(3.w),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFB5050F),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Text(
-                                    '$notificationCount',
-                                    style: TextStyle(
-                                      fontSize: 11.sp,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 16.w),
+                      // Notification icon with badge
+                      _buildNotificationIcon(),
+                      SizedBox(width: 20.w),
                       GestureDetector(
                         onTap: onProfileTap,
                         child: CircleAvatar(
@@ -99,10 +80,47 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          Container(
-            height: 8.h,
-            color: AppColors.bgColor,
-          ),
+          Container(height: 8.h, color: colorSpace),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToHome(BuildContext context) {
+    final bottomNavProvider = Provider.of<BottomNavViewModel>(
+      context,
+      listen: false,
+    );
+    bottomNavProvider.updateIndex(0);
+  }
+
+  Widget _buildNotificationIcon() {
+    return GestureDetector(
+      onTap: onNotificationTap,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Icon(CupertinoIcons.bell, size: 28.sp),
+          if (notificationCount > 0)
+            Positioned(
+              right: 1.w,
+              top: -7.h,
+              child: Container(
+                padding: EdgeInsets.all(3.w),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFB5050F),
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  '$notificationCount',
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

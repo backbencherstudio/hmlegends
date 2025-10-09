@@ -181,7 +181,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ],
                         ),
                       ),
-                      SizedBox(width: 16.w),
+                      SizedBox(width: 20.w),
                       GestureDetector(
                         onTap: onProfileTap,
                         child: CircleAvatar(

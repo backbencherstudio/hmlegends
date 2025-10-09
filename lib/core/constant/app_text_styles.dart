@@ -28,5 +28,11 @@ class AppTextStyles {
     color: AppColors.authHeaderTextColor,
   );
 
+  static TextStyle appHeaderText = TextStyle(
+    fontSize: 20.sp,
+    fontWeight: FontWeight.w600,
+    color: AppColors.authHeaderTextColor,
+  );
+
 // Add more styles as needed
 }
