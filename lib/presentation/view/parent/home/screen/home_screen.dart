@@ -118,19 +118,23 @@ class HomeScreen extends StatelessWidget {
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Icon(
           CupertinoIcons.exclamationmark_triangle_fill,
           color: Colors.red,
-          size: 17.sp,
+          size: 16.sp,
         ),
-        SizedBox(width: 6.w),
-        Text(
-          'Stock Low',
-          style: TextStyle(
-            color: AppColors.headOfficeRadiusColor,
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w400,
+        SizedBox(width: 5.w),
+        Transform.translate(
+          offset: Offset(0, 1.h),
+          child: Text(
+            'Stock Low',
+            style: TextStyle(
+              color: AppColors.headOfficeRadiusColor,
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w400,
+            ),
           ),
         ),
       ],
