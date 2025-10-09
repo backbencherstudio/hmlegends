@@ -2,6 +2,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../../core/constant/app_colors.dart';
+
 class WeeklyBarChart extends StatelessWidget {
   const WeeklyBarChart({super.key});
 
@@ -38,8 +40,8 @@ class WeeklyBarChart extends StatelessWidget {
                   return Text(
                     value.toInt().toString(),
                     style: TextStyle(
-                      fontSize: 10.sp,
-                      color: Colors.grey[600],
+                      fontSize: 11.sp,
+                      color: AppColors.authBodyTextColor,
                     ),
                   );
                 },
@@ -56,7 +58,7 @@ class WeeklyBarChart extends StatelessWidget {
                       days[value.toInt()],
                       style: TextStyle(
                         fontSize: 11.sp,
-                        color: Colors.black87,
+                        color: AppColors.authBodyTextColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
