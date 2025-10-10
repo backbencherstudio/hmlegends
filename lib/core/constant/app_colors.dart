@@ -12,5 +12,12 @@ class AppColors{
   static const Color bgColor = Color(0xFFFFF6F7);
   static const Color headOfficeRadiusColor = Color(0xFFE20614);
   static const Color headOfficeCardBorderColor = Color(0xFFECEFF3);
+  static const Color stockFilterButton = Color(0xFFFCEBE9);
+  static const Color searchFieldBgColor = Color(0xFFEFEFEF);
+  static const Color iconColor = Color(0xFF777980);
+  static const Color inStockTextColor = Color(0xFF5BB450);
+  static const Color outOfStockTextColor = Color(0xFFEB3D4D);
+  static const Color lowStockTextColor = Color(0xFFFDF3CE);
+
 
 }
