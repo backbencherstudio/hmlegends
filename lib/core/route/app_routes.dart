@@ -8,6 +8,10 @@ import '../../presentation/view/auth/onboarding/screen/onboarding_screen.dart';
 import '../../presentation/view/auth/otp_verify/screen/otp_verify_screen.dart';
 import '../../presentation/view/auth/set_new_password/screen/set_new_password_screen.dart';
 import '../../presentation/view/auth/signup/screen/signup_screen.dart';
+import '../../presentation/view/branch_manager_flow/home/home_screen.dart';
+import '../../presentation/view/branch_manager_flow/orders/orders_screen.dart';
+import '../../presentation/view/branch_manager_flow/parent/bottom_nav_bar.dart';
+import '../../presentation/view/branch_manager_flow/parent/parent_screen.dart';
 import '../../presentation/view/parent/bottom_nav/screen/wrapper.dart';
 import '../../presentation/view/parent/home/screen/home_screen.dart';
 
@@ -23,6 +27,10 @@ class AppRoutes{
     RouteNames.otpVerifyScreen  :(context)=>  OtpVerifyScreen(),
     RouteNames.setNewPasswordScreen   :(context)=>  SetNewPasswordScreen (),
     RouteNames.mainWrapper   :(context)=>  MainWrapper(),
+    RouteNames.branchHomeScreen   :(context)=>  BranchHomeScreen(),
+    RouteNames.branchParentScreen   :(context)=>  BranchParentScreen(),
+    RouteNames.bottomNavBar   :(context)=>  BottomNavBar(),
+    RouteNames.ordersScreen   :(context)=>  OrdersScreen(),
 
 
   };
