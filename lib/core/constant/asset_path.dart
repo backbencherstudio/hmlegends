@@ -20,6 +20,8 @@ class AssetPaths {
   static const String addIcon ='$_iconUrl/add_icon.png';
   static const String editIcon ='$_iconUrl/edit_icon.png';
   static const String deleteIcon ='$_iconUrl/deleteIcon.png';
+  static const String successfulIcon ='$_iconUrl/successful_icon.png';
+
 
 
 

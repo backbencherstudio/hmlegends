@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/presentation/view/widget/show_dialog.dart';
 
 import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/constant/asset_path.dart';
 import '../../../../../domain/entities/product_entity.dart';
+
 
 class ProductCard extends StatelessWidget {
   final ProductEntity product;
@@ -28,7 +30,7 @@ class ProductCard extends StatelessWidget {
           _buildProductImage(),
           SizedBox(width: 12.w),
           _buildProductDetails(),
-          _buildStatusSection(statusColors),
+          _buildStatusSection(statusColors,context),
         ],
       ),
     );
@@ -65,7 +67,7 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusSection(Map<String, Color> statusColors) {
+  Widget _buildStatusSection(Map<String, Color> statusColors,context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -82,7 +84,10 @@ class ProductCard extends StatelessWidget {
         Row(children: [
           _buildActionIcon(AssetPaths.editIcon, () => print('Edit ${product.name}')),
           SizedBox(width: 12.w),
-          _buildActionIcon(AssetPaths.deleteIcon, () => print('Delete ${product.name}')),
+          _buildActionIcon(AssetPaths.deleteIcon, () {
+            showDeleteDialog(context, () {
+            }, 'Are you sure you want to delete this item?');
+          }),
         ]),
       ],
     );
