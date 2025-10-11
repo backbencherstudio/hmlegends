@@ -23,10 +23,8 @@ class WeeklyBarChart extends StatelessWidget {
           gridData: FlGridData(
             show: true,
             drawHorizontalLine: true,
-            getDrawingHorizontalLine: (value) => FlLine(
-              color: Colors.grey.shade300,
-              strokeWidth: 1,
-            ),
+            getDrawingHorizontalLine: (value) =>
+                FlLine(color: Colors.grey.shade300, strokeWidth: 1),
             drawVerticalLine: false,
           ),
           borderData: FlBorderData(show: false),
@@ -51,7 +49,15 @@ class WeeklyBarChart extends StatelessWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 getTitlesWidget: (value, meta) {
-                  const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+                  const days = [
+                    'MON',
+                    'TUE',
+                    'WED',
+                    'THU',
+                    'FRI',
+                    'SAT',
+                    'SUN',
+                  ];
                   return Padding(
                     padding: EdgeInsets.only(top: 4.h),
                     child: Text(
@@ -66,8 +72,12 @@ class WeeklyBarChart extends StatelessWidget {
                 },
               ),
             ),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
           ),
           barGroups: [
             _bar(0, 800, const Color(0xFFE20614)), // Odd - Red

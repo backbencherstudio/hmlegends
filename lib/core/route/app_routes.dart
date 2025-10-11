@@ -19,6 +19,7 @@ import '../../presentation/view/branch_manager_flow/parent/parent_screen.dart';
 import '../../presentation/view/branch_manager_flow/profile/profile_screen.dart';
 import '../../presentation/view/branch_manager_flow/profile/screens/change_info.dart';
 import '../../presentation/view/branch_manager_flow/profile/screens/change_password.dart';
+import '../../presentation/view/driver_flow/driver_brance_detailScreen/driver_brance_detail_screen.dart';
 import '../../presentation/view/driver_flow/driver_screen.dart';
 import '../../presentation/view/driver_flow/parent/parent_screen.dart' hide BranchParentScreen;
 import '../../presentation/view/parent/bottom_nav/screen/wrapper.dart';
@@ -50,6 +51,7 @@ class AppRoutes{
     RouteNames.driverScreen   :(context)=>  DriverScreen(),
     RouteNames.driverBottomNavBar   :(context)=>  DriverBottomNavBar(),
     RouteNames.driverBranchParentScreen   :(context)=>  DriverBranchParentScreen(),
+    RouteNames.driverBranseDetailScreen   :(context)=>  DriverBranseDetailScreen(),
 
 
   };
