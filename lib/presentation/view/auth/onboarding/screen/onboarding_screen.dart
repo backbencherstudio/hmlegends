@@ -167,7 +167,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           OnBoardingElevatedButton(
             text: 'Start as Driver',
             suffixIcon: Icons.arrow_forward,
-            onPressed: (){Navigator.pushNamed(context, RouteNames.branchParentScreen);},
+            onPressed: (){Navigator.pushNamed(context, RouteNames.driverBranchParentScreen);},
             height: 49.h,
             width: 220.w,
             borderRadius: 30.r,

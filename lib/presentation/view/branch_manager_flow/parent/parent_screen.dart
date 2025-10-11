@@ -5,8 +5,10 @@ import 'package:hmlegends/presentation/view_model/parent/bottom_nav_viewmodel.da
 import 'package:provider/provider.dart';
 
 import '../../parent/bottom_nav/widget/custom_bottom_nav_bar.dart';
+import '../Invoice/Invoice_screen.dart';
 import '../home/home_screen.dart';
 import '../orders/orders_screen.dart';
+import '../profile/profile_screen.dart';
 import 'bottom_nav_bar.dart';
 
 class BranchParentScreen extends StatelessWidget {
@@ -17,8 +19,8 @@ class BranchParentScreen extends StatelessWidget {
     final List<Widget> pages = [
       BranchHomeScreen(),
       OrdersScreen(),
-      BranchHomeScreen(),
-      BranchHomeScreen(),
+      InvoiceScreen(),
+      ProfileScreen(),
     ];
 
     return Consumer<BottomNavViewModel>(

@@ -108,6 +108,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 
 class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
 
@@ -115,13 +116,14 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
   final int notificationCount;
   final VoidCallback? onProfileTap;
   final VoidCallback? onNotificationTap;
+  final String title;
 
   const SimpleAppbar({
     super.key,
     required this.profileImage,
     required this.notificationCount,
     this.onProfileTap,
-    this.onNotificationTap,
+    this.onNotificationTap, required this.title,
   });
 
   @override
@@ -145,8 +147,10 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
                   // Left Section
                   Row(spacing: 4,
                     children: [
-                      Icon(Icons.arrow_back_ios),
-                      Text('Place Order',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 20),),
+                      GestureDetector(
+                          onTap: (){Navigator.pop(context);},
+                          child: Icon(Icons.arrow_back_ios)),
+                      Text(title,style: TextStyle(fontWeight: FontWeight.w600,fontSize: 20),),
                     ],
                   ),
                   // Right Section
@@ -157,7 +161,9 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
-                            Icon(CupertinoIcons.bell, size: 28.sp),
+                            GestureDetector(
+                                onTap: (){Navigator.pushNamedAndRemoveUntil(context, RouteNames.notificationScreen, (route)=> false);},
+                                child: Icon(CupertinoIcons.bell, size: 28.sp)),
                             if (notificationCount > 0)
                               Positioned(
                                 right: 1.w,
