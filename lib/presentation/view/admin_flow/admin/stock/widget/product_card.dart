@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/presentation/view/widget/show_dialog.dart';
 
-import '../../../../../core/constant/app_colors.dart';
-import '../../../../../core/constant/asset_path.dart';
-import '../../../../../domain/entities/product_entity.dart';
-
+import '../../../../../../core/constant/app_colors.dart';
+import '../../../../../../core/constant/asset_path.dart';
+import '../../../../../../domain/entities/product_entity.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductEntity product;

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constant/asset_path.dart';
-import '../../../widget/simple_appbar.dart'; // Import for Key and specific widgets if needed
+import '../../../widget/simple_appbar.dart';
 
 class InvoiceItem {
   final String no;
@@ -13,6 +12,7 @@ class InvoiceItem {
 
   const InvoiceItem(this.no, this.name, this.price, this.quantity, this.total);
 }
+
 final List<InvoiceItem> mockItems = [
   const InvoiceItem('01', 'Peri Chicken Wrap', '£10', 10, '100'),
   const InvoiceItem('02', "Billy's Special", '£12', 12, '144'),
@@ -26,70 +26,75 @@ class ViewDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xffFFF6F7),
-      appBar: SimpleAppbar(
-        profileImage: AssetPaths.personIcon,
-        notificationCount: 4,
-        title: 'Invoice',
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(15.0),
-                child: Card(
-                  color: Colors.white,
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 1. Invoice From Section
-                        const _AddressSection(
-                          title: 'Invoice From',
-                          name: 'JHON DOE',
-                          address: '1550 Silky Blue Road San Francisco California',
-                          phone: '(123) 123456-789',
-                        ),
-                        const Divider(height: 35, thickness: 1, color: Color(0xFFE0E0E0)),
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      builder: (context, child) {
+        return Scaffold(
+          backgroundColor: const Color(0xffFFF6F7),
+          appBar: SimpleAppbar(
+            profileImage: AssetPaths.personIcon,
+            notificationCount: 4,
+            title: 'Invoice',
+          ),
+          body: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(15.0.w),
+                    child: Card(
+                      color: Colors.white,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 24.0.w, vertical: 30.0.h),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 1. Invoice From Section
+                            const _AddressSection(
+                              title: 'Invoice From',
+                              name: 'JHON DOE',
+                              address:
+                              '1550 Silky Blue Road San Francisco California',
+                              phone: '(123) 123456-789',
+                            ),
+                            Divider(height: 35.h, thickness: 1, color: const Color(0xFFE0E0E0)),
 
-                        // 2. Ship To Section
-                        const _AddressSection(
-                          title: 'Ship to',
-                          name: 'JHON DOE',
-                          address: '1550 Silky Blue Road San Francisco California',
-                          phone: '(123) 123456-789',
+                            // 2. Ship To Section
+                            const _AddressSection(
+                              title: 'Ship to',
+                              name: 'JHON DOE',
+                              address:
+                              '1550 Silky Blue Road San Francisco California',
+                              phone: '(123) 123456-789',
+                            ),
+                            Divider(height: 35.h, thickness: 1, color: const Color(0xFFE0E0E0)),
+                            const _DateInvoiceRow(
+                              date: '20 APRIL 2025',
+                              invoiceNo: 'FS618A',
+                            ),
+                            _InvoiceTable(items: mockItems),
+                            SizedBox(height: 20.h),
+                            const _SubtotalRow(subtotal: '£588'),
+                          ],
                         ),
-                        const Divider(height: 35, thickness: 1, color: Color(0xFFE0E0E0)),
-                        const _DateInvoiceRow(
-                          date: '20 APRIL 2025',
-                          invoiceNo: 'FS618A',
-                        ),
-                        _InvoiceTable(items: mockItems),
-
-                        const SizedBox(height: 20),
-                        // 5. Subtotal
-                        const _SubtotalRow(subtotal: '£588'),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
+                const _BottomActionBar(),
+              ],
             ),
-            const _BottomActionBar(),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
-
 
 class _AddressSection extends StatelessWidget {
   final String title;
@@ -111,42 +116,43 @@ class _AddressSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 16,
+          style: TextStyle(
+            fontSize: 16.sp,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1D1F2C),
+            color: const Color(0xFF1D1F2C),
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Text(
           name,
-          style: const TextStyle(
-            fontSize: 16,
+          style: TextStyle(
+            fontSize: 16.sp,
             fontWeight: FontWeight.w500,
-            color: Color(0xff4A4C56),
+            color: const Color(0xff4A4C56),
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4.h),
         Text(
           address,
-          style: const TextStyle(
-            fontSize: 14,
+          style: TextStyle(
+            fontSize: 14.sp,
             fontWeight: FontWeight.w400,
-            color: Color(0xFF4A4C56),
+            color: const Color(0xFF4A4C56),
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4.h),
         Text(
           phone,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Color(0xFF757575),
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: const Color(0xFF757575),
           ),
         ),
       ],
     );
   }
 }
+
 class _DateInvoiceRow extends StatelessWidget {
   final String date;
   final String invoiceNo;
@@ -164,68 +170,69 @@ class _DateInvoiceRow extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'DATE: $date' ,
-              style: const TextStyle(
-                fontSize: 12,
+              'DATE: $date',
+              style: TextStyle(
+                fontSize: 12.sp,
                 fontWeight: FontWeight.w500,
-                color: Color(0xff4A4C56),
+                color: const Color(0xff4A4C56),
               ),
             ),
             Text(
-             'INVOICE NO: $invoiceNo',
-              style: const TextStyle(
-                fontSize: 12,
+              'INVOICE NO: $invoiceNo',
+              style: TextStyle(
+                fontSize: 12.sp,
                 fontWeight: FontWeight.w500,
-                color: Color(0xff4A4C56),
+                color: const Color(0xff4A4C56),
               ),
-                        ),
+            ),
           ],
         ),
-        Divider()
+        SizedBox(height: 10.h,),
+        Divider(height: 1.h),
       ],
     );
   }
 }
+
 class _InvoiceTable extends StatelessWidget {
   final List<InvoiceItem> items;
 
-   _InvoiceTable({required this.items});
+  const _InvoiceTable({required this.items});
 
-  Widget _buildHeaderCell(String text, {Alignment alignment = Alignment.centerLeft}) {
-    return Expanded(
-      child: Container(
-        alignment: alignment,
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Text(
-          text,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 10.5,
-            color: Colors.black,
-          ),
+  Widget _buildHeaderCell(String text,
+      {Alignment alignment = Alignment.centerLeft}) {
+    return Container(
+      alignment: alignment,
+      padding: EdgeInsets.symmetric(vertical: 10.h),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 12.sp,
+          color: Colors.black,
         ),
       ),
     );
   }
 
-  Widget _buildDataCell(String text, {Alignment alignment = Alignment.centerLeft, FontWeight fontWeight = FontWeight.normal}) {
+  Widget _buildDataCell(String text,
+      {Alignment alignment = Alignment.centerLeft,
+        FontWeight fontWeight = FontWeight.normal}) {
     return Expanded(
       child: Container(
         alignment: alignment,
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(vertical: 8.h),
         child: Text(
           text,
           style: TextStyle(
             fontWeight: fontWeight,
-            fontSize: 11,
+            fontSize: 11.sp,
             color: Colors.black,
           ),
         ),
       ),
     );
   }
-
-  List<int> flexes = [1, 5, 2, 2, 2];
 
   @override
   Widget build(BuildContext context) {
@@ -235,59 +242,56 @@ class _InvoiceTable extends StatelessWidget {
         Row(
           children: [
             _buildHeaderCell('NO', alignment: Alignment.centerLeft),
+            SizedBox(width: 14.w),
+
             Expanded(
               flex: 4,
               child: Container(
                 alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: const Text(
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                child: Text(
                   'Product Name',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    fontSize: 11,
+                    fontSize: 12.sp,
                     color: Colors.black,
                   ),
                 ),
               ),
             ),
             _buildHeaderCell('Price', alignment: Alignment.centerRight),
-SizedBox(width: 5,),
+            SizedBox(width: 10.w),
             _buildHeaderCell('Quantity', alignment: Alignment.center),
-
+            SizedBox(width: 10.w),
             _buildHeaderCell('Total', alignment: Alignment.centerRight),
           ],
         ),
-        const Divider(height: 1, thickness: 0.5, color: Color(0xFFE0E0E0)),
+        Divider(height: 1.h, thickness: 0.5, color: const Color(0xFFE0E0E0)),
 
         // Table Data Rows
         ...items.map((item) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2.0),
+            padding: EdgeInsets.symmetric(vertical: 2.0.h),
             child: Row(
               children: [
-                // NO (01, 02, ...)
                 _buildDataCell(item.no, fontWeight: FontWeight.bold),
-                // Product Name (Wider)
                 Expanded(
                   flex: 5,
                   child: Container(
                     alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: EdgeInsets.symmetric(vertical: 8.h),
                     child: Text(
                       item.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         color: Colors.black,
                       ),
                     ),
                   ),
                 ),
-                // Price
                 _buildDataCell(item.price, alignment: Alignment.centerRight),
-                // Quantity
                 _buildDataCell('${item.quantity}', alignment: Alignment.center),
-                // Total
                 _buildDataCell(item.total, alignment: Alignment.centerRight),
               ],
             ),
@@ -297,6 +301,7 @@ SizedBox(width: 5,),
     );
   }
 }
+
 class _SubtotalRow extends StatelessWidget {
   final String subtotal;
 
@@ -307,29 +312,29 @@ class _SubtotalRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        const Text(
+        Text(
           'Subtotal:',
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 16.sp,
             color: Colors.black,
             fontWeight: FontWeight.normal,
           ),
         ),
-        const SizedBox(width: 10),
+        SizedBox(width: 10.w),
         Text(
           subtotal,
-          style: const TextStyle(
-            fontSize: 16,
+          style: TextStyle(
+            fontSize: 16.sp,
             fontWeight: FontWeight.w900,
             color: Colors.black,
           ),
         ),
-        // Add padding to align with the 'Total' column, matching the image.
-        const SizedBox(width: 8),
+        SizedBox(width: 8.w),
       ],
     );
   }
 }
+
 class _BottomActionBar extends StatelessWidget {
   const _BottomActionBar();
 
@@ -344,45 +349,42 @@ class _BottomActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
-      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 50.0),
+      height: 150.h,
+      padding: EdgeInsets.symmetric(horizontal: 5.0.w, vertical: 50.0.h),
       color: Colors.transparent,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 120,),
-
-            ElevatedButton(
-              onPressed: _onPayBill,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE20613),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 35),
-                elevation: 5,
+          SizedBox(width: 120.w),
+          ElevatedButton(
+            onPressed: _onPayBill,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFE20613),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.r),
               ),
-              child: const Text(
-                'Pay bill',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
+              padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 35.w),
+              elevation: 5,
+            ),
+            child: Text(
+              'Pay bill',
+              style: TextStyle(
+                fontSize: 15.sp,
+                fontWeight: FontWeight.bold,
               ),
             ),
-
-          const SizedBox(width: 20),
-
+          ),
+          SizedBox(width: 15.w),
           TextButton.icon(
             onPressed: _onExport,
-            icon: Image.asset('assets/icons/export.png',scale: 3.5,),
-            label: const Text(
+            icon: Image.asset('assets/icons/export.png', scale: 3.5),
+            label: Text(
               'Export',
               style: TextStyle(
-                fontSize: 17,
-                color: Color(0xFF5BB450), // Green color for the text
+                fontSize: 16.sp,
+                color: const Color(0xFF5BB450),
                 fontWeight: FontWeight.w600,
               ),
             ),

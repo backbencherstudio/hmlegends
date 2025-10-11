@@ -47,8 +47,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black12,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+                    blurRadius: 4.r,
+                    offset: Offset(0, 2.h),
                   ),
                 ],
               ),
@@ -79,9 +79,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         vertical: 8.h,
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Submit Order',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.sp,
+                      ),
                     ),
                   ),
                 ],
@@ -93,11 +96,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
               decoration: BoxDecoration(
                 color: const Color(0xffEFEFEF),
                 borderRadius: BorderRadius.circular(25.r),
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
                     color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
+                    blurRadius: 4.r,
+                    offset: Offset(0, 2.h),
                   ),
                 ],
               ),
@@ -141,6 +144,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       ),
     );
   }
+
   void _showSubmitDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -154,50 +158,61 @@ class _OrdersScreenState extends State<OrdersScreen> {
             'Can’t edit after submission',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 14,
+              fontSize: 14.sp,
               color: Colors.red,
             ),
           ),
         ),
         content: Text(
           'Are you sure you want to submit\n                today’s order?',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
         ),
         actions: [
-          Row(spacing: 20,
+          Row(crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ElevatedButton(
                 onPressed: () {
                   _showSuccessDialog(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(backgroundColor: Colors.greenAccent.shade200,
-                      content: Text('Submitted $totalSelected items successfully!',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w700),),
+                    SnackBar(
+                      backgroundColor: Colors.greenAccent.shade200,
+                      content: Text(
+                        'Submitted $totalSelected items successfully!',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14.sp),
+                      ),
                     ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xffE20613),
+                  backgroundColor: const Color(0xffE20613),
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(30.r),
                   ),
-                  padding:  EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                  padding:
+                  EdgeInsets.symmetric(horizontal: 50.w, vertical: 8.h),
                 ),
-                child: const Text('Yes'),
+                child: Text('Yes', style: TextStyle(fontSize: 14.sp)),
               ),
+              SizedBox(width: 10.w),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xffE9E9EA), // Grey background
-                  foregroundColor: Colors.black, // Black text
+                  backgroundColor: const Color(0xffE9E9EA),
+                  foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(30.r),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+                  padding:
+                  EdgeInsets.symmetric(horizontal: 35.w, vertical: 4.h),
                 ),
-                child: const Text(
+                child: Text(
                   'Cancel',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      fontSize: 16.sp, fontWeight: FontWeight.w500),
                 ),
               ),
             ],
@@ -206,6 +221,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       ),
     );
   }
+
   void _showSuccessDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -215,13 +231,20 @@ class _OrdersScreenState extends State<OrdersScreen> {
           borderRadius: BorderRadius.circular(15.r),
         ),
         actions: [
-         GestureDetector(
-             onTap: (){Navigator.pushNamed(context, RouteNames.myOrders);},
-             child: Image.asset('assets/images/successful.png',scale: 2,))
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, RouteNames.myOrders);
+            },
+            child: Image.asset(
+              'assets/images/successful.png',
+              scale: 2,
+            ),
+          )
         ],
       ),
     );
   }
+
   Widget periChickenWrapCard(BuildContext context, int index) {
     int quantity = 10;
     const int stock = 120;
@@ -246,29 +269,28 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
         return Center(
           child: Padding(
-            padding: const EdgeInsets.all(4.0),
+            padding: EdgeInsets.all(4.w),
             child: Card(
               color: Colors.white,
               elevation: 4,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
+                borderRadius: BorderRadius.circular(15.r),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: EdgeInsets.all(12.w),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(10.r),
                       child: Image.asset(
                         imageUrl,
-                        width: 100,
-                        height: 115,
+                        width: 100.w,
+                        height: 105.h,
                         fit: BoxFit.cover,
                       ),
                     ),
-                    const SizedBox(width: 12.0),
-
+                    SizedBox(width: 12.w),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,47 +298,45 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         children: <Widget>[
                           Text(
                             productName,
-                            style: const TextStyle(
-                              fontSize: 18,
+                            style: TextStyle(
+                              fontSize: 18.sp,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 'Stock: $stock pcs',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 14.sp,
                                   color: Colors.grey.shade700,
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8.w, vertical: 4.h),
                                 decoration: BoxDecoration(
                                   color: Colors.green.shade100,
-                                  borderRadius: BorderRadius.circular(15),
+                                  borderRadius: BorderRadius.circular(15.r),
                                 ),
                                 child: Row(
                                   children: [
                                     Container(
-                                      width: 8,
-                                      height: 8,
+                                      width: 8.w,
+                                      height: 8.w,
                                       decoration: const BoxDecoration(
                                         color: Colors.green,
                                         shape: BoxShape.circle,
                                       ),
                                     ),
-                                    const SizedBox(width: 4),
-                                    const Text(
+                                    SizedBox(width: 4.w),
+                                    Text(
                                       'In Stock',
                                       style: TextStyle(
                                         color: Colors.green,
-                                        fontSize: 12,
+                                        fontSize: 12.sp,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -325,55 +345,53 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-
-                          // ✅ Quantity & Confirm Button
+                          SizedBox(height: 12.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 3,
-                                ),
+                                padding:
+                                EdgeInsets.symmetric(horizontal: 3.w),
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: Colors.grey.shade300,
                                   ),
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(10.r),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     InkWell(
-                                      onTap: () => decrementQuantity(setState),
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
+                                      onTap: () =>
+                                          decrementQuantity(setState),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.w),
                                         child: Icon(
                                           Icons.remove,
-                                          size: 20,
+                                          size: 20.w,
                                           color: Colors.grey,
                                         ),
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0,
-                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8.w),
                                       child: Text(
                                         '$quantity',
-                                        style: const TextStyle(
-                                          fontSize: 16,
+                                        style: TextStyle(
+                                          fontSize: 16.sp,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
                                     InkWell(
-                                      onTap: () => incrementQuantity(setState),
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
+                                      onTap: () =>
+                                          incrementQuantity(setState),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.w),
                                         child: Icon(
                                           Icons.add,
-                                          size: 20,
+                                          size: 20.w,
                                           color: Colors.black,
                                         ),
                                       ),
@@ -381,15 +399,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                   ],
                                 ),
                               ),
-
-                              const SizedBox(width: 10),
-
+                              SizedBox(width: 10.w),
                               Expanded(
                                 child: ElevatedButton(
                                   onPressed: () {
                                     setState(() {
                                       selectedList[index] =
-                                          !selectedList[index];
+                                      !selectedList[index];
                                     });
                                     this.setState(() {
                                       totalSelected = selectedList
@@ -403,16 +419,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                         : Colors.red,
                                     foregroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius:
+                                      BorderRadius.circular(10.r),
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 4,
-                                    ),
+                                    padding:
+                                    EdgeInsets.symmetric(vertical: 4.h),
                                   ),
                                   child: Text(
                                     isSelected ? 'Selected' : 'Confirm',
-                                    style: const TextStyle(
-                                      fontSize: 15,
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),

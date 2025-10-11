@@ -1,61 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChangeInfo extends StatelessWidget {
   const ChangeInfo({super.key});
+
   void _showSubmitDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(15.r),
         ),
         actions: [
-          Column(spacing: 10,
+          Column(
+            spacing: 10.h,
             children: [
-              SizedBox(height: 20,),
+              SizedBox(height: 20.h),
               Text(
                 'Discard Changes?',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-              ), Text(
-                'Unsaved changes will be lost',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400,color: Color(0xff4A4C56)),
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700),
               ),
-              SizedBox(height: 10,),
-              Column(spacing: 6,
+              Text(
+                'Unsaved changes will be lost',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xff4A4C56),
+                ),
+              ),
+              SizedBox(height: 10.h),
+              Column(
+                spacing: 6.h,
                 children: [
                   ElevatedButton(
                     onPressed: () {
                       _showSubmitDialog(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xffE20613),
+                      backgroundColor: const Color(0xffE20613),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(30.r),
                       ),
-                      padding:  EdgeInsets.symmetric(horizontal: 120, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 120.w, vertical: 8.h),
                     ),
-                    child: const Text('Yes',   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),),
+                    child: Text(
+                      'Yes',
+                      style: TextStyle(
+                          fontSize: 16.sp, fontWeight: FontWeight.w500),
+                    ),
                   ),
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      foregroundColor: Color(0xffE20613),
-                      side:  BorderSide(color: Color(0xffE20613)),
+                      foregroundColor: const Color(0xffE20613),
+                      side: const BorderSide(color: Color(0xffE20613)),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(30.r),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 100.w, vertical: 8.h),
                     ),
-                    child: const Text(
+                    child: Text(
                       'No, Keep',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                          fontSize: 16.sp, fontWeight: FontWeight.w500),
                     ),
                   ),
-
-
                 ],
               ),
             ],
@@ -69,51 +83,64 @@ class ChangeInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Personal Information',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 18),
-        ),
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Column(
-            children: [
-              SizedBox(height: 15,),
-               Text(
-                'Cancel',
-                style: TextStyle(color: Color(0xffE20613), fontSize: 17, fontWeight: FontWeight.w800),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {_showSubmitDialog(context);},
-            child: const Text(
-              'Save',
-              style: TextStyle(color: Color(0xffE20613), fontSize: 17, fontWeight: FontWeight.w800),
-            ),
-          ),
-        ],
-      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _ProfileHeader(),
-            const SizedBox(height: 16.0),
+            SizedBox(height: 30.h),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              color: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Cancel Button
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        color: const Color(0xffE20613),
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+
+                  // Title
+                  Text(
+                    'Personal Information',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18.sp,
+                    ),
+                  ),
+
+                  // Save Button
+                  TextButton(
+                    onPressed: () => _showSubmitDialog(context),
+                    child: Text(
+                      'Save',
+                      style: TextStyle(
+                        color: const Color(0xffE20613),
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const _ProfileHeader(),
+            SizedBox(height: 16.h),
             const LabeledInputField(
               label: 'First Name',
-              placeholder: 'Cameron',
+              placeholder: 'Protiva',
             ),
             const LabeledInputField(
               label: 'Last Name',
-              placeholder: 'Williamson',
+              placeholder: 'Bose',
             ),
             const LabeledInputField(
               label: 'Occupation',
@@ -137,7 +164,7 @@ class ChangeInfo extends StatelessWidget {
               placeholder: '123 Main St, Apt 4B',
               isMultiline: true,
             ),
-            const SizedBox(height: 50),
+            SizedBox(height: 50.h),
           ],
         ),
       ),
@@ -151,16 +178,16 @@ class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-      padding: const EdgeInsets.all(25),
+      margin: EdgeInsets.symmetric(horizontal: 25.w, vertical: 10.h),
+      padding: EdgeInsets.all(25.w),
       decoration: BoxDecoration(
-        color: const Color(0xFFE20613), // Primary red
-        borderRadius: BorderRadius.circular(15),
+        color: const Color(0xFFE20613),
+        borderRadius: BorderRadius.circular(15.r),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            blurRadius: 10.r,
+            offset: Offset(0, 5.h),
           ),
         ],
       ),
@@ -170,21 +197,20 @@ class _ProfileHeader extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                // User Avatar (Placeholder)
                 ClipOval(
                   child: Image.asset(
-                    'assets/images/panda.jpeg', scale:2.7,// Placeholder image
+                    'assets/images/panda.jpeg',
+                    scale: 2.7,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) =>
                     const Icon(Icons.person, size: 50, color: Colors.grey),
                   ),
                 ),
-                // Camera/Edit Icon
                 Positioned(
-                  bottom: -5,
-                  right: -5,
+                  bottom: -5.h,
+                  right: -5.w,
                   child: Container(
-                    padding: const EdgeInsets.all(4),
+                    padding: EdgeInsets.all(4.w),
                     decoration: const BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
@@ -192,33 +218,31 @@ class _ProfileHeader extends StatelessWidget {
                         BoxShadow(color: Colors.black26, blurRadius: 2)
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.camera_alt_outlined,
-                      color: Color(0xFFD32F2F),
-                      size: 19,
+                      color: const Color(0xFFD32F2F),
+                      size: 19.sp,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 15),
-            // Name
-            const Text(
+            SizedBox(height: 15.h),
+            Text(
               'Cameron Williamson',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 20.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 4),
-            // Role/Title
-            const Text(
+            SizedBox(height: 4.h),
+            Text(
               "Head of Legends's branch-02",
               style: TextStyle(
-                  color: Color(0xFFF0F0F0), // Lighter white/grey
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400
+                color: const Color(0xFFF0F0F0),
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ],
@@ -245,49 +269,54 @@ class LabeledInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      padding:
+      EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
+            padding: EdgeInsets.only(bottom: 8.h),
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Color(0xff4A4C56),
+                fontSize: 16.sp,
+                color: const Color(0xff4A4C56),
               ),
             ),
           ),
-          // Text Field
           TextField(
             maxLines: isMultiline ? 3 : 1,
-            keyboardType: isNumeric ? TextInputType.phone : TextInputType.text,
+            keyboardType: isNumeric
+                ? TextInputType.phone
+                : TextInputType.text,
             decoration: InputDecoration(
               hintText: placeholder,
-              hintStyle: TextStyle(color: Color(0xff777980)),
-              contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+              hintStyle: TextStyle(color: const Color(0xff777980)),
+              contentPadding: EdgeInsets.symmetric(
+                  vertical: 12.h, horizontal: 16.w),
               filled: true,
-              fillColor: Color(0xffF6F6F7),
+              fillColor: const Color(0xffF6F6F7),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.0),
-                borderSide: BorderSide(color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(15.r),
+                borderSide:
+                BorderSide(color: Colors.grey.shade400),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.0),
-                borderSide: const BorderSide(color: Color(0xffE20613), width: 1.5),
+                borderRadius: BorderRadius.circular(15.r),
+                borderSide: const BorderSide(
+                    color: Color(0xffE20613), width: 1.5),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.0),
-                borderSide: BorderSide(color: Colors.grey.shade400,width: 1.5),
+                borderRadius: BorderRadius.circular(15.r),
+                borderSide: BorderSide(
+                    color: Colors.grey.shade400, width: 1.5),
               ),
             ),
-            style: const TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 16.sp),
           ),
         ],
       ),
     );
   }
 }
-
