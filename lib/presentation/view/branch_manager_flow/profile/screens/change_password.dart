@@ -105,7 +105,6 @@ class ChangePassword extends StatelessWidget {
         ],
       );
     }
-
     return ScreenUtilInit(
       designSize: const Size(390, 844),
       minTextAdapt: true,

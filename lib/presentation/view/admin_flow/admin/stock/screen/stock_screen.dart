@@ -6,7 +6,7 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../view_model/parent/stock_viewmodel.dart';
+import '../../../../../view_model/parent/stock_viewmodel.dart';
 import '../widget/filter_button.dart';
 import '../widget/product_card.dart';
 

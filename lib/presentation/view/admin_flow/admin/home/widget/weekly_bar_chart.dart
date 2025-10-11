@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../../core/constant/app_colors.dart';
+import '../../../../../../core/constant/app_colors.dart';
 
 class WeeklyBarChart extends StatelessWidget {
   const WeeklyBarChart({super.key});
