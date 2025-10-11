@@ -108,6 +108,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
@@ -153,7 +154,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: onNotificationTap,
+                        onTap: (){Navigator.pushNamedAndRemoveUntil(context, RouteNames.notificationScreen, (route)=> false);},
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [

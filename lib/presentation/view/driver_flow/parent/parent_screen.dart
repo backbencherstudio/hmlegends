@@ -80,8 +80,10 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view_model/parent/bottom_nav_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class BottomNavBar extends StatelessWidget {
-  const BottomNavBar({super.key});
+import '../driver_screen.dart';
+
+class DriverBottomNavBar extends StatelessWidget {
+  const DriverBottomNavBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -131,18 +133,6 @@ class BottomNavBar extends StatelessWidget {
                       isActive: bottomProvider.currentIndex == 0,
                     ),
                     _buildBottomNavItem(
-                      iconPath: 'assets/icons/lsicon_place-order-outline.svg',
-                      activeIconPath: 'assets/icons/lsicon_place-order-outline.svg',
-                      label: 'Orders',
-                      isActive: bottomProvider.currentIndex == 1,
-                    ),
-                    _buildBottomNavItem(
-                      iconPath: 'assets/icons/arcticons_zoho-invoice.svg',
-                      activeIconPath: 'assets/icons/arcticons_zoho-invoice.svg',
-                      label: 'Invoices',
-                      isActive: bottomProvider.currentIndex == 2,
-                    ),
-                    _buildBottomNavItem(
                       iconPath: 'assets/icons/user.svg',
                       activeIconPath: 'assets/icons/user.svg',
                       label: 'Profile',
@@ -177,6 +167,28 @@ class BottomNavBar extends StatelessWidget {
         color: AppColors.headOfficeRadiusColor, // Selected color
       ),
       label: label,
+    );
+  }
+}
+
+class DriverBranchParentScreen extends StatelessWidget {
+  const DriverBranchParentScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Widget> pages = [
+      DriverScreen(),
+      DriverScreen(),
+    ];
+
+    return Consumer<BottomNavViewModel>(
+      builder: (context, nav, child) {
+        return Scaffold(
+          backgroundColor: AppColors.bgColor,
+          body: pages[nav.currentIndex],
+          bottomNavigationBar: const DriverBottomNavBar(),
+        );
+      },
     );
   }
 }

@@ -8,10 +8,19 @@ import '../../presentation/view/auth/onboarding/screen/onboarding_screen.dart';
 import '../../presentation/view/auth/otp_verify/screen/otp_verify_screen.dart';
 import '../../presentation/view/auth/set_new_password/screen/set_new_password_screen.dart';
 import '../../presentation/view/auth/signup/screen/signup_screen.dart';
+import '../../presentation/view/branch_manager_flow/Invoice/Invoice_screen.dart';
+import '../../presentation/view/branch_manager_flow/Invoice/screens/view_details.dart';
 import '../../presentation/view/branch_manager_flow/home/home_screen.dart';
+import '../../presentation/view/branch_manager_flow/notification/notification_screen.dart';
 import '../../presentation/view/branch_manager_flow/orders/orders_screen.dart';
+import '../../presentation/view/branch_manager_flow/orders/screens/my_orders.dart';
 import '../../presentation/view/branch_manager_flow/parent/bottom_nav_bar.dart';
 import '../../presentation/view/branch_manager_flow/parent/parent_screen.dart';
+import '../../presentation/view/branch_manager_flow/profile/profile_screen.dart';
+import '../../presentation/view/branch_manager_flow/profile/screens/change_info.dart';
+import '../../presentation/view/branch_manager_flow/profile/screens/change_password.dart';
+import '../../presentation/view/driver_flow/driver_screen.dart';
+import '../../presentation/view/driver_flow/parent/parent_screen.dart' hide BranchParentScreen;
 import '../../presentation/view/parent/bottom_nav/screen/wrapper.dart';
 import '../../presentation/view/parent/home/screen/home_screen.dart';
 
@@ -31,6 +40,16 @@ class AppRoutes{
     RouteNames.branchParentScreen   :(context)=>  BranchParentScreen(),
     RouteNames.bottomNavBar   :(context)=>  BottomNavBar(),
     RouteNames.ordersScreen   :(context)=>  OrdersScreen(),
+    RouteNames.myOrders   :(context)=>  MyOrders(),
+    RouteNames.invoiceScreen   :(context)=>  InvoiceScreen(),
+    RouteNames.viewDetails   :(context)=>  ViewDetails(),
+    RouteNames.profileScreen   :(context)=>  ProfileScreen(),
+    RouteNames.changePassword   :(context)=>  ChangePassword(),
+    RouteNames.changeInfo   :(context)=>  ChangeInfo(),
+    RouteNames.notificationScreen   :(context)=>  NotificationScreen(),
+    RouteNames.driverScreen   :(context)=>  DriverScreen(),
+    RouteNames.driverBottomNavBar   :(context)=>  DriverBottomNavBar(),
+    RouteNames.driverBranchParentScreen   :(context)=>  DriverBranchParentScreen(),
 
 
   };
