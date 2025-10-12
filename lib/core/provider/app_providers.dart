@@ -5,6 +5,7 @@ import 'package:provider/single_child_widget.dart';
 import '../../data/datasources/product_local_datasource.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/usecase/get_product_usecase.dart';
+import '../../presentation/view/driver_flow/driver_provider/branch_product_provider.dart';
 import '../../presentation/view_model/auth/login_viewmodel.dart';
 import '../../presentation/view_model/auth/set_new_password_viewModel.dart';
 import '../../presentation/view_model/parent/bottom_nav_viewmodel.dart';
@@ -19,6 +20,7 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => SetNewPasswordViewModel()),
     ChangeNotifierProvider(create: (_) => BottomNavViewModel()),
     ChangeNotifierProvider(create: (_) => ChangePasswordProvider()),
+    ChangeNotifierProvider(create: (_) => BranchProductProvider()),
 
     ChangeNotifierProvider(
       create: (_) => StockViewModel(

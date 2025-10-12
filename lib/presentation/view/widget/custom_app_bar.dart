@@ -111,15 +111,17 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-
   final String profileImage;
+  final String? backArrow;
   final int notificationCount;
   final VoidCallback? onProfileTap;
   final VoidCallback? onNotificationTap;
 
+
   const CustomAppBar({
     super.key,
     required this.profileImage,
+     this.backArrow,
     required this.notificationCount,
     this.onProfileTap,
     this.onNotificationTap,
@@ -146,6 +148,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   // Left Section
                   Row(
                     children: [
+                      backArrow !=null && backArrow!.isNotEmpty ? Image.asset("assets/images/back_arrow.png", height: 38.h):
                       Image.asset(AssetPaths.headOfficeLogo, height: 38.h),
                       SizedBox(width: 8.w),
                     ],
@@ -154,7 +157,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: (){Navigator.pushNamed(context, RouteNames.notificationScreen);},
+                        onTap: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            RouteNames.notificationScreen,
+                            (route) => false,
+                          );
+                        },
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
@@ -196,10 +205,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          Container(
-            height: 8.h,
-            color: AppColors.bgColor,
-          ),
+          Container(height: 8.h, color: AppColors.bgColor),
         ],
       ),
     );
