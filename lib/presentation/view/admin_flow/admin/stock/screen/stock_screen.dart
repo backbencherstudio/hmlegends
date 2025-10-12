@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../view_model/parent/stock_viewmodel.dart';
 import '../widget/filter_button.dart';
 import '../widget/product_card.dart';
+import '../../widget/search_filter.dart';
 
 class StockScreen extends StatelessWidget {
   const StockScreen({super.key});
@@ -32,7 +33,7 @@ class StockScreen extends StatelessWidget {
           children: [
             _buildFilterButtons(vm),
             SizedBox(height: 15.h),
-            _buildSearchField(),
+            SearchField(),
             SizedBox(height: 12.h),
             _buildHeaderRow(vm),
             SizedBox(height: 6.h),
@@ -62,43 +63,6 @@ class StockScreen extends StatelessWidget {
               ),
             )
             .toList(),
-      ),
-    );
-  }
-
-  Widget _buildSearchField() {
-    return Container(
-      height: 48.h,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30.r),
-        color: AppColors.searchFieldBgColor,
-      ),
-      child: TextField(
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.only(
-            left: 60.w,
-            right: 16.w,
-            top: 14.h,
-            bottom: 14.h,
-          ),
-          prefixIcon: Padding(
-            padding: EdgeInsets.only(left: 12.w, right: 4.w),
-            child: Icon(
-              CupertinoIcons.search,
-              color: AppColors.iconColor,
-              size: 24.sp,
-            ),
-          ),
-          prefixIconConstraints: BoxConstraints(
-            minWidth: 44.w,
-            minHeight: 48.h,
-          ),
-          hintText: 'Search',
-          hintStyle: AppTextStyles.hintText,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-        ),
       ),
     );
   }
@@ -168,3 +132,5 @@ class StockScreen extends StatelessWidget {
     return images[index % images.length];
   }
 }
+
+
