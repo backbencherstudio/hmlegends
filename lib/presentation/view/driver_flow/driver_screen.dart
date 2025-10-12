@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import '../../../core/constant/asset_path.dart';
 import '../widget/custom_app_bar.dart';
 
@@ -69,7 +70,9 @@ class BranchInfoCard extends StatelessWidget {
     return Column(
       children: [
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Navigator.pushNamed(context, RouteNames.driverBranseDetailScreen);
+          },
           child: Container(
             width: double.infinity,
             height: 120.h,
