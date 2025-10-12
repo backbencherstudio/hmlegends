@@ -22,6 +22,9 @@ class AppColors{
   static const Color lowStockTextColor = Color(0xFFFDF3CE);
   static const Color editTextFieldColor = Color(0xFFF6F6F7);
   static const Color editTextFieldBorderColor = Color(0xFFD2D2D5);
+  static const Color totalOrder1stColor = Color(0xFFD1E4C9);
+  static const Color totalOrder2ndColor = Color(0xFFE6ECDE);
+  static const Color totalOrder3rdColor = Color(0xFFE20614);
 
 
 }
