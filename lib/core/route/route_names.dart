@@ -26,6 +26,8 @@ class RouteNames{
   static const String editStockScreen  = '/editStockScreen ';
   static const String orderSummaryScreen = '/orderSummaryScreen';
   static const String orderSummaryViewScreen = '/orderSummaryViewScreen';
+  static const String confirmDeliveryScreen  = '/confirmDeliveryScreen ';
+  static const String deliverySummeryScreen  = '/deliverySummeryScreen ';
 
 
 }
