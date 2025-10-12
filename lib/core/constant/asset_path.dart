@@ -21,6 +21,7 @@ class AssetPaths {
   static const String editIcon ='$_iconUrl/edit_icon.png';
   static const String deleteIcon ='$_iconUrl/deleteIcon.png';
   static const String successfulIcon ='$_iconUrl/successful_icon.png';
+  static const String orderSummaryIcon1 ='$_iconUrl/order_summary_icon1.png';
 
 
 
