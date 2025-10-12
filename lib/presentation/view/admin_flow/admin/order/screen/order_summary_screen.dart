@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 
+import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../widget/search_filter.dart';
 import '../widget/order_summary_card.dart';
@@ -34,87 +34,86 @@ class OrderSummaryScreen extends StatelessWidget {
         onBackTap: () => Navigator.pop(context),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SearchField(),
-              SizedBox(height: 20.h),
+        padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 10.h), // Remove bottom padding
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SearchField(),
+            SizedBox(height: 20.h),
 
-              /// Summary boxes
-              Row(
-                children: [
-                  Expanded(
-                    child: OrderSummaryCard(
-                      title: "Total Orders",
-                      value: "08",
-                      isHighlighted: true,
-                    ),
+            /// Summary boxes
+            Row(
+              children: [
+                Expanded(
+                  child: OrderSummaryCard(
+                    title: "Total Orders",
+                    value: "08",
+                    isHighlighted: true,
                   ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: OrderSummaryCard(
-                      title: "Pending Orders",
-                      value: "04",
-                    ),
+                ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: OrderSummaryCard(
+                    title: "Pending Orders",
+                    value: "04",
                   ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: OrderSummaryCard(
-                      title: "Invoiced Orders",
-                      value: "07",
-                    ),
+                ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: OrderSummaryCard(
+                    title: "Invoiced Orders",
+                    value: "07",
                   ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: OrderSummaryCard(
-                      title: "Dlivered Orders",
-                      value: "08",
-                      isWide: true,
-                    ),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            Row(
+              children: [
+                Expanded(
+                  child: OrderSummaryCard(
+                    title: "Dlivered Orders",
+                    value: "08",
+                    isWide: true,
                   ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: OrderSummaryCard(
-                      title: "Units of items ordered",
-                      value: "350",
-                      isWide: true,
-                    ),
+                ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: OrderSummaryCard(
+                    title: "Units of items ordered",
+                    value: "350",
+                    isWide: true,
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
 
-              SizedBox(height: 28.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Total Orders",
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
+            SizedBox(height: 28.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Total Orders",
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
                   ),
-                  Row(
-                    children: [
-                      Text("Today", style: TextStyle(fontSize: 14.sp)),
-                      Icon(Icons.keyboard_arrow_down_rounded, size: 20.sp),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 14.h),
+                ),
+                Row(
+                  children: [
+                    Text("Today", style: TextStyle(fontSize: 14.sp)),
+                    Icon(Icons.keyboard_arrow_down_rounded, size: 20.sp),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 14.h),
 
-              /// Order List - Removed ListTile and using custom colored containers
-              ListView.builder(
+            /// Order List - Use Expanded to take remaining space
+            Expanded(
+              child: ListView.builder(
                 itemCount: orderData.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.only(bottom: 10.h), // Add padding only to list
                 itemBuilder: (context, index) {
                   final item = orderData[index];
                   return Padding(
@@ -178,7 +177,6 @@ class OrderSummaryScreen extends StatelessWidget {
                             child: Container(
                               decoration: BoxDecoration(
                                 color: const Color(0xFFE20614),
-
                                 borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(8.r),
                                   bottomRight: Radius.circular(8.r),
@@ -214,8 +212,8 @@ class OrderSummaryScreen extends StatelessWidget {
                   );
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
