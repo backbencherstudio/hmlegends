@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
 import '../../widget/custom_app_bar.dart';
 import '../driver_provider/branch_product_provider.dart';
@@ -131,6 +132,8 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                             children: [
                               Text("${index + 1}."),
                               Checkbox(
+                                checkColor: Color(0xffFFFFFF),
+                                activeColor: Color(0xffE20613),
                                 value: product.isSelected ?? false,
                                 onChanged: (_) =>
                                     provider.toggleProductSelection(index),
@@ -188,7 +191,12 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                     borderRadius: BorderRadius.circular(36),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.confirmDeliveryScreen,
+                  );
+                },
                 child: const Text("Start Delivery"),
               ),
             ),
