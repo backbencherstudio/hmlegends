@@ -15,19 +15,22 @@ void showSuccessDialog(BuildContext context, Function onDelete, String text) {
           height: 451.h,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(10.r),
+            borderRadius: BorderRadius.circular(14.r),
           ),
-          child: Column(
-            children: [
-              SizedBox(height: 100.h),
-              Image.asset("assets/icons/orders.png", height: 95.h, width: 95.w),
-              SizedBox(height: 30.h),
-              Text(
-                text,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-            ],
+          child: Padding(
+            padding:  EdgeInsets.symmetric(horizontal: 50.w,vertical: 40.h),
+            child: Column(
+              children: [
+                SizedBox(height: 100.h),
+                Image.asset(AssetPaths.successfulIcon, height: 100.h, width: 100.w),
+                SizedBox(height: 50.h),
+                Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
           ),
         ),
       );
