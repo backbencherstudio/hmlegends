@@ -9,6 +9,7 @@ import '../../presentation/view_model/auth/login_viewmodel.dart';
 import '../../presentation/view_model/auth/set_new_password_viewModel.dart';
 import '../../presentation/view_model/parent/bottom_nav_viewmodel.dart';
 import '../../presentation/view_model/parent/stock_viewmodel.dart';
+import '../../presentation/view_model/profile/change_pass_provider.dart';
 
 class AppProviders {
   static final List<SingleChildWidget> providers = [
@@ -17,6 +18,7 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => LoginViewModel()),
     ChangeNotifierProvider(create: (_) => SetNewPasswordViewModel()),
     ChangeNotifierProvider(create: (_) => BottomNavViewModel()),
+    ChangeNotifierProvider(create: (_) => ChangePasswordProvider()),
 
     ChangeNotifierProvider(
       create: (_) => StockViewModel(

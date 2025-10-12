@@ -110,19 +110,20 @@ import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-
+class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
   final String profileImage;
   final int notificationCount;
   final VoidCallback? onProfileTap;
   final VoidCallback? onNotificationTap;
+  final String title;
 
-  const CustomAppBar({
+  const SimpleAppbar({
     super.key,
     required this.profileImage,
     required this.notificationCount,
     this.onProfileTap,
     this.onNotificationTap,
+    required this.title,
   });
 
   @override
@@ -145,20 +146,37 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   // Left Section
                   Row(
+                    spacing: 4,
                     children: [
-                      Image.asset(AssetPaths.headOfficeLogo, height: 38.h),
-                      SizedBox(width: 8.w),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Icon(Icons.arrow_back_ios),
+                      ),
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                        ),
+                      ),
                     ],
                   ),
                   // Right Section
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: (){Navigator.pushNamed(context, RouteNames.notificationScreen);},
+                        onTap: onNotificationTap,
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
-                            Icon(CupertinoIcons.bell, size: 28.sp),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, RouteNames.notificationScreen);
+                              },
+                              child: Icon(CupertinoIcons.bell, size: 28.sp),
+                            ),
                             if (notificationCount > 0)
                               Positioned(
                                 right: 1.w,
@@ -196,10 +214,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          Container(
-            height: 8.h,
-            color: AppColors.bgColor,
-          ),
+          Container(height: 8.h, color: AppColors.bgColor),
         ],
       ),
     );
