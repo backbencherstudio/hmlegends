@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/widget/show_dialog.dart';
 
 import '../../../../../../core/constant/app_colors.dart';
@@ -81,7 +82,9 @@ class ProductCard extends StatelessWidget {
         ),
         SizedBox(height: 12.h),
         Row(children: [
-          _buildActionIcon(AssetPaths.editIcon, () => print('Edit ${product.name}')),
+          _buildActionIcon(AssetPaths.editIcon, () {
+            Navigator.pushNamed(context, RouteNames.editStockScreen);
+          }),
           SizedBox(width: 12.w),
           _buildActionIcon(AssetPaths.deleteIcon, () {
             showDeleteDialog(context, () {

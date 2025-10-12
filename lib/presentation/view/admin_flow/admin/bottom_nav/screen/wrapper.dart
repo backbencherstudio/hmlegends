@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/presentation/view_model/parent/bottom_nav_viewmodel.dart';
 import 'package:provider/provider.dart';
-import '../../home/screen/home_screen.dart';
+import '../../home/screen/head_office_home_screen.dart';
 import '../../stock/screen/stock_screen.dart';
 import '../widget/custom_bottom_nav_bar.dart';
 
@@ -12,10 +12,10 @@ class MainWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
-      const HomeScreen(),
+      const HeadOfficeHomeScreen(),
       StockScreen(),
-      const HomeScreen(),
-      const HomeScreen(),
+      const HeadOfficeHomeScreen(),
+      const HeadOfficeHomeScreen(),
     ];
 
     return Consumer<BottomNavViewModel>(

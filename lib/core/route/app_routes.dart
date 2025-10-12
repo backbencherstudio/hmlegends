@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart';
+import '../../presentation/view/admin_flow/admin/stock/screen/edit_stock_screen.dart';
 import '../../presentation/view/auth/forget_password/screen/forget_password_screen.dart';
 import '../../presentation/view/auth/login/screen/login_screen.dart';
 import '../../presentation/view/auth/otp_verify/screen/otp_verify_screen.dart';
@@ -48,6 +49,7 @@ class AppRoutes{
     RouteNames.driverScreen   :(context)=>  DriverScreen(),
     RouteNames.driverBottomNavBar   :(context)=>  DriverBottomNavBar(),
     RouteNames.driverBranchParentScreen   :(context)=>  DriverBranchParentScreen(),
+    RouteNames.editStockScreen   :(context)=>  EditStockScreen (),
 
 
   };

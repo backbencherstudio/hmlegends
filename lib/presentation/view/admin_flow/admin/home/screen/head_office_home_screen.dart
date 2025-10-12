@@ -7,8 +7,8 @@ import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
 import '../widget/info_card.dart';
 import '../widget/weekly_bar_chart.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HeadOfficeHomeScreen extends StatelessWidget {
+  const HeadOfficeHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
