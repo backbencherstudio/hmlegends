@@ -18,6 +18,8 @@ import '../../presentation/view/branch_manager_flow/parent/parent_screen.dart';
 import '../../presentation/view/branch_manager_flow/profile/profile_screen.dart';
 import '../../presentation/view/branch_manager_flow/profile/screens/change_info.dart';
 import '../../presentation/view/branch_manager_flow/profile/screens/change_password.dart';
+import '../../presentation/view/driver_flow/driver_brance_detailScreen/confirm_delivery_screen.dart';
+import '../../presentation/view/driver_flow/driver_brance_detailScreen/delivery_summery_screen.dart';
 import '../../presentation/view/driver_flow/driver_brance_detailScreen/driver_brance_detail_screen.dart';
 import '../../presentation/view/driver_flow/driver_screen.dart';
 import '../../presentation/view/driver_flow/parent/parent_screen.dart';
@@ -52,6 +54,8 @@ class AppRoutes{
     RouteNames.driverBranchParentScreen   :(context)=>  DriverBranchParentScreen(),
     RouteNames.editStockScreen   :(context)=>  EditStockScreen (),
     RouteNames.driverBranseDetailScreen   :(context)=>  DriverBranchDetailScreen(),
+    RouteNames.confirmDeliveryScreen   :(context)=>  ConfirmDeliveryScreen(),
+    RouteNames.deliverySummeryScreen   :(context)=>  DeliverySummeryScreen(),
 
 
   };
