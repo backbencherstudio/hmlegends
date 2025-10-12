@@ -51,7 +51,7 @@ class AppRoutes{
     RouteNames.driverScreen   :(context)=>  DriverScreen(),
     RouteNames.driverBottomNavBar   :(context)=>  DriverBottomNavBar(),
     RouteNames.driverBranchParentScreen   :(context)=>  DriverBranchParentScreen(),
-    RouteNames.driverBranseDetailScreen   :(context)=>  DriverBranseDetailScreen(),
+    RouteNames.driverBranseDetailScreen   :(context)=>  DriverBranchDetailScreen(),
 
 
   };
