@@ -23,6 +23,7 @@ class RouteNames{
   static const String driverBottomNavBar  = '/driverBottomNavBar';
   static const String driverBranchParentScreen  = '/driverBranchParentScreen';
   static const String driverBranseDetailScreen  = '/driverBranseDetailScreen';
+  static const String editStockScreen  = '/editStockScreen ';
 
 
 }

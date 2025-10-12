@@ -15,9 +15,8 @@ class MyOrders extends StatefulWidget {
 
 class _MyOrdersState extends State<MyOrders> {
   String selectedPeriod = 'Today';
-  String? expandedDate; // The date whose dropdown is expanded
+  String? expandedDate;
 
-  // Dummy food lists for demo purposes
   final Map<String, List<String>> foodList = {
     'Today': List.generate(5, (index) => 'Today Food ${index + 1}'),
     'This Week': List.generate(5, (index) => 'Weekly Food ${index + 1}'),
@@ -27,11 +26,9 @@ class _MyOrdersState extends State<MyOrders> {
   @override
   void initState() {
     super.initState();
-    // Initially expand the first item for Today
     expandedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
   }
 
-  /// Generate list of dates for week or month
   List<String> getDateList() {
     final now = DateTime.now();
     if (selectedPeriod == 'Today') {
@@ -59,7 +56,7 @@ class _MyOrdersState extends State<MyOrders> {
         notificationCount: 4,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           children: [
             Container(
@@ -100,22 +97,22 @@ class _MyOrdersState extends State<MyOrders> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Total Items',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: Color(0xff1D1F2C),
+                    fontSize: 16.sp,
+                    color: const Color(0xff1D1F2C),
                   ),
                 ),
                 Row(
                   children: [
                     Text(
                       selectedPeriod,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                        color: Color(0xff4A4C56),
+                        fontSize: 14.sp,
+                        color: const Color(0xff4A4C56),
                       ),
                     ),
                     PopupMenuButton<String>(
@@ -149,16 +146,16 @@ class _MyOrdersState extends State<MyOrders> {
                 ),
               ],
             ),
-            const Divider(height: 20),
+            Divider(height: 20.h),
 
             Expanded(
               child: ListView.separated(
                 itemCount: dates.length,
-                separatorBuilder: (context, index) => const Divider(
-                  thickness: 0.8,
-                  color: Color(0xffE0E0E0),
-                  indent: 10,
-                  endIndent: 10,
+                separatorBuilder: (context, index) => Divider(
+                  thickness: 0.8.h,
+                  color: const Color(0xffE0E0E0),
+                  indent: 10.w,
+                  endIndent: 10.w,
                 ),
                 itemBuilder: (context, index) {
                   final date = dates[index];
@@ -167,21 +164,22 @@ class _MyOrdersState extends State<MyOrders> {
                   return Column(
                     children: [
                       ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        contentPadding:
+                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
                         leading: Text(
                           '${index + 1}.',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: Color(0xff4A4C56),
-                            fontSize: 16,
+                            color: const Color(0xff4A4C56),
+                            fontSize: 16.sp,
                           ),
                         ),
                         title: Text(
                           date,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: TextStyle(
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
-                            color: Color(0xff4A4C56),
+                            color: const Color(0xff4A4C56),
                           ),
                         ),
                         trailing: IconButton(
@@ -190,6 +188,7 @@ class _MyOrdersState extends State<MyOrders> {
                                 ? Icons.keyboard_arrow_up_sharp
                                 : Icons.keyboard_arrow_down_sharp,
                             color: Colors.grey.shade600,
+                            size: 22.w,
                           ),
                           onPressed: () {
                             setState(() {
@@ -201,7 +200,7 @@ class _MyOrdersState extends State<MyOrders> {
 
                       if (isExpanded)
                         Padding(
-                          padding: const EdgeInsets.only(left: 2, bottom: 8),
+                          padding: EdgeInsets.only(left: 2.w, bottom: 8.h),
                           child: Column(
                             children: List.generate(foodList[selectedPeriod]!.length, (foodIndex) {
                               final food = 'PERI CHICKEN WRAP';
@@ -211,19 +210,19 @@ class _MyOrdersState extends State<MyOrders> {
                                   children: [
                                     Text(
                                       '${foodIndex + 1}.',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w600,
-                                        color: Color(0xff4A4C56),
-                                        fontSize: 16,
+                                        color: const Color(0xff4A4C56),
+                                        fontSize: 16.sp,
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    SizedBox(width: 8.w),
                                     ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(10.r),
                                       child: Image.asset(
                                         'assets/images/food_burger.png',
-                                        width: 45,
-                                        height: 25,
+                                        width: 45.w,
+                                        height: 25.h,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -231,29 +230,29 @@ class _MyOrdersState extends State<MyOrders> {
                                 ),
                                 title: Text(
                                   food,
-                                  style: const TextStyle(
-                                    fontSize: 16,
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
                                     fontWeight: FontWeight.w500,
-                                    color: Color(0xff4A4C56),
+                                    color: const Color(0xff4A4C56),
                                   ),
                                 ),
-                                trailing:  RichText(
+                                trailing: RichText(
                                   text: TextSpan(
                                     children: [
                                       TextSpan(
                                         text: '1 ',
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 16.sp,
                                           fontWeight: FontWeight.w800,
-                                          color: Color(0xff4A4C56),
+                                          color: const Color(0xff4A4C56),
                                         ),
                                       ),
                                       TextSpan(
                                         text: 'Pcs',
                                         style: TextStyle(
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                           fontWeight: FontWeight.w400,
-                                          color: Color(0xff777980),
+                                          color: const Color(0xff777980),
                                         ),
                                       ),
                                     ],

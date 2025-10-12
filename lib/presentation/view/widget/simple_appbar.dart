@@ -111,7 +111,6 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 
 class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
-
   final String profileImage;
   final int notificationCount;
   final VoidCallback? onProfileTap;
@@ -123,7 +122,8 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
     required this.profileImage,
     required this.notificationCount,
     this.onProfileTap,
-    this.onNotificationTap, required this.title,
+    this.onNotificationTap,
+    required this.title,
   });
 
   @override
@@ -145,12 +145,22 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Left Section
-                  Row(spacing: 4,
+                  Row(
+                    spacing: 4,
                     children: [
                       GestureDetector(
-                          onTap: (){Navigator.pop(context);},
-                          child: Icon(Icons.arrow_back_ios)),
-                      Text(title,style: TextStyle(fontWeight: FontWeight.w600,fontSize: 20),),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Icon(Icons.arrow_back_ios),
+                      ),
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                        ),
+                      ),
                     ],
                   ),
                   // Right Section
@@ -162,8 +172,11 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
                           clipBehavior: Clip.none,
                           children: [
                             GestureDetector(
-                                onTap: (){Navigator.pushNamedAndRemoveUntil(context, RouteNames.notificationScreen, (route)=> false);},
-                                child: Icon(CupertinoIcons.bell, size: 28.sp)),
+                              onTap: () {
+                                Navigator.pushNamed(context, RouteNames.notificationScreen);
+                              },
+                              child: Icon(CupertinoIcons.bell, size: 28.sp),
+                            ),
                             if (notificationCount > 0)
                               Positioned(
                                 right: 1.w,
@@ -201,10 +214,7 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          Container(
-            height: 8.h,
-            color: AppColors.bgColor,
-          ),
+          Container(height: 8.h, color: AppColors.bgColor),
         ],
       ),
     );

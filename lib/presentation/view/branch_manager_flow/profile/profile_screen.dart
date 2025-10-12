@@ -1,58 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
   void _showSubmitDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(15.r),
         ),
         actions: [
-          Column(spacing: 10,
+          Column(
+            spacing: 10.h,
             children: [
-              SizedBox(height: 20,),
+              SizedBox(height: 20.h),
               Text(
                 'Are you sure you want\n            to log out?',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
               ),
-              Row(spacing: 20,
+              Row(
+                spacing: 20.w,
                 children: [
-
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      foregroundColor: Color(0xffE20613),
-                      side:  BorderSide(color: Color(0xffE20613)),
+                      foregroundColor: const Color(0xffE20613),
+                      side: const BorderSide(color: Color(0xffE20613)),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(30.r),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 20.w, vertical: 8.h),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Log me out',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
-
                   ElevatedButton(
                     onPressed: () {
                       _showSubmitDialog(context);
-
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xffE20613),
+                      backgroundColor: const Color(0xffE20613),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(30.r),
                       ),
-                      padding:  EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 20.w, vertical: 8.h),
                     ),
-                    child: const Text('Stay logged in',   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),),
+                    child: Text(
+                      'Stay logged in',
+                      style: TextStyle(
+                          fontSize: 16.sp, fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ],
               ),
@@ -69,66 +79,79 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: const Color(0xffFFF6F7),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Profile',style: TextStyle(fontWeight: FontWeight.w700),),
+        title: Text(
+          'Profile',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.sp),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {
-
-            },
+            icon: Icon(Icons.settings_outlined, size: 24.w),
+            onPressed: () {},
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 20),
+        padding: EdgeInsets.only(bottom: 20.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 30,),
+            SizedBox(height: 15.h),
             const _ProfileHeader(),
-            const SizedBox(height: 15),
+            SizedBox(height: 15.h),
             const _ProfileInfoTile(
               icon: Icons.phone_outlined,
               title: 'Phone Number',
               value: '+123-456-7890',
             ),
-            Divider(indent: 15,
-            endIndent: 15,
-            color: Colors.grey.shade300,
+            Divider(
+              indent: 15.w,
+              endIndent: 15.w,
+              color: Colors.grey.shade300,
             ),
             const _ProfileInfoTile(
               icon: Icons.mail_outline,
               title: 'Email',
               value: 'camwill056@gmail.com',
-            ),  Divider(indent: 15,
-              endIndent: 15,
+            ),
+            Divider(
+              indent: 15.w,
+              endIndent: 15.w,
               color: Colors.grey.shade300,
             ),
             const _ProfileInfoTile(
               icon: Icons.location_on_outlined,
               title: 'Address',
               value: '2715 Ash Dr. San Jose, South\nDakota 83475',
-            ),  Divider(indent: 15,
-              endIndent: 15,
+            ),
+            Divider(
+              indent: 15.w,
+              endIndent: 15.w,
               color: Colors.grey.shade300,
             ),
             _ProfileActionTile(
               icon: Icons.lock_outline,
               title: 'Change Password',
               isDestructive: true,
-              onTap: () {Navigator.pushNamedAndRemoveUntil(context, RouteNames.changePassword, (route) => false);
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.changePassword);
               },
-            ),  Divider(indent: 15,
-              endIndent: 15,
+            ),
+            Divider(
+              indent: 15.w,
+              endIndent: 15.w,
               color: Colors.grey.shade300,
             ),
             _ProfileActionTile(
               icon: Icons.info_outline,
               title: 'Change info',
               isDestructive: true,
-              onTap: () {Navigator.pushNamedAndRemoveUntil(context, RouteNames.changeInfo, (route) => false);},
-            ),  Divider(indent: 15,
-              endIndent: 15,
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.changeInfo);
+              },
+            ),
+            Divider(
+              indent: 15.w,
+              endIndent: 15.w,
               color: Colors.grey.shade300,
             ),
             _ProfileActionTile(
@@ -152,16 +175,16 @@ class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-      padding: const EdgeInsets.all(25),
+      margin: EdgeInsets.symmetric(horizontal: 25.w, vertical: 10.h),
+      padding: EdgeInsets.all(25.w),
       decoration: BoxDecoration(
-        color: const Color(0xFFE20613), // Primary red
-        borderRadius: BorderRadius.circular(15),
+        color: const Color(0xFFE20613),
+        borderRadius: BorderRadius.circular(15.r),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            blurRadius: 10.r,
+            offset: Offset(0, 5.h),
           ),
         ],
       ),
@@ -171,55 +194,55 @@ class _ProfileHeader extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                // User Avatar (Placeholder)
                 ClipOval(
                   child: Image.asset(
-                    'assets/images/panda.jpeg', scale:2.7,// Placeholder image
+                    'assets/images/panda.jpeg',
+                    scale: 2.7,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.person, size: 50, color: Colors.grey),
+                        Icon(Icons.person, size: 50.w, color: Colors.grey),
                   ),
                 ),
-                // Camera/Edit Icon
                 Positioned(
-                  bottom: -5,
-                  right: -5,
+                  bottom: -5.h,
+                  right: -5.w,
                   child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
+                    padding: EdgeInsets.all(4.w),
+                    decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
                       boxShadow: [
-                        BoxShadow(color: Colors.black26, blurRadius: 2)
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 2.r,
+                        )
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.camera_alt_outlined,
-                      color: Color(0xFFD32F2F),
-                      size: 19,
+                      color: const Color(0xFFD32F2F),
+                      size: 19.w,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 15),
-            // Name
-            const Text(
+            SizedBox(height: 15.h),
+            Text(
               'Cameron Williamson',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 20.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 4),
-            // Role/Title
-            const Text(
+            SizedBox(height: 4.h),
+            Text(
               "Head of Legends's branch-02",
               style: TextStyle(
-                color: Color(0xFFF0F0F0), // Lighter white/grey
-                fontSize: 16,
-                fontWeight: FontWeight.w400
+                color: const Color(0xFFF0F0F0),
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ],
@@ -228,8 +251,6 @@ class _ProfileHeader extends StatelessWidget {
     );
   }
 }
-
-// --- Component: Profile Information Tile (Phone, Email, Address) ---
 
 class _ProfileInfoTile extends StatelessWidget {
   final IconData icon;
@@ -245,37 +266,39 @@ class _ProfileInfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      padding:
+      EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
             icon,
             color: Colors.black87,
-            size: 24,
+            size: 24.w,
           ),
-          const SizedBox(width: 15),
+          SizedBox(width: 15.w),
           Expanded(
-            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xff1D1F2C),
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: const Color(0xff1D1F2C),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
                   value,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF4A4C56),
-                    fontWeight: FontWeight.w400
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: const Color(0xFF4A4C56),
+                    fontWeight: FontWeight.w400,
                   ),
-                  softWrap: true, // Allow address to wrap
+                  softWrap: true,
                 ),
               ],
             ),
@@ -285,8 +308,6 @@ class _ProfileInfoTile extends StatelessWidget {
     );
   }
 }
-
-// --- Component: Profile Action Tile (Change Password, Log out) ---
 
 class _ProfileActionTile extends StatelessWidget {
   final IconData icon;
@@ -305,25 +326,25 @@ class _ProfileActionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determine the color for the text (red if destructive, otherwise black)
     final textColor = isDestructive ? const Color(0xFFD32F2F) : Colors.black87;
 
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+        padding:
+        EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
         child: Row(
           children: [
             Icon(
               icon,
-              color: iconColor ?? Color(0xff4A4C56),
-              size: 24,
+              color: iconColor ?? const Color(0xff4A4C56),
+              size: 24.w,
             ),
-            const SizedBox(width: 15),
+            SizedBox(width: 15.w),
             Text(
               title,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 16.sp,
                 color: textColor,
                 fontWeight: FontWeight.w600,
               ),

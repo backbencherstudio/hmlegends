@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/route/route_names.dart';
-import 'package:hmlegends/presentation/view/auth/splash/screen/splash_screen.dart';
-
+import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart';
+import '../../presentation/view/admin_flow/admin/stock/screen/edit_stock_screen.dart';
 import '../../presentation/view/auth/forget_password/screen/forget_password_screen.dart';
 import '../../presentation/view/auth/login/screen/login_screen.dart';
-import '../../presentation/view/auth/onboarding/screen/onboarding_screen.dart';
 import '../../presentation/view/auth/otp_verify/screen/otp_verify_screen.dart';
 import '../../presentation/view/auth/set_new_password/screen/set_new_password_screen.dart';
 import '../../presentation/view/auth/signup/screen/signup_screen.dart';
@@ -21,9 +20,9 @@ import '../../presentation/view/branch_manager_flow/profile/screens/change_info.
 import '../../presentation/view/branch_manager_flow/profile/screens/change_password.dart';
 import '../../presentation/view/driver_flow/driver_brance_detailScreen/driver_brance_detail_screen.dart';
 import '../../presentation/view/driver_flow/driver_screen.dart';
-import '../../presentation/view/driver_flow/parent/parent_screen.dart' hide BranchParentScreen;
-import '../../presentation/view/parent/bottom_nav/screen/wrapper.dart';
-import '../../presentation/view/parent/home/screen/home_screen.dart';
+import '../../presentation/view/driver_flow/parent/parent_screen.dart';
+import '../../presentation/view/onboarding/onboarding/screen/onboarding_screen.dart';
+import '../../presentation/view/splash/splash/screen/splash_screen.dart';
 
 class AppRoutes{
 
@@ -51,6 +50,7 @@ class AppRoutes{
     RouteNames.driverScreen   :(context)=>  DriverScreen(),
     RouteNames.driverBottomNavBar   :(context)=>  DriverBottomNavBar(),
     RouteNames.driverBranchParentScreen   :(context)=>  DriverBranchParentScreen(),
+    RouteNames.editStockScreen   :(context)=>  EditStockScreen (),
     RouteNames.driverBranseDetailScreen   :(context)=>  DriverBranchDetailScreen(),
 
 

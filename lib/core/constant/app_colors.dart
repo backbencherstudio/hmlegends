@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:flutter/animation.dart';
+
 class AppColors{
   static const Color onBoardingButtonTextColor =Color(0xFFE20614);
   static const Color authHeaderTextColor = Color(0xFF4A4C56);
@@ -18,6 +20,8 @@ class AppColors{
   static const Color inStockTextColor = Color(0xFF5BB450);
   static const Color outOfStockTextColor = Color(0xFFEB3D4D);
   static const Color lowStockTextColor = Color(0xFFFDF3CE);
+  static const Color editTextFieldColor = Color(0xFFF6F6F7);
+  static const Color editTextFieldBorderColor = Color(0xFFD2D2D5);
 
 
 }
