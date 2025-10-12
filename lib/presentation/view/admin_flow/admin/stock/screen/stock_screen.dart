@@ -28,7 +28,7 @@ class StockScreen extends StatelessWidget {
         colorSpace: Colors.white,
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.r),
+        padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 10.h),
         child: Column(
           children: [
             _buildFilterButtons(vm),
