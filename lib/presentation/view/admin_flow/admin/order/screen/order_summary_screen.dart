@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar_2.dart';
@@ -113,7 +114,7 @@ class OrderSummaryScreen extends StatelessWidget {
             Expanded(
               child: ListView.builder(
                 itemCount: orderData.length,
-                padding: EdgeInsets.only(bottom: 10.h), // Add padding only to list
+                padding: EdgeInsets.only(bottom: 10.h),
                 itemBuilder: (context, index) {
                   final item = orderData[index];
                   return Padding(
@@ -185,6 +186,7 @@ class OrderSummaryScreen extends StatelessWidget {
                               child: TextButton(
                                 onPressed: () {
                                   // Handle View click
+                                  Navigator.pushNamed(context, RouteNames.orderSummaryViewScreen);
                                 },
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
