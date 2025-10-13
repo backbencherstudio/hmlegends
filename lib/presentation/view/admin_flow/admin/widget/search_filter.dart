@@ -7,8 +7,9 @@ import '../../../../../core/constant/app_text_styles.dart';
 
 class SearchField extends  StatelessWidget {
   const SearchField({
-    super.key,
+    super.key, required this.hintText,
   });
+  final String hintText;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class SearchField extends  StatelessWidget {
       child: TextField(
         decoration: InputDecoration(
           contentPadding: EdgeInsets.only(
-            left: 60.w,
+            left: 50.w,
             right: 16.w,
             top: 14.h,
             bottom: 14.h,
@@ -38,7 +39,7 @@ class SearchField extends  StatelessWidget {
             minWidth: 44.w,
             minHeight: 48.h,
           ),
-          hintText: 'Search',
+          hintText:hintText.isNotEmpty?hintText:'Search',
           hintStyle: AppTextStyles.hintText,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,

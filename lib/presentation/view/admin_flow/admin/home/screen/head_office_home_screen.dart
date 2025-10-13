@@ -183,7 +183,10 @@ class HeadOfficeHomeScreen extends StatelessWidget {
     mainAxisSpacing: 12.h,
     childAspectRatio: 1.2,
     children: [
-      const InfoCard(
+       InfoCard(
+         onTaps: (){
+           Navigator.pushNamed(context, RouteNames.invoiceStatusScreen);
+         },
         title: 'Invoices',
         subtitle: 'Status',
         label1: 'Paid Invoices',

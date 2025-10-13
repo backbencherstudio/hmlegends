@@ -39,7 +39,7 @@ class OrderSummaryScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SearchField(),
+            const SearchField(hintText: '',),
             SizedBox(height: 20.h),
 
             /// Summary boxes
@@ -111,110 +111,110 @@ class OrderSummaryScreen extends StatelessWidget {
             SizedBox(height: 14.h),
 
             /// Order List - Use Expanded to take remaining space
-            Expanded(
-              child: ListView.builder(
-                itemCount: orderData.length,
-                padding: EdgeInsets.only(bottom: 10.h),
-                itemBuilder: (context, index) {
-                  final item = orderData[index];
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: 10.h),
-                    child: Container(
-                      height: 40.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.r),
+        Expanded(
+          child: ListView.builder(
+            itemCount: orderData.length,
+            padding: EdgeInsets.only(bottom: 8.h),
+            itemBuilder: (context, index) {
+              final item = orderData[index];
+              return Padding(
+                padding: EdgeInsets.only(bottom: 8.h),
+                child: Container(
+                  height: 30.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Row(
+                    children: [
+                      // First color section - Branch Name
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD1E4C9),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8.r),
+                              bottomLeft: Radius.circular(8.r),
+                            ),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "${index + 1}. ${item["branch"]}",
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.authBodyTextColor,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      child: Row(
-                        children: [
-                          // First color section - Branch Name
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFD1E4C9),
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(8.r),
-                                  bottomLeft: Radius.circular(8.r),
-                                ),
-                              ),
-                              padding: EdgeInsets.symmetric(horizontal: 12.w),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  "${index + 1}. ${item["branch"]}",
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.authBodyTextColor,
-                                  ),
-                                ),
+
+                      // Second color section - Total Units
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          color: const Color(0xFFE6ECDE),
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Total Units: ${item["units"]}",
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                color: AppColors.authBodyTextColor,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
+                        ),
+                      ),
 
-                          // Second color section - Total Units
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              color: const Color(0xFFE6ECDE),
-                              padding: EdgeInsets.symmetric(horizontal: 12.w),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  "Total Units: ${item["units"]}",
-                                  style: TextStyle(
-                                    fontSize: 13.sp,
-                                    color: AppColors.authBodyTextColor,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
+                      // Third color section - View Button
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE20614),
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(8.r),
+                              bottomRight: Radius.circular(8.r),
                             ),
                           ),
-
-                          // Third color section - View Button
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE20614),
+                          child: TextButton(
+                            onPressed: () {
+                              // Handle View click
+                              Navigator.pushNamed(context, RouteNames.orderSummaryViewScreen);
+                            },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(8.r),
                                   bottomRight: Radius.circular(8.r),
                                 ),
                               ),
-                              child: TextButton(
-                                onPressed: () {
-                                  // Handle View click
-                                  Navigator.pushNamed(context, RouteNames.orderSummaryViewScreen);
-                                },
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(8.r),
-                                      bottomRight: Radius.circular(8.r),
-                                    ),
-                                  ),
-                                ),
-                                child: Text(
-                                  "View",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 13.sp,
-                                  ),
-                                ),
+                            ),
+                            child: Text(
+                              "View",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 13.sp,
                               ),
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
           ],
         ),
       ),
