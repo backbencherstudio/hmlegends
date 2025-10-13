@@ -31,6 +31,7 @@ class RouteNames{
   static const String orderSummaryViewSuccessfulScreen  = '/orderSummaryViewSuccessfulScreen';
   static const String headOfficeInvoiceScreen  = '/headOfficeInvoiceScreen';
   static const String manageBranchesScreen  = '/manageBranchesScreen';
+  static const String addNewBranchesScreen  = '/addNewBranchesScreen';
 
 
 }

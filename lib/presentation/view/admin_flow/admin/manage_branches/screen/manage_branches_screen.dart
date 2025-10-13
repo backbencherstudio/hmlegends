@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 
 class ManageBranchesScreen extends StatelessWidget {
@@ -105,19 +105,24 @@ class ManageBranchesScreen extends StatelessWidget {
                         color: AppColors.authHeaderTextColor,
                       ),
                     ),
-                    Row(
-                      children: [
-                        Image.asset(AssetPaths.addIcon,height: 20.h,width: 20.w,),
-                        SizedBox(width: 6.w),
-                        Text(
-                          "Add New Branch",
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14.sp,
+                    InkWell(
+                      onTap: (){
+                        Navigator.pushNamed(context, RouteNames.addNewBranchesScreen);
+                      },
+                      child: Row(
+                        children: [
+                          Image.asset(AssetPaths.addIcon,height: 20.h,width: 20.w,),
+                          SizedBox(width: 6.w),
+                          Text(
+                            "Add New Branch",
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14.sp,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
