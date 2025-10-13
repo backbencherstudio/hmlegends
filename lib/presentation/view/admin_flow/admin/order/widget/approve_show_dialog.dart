@@ -3,9 +3,11 @@ import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/presentation/view/widget/success_dialog.dart';
 
 
-import 'dialog_button.dart';
 
-void showDeleteDialog(BuildContext context, Function onDelete,String text) {
+import '../../../../widget/dialog_button.dart';
+
+
+void showApproveDialog(BuildContext context,String text) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -18,7 +20,7 @@ void showDeleteDialog(BuildContext context, Function onDelete,String text) {
         actions: [
 
           DialogButton(text: 'Yes', textColor:Colors.white,onPressed: (){
-            showSuccessDialog(context,'You successfully deleted the item!');
+          showSuccessDialog(context,  'You have successfully approved the order!');
           }, color: AppColors.primaryColor),
           DialogButton(text: 'Cancel',textColor:AppColors.authHeaderTextColor, onPressed: (){
             Navigator.pop(context);

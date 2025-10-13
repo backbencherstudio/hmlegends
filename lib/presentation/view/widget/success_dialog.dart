@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 
-void showSuccessDialog(BuildContext context, Function onDelete, String text) {
+void showSuccessDialog(BuildContext context, String text) {
   showDialog(
     context: context,
-    builder: (BuildContext context) {
+    barrierDismissible: false,
+    builder: (BuildContext dialogContext) {
+      Future.delayed(Duration(seconds: 1), () {
+        if (Navigator.canPop(dialogContext)) {
+          Navigator.pop(dialogContext);
+          Navigator.pop(context);
+        }
+      });
+
       return Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.r),
@@ -18,7 +26,7 @@ void showSuccessDialog(BuildContext context, Function onDelete, String text) {
             borderRadius: BorderRadius.circular(14.r),
           ),
           child: Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 50.w,vertical: 40.h),
+            padding: EdgeInsets.symmetric(horizontal: 50.w, vertical: 40.h),
             child: Column(
               children: [
                 SizedBox(height: 100.h),

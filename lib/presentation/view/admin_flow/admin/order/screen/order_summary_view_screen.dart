@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/order/widget/approve_show_dialog.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 
 class OrderSummaryViewScreen extends StatelessWidget {
@@ -82,18 +83,23 @@ class OrderSummaryViewScreen extends StatelessWidget {
                       fontSize: 15.sp,
                     ),
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(20.r),
-                    ),
-                    padding:
-                    EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-                    child: const Text(
-                      "Approve",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                  InkWell(
+                    onTap: (){
+                      showApproveDialog(context,  'Are you sure you want to approve today’s order?');
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(20.r),
+                      ),
+                      padding:
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                      child: const Text(
+                        "Approve",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
