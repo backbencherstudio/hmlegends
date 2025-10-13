@@ -6,28 +6,27 @@ import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 
-class EditStockScreen extends StatefulWidget {
-  const EditStockScreen({super.key});
+class AddNewBranchesScreen extends StatefulWidget {
+  const AddNewBranchesScreen({super.key});
 
   @override
-  State<EditStockScreen> createState() => _EditStockScreenState();
+  State<AddNewBranchesScreen> createState() => _AddNewBranchesScreenState();
 }
 
-class _EditStockScreenState extends State<EditStockScreen> {
+class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
   // Dropdown values
   String? selectedProduct;
   String? selectedStockStatus;
 
   // Dropdown options
-  final List<String> productOptions = ['Chicken Steak & Chips'];
-  final List<String> stockStatusOptions = ['in stock', 'low stock', 'out of stock'];
+  final List<String> stockStatusOptions = ['Active', 'Inactive',];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBarTwo(
-        title: 'Edit Stock',
+        title: 'Add New Branch',
         notificationCount: 4,
         colorMain: Colors.white,
         colorSpace: Colors.white,
@@ -39,19 +38,15 @@ class _EditStockScreenState extends State<EditStockScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildLabel("Product Name"),
-            _buildProductDropdown(),
+            _buildLabel("Branch name"),
+            _buildTextField("Branch name with ID"),
 
             SizedBox(height: 16.h),
-            _buildLabel("Stock Quantity"),
-            _buildTextField("Write quantity"),
+            _buildLabel("Branch location"),
+            _buildTextField("Add location"),
 
             SizedBox(height: 16.h),
-            _buildLabel("Product Price"),
-            _buildTextField("Write price"),
-
-            SizedBox(height: 16.h),
-            _buildLabel("Stock Status"),
+            _buildLabel("Status"),
             _buildStockStatusDropdown(),
 
             SizedBox(height: 24.h),
@@ -104,40 +99,6 @@ class _EditStockScreenState extends State<EditStockScreen> {
     ),
   );
 
-  // Product Dropdown
-  Widget _buildProductDropdown() => Container(
-    decoration: BoxDecoration(
-      color: AppColors.editTextFieldColor,
-      borderRadius: BorderRadius.circular(8.r),
-      border: Border.all(color: const Color(0xFFD2D2D5)),
-    ),
-    padding: EdgeInsets.symmetric(horizontal: 14.w),
-    child: DropdownButtonHideUnderline(
-      child: DropdownButton<String>(
-        value: selectedProduct,
-        isExpanded: true,
-        icon: const Icon(Icons.arrow_drop_down),
-        hint: Text(
-          "Enter product name",
-          style: TextStyle(color: Colors.grey[500]),
-        ),
-        dropdownColor: AppColors.editTextFieldColor, // Dropdown menu background color
-        borderRadius: BorderRadius.circular(8.r), // Dropdown menu border radius
-        style: TextStyle(color: Colors.grey[600]), // Dropdown item text color
-        items: productOptions.map((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
-        onChanged: (String? newValue) {
-          setState(() {
-            selectedProduct = newValue;
-          });
-        },
-      ),
-    ),
-  );
 
   // Stock Status Dropdown
   Widget _buildStockStatusDropdown() => Container(
