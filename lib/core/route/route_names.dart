@@ -32,6 +32,7 @@ class RouteNames{
   static const String headOfficeInvoiceScreen  = '/headOfficeInvoiceScreen';
   static const String manageBranchesScreen  = '/manageBranchesScreen';
   static const String addNewBranchesScreen  = '/addNewBranchesScreen';
+  static const String invoiceStatusScreen  = '/invoiceStatusScreen';
 
 
 }

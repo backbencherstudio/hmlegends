@@ -33,7 +33,7 @@ class StockScreen extends StatelessWidget {
           children: [
             _buildFilterButtons(vm),
             SizedBox(height: 15.h),
-            SearchField(),
+            SearchField(hintText: '',),
             SizedBox(height: 12.h),
             _buildHeaderRow(vm),
             SizedBox(height: 6.h),
