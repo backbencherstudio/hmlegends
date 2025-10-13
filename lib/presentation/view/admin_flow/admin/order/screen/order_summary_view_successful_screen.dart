@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
-import 'package:hmlegends/presentation/view/admin_flow/admin/order/widget/approve_show_dialog.dart';
+import '../../../../auth/widget/auth_button.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 
-class OrderSummaryViewScreen extends StatelessWidget {
-  const OrderSummaryViewScreen({super.key});
+class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
+  const OrderSummaryViewSuccessfulScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +48,10 @@ class OrderSummaryViewScreen extends StatelessWidget {
       },
     ];
 
-    final totalQty =
-    orderItems.fold<int>(0, (sum, item) => sum + (item['qty'] as int));
+    final totalQty = orderItems.fold<int>(
+      0,
+          (sum, item) => sum + (item['qty'] as int),
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
@@ -66,39 +68,80 @@ class OrderSummaryViewScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Branch Row
+            // Branch Row - Fixed the Row structure
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              padding: EdgeInsets.symmetric( vertical: 10.h),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(8.r),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Branch Name",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15.sp,
-                    ),
-                  ),
-                  InkWell(
-                    onTap: (){
-                      showApproveDialog(context,  'Are you sure you want to approve today’s order?');
-                    },
+                  // First color section - Branch Name
+                  Expanded(
+                    flex: 2,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(20.r),
+                        color: const Color(0xFFD1E4C9),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8.r),
+                          bottomLeft: Radius.circular(8.r),
+                        ),
                       ),
-                      padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-                      child: const Text(
-                        "Approve",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "1. Branch Name", // Fixed: removed index and item references
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.authBodyTextColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Second color section - Total Units
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      color: const Color(0xFFE6ECDE),
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Total Units: 76", // Fixed: added actual units value
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: AppColors.authBodyTextColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Third color section - Approved Button
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF5BB450),
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(8.r),
+                          bottomRight: Radius.circular(8.r),
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      child: Center(
+                        child: Text(
+                          "Approved",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 12.sp,
+                          ),
                         ),
                       ),
                     ),
@@ -149,6 +192,8 @@ class OrderSummaryViewScreen extends StatelessWidget {
                     );
                   }
 
+
+
                   // Regular item rows
                   final item = orderItems[index];
                   return Row(
@@ -195,11 +240,40 @@ class OrderSummaryViewScreen extends StatelessWidget {
                 },
               ),
             ),
+            // Success Message and Make Invoice Button
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'You approved Branch Name\'s order. Now you can make invoice.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: AppColors.authBodyTextColor,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+                  AuthButton(
+                    text: 'Make Invoice',
+                    onPressed: () {
+                      // Handle make invoice action
+                    },
+                    color: AppColors.primaryColor,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 16.h),
           ],
         ),
       ),
     );
   }
 }
-
-

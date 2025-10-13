@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
-import 'package:hmlegends/presentation/view/widget/success_dialog.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/order/widget/success_order_summary_card.dart';
+
 
 
 
@@ -20,7 +21,7 @@ void showApproveDialog(BuildContext context,String text) {
         actions: [
 
           DialogButton(text: 'Yes', textColor:Colors.white,onPressed: (){
-          showSuccessDialog(context,  'You have successfully approved the order!');
+            SuccessOrderSummaryCard(context,  'You have successfully approved the order!');
           }, color: AppColors.primaryColor),
           DialogButton(text: 'Cancel',textColor:AppColors.authHeaderTextColor, onPressed: (){
             Navigator.pop(context);
@@ -30,3 +31,4 @@ void showApproveDialog(BuildContext context,String text) {
     },
   );
 }
+
