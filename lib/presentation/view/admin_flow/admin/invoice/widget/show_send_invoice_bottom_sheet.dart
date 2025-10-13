@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
@@ -8,7 +7,7 @@ void showSendInvoiceBottomSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.white, // ✅ full white background
+    backgroundColor: Colors.white,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
     ),
@@ -25,8 +24,21 @@ void showSendInvoiceBottomSheet(BuildContext context) {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Center(
+              child: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  width: 60.w,
+                  height: 3.h,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade400,
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
+                ),
+              ),
+            ),
 
-            SizedBox(height: 10.h),
+            SizedBox(height: 20.h),
 
             // === Title ===
             Text(
@@ -51,22 +63,21 @@ void showSendInvoiceBottomSheet(BuildContext context) {
                   color: Colors.grey.shade500,
                   fontSize: 14.sp,
                 ),
-                contentPadding:
-                EdgeInsets.symmetric(vertical: 14.h, horizontal: 14.w),
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 14.h,
+                  horizontal: 14.w,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.r),
-                  borderSide:
-                  BorderSide(color: Colors.grey.shade300, width: 1),
+                  borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.r),
-                  borderSide:
-                  BorderSide(color: Colors.grey.shade300, width: 1),
+                  borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.r),
-                  borderSide:
-                  BorderSide(color: Colors.grey.shade300, width: 1),
+                  borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
                 ),
               ),
             ),

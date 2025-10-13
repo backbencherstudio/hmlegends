@@ -30,6 +30,7 @@ class RouteNames{
   static const String deliverySummeryScreen  = '/deliverySummeryScreen ';
   static const String orderSummaryViewSuccessfulScreen  = '/orderSummaryViewSuccessfulScreen';
   static const String headOfficeInvoiceScreen  = '/headOfficeInvoiceScreen';
+  static const String manageBranchesScreen  = '/manageBranchesScreen';
 
 
 }

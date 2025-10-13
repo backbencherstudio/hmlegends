@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
 import '../widget/info_card.dart';
 import '../widget/weekly_bar_chart.dart';
@@ -26,7 +27,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
             SizedBox(height: 6.h),
             _stockCard(context),
             SizedBox(height: 16.h),
-            _gridCards(),
+            _gridCards(context),
             SizedBox(height: 16.h),
             Text(
               'Items Ordered (Last 7 Days)',
@@ -174,15 +175,15 @@ class HeadOfficeHomeScreen extends StatelessWidget {
     ),
   );
 
-  Widget _gridCards() => GridView.count(
+  Widget _gridCards(context) => GridView.count(
     crossAxisCount: 2,
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
     crossAxisSpacing: 12.w,
     mainAxisSpacing: 12.h,
     childAspectRatio: 1.2,
-    children: const [
-      InfoCard(
+    children: [
+      const InfoCard(
         title: 'Invoices',
         subtitle: 'Status',
         label1: 'Paid Invoices',
@@ -190,6 +191,9 @@ class HeadOfficeHomeScreen extends StatelessWidget {
         iconPath: AssetPaths.invoiceIcon,
       ),
       InfoCard(
+        onTaps: (){
+          Navigator.pushNamed(context, RouteNames.manageBranchesScreen);
+        },
         title: 'Manage',
         subtitle: 'Branches',
         label1: 'Active',
@@ -198,14 +202,14 @@ class HeadOfficeHomeScreen extends StatelessWidget {
         value2: '0',
         iconPath: AssetPaths.branchIcon,
       ),
-      InfoCard(
+      const InfoCard(
         title: 'Orders',
         subtitle: 'Summery',
         label1: 'Total Orders',
         value1: '6/8',
         iconPath: AssetPaths.orderIcon,
       ),
-      InfoCard(
+      const InfoCard(
         title: 'Manage',
         subtitle: 'Delivery',
         label1: "Today's Delivery",

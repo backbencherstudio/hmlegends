@@ -368,7 +368,7 @@ class HeadOfficeInvoiceScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 30.h),
+            SizedBox(height: 5.h),
           ],
         ),
       ),
