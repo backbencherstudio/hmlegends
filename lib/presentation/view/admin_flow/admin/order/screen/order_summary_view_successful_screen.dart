@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import '../../../../auth/widget/auth_button.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 
@@ -87,11 +88,11 @@ class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
                           bottomLeft: Radius.circular(8.r),
                         ),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "1. Branch Name", // Fixed: removed index and item references
+                          "1. Branch Name",
                           style: TextStyle(
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
@@ -107,7 +108,7 @@ class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
                     flex: 2,
                     child: Container(
                       color: const Color(0xFFE6ECDE),
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -133,7 +134,7 @@ class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
                           bottomRight: Radius.circular(8.r),
                         ),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      padding: EdgeInsets.symmetric(vertical: 8.h),
                       child: Center(
                         child: Text(
                           "Approved",
@@ -191,9 +192,6 @@ class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
                       ),
                     );
                   }
-
-
-
                   // Regular item rows
                   final item = orderItems[index];
                   return Row(
@@ -264,6 +262,7 @@ class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
                     text: 'Make Invoice',
                     onPressed: () {
                       // Handle make invoice action
+                      Navigator.pushNamed(context, RouteNames.headOfficeInvoiceScreen);
                     },
                     color: AppColors.primaryColor,
                   ),
