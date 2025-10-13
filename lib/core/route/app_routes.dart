@@ -3,6 +3,7 @@ import 'package:hmlegends/core/route/route_names.dart';
 import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart';
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_screen.dart';
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_view_screen.dart';
+import '../../presentation/view/admin_flow/admin/order/screen/order_summary_view_successful_screen.dart';
 import '../../presentation/view/admin_flow/admin/stock/screen/edit_stock_screen.dart';
 import '../../presentation/view/auth/forget_password/screen/forget_password_screen.dart';
 import '../../presentation/view/auth/login/screen/login_screen.dart';
@@ -60,6 +61,7 @@ class AppRoutes{
     RouteNames.orderSummaryViewScreen  :(context)=>  OrderSummaryViewScreen(),
     RouteNames.confirmDeliveryScreen   :(context)=>  ConfirmDeliveryScreen(),
     RouteNames.deliverySummeryScreen   :(context)=>  DeliverySummeryScreen(),
+    RouteNames.orderSummaryViewSuccessfulScreen  :(context)=>  OrderSummaryViewSuccessfulScreen(),
 
 
   };
