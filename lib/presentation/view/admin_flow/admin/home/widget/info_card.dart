@@ -5,8 +5,9 @@ import 'package:hmlegends/core/constant/app_colors.dart';
 class InfoCard extends StatelessWidget {
   final String title, subtitle, label1, value1, iconPath;
   final String? label2, value2;
+  final VoidCallback? onTaps;
 
-  const InfoCard({
+   const InfoCard({
     super.key,
     required this.title,
     required this.subtitle,
@@ -14,67 +15,70 @@ class InfoCard extends StatelessWidget {
     required this.value1,
     required this.iconPath,
     this.label2,
-    this.value2,
+    this.value2, this.onTaps,
   });
 
   @override
   Widget build(BuildContext context) {
     final hasSecondLine = label2 != null && value2 != null;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.headOfficeCardBorderColor),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12.withOpacity(0.03),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Top Icon + Titles
-          Row(
-            children: [
-              Image.asset(iconPath, width: 42.w, height: 42.h),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title,
-                        style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.authHeaderTextColor)),
-                    Text(subtitle,
-                        style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.authHeaderTextColor)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          const Spacer(),
-
-          // Bottom labels
-          if (hasSecondLine) ...[
-            _row(label1, value1, true),
-            SizedBox(height: 6.h),
-            _row(label2!, value2!, false),
-          ] else ...[
-            SizedBox(height: 6.h),
-            _row(label1, value1, true),
+    return GestureDetector(
+      onTap: onTaps,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: AppColors.headOfficeCardBorderColor),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12.withOpacity(0.03),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
           ],
-        ],
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top Icon + Titles
+            Row(
+              children: [
+                Image.asset(iconPath, width: 42.w, height: 42.h),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title,
+                          style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.authHeaderTextColor)),
+                      Text(subtitle,
+                          style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.authHeaderTextColor)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const Spacer(),
+
+            // Bottom labels
+            if (hasSecondLine) ...[
+              _row(label1, value1, true),
+              SizedBox(height: 6.h),
+              _row(label2!, value2!, false),
+            ] else ...[
+              SizedBox(height: 6.h),
+              _row(label1, value1, true),
+            ],
+          ],
+        ),
       ),
     );
   }
