@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 
-
 import '../../../../../../core/constant/asset_path.dart';
 import '../../../../widget/custom_app_bar_2.dart';
-
+import '../widget/show_send_invoice_bottom_sheet.dart';
 
 class HeadOfficeInvoiceScreen extends StatelessWidget {
   const HeadOfficeInvoiceScreen({super.key});
@@ -13,11 +12,41 @@ class HeadOfficeInvoiceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final invoiceItems = [
-      {"no": "01", "name": "Peri Chicken Wrap", "price": "£10", "qty": 10, "total": 100},
-      {"no": "02", "name": "Billy's Special", "price": "£12", "qty": 12, "total": 144},
-      {"no": "03", "name": "Chicken Steak & Chips", "price": "£8", "qty": 15, "total": 120},
-      {"no": "04", "name": "The Spicy Dip", "price": "£6.5", "qty": 16, "total": 104},
-      {"no": "05", "name": "Chicken Steak & Rice", "price": "£7.5", "qty": 16, "total": 120},
+      {
+        "no": "01",
+        "name": "Peri Chicken Wrap",
+        "price": "£10",
+        "qty": 10,
+        "total": 100,
+      },
+      {
+        "no": "02",
+        "name": "Billy's Special",
+        "price": "£12",
+        "qty": 12,
+        "total": 144,
+      },
+      {
+        "no": "03",
+        "name": "Chicken Steak & Chips",
+        "price": "£8",
+        "qty": 15,
+        "total": 120,
+      },
+      {
+        "no": "04",
+        "name": "The Spicy Dip",
+        "price": "£6.5",
+        "qty": 16,
+        "total": 104,
+      },
+      {
+        "no": "05",
+        "name": "Chicken Steak & Rice",
+        "price": "£7.5",
+        "qty": 16,
+        "total": 120,
+      },
     ];
 
     const subtotal = 588;
@@ -49,53 +78,71 @@ class HeadOfficeInvoiceScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Invoice From",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15.sp,
-                        color: AppColors.authHeaderTextColor,
-                      )),
+                  Text(
+                    "Invoice From",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15.sp,
+                      color: AppColors.authHeaderTextColor,
+                    ),
+                  ),
                   SizedBox(height: 8.h),
-                  Text("JHON DOE",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14.sp,
-                          color: Colors.black)),
+                  Text(
+                    "JHON DOE",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.sp,
+                      color: Colors.black,
+                    ),
+                  ),
                   SizedBox(height: 4.h),
-                  Text("1550 Silky Blue Road San Francisco California",
-                      style: TextStyle(
-                        color: AppColors.authBodyTextColor,
-                        fontSize: 13.sp,
-                      )),
-                  Text("(123) 123456-789",
-                      style: TextStyle(
-                        color: AppColors.authBodyTextColor,
-                        fontSize: 13.sp,
-                      )),
+                  Text(
+                    "1550 Silky Blue Road San Francisco California",
+                    style: TextStyle(
+                      color: AppColors.authBodyTextColor,
+                      fontSize: 13.sp,
+                    ),
+                  ),
+                  Text(
+                    "(123) 123456-789",
+                    style: TextStyle(
+                      color: AppColors.authBodyTextColor,
+                      fontSize: 13.sp,
+                    ),
+                  ),
                   Divider(height: 20.h, color: const Color(0xFFEAEAEA)),
-                  Text("Ship to",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15.sp,
-                        color: AppColors.authHeaderTextColor,
-                      )),
+                  Text(
+                    "Ship to",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15.sp,
+                      color: AppColors.authHeaderTextColor,
+                    ),
+                  ),
                   SizedBox(height: 8.h),
-                  Text("JHON DOE",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14.sp,
-                          color: Colors.black)),
+                  Text(
+                    "JHON DOE",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.sp,
+                      color: Colors.black,
+                    ),
+                  ),
                   SizedBox(height: 4.h),
-                  Text("1550 Silky Blue Road San Francisco California",
-                      style: TextStyle(
-                        color: AppColors.authBodyTextColor,
-                        fontSize: 13.sp,
-                      )),
-                  Text("(123) 123456-789",
-                      style: TextStyle(
-                        color: AppColors.authBodyTextColor,
-                        fontSize: 13.sp,
-                      )),
+                  Text(
+                    "1550 Silky Blue Road San Francisco California",
+                    style: TextStyle(
+                      color: AppColors.authBodyTextColor,
+                      fontSize: 13.sp,
+                    ),
+                  ),
+                  Text(
+                    "(123) 123456-789",
+                    style: TextStyle(
+                      color: AppColors.authBodyTextColor,
+                      fontSize: 13.sp,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -116,18 +163,22 @@ class HeadOfficeInvoiceScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("DATE: 20 APRIL 2025",
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            color: AppColors.authBodyTextColor,
-                            fontWeight: FontWeight.w500,
-                          )),
-                      Text("INVOICE NO: FS618A",
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            color: AppColors.authBodyTextColor,
-                            fontWeight: FontWeight.w500,
-                          )),
+                      Text(
+                        "DATE: 20 APRIL 2025",
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          color: AppColors.authBodyTextColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        "INVOICE NO: FS618A",
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          color: AppColors.authBodyTextColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ],
                   ),
                   Divider(height: 20.h, color: const Color(0xFFEAEAEA)),
@@ -139,17 +190,44 @@ class HeadOfficeInvoiceScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(flex: 1, child: Text("NO", style: _headerText())),
-                        Expanded(flex: 4, child: Text("Product Name", style: _headerText())),
-                        Expanded(flex: 2, child: Text("Price", style: _headerText(), textAlign: TextAlign.right)),
-                        Expanded(flex: 2, child: Text("Qty", style: _headerText(), textAlign: TextAlign.center)),
-                        Expanded(flex: 2, child: Text("Total", style: _headerText(), textAlign: TextAlign.right)),
+                        Expanded(
+                          flex: 1,
+                          child: Text("NO", style: _headerText()),
+                        ),
+                        Expanded(
+                          flex: 4,
+                          child: Text("Product Name", style: _headerText()),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            "Price",
+                            style: _headerText(),
+                            textAlign: TextAlign.right,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            "Qty",
+                            style: _headerText(),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            "Total",
+                            style: _headerText(),
+                            textAlign: TextAlign.right,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   Divider(height: 12.h, color: const Color(0xFFEAEAEA)),
 
-// ===== TABLE ITEMS =====
+                  // ===== TABLE ITEMS =====
                   ...invoiceItems.map((item) {
                     return Padding(
                       padding: EdgeInsets.symmetric(vertical: 6.h),
@@ -207,22 +285,25 @@ class HeadOfficeInvoiceScreen extends StatelessWidget {
                     );
                   }).toList(),
 
-
                   // ===== SUBTOTAL =====
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text("Subtotal: ",
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                          )),
-                      Text("£$subtotal",
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          )),
+                      Text(
+                        "Subtotal: ",
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        "£$subtotal",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -247,18 +328,24 @@ class HeadOfficeInvoiceScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Send Invoice
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryColor,
-                    borderRadius: BorderRadius.circular(30.r),
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 12.h),
-                  child: Text(
-                    "Send Invoice",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14.sp,
+                GestureDetector(
+                  onTap: () => showSendInvoiceBottomSheet(context),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(30.r),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 40.w,
+                      vertical: 12.h,
+                    ),
+                    child: Text(
+                      "Send Invoice",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14.sp,
+                      ),
                     ),
                   ),
                 ),
@@ -267,7 +354,7 @@ class HeadOfficeInvoiceScreen extends StatelessWidget {
                 Row(
                   children: [
                     //const Icon(Icons.picture_as_pdf, color: Colors.red),
-                    Image.asset(AssetPaths.pdfIcon,height: 40.h,width: 40.w,),
+                    Image.asset(AssetPaths.pdfIcon, height: 40.h, width: 40.w),
                     SizedBox(width: 8.w),
                     Text(
                       "Export pdf",
