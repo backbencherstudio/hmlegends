@@ -83,7 +83,7 @@ class HeadOfficeProfileScreen extends StatelessWidget {
               title: 'Change info',
               isDestructive: true,
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.changeInfo);
+                Navigator.pushNamed(context, RouteNames.headOfficeChangeInfoScreen);
               },
             ),
           ],

@@ -35,6 +35,7 @@ class RouteNames{
   static const String invoiceStatusScreen  = '/invoiceStatusScreen';
   static const String headOfficeProfileScreen  = '/headOfficeProfileScreen';
   static const String headOfficeChangePasswordScreen  = '/headOfficeChangePasswordScreen';
+  static const String headOfficeChangeInfoScreen  = '/headOfficeChangeInfoScreen';
 
 
 }
