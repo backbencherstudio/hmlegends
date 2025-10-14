@@ -158,10 +158,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushNamedAndRemoveUntil(
+                          Navigator.pushNamed(
                             context,
                             RouteNames.notificationScreen,
-                            (route) => false,
                           );
                         },
                         child: Stack(
