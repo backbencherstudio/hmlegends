@@ -205,14 +205,20 @@ class HeadOfficeHomeScreen extends StatelessWidget {
         value2: '0',
         iconPath: AssetPaths.branchIcon,
       ),
-      const InfoCard(
+       InfoCard(
+        onTaps: (){
+          Navigator.pushNamed(context, RouteNames.orderSummaryScreen);
+        },
         title: 'Orders',
         subtitle: 'Summery',
         label1: 'Total Orders',
         value1: '6/8',
         iconPath: AssetPaths.orderIcon,
       ),
-      const InfoCard(
+      InfoCard(
+        onTaps: (){
+          Navigator.pushNamed(context, RouteNames.manageDeliveryScreen);
+        },
         title: 'Manage',
         subtitle: 'Delivery',
         label1: "Today's Delivery",
