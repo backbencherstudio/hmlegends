@@ -17,45 +17,47 @@ class SetNewPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: SafeArea(
-          child: Column(
-            children: [
-              SizedBox(height: 100.h),
-              Center(
-                child: Image.asset(
-                  AssetPaths.authLogo,
-                  width: 100.w,
-                  height: 100.h,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: SafeArea(
+            child: Column(
+              children: [
+                SizedBox(height: 100.h),
+                Center(
+                  child: Image.asset(
+                    AssetPaths.authLogo,
+                    width: 100.w,
+                    height: 100.h,
+                  ),
                 ),
-              ),
-              SizedBox(height: 20.h),
-              Text('Set A New Password', style: AppTextStyles.authHeadline),
-              SizedBox(height: 8.h),
-              Text(
-                'Create a new password. Ensure it differs from previous ones for security',
-                style: AppTextStyles.authBodyText,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20.h),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RequiredLabel(labelText: 'Password'),
-                  SizedBox(height: 5.h),
-                  _buildPasswordField(),
-                  SizedBox(height: 10.h),
-                  RequiredLabel(labelText: 'Confirm Password'),
-                  SizedBox(height: 5.h),
-                  _buildConfirmPasswordField(),
-                  SizedBox(height: 5.h),
-                  _buildErrorMessage(),
-                  SizedBox(height: 20.h),
-                  _resetPasswordButton(context),
-                ],
-              ),
-            ],
+                SizedBox(height: 20.h),
+                Text('Set A New Password', style: AppTextStyles.authHeadline),
+                SizedBox(height: 8.h),
+                Text(
+                  'Create a new password. Ensure it differs from previous ones for security',
+                  style: AppTextStyles.authBodyText,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20.h),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RequiredLabel(labelText: 'Password'),
+                    SizedBox(height: 5.h),
+                    _buildPasswordField(),
+                    SizedBox(height: 10.h),
+                    RequiredLabel(labelText: 'Confirm Password'),
+                    SizedBox(height: 5.h),
+                    _buildConfirmPasswordField(),
+                    SizedBox(height: 5.h),
+                    _buildErrorMessage(),
+                    SizedBox(height: 20.h),
+                    _resetPasswordButton(context),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
