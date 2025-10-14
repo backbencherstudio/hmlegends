@@ -69,7 +69,7 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
                       _buildNotificationIcon(context),
                       SizedBox(width: 20.w),
                       GestureDetector(
-                        onTap: onProfileTap,
+                        onTap: onProfileTap??()=>Navigator.pushNamed(context, RouteNames.headOfficeProfileScreen),
                         child: CircleAvatar(
                           radius: 18.r,
                           backgroundImage: AssetImage(profileImage),
