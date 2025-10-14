@@ -6,6 +6,8 @@ import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/presentation/view_model/parent/bottom_nav_viewmodel.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/route/route_names.dart';
+
 class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final String profileImage;
@@ -16,7 +18,6 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onNotificationTap;
   final VoidCallback? onBackTap;
 
-
   const CustomAppBarTwo({
     super.key,
     required this.title,
@@ -24,12 +25,13 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
     required this.notificationCount,
     this.onProfileTap,
     this.onNotificationTap,
-    this.onBackTap, required this.colorMain, required this.colorSpace,
+    this.onBackTap,
+    required this.colorMain,
+    required this.colorSpace,
   });
 
   @override
   Widget build(BuildContext context) {
-
     return Material(
       color: colorMain,
       elevation: 1,
@@ -64,8 +66,7 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
                   // Right Section
                   Row(
                     children: [
-                      // Notification icon with badge
-                      _buildNotificationIcon(),
+                      _buildNotificationIcon(context),
                       SizedBox(width: 20.w),
                       GestureDetector(
                         onTap: onProfileTap,
@@ -94,9 +95,14 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
     bottomNavProvider.updateIndex(0);
   }
 
-  Widget _buildNotificationIcon() {
+  Widget _buildNotificationIcon(BuildContext context) {
     return GestureDetector(
-      onTap: onNotificationTap,
+      onTap: onNotificationTap ?? () {
+        Navigator.pushNamed(
+          context,
+          RouteNames.notificationScreen,
+        );
+      },
       child: Stack(
         clipBehavior: Clip.none,
         children: [
