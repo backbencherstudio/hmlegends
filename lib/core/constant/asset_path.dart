@@ -18,6 +18,7 @@ class AssetPaths {
   static const String deliveryIcon ='$_iconUrl/material.png';
   static const String orderIcon ='$_iconUrl/orders.png';
   static const String addIcon ='$_iconUrl/add_icon.png';
+  static const String thikIcon ='$_iconUrl/thik_icon.png';
   static const String addIcon1 ='$_iconUrl/addIcon1.png';
   static const String editIcon ='$_iconUrl/edit_icon.png';
   static const String deleteIcon ='$_iconUrl/deleteIcon.png';
@@ -25,6 +26,7 @@ class AssetPaths {
   static const String orderSummaryIcon1 ='$_iconUrl/order_summary_icon1.png';
   static const String pdfIcon = '$_iconUrl/pdf_icon.png';
   static const String locationIcon = '$_iconUrl/location_icon.png';
+  static const String locationIcon1 = '$_iconUrl/location_icon1.png';
   static const String personIcon1 = '$_iconUrl/personIcon1.png';
   static const String mbi1 = '$_iconUrl/manage_branches_icon1.png';
   static const String mbi2 = '$_iconUrl/manage_branches_icon2.png';
