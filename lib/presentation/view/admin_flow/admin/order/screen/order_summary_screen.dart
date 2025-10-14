@@ -8,8 +8,16 @@ import '../../../../widget/custom_app_bar_2.dart';
 import '../../widget/search_filter.dart';
 import '../widget/order_summary_card.dart';
 
-class OrderSummaryScreen extends StatelessWidget {
+class OrderSummaryScreen extends StatefulWidget {
   const OrderSummaryScreen({super.key});
+
+  @override
+  State<OrderSummaryScreen> createState() => _OrderSummaryScreenState();
+}
+
+class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
+
+  String selectedPeriod = 'Today';
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +40,9 @@ class OrderSummaryScreen extends StatelessWidget {
         notificationCount: 4,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
-        onBackTap: () => Navigator.pop(context),
       ),
       body: Padding(
-        padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 10.h), // Remove bottom padding
+        padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 10.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -100,11 +107,31 @@ class OrderSummaryScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Row(
-                  children: [
-                    Text("Today", style: TextStyle(fontSize: 14.sp)),
-                    Icon(Icons.keyboard_arrow_down_rounded, size: 20.sp),
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    setState(() {
+                      selectedPeriod = value;
+                    });
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(value: 'Today', child: Text('Today')),
+                    const PopupMenuItem(
+                      value: 'This week',
+                      child: Text('This week'),
+                    ),
+
+                    const PopupMenuItem(
+                      value: 'This month',
+                      child: Text('This month'),
+                    ),
                   ],
+                  color: const Color(0xFFFFF5F5),
+                  child: Row(
+                    children: [
+                      Text(selectedPeriod, style: TextStyle(fontSize: 14.sp)),
+                      Icon(Icons.keyboard_arrow_down_rounded, size: 20.sp),
+                    ],
+                  ),
                 ),
               ],
             ),
