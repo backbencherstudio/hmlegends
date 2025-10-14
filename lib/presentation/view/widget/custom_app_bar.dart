@@ -192,7 +192,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                       SizedBox(width: 20.w),
                       GestureDetector(
-                        onTap: onProfileTap,
+                        onTap: onProfileTap??()=>Navigator.pushNamed(context, RouteNames.headOfficeProfileScreen),
                         child: CircleAvatar(
                           radius: 18.r,
                           backgroundImage: AssetImage(profileImage),
