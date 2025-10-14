@@ -74,7 +74,7 @@ class HeadOfficeProfileScreen extends StatelessWidget {
               title: 'Change Password',
               isDestructive: true,
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.changePassword);
+                Navigator.pushNamed(context, RouteNames.headOfficeChangePasswordScreen);
               },
             ),
             Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),

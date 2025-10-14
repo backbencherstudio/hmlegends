@@ -8,6 +8,7 @@ import '../../presentation/view/admin_flow/admin/manage_branches/screen/manage_b
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_screen.dart';
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_view_screen.dart';
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_view_successful_screen.dart';
+import '../../presentation/view/admin_flow/admin/profile/screen/head_office_change_password_screen.dart';
 import '../../presentation/view/admin_flow/admin/profile/screen/head_office_profile_screen.dart';
 import '../../presentation/view/admin_flow/admin/stock/screen/edit_stock_screen.dart';
 import '../../presentation/view/auth/forget_password/screen/forget_password_screen.dart';
@@ -72,6 +73,7 @@ class AppRoutes{
     RouteNames.addNewBranchesScreen  :(context)=>  AddNewBranchesScreen(),
     RouteNames.invoiceStatusScreen :(context)=>  InvoiceStatusScreen(),
     RouteNames.headOfficeProfileScreen :(context)=>  HeadOfficeProfileScreen(),
+    RouteNames.headOfficeChangePasswordScreen :(context)=>  HeadOfficeChangePasswordScreen(),
 
 
   };
