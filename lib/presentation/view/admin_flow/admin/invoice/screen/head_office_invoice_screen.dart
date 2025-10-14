@@ -59,7 +59,6 @@ class HeadOfficeInvoiceScreen extends StatelessWidget {
         notificationCount: 4,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
-        onBackTap: () => Navigator.pop(context),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),

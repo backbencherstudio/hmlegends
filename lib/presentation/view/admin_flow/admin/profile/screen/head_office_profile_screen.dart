@@ -20,7 +20,7 @@ class HeadOfficeProfileScreen extends StatelessWidget {
         ),
         leading: IconButton(
           onPressed: () {
-            Navigator.of(context);
+            Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back_ios),
         ),

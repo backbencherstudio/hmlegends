@@ -436,6 +436,7 @@ class ManageDeliveryScreen extends StatelessWidget {
         notificationCount: 4,
         colorMain: Colors.white,
         colorSpace: Colors.white,
+        onBackTap: () => Navigator.pop(context),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
