@@ -149,7 +149,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return AuthButton(
           text: 'Sign Up',
           onPressed: () {
-             Navigator.pushNamed(context, RouteNames.loginScreen);
+            // Navigator.pushNamed(context, RouteNames.loginScreen);
+            Navigator.pushReplacementNamed(context, RouteNames.loginScreen);
+
           },
           color: AppColors.primaryColor,
         );
