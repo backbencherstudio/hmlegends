@@ -34,6 +34,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         profileImage: AssetPaths.personIcon,
         notificationCount: 4,
         title: 'Place Order',
+        navigationType: NavigationType.none,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.w),
@@ -168,7 +169,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
           style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
         ),
         actions: [
-          Row(crossAxisAlignment: CrossAxisAlignment.center,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ElevatedButton(
                 onPressed: () {
@@ -179,9 +181,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       content: Text(
                         'Submitted $totalSelected items successfully!',
                         style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14.sp),
+                          color: Colors.black,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14.sp,
+                        ),
                       ),
                     ),
                   );
@@ -192,8 +195,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.r),
                   ),
-                  padding:
-                  EdgeInsets.symmetric(horizontal: 50.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 50.w,
+                    vertical: 8.h,
+                  ),
                 ),
                 child: Text('Yes', style: TextStyle(fontSize: 14.sp)),
               ),
@@ -206,17 +211,21 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.r),
                   ),
-                  padding:
-                  EdgeInsets.symmetric(horizontal: 35.w, vertical: 4.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 35.w,
+                    vertical: 4.h,
+                  ),
                 ),
                 child: Text(
                   'Cancel',
                   style: TextStyle(
-                      fontSize: 16.sp, fontWeight: FontWeight.w500),
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -235,11 +244,31 @@ class _OrdersScreenState extends State<OrdersScreen> {
             onTap: () {
               Navigator.pushNamed(context, RouteNames.myOrders);
             },
-            child: Image.asset(
-              'assets/images/successful.png',
-              scale: 2,
+            child: Container(
+              width: 300.w,
+              height: 300.h,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/successful.png',
+                    fit: BoxFit.cover,
+                    scale: 1,
+                  ),
+                  Text(
+                    textAlign: TextAlign.center,
+                    'You have successfully\nsubmited the order!',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xff1D1F2C),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -316,7 +345,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               ),
                               Container(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 8.w, vertical: 4.h),
+                                  horizontal: 8.w,
+                                  vertical: 4.h,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.green.shade100,
                                   borderRadius: BorderRadius.circular(15.r),
@@ -350,8 +381,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Container(
-                                padding:
-                                EdgeInsets.symmetric(horizontal: 3.w),
+                                padding: EdgeInsets.symmetric(horizontal: 3.w),
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: Colors.grey.shade300,
@@ -362,8 +392,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     InkWell(
-                                      onTap: () =>
-                                          decrementQuantity(setState),
+                                      onTap: () => decrementQuantity(setState),
                                       child: Padding(
                                         padding: EdgeInsets.all(8.w),
                                         child: Icon(
@@ -375,7 +404,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     ),
                                     Padding(
                                       padding: EdgeInsets.symmetric(
-                                          horizontal: 8.w),
+                                        horizontal: 8.w,
+                                      ),
                                       child: Text(
                                         '$quantity',
                                         style: TextStyle(
@@ -385,8 +415,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                       ),
                                     ),
                                     InkWell(
-                                      onTap: () =>
-                                          incrementQuantity(setState),
+                                      onTap: () => incrementQuantity(setState),
                                       child: Padding(
                                         padding: EdgeInsets.all(8.w),
                                         child: Icon(
@@ -405,7 +434,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                   onPressed: () {
                                     setState(() {
                                       selectedList[index] =
-                                      !selectedList[index];
+                                          !selectedList[index];
                                     });
                                     this.setState(() {
                                       totalSelected = selectedList
@@ -419,11 +448,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                         : Colors.red,
                                     foregroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(10.r),
+                                      borderRadius: BorderRadius.circular(10.r),
                                     ),
-                                    padding:
-                                    EdgeInsets.symmetric(vertical: 4.h),
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 4.h,
+                                    ),
                                   ),
                                   child: Text(
                                     isSelected ? 'Selected' : 'Confirm',
