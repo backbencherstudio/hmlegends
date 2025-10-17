@@ -23,7 +23,7 @@ class ProfileScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
               ),
               Row(
-                spacing: 20.w,
+                spacing: 8.w,
                 children: [
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
@@ -56,12 +56,12 @@ class ProfileScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30.r),
                       ),
                       padding: EdgeInsets.symmetric(
-                          horizontal: 20.w, vertical: 8.h),
+                          horizontal: 15.w, vertical: 8.h),
                     ),
                     child: Text(
                       'Stay logged in',
                       style: TextStyle(
-                          fontSize: 16.sp, fontWeight: FontWeight.w500),
+                          fontSize: 15.sp, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],

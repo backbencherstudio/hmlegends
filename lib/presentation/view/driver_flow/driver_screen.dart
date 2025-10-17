@@ -78,7 +78,7 @@ class BranchInfoCard extends StatelessWidget {
             height: 120.h,
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              color: const Color(0xFFFEECEE), // Light pink background
+              color: const Color(0xFFFFF6F7),
               borderRadius: BorderRadius.circular(8.r),
               border: Border.all(color: Colors.grey.shade300),
             ),

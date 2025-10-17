@@ -4,6 +4,8 @@ import 'package:hmlegends/presentation/view/widget/simple_appbar.dart';
 import '../../../../../core/constant/asset_path.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/route/route_names.dart';
+
 class MyOrders extends StatefulWidget {
   final TextEditingController? controller;
 
@@ -54,6 +56,8 @@ class _MyOrdersState extends State<MyOrders> {
         title: 'My Orders',
         profileImage: AssetPaths.personIcon,
         notificationCount: 4,
+        navigationType: NavigationType.pushReplacementNamed,
+        navigationPath: RouteNames.branchParentScreen,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.w),

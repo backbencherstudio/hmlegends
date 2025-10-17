@@ -44,12 +44,12 @@ class ChangeInfo extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30.r),
                       ),
                       padding: EdgeInsets.symmetric(
-                          horizontal: 120.w, vertical: 8.h),
+                          horizontal: 110.w, vertical: 4.h),
                     ),
                     child: Text(
                       'Yes',
                       style: TextStyle(
-                          fontSize: 16.sp, fontWeight: FontWeight.w500),
+                          fontSize: 14.sp, fontWeight: FontWeight.w500),
                     ),
                   ),
                   ElevatedButton(
@@ -62,12 +62,12 @@ class ChangeInfo extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30.r),
                       ),
                       padding: EdgeInsets.symmetric(
-                          horizontal: 100.w, vertical: 8.h),
+                          horizontal: 90.w, vertical: 4.h),
                     ),
                     child: Text(
                       'No, Keep',
                       style: TextStyle(
-                          fontSize: 16.sp, fontWeight: FontWeight.w500),
+                          fontSize: 14.sp, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],

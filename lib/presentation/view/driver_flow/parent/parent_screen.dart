@@ -80,6 +80,7 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view_model/parent/bottom_nav_viewmodel.dart';
 import 'package:provider/provider.dart';
 
+import '../../branch_manager_flow/profile/profile_screen.dart';
 import '../driver_screen.dart';
 
 class DriverBottomNavBar extends StatelessWidget {
@@ -178,7 +179,7 @@ class DriverBranchParentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       DriverScreen(),
-      DriverScreen(),
+      ProfileScreen(),
     ];
 
     return Consumer<BottomNavViewModel>(
