@@ -9,7 +9,9 @@ import '../../widget/search_filter.dart';
 import '../widget/order_summary_card.dart';
 
 class OrderSummaryScreen extends StatefulWidget {
-  const OrderSummaryScreen({super.key});
+  final bool fromBottomNav;
+
+  const OrderSummaryScreen({super.key, required this.fromBottomNav});
 
   @override
   State<OrderSummaryScreen> createState() => _OrderSummaryScreenState();
@@ -40,6 +42,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
         notificationCount: 4,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
+        useBottomNavBack: widget.fromBottomNav,
       ),
       body: Padding(
         padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 10.h),

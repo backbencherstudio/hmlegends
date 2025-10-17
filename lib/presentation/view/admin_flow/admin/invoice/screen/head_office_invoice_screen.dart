@@ -7,7 +7,8 @@ import '../../../../widget/custom_app_bar_2.dart';
 import '../widget/show_send_invoice_bottom_sheet.dart';
 
 class HeadOfficeInvoiceScreen extends StatelessWidget {
-  const HeadOfficeInvoiceScreen({super.key});
+  final bool fromBottomNav;
+  const HeadOfficeInvoiceScreen({super.key, required this.fromBottomNav});
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +60,7 @@ class HeadOfficeInvoiceScreen extends StatelessWidget {
         notificationCount: 4,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
+        useBottomNavBack: fromBottomNav,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
