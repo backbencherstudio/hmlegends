@@ -12,7 +12,9 @@ import '../widget/product_card.dart';
 import '../../widget/search_filter.dart';
 
 class StockScreen extends StatelessWidget {
-  const StockScreen({super.key});
+  final bool fromBottomNav;
+
+  const StockScreen({super.key, required this.fromBottomNav});
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,7 @@ class StockScreen extends StatelessWidget {
         notificationCount: 4,
         colorMain: Colors.white,
         colorSpace: Colors.white,
+        useBottomNavBack: fromBottomNav,
       ),
       body: Padding(
         padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 10.h),

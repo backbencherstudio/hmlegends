@@ -200,7 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
         return AuthButton(
           text: 'Sign In',
           onPressed: () {
-            Navigator.pushNamed(context, RouteNames.mainWrapper);
+           // Navigator.pushNamed(context, RouteNames.mainWrapper);
+            Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
           },
           color: AppColors.primaryColor,
         );
