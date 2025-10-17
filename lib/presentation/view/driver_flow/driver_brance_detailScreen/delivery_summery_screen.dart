@@ -1,34 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:hmlegends/core/route/route_names.dart';
+import 'package:provider/provider.dart';
+import '../driver_provider/branch_product_provider.dart';
 
 class DeliverySummeryScreen extends StatelessWidget {
   const DeliverySummeryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final items = <_DeliveredItem>[
-      _DeliveredItem("Peri Chicken Wrap", 20),
-      _DeliveredItem("The Khamzat Krunch", 18),
-      _DeliveredItem("Charlie's Special", 25),
-      _DeliveredItem("Chicken Nugget Meal", 21),
-      _DeliveredItem("The Spicy Dip", 15),
-      _DeliveredItem("Chicken Nugget Meal", 17),
-      _DeliveredItem("The Honey & Brie Burger", 32),
-      _DeliveredItem("Billy's Special", 28),
-      _DeliveredItem("Fish Finger Meal", 24),
-      _DeliveredItem("Chicken Steak & Chips", 16),
-    ];
+    final provider = Provider.of<BranchProductProvider>(context);
+
+    // Filter selected items only
+    final items = provider.products
+        .where((p) => p.isSelected == true)
+        .map((p) => _DeliveredItem(p.name, p.quantity))
+        .toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF1F2), // soft pink background
+      backgroundColor: const Color(0xFFFFF1F2),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: const Color(0xFFFFF1F2),
         automaticallyImplyLeading: false,
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () =>
+              Navigator.pushNamed(context, RouteNames.driverBranchParentScreen),
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87),
         ),
-
         title: const Text(
           "Delivery Summary",
           style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
@@ -112,7 +110,10 @@ class DeliverySummeryScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                _infoRow(label: "Total Products:", value: "216"),
+                _infoRow(
+                  label: "Total Products:",
+                  value: "${items.length}",
+                ),
                 const SizedBox(height: 10),
                 _infoRow(
                   icon: Icons.access_time_rounded,
@@ -129,8 +130,8 @@ class DeliverySummeryScreen extends StatelessWidget {
           Row(
             children: [
               Image.asset("assets/images/delivery.png", height: 30),
-              SizedBox(width: 8),
-              Text(
+              const SizedBox(width: 8),
+              const Text(
                 "Items Delivered",
                 style: TextStyle(
                   fontSize: 15,
@@ -145,7 +146,16 @@ class DeliverySummeryScreen extends StatelessWidget {
           const SizedBox(height: 8),
 
           // List of delivered items
-          ...items.map((e) => _DeliveredTile(item: e)).toList(),
+          if (items.isEmpty)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text("No items selected for delivery."),
+              ),
+            )
+          else
+            ...items.map((e) => _DeliveredTile(item: e)).toList(),
+
           const SizedBox(height: 28),
         ],
       ),
@@ -159,8 +169,8 @@ class DeliverySummeryScreen extends StatelessWidget {
   }) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: const Color(0xFFEF4444)),
-        const SizedBox(width: 10),
+        if (icon != null) Icon(icon, size: 18, color: const Color(0xFFEF4444)),
+        if (icon != null) const SizedBox(width: 10),
         Expanded(
           child: Text(
             label,
