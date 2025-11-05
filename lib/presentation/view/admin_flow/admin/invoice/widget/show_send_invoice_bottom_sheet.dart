@@ -19,11 +19,12 @@ void showSendInvoiceBottomSheet(BuildContext context) {
           left: 20.w,
           right: 20.w,
           bottom: MediaQuery.of(context).viewInsets.bottom + 30.h,
-          top: 20.h,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            SizedBox(height: 4.h),
+
             Center(
               child: GestureDetector(
                 onTap: () => Navigator.pop(context),

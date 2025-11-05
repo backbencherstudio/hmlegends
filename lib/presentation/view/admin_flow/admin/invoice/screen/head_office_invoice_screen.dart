@@ -185,7 +185,7 @@ class HeadOfficeInvoiceScreen extends StatelessWidget {
                   Divider(height: 20.h, color: const Color(0xFFEAEAEA)),
 
                   // ===== TABLE HEADER =====
-                  // ===== TABLE HEADER =====
+
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 8.h),
                     child: Row(
@@ -369,7 +369,7 @@ class HeadOfficeInvoiceScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 5.h),
+            SizedBox(height: 20.h),
           ],
         ),
       ),
