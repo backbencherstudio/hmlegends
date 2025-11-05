@@ -24,7 +24,6 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
       Provider.of<BranchProductProvider>(context, listen: false);
       await provider.fetchBranchProducts();
 
-      // ✅ Ensure all products are unselected initially
       for (var p in provider.products) {
         p.isSelected = false;
       }
@@ -44,7 +43,6 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            /// ===== Header Section =====
             Center(
               child: Container(
                 padding: EdgeInsets.all(10.r),
@@ -99,7 +97,6 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
               ),
             ),
 
-            /// ===== Product List Section =====
             Consumer<BranchProductProvider>(
               builder: (context, provider, _) {
                 if (provider.isLoading) {
@@ -194,7 +191,6 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
 
             SizedBox(height: 10.h),
 
-            /// ===== Button Section =====
             Consumer<BranchProductProvider>(
               builder: (context, provider, _) {
                 return SizedBox(
