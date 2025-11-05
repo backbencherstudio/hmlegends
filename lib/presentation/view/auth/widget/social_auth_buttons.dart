@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 
+import '../../../widget/google_button.dart';
 import 'SignUpFormButton.dart';
 
 class SocialAuthButtons extends StatelessWidget {
@@ -20,11 +21,7 @@ class SocialAuthButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SignUpFormButton(
-          title: 'Continue With Google',
-          image: AssetPaths.googleIcon,
-          onTap: onGooglePressed,
-        ),
+        GoogleButton(),
 
         SizedBox(height: 10.h),
         SignUpFormButton(

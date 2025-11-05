@@ -143,7 +143,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           OnBoardingElevatedButton(
             text: 'Start as Admin',
             suffixIcon: Icons.arrow_forward,
-            onPressed: _onButton1Pressed,
+            onPressed: (){Navigator.pushNamed(context, RouteNames.loginScreen);},
             height: 49.h,
             width: 240.w,
             borderRadius: 30.r,
@@ -155,7 +155,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           OnBoardingElevatedButton(
             text: 'Start as Branch manager',
             suffixIcon: Icons.arrow_forward,
-            onPressed:(){Navigator.pushNamed(context, RouteNames.branchParentScreen);},
+            onPressed:(){Navigator.pushNamed(context, RouteNames.loginScreen);},
             height: 49.h,
             width: 280.w,
             borderRadius: 30.r,
@@ -167,7 +167,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           OnBoardingElevatedButton(
             text: 'Start as Driver',
             suffixIcon: Icons.arrow_forward,
-            onPressed: (){Navigator.pushNamed(context, RouteNames.driverBranchParentScreen);},
+            onPressed: (){Navigator.pushNamed(context, RouteNames.loginScreen);},
             height: 49.h,
             width: 220.w,
             borderRadius: 30.r,
