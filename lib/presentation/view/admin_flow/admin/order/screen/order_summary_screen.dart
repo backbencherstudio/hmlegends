@@ -83,7 +83,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               children: [
                 Expanded(
                   child: OrderSummaryCard(
-                    title: "Dlivered Orders",
+                    title: "Delivered Orders",
                     value: "08",
                     isWide: true,
                   ),

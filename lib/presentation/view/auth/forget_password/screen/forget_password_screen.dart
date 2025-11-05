@@ -33,7 +33,9 @@ class ForgetPasswordScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Please enter your email to reset the password',
-                    style: AppTextStyles.authBodyText,
+                    style: AppTextStyles.authBodyText.copyWith(
+                      fontSize: 15.sp
+                    ),
                   ),
                 ],
               ),
