@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,16 +8,23 @@ import 'core/constant/app_colors.dart';
 import 'core/provider/app_providers.dart';
 import 'core/route/app_routes.dart';
 import 'core/route/route_names.dart';
+import 'firebase_options.dart';
 
 
 Future<void> main() async {
+  // Ensure proper widget binding before Firebase init
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Setup dependency injection
+  // Initialize Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  // Force portrait orientation
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  // Ensure ScreenUtil can access device metrics
   await ScreenUtil.ensureScreenSize();
 
+  // Run the app
   runApp(const MyApp());
 }
 
