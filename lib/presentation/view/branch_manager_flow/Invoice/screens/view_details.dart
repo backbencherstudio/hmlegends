@@ -13,6 +13,29 @@ class ViewDetails extends StatefulWidget {
 class _ViewDetailsState extends State<ViewDetails> {
   bool isPaid = false;
 
+  final List<Map<String, dynamic>> mockItems = [
+    {
+      'no': '01',
+      'product_name': 'Peri Chicken',
+      'price': 250,
+      'quantity': 10,
+      'total': 2500,
+    },
+    {
+      'no': '02',
+      'product_name': 'Peri Chicken',
+      'price': 250,
+      'quantity': 10,
+      'total': 2500,
+    },
+    {
+      'no': '03',
+      'product_name': 'Peri Chicken',
+      'price': 250,
+      'quantity': 10,
+      'total': 2500,
+    },
+  ];
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -44,7 +67,6 @@ class _ViewDetailsState extends State<ViewDetails> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // 🔹 Invoice From Row + Paid Badge
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,23 +101,23 @@ class _ViewDetailsState extends State<ViewDetails> {
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 10.w, vertical: 5.h),
                                     decoration: BoxDecoration(
-                                      color:  Color(0xFF5BB450),
+                                      color: const Color(0xFF5BB450),
                                       borderRadius:
                                       BorderRadius.circular(20.r),
                                     ),
                                     child: Row(
                                       children: [
-                                       Container(
-                                         width: 25.w,
-                                         height: 25.h,
-                                         decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
-                                         ),
-                                         child: Icon(Icons.check,
-                                             color: Colors.red,
-                                             size: 22.w),
-                                       ),
+                                        Container(
+                                          width: 25.w,
+                                          height: 25.h,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(Icons.check,
+                                              color: Colors.green,
+                                              size: 22.w),
+                                        ),
                                         SizedBox(width: 6.w),
                                         Text(
                                           'Paid',
@@ -134,6 +156,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                               date: '20 APRIL 2025',
                               invoiceNo: 'FS618A',
                             ),
+                            SizedBox(height: 10.h),
                             _InvoiceTable(items: mockItems),
                             SizedBox(height: 20.h),
                             const _SubtotalRow(subtotal: '£588'),
@@ -144,7 +167,6 @@ class _ViewDetailsState extends State<ViewDetails> {
                   ),
                 ),
 
-                // 🔹 Conditional Bottom Bar
                 if (!isPaid)
                   _BottomActionBar(
                     onPaid: () {
@@ -161,10 +183,6 @@ class _ViewDetailsState extends State<ViewDetails> {
     );
   }
 }
-
-/// ------------------------------------------------------------
-/// WIDGETS BELOW
-/// ------------------------------------------------------------
 
 class _AddressSection extends StatelessWidget {
   final String title;
@@ -244,7 +262,6 @@ class _DateInvoiceRow extends StatelessWidget {
   }
 }
 
-/// Table showing invoice items
 class _InvoiceTable extends StatelessWidget {
   final List<Map<String, dynamic>> items;
 
@@ -255,9 +272,11 @@ class _InvoiceTable extends StatelessWidget {
     return Table(
       border: TableBorder.all(color: const Color(0xFFE0E0E0)),
       columnWidths: const {
-        0: FlexColumnWidth(3),
-        1: FlexColumnWidth(2),
+        0: FlexColumnWidth(1.2),
+        1: FlexColumnWidth(4),
         2: FlexColumnWidth(2),
+        3: FlexColumnWidth(1.5),
+        4: FlexColumnWidth(2),
       },
       children: [
         TableRow(
@@ -265,21 +284,33 @@ class _InvoiceTable extends StatelessWidget {
           children: [
             Padding(
               padding: EdgeInsets.all(8.w),
-              child: Text('Item',
+              child: Text('No',
                   style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 14.sp)),
+                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
             ),
             Padding(
               padding: EdgeInsets.all(8.w),
-              child: Text('Qty',
+              child: Text('Product Name',
                   style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 14.sp)),
+                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
             ),
             Padding(
               padding: EdgeInsets.all(8.w),
-              child: Text('Amount',
+              child: Text('Price',
                   style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 14.sp)),
+                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.w),
+              child: Text('Quantity',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.w),
+              child: Text('Total',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
             ),
           ],
         ),
@@ -288,15 +319,23 @@ class _InvoiceTable extends StatelessWidget {
             children: [
               Padding(
                 padding: EdgeInsets.all(8.w),
-                child: Text(item['name']),
+                child: Text(item['no']?.toString() ?? ''),
               ),
               Padding(
                 padding: EdgeInsets.all(8.w),
-                child: Text(item['qty'].toString()),
+                child: Text(item['product_name']?.toString() ?? ''),
               ),
               Padding(
                 padding: EdgeInsets.all(8.w),
-                child: Text('£${item['price']}'),
+                child: Text('£${item['price'] ?? 0}'),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.w),
+                child: Text('${item['quantity'] ?? 0}'), // No £ on quantity
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.w),
+                child: Text('£${item['total'] ?? 0}'),
               ),
             ],
           ),
@@ -325,7 +364,6 @@ class _SubtotalRow extends StatelessWidget {
   }
 }
 
-/// Bottom Action Buttons
 class _BottomActionBar extends StatelessWidget {
   final VoidCallback onPaid;
 
@@ -373,7 +411,7 @@ class _BottomActionBar extends StatelessWidget {
               'Export',
               style: TextStyle(
                 fontSize: 16.sp,
-                color:  Color(0xFF5BB450),
+                color: const Color(0xFF5BB450),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -384,9 +422,3 @@ class _BottomActionBar extends StatelessWidget {
   }
 }
 
-/// Mock Data
-final List<Map<String, dynamic>> mockItems = [
-  {'name': 'Web Design', 'qty': 1, 'price': 250},
-  {'name': 'App UI Design', 'qty': 1, 'price': 200},
-  {'name': 'Hosting', 'qty': 1, 'price': 138},
-];
