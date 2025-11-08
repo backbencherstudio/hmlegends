@@ -1,23 +1,44 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/core/constant/app_text_styles.dart';
-import 'package:hmlegends/core/constant/asset_path.dart';
-import 'package:hmlegends/presentation/view_model/auth/signup_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../core/constant/app_colors.dart';
+import '../../../../../core/constant/app_text_styles.dart';
+import '../../../../../core/constant/asset_path.dart';
 import '../../../../../core/route/route_names.dart';
+import '../../../../view_model/auth_api/register_viewmodel.dart';
 import '../../widget/auth_button.dart';
-import '../../widget/level_text.dart';
 import '../../widget/social_auth_buttons.dart';
 
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  // @override    // pass the type from onboarding
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   context.read<RegisterProvider>().setTypeFromRoute(context);
+  // }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<RegisterProvider>().setTypeFromRoute(context);
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,57 +48,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 10.h),
-                Center(
-                  child: Center(
-                    child: Image.asset(
-                      AssetPaths.authLogo,
-                      width: 100.w,
-                      height: 100.h,
-                    ),
-                  ),
-                ),
+                Image.asset(AssetPaths.authLogo, width: 100.w, height: 100.h),
                 SizedBox(height: 20.h),
-                Text(
-                  'Let\'s get you started!',
-                  style: AppTextStyles.authHeadline,
-                ),
+                Text('Let\'s get you started!', style: AppTextStyles.authHeadline),
                 SizedBox(height: 8.h),
-                Text(
-                  'Enter info to create a new account.',
-                  style: AppTextStyles.authBodyText,
-                  textAlign: TextAlign.center,
-                ),
+                Text('Enter info to create a new account.', style: AppTextStyles.authBodyText, textAlign: TextAlign.center),
                 SizedBox(height: 20.h),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 8.h),
-                    RequiredLabel(labelText: 'Full Name'),
-                    SizedBox(height: 5.h),
-                    _buildTextField('Your name', Icons.person_outlined),
-                    SizedBox(height: 8.h),
-                    RequiredLabel(labelText: 'Email'),
-                    SizedBox(height: 5.h),
-                    _buildTextField('Your email', Icons.email_outlined),
-                    SizedBox(height: 8.h),
-                    RequiredLabel(labelText: 'Password'),
-                    SizedBox(height: 5.h),
-                    _buildPasswordField(),
-                    SizedBox(height: 10.h),
-                  ],
-                ),
+                _buildFormFields(),
                 SizedBox(height: 10.h),
                 _buildSignUpButton(),
                 SizedBox(height: 20.h),
                 _buildOrJoinWithDivider(),
                 SizedBox(height: 20.h),
-                SocialAuthButtons(),
+                const SocialAuthButtons(),
                 SizedBox(height: 30.h),
-                _buildSignUpLink(),
-                SizedBox(height: 10.h),
+                _buildSignInLink(),
               ],
             ),
           ),
@@ -86,172 +73,163 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildPasswordField() {
-    return Consumer<SignUpViewModel>(
-      builder: (context, viewModel, child) {
-        return TextField(
-          obscureText: !viewModel.passwordVisible,
-          decoration: InputDecoration(
-            hintText: 'Enter your password',
-            hintStyle: AppTextStyles.hintText,
-            filled: true,
-            fillColor: AppColors.authTextFormFieldFillColor,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.r),
-              borderSide: BorderSide(
-                color: AppColors.authTextFormFieldBorderColor,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.r),
-              borderSide: BorderSide(
-                color: AppColors.authTextFormFieldBorderColor,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.r),
-              borderSide: BorderSide(
-                color: AppColors.authTextFormFieldBorderColor,
-              ),
-            ),
-            contentPadding: EdgeInsets.symmetric(
-              vertical: 12.h,
-              horizontal: 16.w,
-            ),
-            prefixIcon: Padding(
-              padding: EdgeInsets.only(left: 8.w),
-              child: Icon(
-                Icons.lock_outline_rounded,
-                color: AppColors.authBodyTextColor,
-              ),
-            ),
-            suffixIcon: IconButton(
-              padding: EdgeInsets.only(right: 8.w),
-              icon: Icon(
-                viewModel.passwordVisible
-                    ? Icons.visibility
-                    : Icons.visibility_off,
-                color: AppColors.authBodyTextColor,
-              ),
-              onPressed: () {
-                viewModel.togglePasswordVisibility();
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSignUpButton() {
-    return Consumer<SignUpViewModel>(
-      builder: (context, viewModel, child) {
-        return AuthButton(
-          text: 'Sign Up',
-          onPressed: () {
-            // Navigator.pushNamed(context, RouteNames.loginScreen);
-            Navigator.pushReplacementNamed(context, RouteNames.loginScreen);
-
-          },
-          color: AppColors.primaryColor,
-        );
-      },
-    );
-  }
-
-  Widget _buildOrJoinWithDivider() {
-    return Row(
-      children: [
-        const Expanded(
-          child: Divider(
-            color: AppColors.authTextFormFieldBorderColor,
-            thickness: 1.0,
-            indent: 4.0,
-            endIndent: 7.0,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.w),
-          child: Text(
-            'Or',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: const Color(0xFF777980), fontSize: 14.sp),
-          ),
-        ),
-        const Expanded(
-          child: Divider(
-            color: AppColors.authTextFormFieldBorderColor,
-            thickness: 1.0,
-            indent: 7.0,
-            endIndent: 4.0,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTextField(String hint, IconData icon) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 8.h),
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: AppTextStyles.hintText,
-          filled: true,
-          fillColor: AppColors.authTextFormFieldFillColor,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(
-              color: AppColors.authTextFormFieldBorderColor,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(
-              color: AppColors.authTextFormFieldBorderColor,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(
-              color: AppColors.authTextFormFieldBorderColor,
-            ),
-          ),
-          contentPadding: EdgeInsets.symmetric(
-            vertical: 12.h,
-            horizontal: 16.w,
-          ),
-          prefixIcon: Padding(
-            padding: EdgeInsets.only(left: 8.w),
-            child: Icon(icon, color: AppColors.authBodyTextColor),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSignUpLink() {
-    return Center(
-      child: RichText(
-        text: TextSpan(
+  Widget _buildFormFields() {
+    return Consumer<RegisterProvider>(
+      builder: (context, provider, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextSpan(text: 'Have an account?', style: AppTextStyles.hintText),
-            TextSpan(
-              text: ' Sign In',
-              style: TextStyle(
-                color: AppColors.primaryColor,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-              ),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                // Navigate to login page
-                   Navigator.pushNamed(context, RouteNames.loginScreen);
-                },
-            ),
+            _label('Full Name'),
+            SizedBox(height: 5.h),
+            _buildTextField('Your name', Icons.person_outlined, _nameController),
+            SizedBox(height: 8.h),
+            _label('Email'),
+            SizedBox(height: 5.h),
+            _buildTextField('Your email', Icons.email_outlined, _emailController),
+            SizedBox(height: 8.h),
+            _label('Password'),
+            SizedBox(height: 5.h),
+            _buildPasswordField(provider),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
+
+  Widget _buildTextField(String hint, IconData icon, TextEditingController controller) => TextField(
+    controller: controller,
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: AppTextStyles.hintText,
+      filled: true,
+      fillColor: AppColors.authTextFormFieldFillColor,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.r)),
+      contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+      prefixIcon: Padding(padding: EdgeInsets.only(left: 8.w), child: Icon(icon, color: AppColors.authBodyTextColor)),
+    ),
+  );
+
+  Widget _buildPasswordField(RegisterProvider provider) => TextField(
+    controller: _passwordController,
+    obscureText: !provider.passwordVisible,
+    decoration: InputDecoration(
+      hintText: 'Enter your password',
+      hintStyle: AppTextStyles.hintText,
+      filled: true,
+      fillColor: AppColors.authTextFormFieldFillColor,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.r)),
+      contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+      prefixIcon: const Icon(Icons.lock_outline_rounded),
+      suffixIcon: IconButton(
+        icon: Icon(provider.passwordVisible ? Icons.visibility : Icons.visibility_off),
+        onPressed: provider.togglePasswordVisibility,
+      ),
+    ),
+  );
+
+  Widget _label(String text) => Text(text, style: AppTextStyles.hintText);
+
+  Widget _buildSignUpButton() => Consumer<RegisterProvider>(
+    builder: (context, provider, child) {
+      return AuthButton(
+        text: 'Sign Up',
+        onPressed: () async {
+          final success = await provider.registerUser(
+            name: _nameController.text.trim(),
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
+          // if (success) {
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     SnackBar(
+          //       content: Text(provider.errorMessage),
+          //     ),
+          //   );
+          //   Navigator.pushReplacementNamed(context, RouteNames.loginScreen);
+          // } else {
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     SnackBar(
+          //       content: Text(provider.errorMessage),
+          //     ),
+          //   );
+          //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage)));
+          // }
+          if (success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                content: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.white),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        provider.errorMessage,
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+            Navigator.pushReplacementNamed(context, RouteNames.loginScreen);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.redAccent,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                margin: const EdgeInsets.all(16),
+                content: Row(
+                  children: [
+                    const Icon(Icons.error_outline, color: Colors.white),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        provider.errorMessage,
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          }
+
+        },
+        color: AppColors.primaryColor,
+      );
+    },
+  );
+
+  Widget _buildOrJoinWithDivider() => Row(
+    children: const [
+      Expanded(child: Divider(color: AppColors.authTextFormFieldBorderColor)),
+      Padding(padding: EdgeInsets.symmetric(horizontal: 8.0), child: Text('Or')),
+      Expanded(child: Divider(color: AppColors.authTextFormFieldBorderColor)),
+    ],
+  );
+
+  Widget _buildSignInLink() => Center(
+    child: RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(text: 'Have an account?', style: AppTextStyles.hintText),
+          TextSpan(
+            text: ' Sign In',
+            style: const TextStyle(color: AppColors.primaryColor),
+            recognizer: TapGestureRecognizer()..onTap = () => Navigator.pushNamed(context, RouteNames.loginScreen),
+          ),
+        ],
+      ),
+    ),
+  );
 }

@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:hmlegends/core/services/local_storage/local_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 
 import '../../../core/constant/api_endpoint.dart';
+import '../../../core/services/token_storage.dart';
 
 class LoginViewModel with ChangeNotifier {
   bool _passwordVisible = false;
@@ -39,7 +39,7 @@ class LoginViewModel with ChangeNotifier {
     }
 
     debugPrint("message Firebase token is $firebaseToken");
-    final url = Uri.parse(ApiEndPoints.googleLogin);
+    final url = Uri.parse(ApiEndpoints.googleLogin);
 
     debugPrint("message Firebase token is $firebaseToken.");
     try {
