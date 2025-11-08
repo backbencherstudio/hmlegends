@@ -29,7 +29,6 @@ class AppProviders {
         GetProductsUseCase(ProductRepositoryImpl(ProductLocalDataSource())),
       ),
     ),
-
   ];
 
   static List<SingleChildWidget> getProviders() {

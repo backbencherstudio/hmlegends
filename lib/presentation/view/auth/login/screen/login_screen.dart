@@ -13,6 +13,8 @@ import '../../widget/level_text.dart';
 import '../../widget/social_auth_buttons.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -174,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Spacer(),
             TextButton(
               onPressed: () {
-                 Navigator.pushNamed(context, RouteNames.forgetPasswordScreen);
+                Navigator.pushNamed(context, RouteNames.forgetPasswordScreen);
               },
               child: Text(
                 'Forgot Password?',
@@ -191,8 +193,6 @@ class _LoginScreenState extends State<LoginScreen> {
       },
     );
   }
-
-
 
   Widget _buildSignInButton() {
     return Consumer<LoginViewModel>(
