@@ -223,18 +223,18 @@ class ManageBranchesScreen extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
       ),
-      child: InkWell(
-        onTap: (){
-          Navigator.pushNamed(context, RouteNames.manageBranchesToOrderSummaryScreen);
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // === Top Row (Image + Info + Status)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // === Top Row (Image + Info + Status)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              InkWell(
+                onTap: (){
+                  Navigator.pushNamed(context, RouteNames.manageBranchesToOrderSummaryScreen);
+                },
+                child: ClipRRect(
                   borderRadius: BorderRadius.circular(8.r),
                   child: Image.asset(
                     branch["image"],
@@ -243,76 +243,80 @@ class ManageBranchesScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        branch["name"],
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14.sp,
-                          color: AppColors.authHeaderTextColor,
-                        ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      branch["name"],
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14.sp,
+                        color: AppColors.authHeaderTextColor,
                       ),
-                      SizedBox(height: 4.h),
-                      Row(
-                        children: [
-                          Image.asset(AssetPaths.locationIcon,
-                              height: 22.h,width: 22.w,),
-                          SizedBox(width: 6.w),
-                          Expanded(
-                            child: Text(
-                              branch["address"],
-                              style: TextStyle(
-                                color: AppColors.authBodyTextColor,
-                                fontSize: 12.sp,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE6F5E6),
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                  child: Text(
-                    branch["status"],
-                    style: TextStyle(
-                      color:  Color(0xFF5BB450),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12.sp,
                     ),
+                    SizedBox(height: 4.h),
+                    Row(
+                      children: [
+                        Image.asset(AssetPaths.locationIcon,
+                            height: 22.h,width: 22.w,),
+                        SizedBox(width: 6.w),
+                        Expanded(
+                          child: Text(
+                            branch["address"],
+                            style: TextStyle(
+                              color: AppColors.authBodyTextColor,
+                              fontSize: 12.sp,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6F5E6),
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+                child: Text(
+                  branch["status"],
+                  style: TextStyle(
+                    color:  Color(0xFF5BB450),
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12.sp,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
 
-            SizedBox(height: 10.h),
+          SizedBox(height: 10.h),
 
-            // === Bottom Row (Action Icons)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _actionIcon(AssetPaths.mbi1),
-                _actionIcon(AssetPaths.mbi2),
+          // === Bottom Row (Action Icons)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _actionIcon(AssetPaths.mbi1),
+              InkWell(
+                  onTap: (){
+                    Navigator.pushNamed(context, RouteNames.editBranchScreen);
+                  },
+                  child: _actionIcon(AssetPaths.mbi2)),
 
-                _actionIcon(
-                  //isActive ? AssetPaths.mbi3 :AssetPaths.mbi3i,
-                AssetPaths.mbi3),
-                // _actionIcon(AssetPaths.mbi4,),
-              ],
-            ),
-          ],
-        ),
+              _actionIcon(
+                //isActive ? AssetPaths.mbi3 :AssetPaths.mbi3i,
+              AssetPaths.mbi3),
+              // _actionIcon(AssetPaths.mbi4,),
+            ],
+          ),
+        ],
       ),
     );
   }
