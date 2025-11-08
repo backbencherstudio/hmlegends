@@ -49,7 +49,7 @@ class AppRoutes{
     RouteNames.loginScreen :(context)=> LoginScreen (),
     RouteNames.forgetPasswordScreen  :(context)=>  ForgetPasswordScreen (),
     RouteNames.otpVerifyScreen  :(context)=>  OtpVerifyScreen(),
-    RouteNames.setNewPasswordScreen   :(context)=>  SetNewPasswordScreen (),
+    // RouteNames.setNewPasswordScreen   :(context)=>  SetNewPasswordScreen (),
     RouteNames.mainWrapper   :(context)=>  MainWrapper(),
     RouteNames.branchHomeScreen   :(context)=>  BranchHomeScreen(),
     RouteNames.branchParentScreen   :(context)=>  BranchParentScreen(),

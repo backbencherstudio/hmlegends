@@ -28,7 +28,6 @@ class RegisterProvider extends ChangeNotifier {
   bool _passwordVisible = false;
   bool get passwordVisible => _passwordVisible;
 
-
   void toggleConfirmPassObscured() {
     _isConfirmPassObscured = !_isConfirmPassObscured;
     notifyListeners();
@@ -41,20 +40,44 @@ class RegisterProvider extends ChangeNotifier {
 
   final ApiService _apiService = ApiService();
 
+  void setTypeFromRoute(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final String? userRole = args?['userRole'] as String?;
+
+    if (userRole != null && userRole != _type) {
+      _type = userRole;
+      debugPrint("RegisterProvider: User type set to: $_type");
+      notifyListeners();
+    }
+  }
+
+  void clearType() {
+    if (_type.isNotEmpty) {
+      _type = '';
+      notifyListeners();
+    }
+  }
+
   Future<bool> registerUser({
     required String name,
     required String email,
     required String password,
-
   }) async {
     _isLoading = true;
     notifyListeners();
+
+    if (_type.isEmpty) {
+      _errorMessage = 'User type not selected. Please go back and choose a role.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
 
     final data = {
       "name": name,
       "email": email,
       "password": password,
-      "type": type,
+      "type": _type,
     };
 
     try {
@@ -68,17 +91,18 @@ class RegisterProvider extends ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         setEmail(email);
         _isLoading = false;
+        _errorMessage = response.data['message'] ?? 'Registration successful';
+        debugPrint("register response: ${_errorMessage}");
         notifyListeners();
-        _errorMessage = response.data['message'];
-        debugPrint("register response: ${response.data['message']}");
-        notifyListeners();
-        if (_errorMessage.contains('Email already exist')) {
+
+        if (_errorMessage.contains('Email already exist') ||
+            _errorMessage.contains('already')) {
           return false;
         } else {
           return true;
         }
       } else {
-        _errorMessage = response.data['message'];
+        _errorMessage = response.data['message'] ?? 'Registration failed';
         _isLoading = false;
         notifyListeners();
         return false;

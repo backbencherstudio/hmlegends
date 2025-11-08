@@ -8,7 +8,10 @@ import '../../domain/usecase/get_product_usecase.dart';
 import '../../presentation/view/driver_flow/driver_provider/branch_product_provider.dart';
 import '../../presentation/view_model/auth/login_viewmodel.dart';
 import '../../presentation/view_model/auth/set_new_password_viewModel.dart';
-import '../../presentation/view_model/auth_viewmodel/register_viewmodel.dart';
+import '../../presentation/view_model/auth_api/forget_password_viewmodel.dart';
+import '../../presentation/view_model/auth_api/login_viewmodel.dart';
+import '../../presentation/view_model/auth_api/register_viewmodel.dart';
+import '../../presentation/view_model/auth_api/verify_otp_viewmodel.dart';
 import '../../presentation/view_model/parent/bottom_nav_viewmodel.dart';
 import '../../presentation/view_model/parent/manage_delivery_viewmodel.dart';
 import '../../presentation/view_model/parent/stock_viewmodel.dart';
@@ -33,6 +36,10 @@ class AppProviders {
 
     //auth_api
     ChangeNotifierProvider(create: (_) => RegisterProvider()),
+    ChangeNotifierProvider(create: (_) => LoginScreenProvider()),
+    ChangeNotifierProvider(create: (_) => ForgetPasswordProvider()),
+    ChangeNotifierProvider(create: (_) => VerifyOtpViewmodel()),
+    ChangeNotifierProvider(create: (_) => SetNewPasswordViewModel()),
   ];
 
 

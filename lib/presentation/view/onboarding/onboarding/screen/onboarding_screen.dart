@@ -15,35 +15,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  String? _selectedRole;
-
-  void _onGetStartedPressed() {
+  void _navigateToSignUp(String role) {
     Navigator.pushNamed(
       context,
-      RouteNames.loginScreen,
-      arguments: {'userRole': _selectedRole},
+      RouteNames.signUpScreen,
+      arguments: {'userRole': role},
     );
-  }
-
-  void _onButton1Pressed() {
-    setState(() {
-      _selectedRole = 'admin';
-    });
-    _onGetStartedPressed();
-  }
-
-  void _onButton2Pressed() {
-    setState(() {
-      _selectedRole = 'branch_manager';
-    });
-    _onGetStartedPressed();
-  }
-
-  void _onButton3Pressed() {
-    setState(() {
-      _selectedRole = 'driver';
-    });
-    _onGetStartedPressed();
   }
 
   void _onNextPressed() {
@@ -57,9 +34,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: _currentPage == 0
-            ? _buildPage1Decoration()
-            : _buildPage2Decoration(),
+        decoration: _currentPage == 0 ? _buildPage1Decoration() : _buildPage2Decoration(),
         child: SafeArea(
           child: Column(
             children: [
@@ -68,14 +43,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   controller: _pageController,
                   physics: const NeverScrollableScrollPhysics(),
                   onPageChanged: (int page) {
-                    setState(() {
-                      _currentPage = page;
-                    });
+                    setState(() => _currentPage = page);
                   },
-                  children: [
-                    _buildPage1(),
-                    _buildPage2(),
-                  ],
+                  children: [_buildPage1(), _buildPage2()],
                 ),
               ),
             ],
@@ -85,86 +55,73 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  BoxDecoration _buildPage1Decoration() {
-    return const BoxDecoration(
-      gradient: LinearGradient(
-        colors: [Color(0xFF613A19), Color(0xFF161618)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ),
-    );
-  }
+  BoxDecoration _buildPage1Decoration() => const BoxDecoration(
+    gradient: LinearGradient(
+      colors: [Color(0xFF613A19), Color(0xFF161618)],
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+    ),
+  );
 
-  BoxDecoration _buildPage2Decoration() {
-    return const BoxDecoration(
-      gradient: LinearGradient(
-        colors: [Color(0xFF0F1016), Color(0xFF77161A)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ),
-    );
-  }
+  BoxDecoration _buildPage2Decoration() => const BoxDecoration(
+    gradient: LinearGradient(
+      colors: [Color(0xFF0F1016), Color(0xFF77161A)],
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+    ),
+  );
 
-  Widget _buildPage1() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(AssetPaths.appLogo, height: 113.h, width: 113.w),
-          SizedBox(height: 40.h),
-          OnBoardingElevatedButton(
-            text: 'Get Started',
-            suffixIcon: Icons.arrow_forward,
-            onPressed: _onNextPressed,
-            height: 50.h,
-            width: 210.w,
-            borderRadius: 30.r,
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildPage1() => Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(AssetPaths.appLogo, height: 113.h, width: 113.w),
+        SizedBox(height: 40.h),
+        OnBoardingElevatedButton(
+          text: 'Get Started',
+          suffixIcon: Icons.arrow_forward,
+          onPressed: _onNextPressed,
+          height: 50.h,
+          width: 210.w,
+          borderRadius: 30.r,
+        ),
+      ],
+    ),
+  );
 
-  Widget _buildPage2() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(AssetPaths.appLogo, height: 113.h, width: 113.w),
-          SizedBox(height: 40.h),
-
-          OnBoardingElevatedButton(
-            text: 'Start as Admin',
-            suffixIcon: Icons.arrow_forward,
-            onPressed: _onButton1Pressed,
-            height: 49.h,
-            width: 240.w,
-            borderRadius: 30.r,
-          ),
-
-          SizedBox(height: 20.h),
-
-          OnBoardingElevatedButton(
-            text: 'Start as Branch manager',
-            suffixIcon: Icons.arrow_forward,
-            onPressed: _onButton2Pressed,
-            height: 49.h,
-            width: 280.w,
-            borderRadius: 30.r,
-          ),
-
-          SizedBox(height: 20.h),
-
-          OnBoardingElevatedButton(
-            text: 'Start as Driver',
-            suffixIcon: Icons.arrow_forward,
-            onPressed: _onButton3Pressed,
-            height: 49.h,
-            width: 220.w,
-            borderRadius: 30.r,
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildPage2() => Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(AssetPaths.appLogo, height: 113.h, width: 113.w),
+        SizedBox(height: 40.h),
+        OnBoardingElevatedButton(
+          text: 'Start as Admin',
+          suffixIcon: Icons.arrow_forward,
+          onPressed: () => _navigateToSignUp('admin'),
+          height: 49.h,
+          width: 240.w,
+          borderRadius: 30.r,
+        ),
+        SizedBox(height: 20.h),
+        OnBoardingElevatedButton(
+          text: 'Start as Branch manager',
+          suffixIcon: Icons.arrow_forward,
+          onPressed: () => _navigateToSignUp('branch_manager'),
+          height: 49.h,
+          width: 280.w,
+          borderRadius: 30.r,
+        ),
+        SizedBox(height: 20.h),
+        OnBoardingElevatedButton(
+          text: 'Start as Driver',
+          suffixIcon: Icons.arrow_forward,
+          onPressed: () => _navigateToSignUp('driver'),
+          height: 49.h,
+          width: 220.w,
+          borderRadius: 30.r,
+        ),
+      ],
+    ),
+  );
 }

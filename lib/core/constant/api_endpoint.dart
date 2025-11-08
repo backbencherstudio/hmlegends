@@ -7,15 +7,15 @@ class ApiEndpoints {
   // Admin
   static const String register = '/api/auth/register';
   static const String login = '/api/auth/login';
+  static const String forgetPassword = '/api/auth/forgot-password';
+  static const String verify_otp = '/api/auth/reset-password';
+  static const String setNewPassword = '/api/auth/reset-password';
 
 
   //Branch
 
 
-
   //Driver
-
-
 
 
   // static const String getBanners = '/api/getBanners';
