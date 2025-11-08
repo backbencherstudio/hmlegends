@@ -1,9 +1,24 @@
-class ApiEndPoints {
-  ApiEndPoints._();
-  static const String register = '/api/users/register';
-  static const String login = '/api/users/register';
+class ApiEndpoints {
+  ApiEndpoints._();
+
+  static const String baseUrl = 'https://neural-everywhere-conclusion-magnificent.trycloudflare.com';
   static const String googleLogin = 'http://192.168.5.232:4050/api/auth/google/signin';
-  static const String getBanners = '/api/getBanners';
-  static const String getProducts = '/api/products';
-  static const String getUsers = '/api/users';
+
+  // Admin
+  static const String register = '/api/auth/register';
+  static const String login = '/api/auth/login';
+
+
+  //Branch
+
+
+
+  //Driver
+
+
+
+
+  // static const String getBanners = '/api/getBanners';
+  // static const String getProducts = '/api/products';
+  // static const String getUsers = '/api/users';
 }

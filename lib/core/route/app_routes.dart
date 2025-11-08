@@ -35,7 +35,7 @@ import '../../presentation/view/driver_flow/driver_brance_detailScreen/delivery_
 import '../../presentation/view/driver_flow/driver_brance_detailScreen/driver_brance_detail_screen.dart';
 import '../../presentation/view/driver_flow/driver_screen.dart';
 import '../../presentation/view/driver_flow/parent/parent_screen.dart';
-import '../../presentation/view/onboarding/onboarding/screen/onboarding_screen.dart';
+import '../../presentation/view/onboarding/onboarding/screen/onboarding_screen.dart' hide LoginScreen;
 import '../../presentation/view/splash/splash/screen/splash_screen.dart';
 
 class AppRoutes{

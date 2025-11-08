@@ -71,7 +71,7 @@ class SetNewPasswordScreen extends StatelessWidget {
           text: 'Update Password',
           onPressed: viewModel.canUpdatePassword()
               ? () {
-            Navigator.pushNamed(context, RouteNames.mainWrapper);
+            Navigator.pushNamed(context, RouteNames.loginScreen);
           }
               : (){},
           color: AppColors.primaryColor,

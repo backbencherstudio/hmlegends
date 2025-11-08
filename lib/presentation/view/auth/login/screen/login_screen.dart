@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 visualDensity: VisualDensity(horizontal: -4, vertical: -4),
               ),
             ),
-            SizedBox(width: 10.w), // Spacing
+            SizedBox(width: 10.w),
             Text(
               'Remember me',
               style: TextStyle(
@@ -200,8 +200,18 @@ class _LoginScreenState extends State<LoginScreen> {
         return AuthButton(
           text: 'Sign In',
           onPressed: () {
-           // Navigator.pushNamed(context, RouteNames.mainWrapper);
-            Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
+            final args = ModalRoute.of(context)?.settings.arguments as Map?;
+            final String? userRole = args?['userRole'] as String?;
+
+            if (userRole == 'admin') {
+              Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
+            } else if (userRole == 'branch_manager') {
+              Navigator.pushReplacementNamed(context, RouteNames.branchParentScreen);
+            } else if (userRole == 'driver') {
+              Navigator.pushReplacementNamed(context, RouteNames.driverBranchParentScreen);
+            } else {
+              Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
+            }
           },
           color: AppColors.primaryColor,
         );
@@ -290,7 +300,7 @@ class _LoginScreenState extends State<LoginScreen> {
         text: TextSpan(
           children: [
             TextSpan(
-              text: 'Haven\’t an account?',
+              text: 'Haven’t an account?',
               style: AppTextStyles.hintText,
             ),
             TextSpan(
