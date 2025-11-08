@@ -4,6 +4,7 @@ import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart'
 import '../../presentation/view/admin_flow/admin/invoice/screen/head_office_invoice_screen.dart';
 import '../../presentation/view/admin_flow/admin/invoice_status/screen/invoice_status_screen.dart';
 import '../../presentation/view/admin_flow/admin/manage_branches/screen/add_new_branches_screen.dart';
+import '../../presentation/view/admin_flow/admin/manage_branches/screen/edit_branch_screen.dart';
 import '../../presentation/view/admin_flow/admin/manage_branches/screen/manage_branches_screen.dart';
 import '../../presentation/view/admin_flow/admin/manage_branches_to_order_summary/screen/manage_branches_to_order_summary_screen.dart';
 import '../../presentation/view/admin_flow/admin/manage_delivery/screen/manage_delivery_screen.dart';
@@ -80,6 +81,7 @@ class AppRoutes{
     RouteNames.headOfficeChangeInfoScreen :(context)=>  HeadOfficeChangeInfoScreen(),
     RouteNames.manageDeliveryScreen:(context)=>  ManageDeliveryScreen(),
     RouteNames.manageBranchesToOrderSummaryScreen :(context)=>  ManageBranchesToOrderSummaryScreen(),
+    RouteNames.editBranchScreen :(context)=>  EditBranchScreen(),
 
 
   };

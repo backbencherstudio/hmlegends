@@ -6,14 +6,14 @@ import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 
-class AddNewBranchesScreen extends StatefulWidget {
-  const AddNewBranchesScreen({super.key});
+class EditBranchScreen extends StatefulWidget {
+  const EditBranchScreen({super.key});
 
   @override
-  State<AddNewBranchesScreen> createState() => _AddNewBranchesScreenState();
+  State<EditBranchScreen> createState() => _EditBranchScreenState();
 }
 
-class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
+class _EditBranchScreenState extends State<EditBranchScreen> {
   // Dropdown values
   String? selectedProduct;
   String? selectedStockStatus;
@@ -26,7 +26,7 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBarTwo(
-        title: 'Add New Branch',
+        title: 'Edit Branch',
         notificationCount: 4,
         colorMain: Colors.white,
         colorSpace: Colors.white,
@@ -49,17 +49,10 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
             _buildLabel("Status"),
             _buildStockStatusDropdown(),
 
-            SizedBox(height: 16.h),
-            _buildLabel("Email"),
-            _buildTextField("Enter your email"),
-
-            SizedBox(height: 16.h),
-            _buildLabel("Password"),
-            _buildTextField("Enter your password"),
-
-
-
-            SizedBox(height: 40.h),
+            SizedBox(height: 24.h),
+            _buildLabel("Upload product Image"),
+            _buildImageUploader(),
+            SizedBox(height: 24.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: AuthButton(text: 'Save & Update', onPressed: (){}, color: AppColors.primaryColor),
