@@ -5,7 +5,6 @@ import '../../../core/constant/api_endpoint.dart';
 import '../../../core/services/api_service.dart';
 import '../../../core/services/socket_service.dart';
 import '../../../core/services/token_storage.dart';
-import '../../../core/services/user_id_storage.dart';
 
 class LoginScreenProvider extends ChangeNotifier {
   bool _isLoading = false;
@@ -29,6 +28,9 @@ class LoginScreenProvider extends ChangeNotifier {
         ApiEndpoints.login,
         data: {'email': email, 'password': password},
       );
+      debugPrint('+++++++++++++response statusCode :+++++++ ${response.statusCode}\n');
+
+      debugPrint('++++++++++ response statusCode : +++++++ ${response.data}\n\n');
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = response.data;
         final token = data['authorization']['access_token'];

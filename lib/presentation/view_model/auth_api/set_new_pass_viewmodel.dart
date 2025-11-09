@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/services/api_service.dart';
 import '../../../core/constant/api_endpoint.dart';
 
-class SetNewPasswordViewModel extends ChangeNotifier {
+class SetPasswordViewModel extends ChangeNotifier {
   String? errorMessage;
 
   bool passwordVisible = false;
@@ -39,14 +39,13 @@ class SetNewPasswordViewModel extends ChangeNotifier {
         _password == _confirmPassword;
   }
 
-  /// API call to update password
   Future<bool> updatePassword({required String email, required String token}) async {
     errorMessage = null;
     notifyListeners();
 
     try {
       final response = await _apiService.post(
-        ApiEndpoints.setNewPassword, // Define your endpoint
+        ApiEndpoints.setNewPassword,
         data: {
           "email": email,
           "token": token,

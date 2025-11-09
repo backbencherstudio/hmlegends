@@ -9,7 +9,6 @@ class VerifyOtpViewmodel extends ChangeNotifier {
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
 
-  // Store response data
   String _otpToken = '';
   String get otpToken => _otpToken;
 
@@ -21,7 +20,6 @@ class VerifyOtpViewmodel extends ChangeNotifier {
 
   final ApiService _apiService = ApiService();
 
-  /// Forget Password API
   Future<bool> forgetPassword({required String email}) async {
     _isFPLoading = true;
     _errorMessage = '';
@@ -39,7 +37,6 @@ class VerifyOtpViewmodel extends ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = response.data;
 
-        // ✅ Extract data safely from response
         _email = data['email'] ?? '';
         _otpToken = data['token'] ?? '';
         _tempPassword = data['password'] ?? '';
@@ -63,7 +60,6 @@ class VerifyOtpViewmodel extends ChangeNotifier {
     }
   }
 
-  /// Verify OTP Method (mock for now)
   Future<bool> verifyOtp(String enteredOtp) async {
     if (enteredOtp == _otpToken) {
       _errorMessage = "OTP verified successfully";
