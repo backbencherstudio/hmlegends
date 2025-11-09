@@ -11,6 +11,7 @@ import '../../presentation/view_model/auth/set_new_password_viewModel.dart';
 import '../../presentation/view_model/auth_api/forget_password_viewmodel.dart';
 import '../../presentation/view_model/auth_api/login_viewmodel.dart';
 import '../../presentation/view_model/auth_api/register_viewmodel.dart';
+import '../../presentation/view_model/auth_api/set_new_pass_viewmodel.dart';
 import '../../presentation/view_model/auth_api/verify_otp_viewmodel.dart';
 import '../../presentation/view_model/parent/bottom_nav_viewmodel.dart';
 import '../../presentation/view_model/parent/manage_delivery_viewmodel.dart';
@@ -40,11 +41,8 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => ForgetPasswordProvider()),
     ChangeNotifierProvider(create: (_) => VerifyOtpViewmodel()),
     ChangeNotifierProvider(create: (_) => SetNewPasswordViewModel()),
+    ChangeNotifierProvider(create: (_) => SetPasswordViewModel()),
   ];
-
-
-
-
 
   static List<SingleChildWidget> getProviders() {
     return providers;
