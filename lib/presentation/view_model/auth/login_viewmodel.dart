@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:hmlegends/core/services/local_storage/local_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
-
 import '../../../core/constant/api_endpoint.dart';
 
 class LoginViewModel with ChangeNotifier {
@@ -60,14 +59,9 @@ class LoginViewModel with ChangeNotifier {
 
         debugPrint("data: $data");
         debugPrint("Login success");
-
         return {"success": true, "data": ""};
       } else {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
-
-        // debugPrint(
-        //   "Login failed: ${response.statusCode}. ${data['token']}. ${data['message']}",
-        // );
         return {"success": false, "message": "Login failed. Please try again."};
       }
     } catch (error) {
