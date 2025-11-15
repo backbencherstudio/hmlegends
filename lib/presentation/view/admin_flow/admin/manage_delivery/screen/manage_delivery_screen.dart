@@ -394,8 +394,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../../../core/constant/asset_path.dart';
-import '../../../../../view_model/parent/manage_delivery_viewmodel.dart';
 import '../../../../widget/custom_app_bar_2.dart';
+import '../../../view_model/parent/manage_delivery_viewmodel.dart';
 import '../widget/assign_driver_sheet.dart';
 import '../widget/branch_card.dart';
 

@@ -1,21 +1,16 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
-import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../../view_model/parent/stock_viewmodel.dart';
+import '../../../view_model/parent/stock_viewmodel.dart';
 import '../widget/filter_button.dart';
-import '../widget/product_card.dart';
 import '../../widget/search_filter.dart';
 
 class StockScreen extends StatelessWidget {
   final bool fromBottomNav;
-
   const StockScreen({super.key, required this.fromBottomNav});
-
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<StockViewModel>();
@@ -36,11 +31,11 @@ class StockScreen extends StatelessWidget {
           children: [
             _buildFilterButtons(vm),
             SizedBox(height: 15.h),
-            SearchField(hintText: '',),
+            SearchField(hintText: ''),
             SizedBox(height: 12.h),
             _buildHeaderRow(vm),
             SizedBox(height: 6.h),
-            _buildProductList(vm),
+            //   _buildProductList(vm),
           ],
         ),
       ),
@@ -49,7 +44,6 @@ class StockScreen extends StatelessWidget {
 
   Widget _buildFilterButtons(StockViewModel vm) {
     final filters = ["All Products", "In Stock", "Stock Low", "Out of Stock"];
-
     return SizedBox(
       height: 36.h,
       child: ListView(
@@ -100,19 +94,6 @@ class StockScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProductList(StockViewModel vm) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: vm.products.length,
-        itemBuilder: (context, index) {
-          final product = vm.products[index];
-          final productImage = _getProductImage(index);
-          return ProductCard(product: product, imagePath: productImage);
-        },
-      ),
-    );
-  }
-
   String _getFilterDisplayText(String selectedFilter) {
     switch (selectedFilter) {
       case "In Stock":
@@ -125,15 +106,4 @@ class StockScreen extends StatelessWidget {
         return "All Stock Products";
     }
   }
-
-  String _getProductImage(int index) {
-    final images = [
-      AssetPaths.stockImageOne,
-      AssetPaths.stockImageTwo,
-      AssetPaths.stockImageThree,
-    ];
-    return images[index % images.length];
-  }
 }
-
-

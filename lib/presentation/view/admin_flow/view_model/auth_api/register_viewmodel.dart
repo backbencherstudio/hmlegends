@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../../../core/constant/api_endpoint.dart';
-import '../../../core/services/api_service.dart';
+
+import '../../../../../core/constant/api_endpoint.dart';
+import '../../../../../core/services/api_service.dart';
+
 
 class RegisterProvider extends ChangeNotifier {
   bool _isLoading = false;

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../../view_model/profile/change_pass_provider.dart';
+import '../../../view_model/profile/change_pass_provider.dart';
 
 
 class HeadOfficeChangePasswordScreen extends StatelessWidget {

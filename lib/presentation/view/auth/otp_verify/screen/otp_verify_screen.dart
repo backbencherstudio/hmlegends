@@ -1,13 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/presentation/view_model/auth_api/verify_otp_viewmodel.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
-import '../../../../../core/constant/app_colors.dart';
-import '../../../../../core/route/route_names.dart';
+import 'package:hmlegends/core/constant/app_colors.dart';
+import 'package:hmlegends/core/route/route_names.dart';
+import '../../../admin_flow/view_model/auth_api/forget_password_viewmodel.dart';
 import '../../widget/auth_button.dart';
 
 class OtpVerifyScreen extends StatelessWidget {
@@ -17,7 +17,7 @@ class OtpVerifyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<VerifyOtpViewmodel>(context);
+    final provider = Provider.of<ForgetPasswordProvider>(context);
 
     return Scaffold(
       body: Padding(
@@ -26,6 +26,8 @@ class OtpVerifyScreen extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: 100.h),
+
+              /// LOGO
               Center(
                 child: Image.asset(
                   AssetPaths.authLogo,
@@ -33,26 +35,69 @@ class OtpVerifyScreen extends StatelessWidget {
                   height: 100.h,
                 ),
               ),
+
               SizedBox(height: 20.h),
+
               Text('Check Your Mail', style: AppTextStyles.authHeadline),
               SizedBox(height: 8.h),
 
+              /// EMAIL DISPLAY
               Text(
                 'We sent a reset code to ${provider.email.isNotEmpty ? provider.email : "your email"}. '
-                    'Enter the 6-digit code below.',
+                'Enter the 6-digit code below.',
                 style: AppTextStyles.authBodyText,
                 textAlign: TextAlign.center,
               ),
 
               SizedBox(height: 20.h),
+
+              /// OTP FIELD
               _buildOtpField(),
+
               SizedBox(height: 20.h),
 
+              /// VERIFY BUTTON
               provider.isFPLoading
-                  ? const Center(child: CircularProgressIndicator(color: Colors.green))
-                  : _otpVerifyButton(context, provider),
+                  ? const CircularProgressIndicator(color: Colors.green)
+                  : AuthButton(
+                      text: 'Verify Code',
+                      color: AppColors.primaryColor,
+                      onPressed: () async {
+                        final enteredOtp = _otpController.text.trim();
+
+                        if (enteredOtp.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Please enter the OTP"),
+                            ),
+                          );
+                          return;
+                        }
+
+                        final success = await provider.otpVerify(
+                          otp: enteredOtp,
+                        );
+                        provider.setOtpToken(enteredOtp);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: success
+                                ? Colors.green
+                                : Colors.red,
+                            content: Text(provider.errorMessage),
+                          ),
+                        );
+
+                        if (success && context.mounted) {
+                          Navigator.pushNamed(
+                            context,
+                            RouteNames.setNewPasswordScreen,
+                          );
+                        }
+                      },
+                    ),
 
               SizedBox(height: 10.h),
+
               _buildOtpResendLink(provider),
             ],
           ),
@@ -61,6 +106,7 @@ class OtpVerifyScreen extends StatelessWidget {
     );
   }
 
+  /// OTP FIELD
   Widget _buildOtpField() {
     final defaultPinTheme = PinTheme(
       width: 48.w,
@@ -78,43 +124,11 @@ class OtpVerifyScreen extends StatelessWidget {
       defaultPinTheme: defaultPinTheme,
       keyboardType: TextInputType.number,
       showCursor: true,
-      onCompleted: (pin) {
-        debugPrint("Completed OTP: $pin");
-      },
+      onCompleted: (pin) => debugPrint("Completed OTP: $pin"),
     );
   }
 
-  Widget _otpVerifyButton(BuildContext context, VerifyOtpViewmodel provider) {
-    return AuthButton(
-      text: 'Verify Code',
-      color: AppColors.primaryColor,
-      onPressed: () async {
-        final enteredOtp = _otpController.text.trim();
-
-        if (enteredOtp.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Please enter the OTP")),
-          );
-          return;
-        }
-
-        final success = await provider.verifyOtp(enteredOtp);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: success ? Colors.green : Colors.red,
-            content: Text(provider.errorMessage),
-          ),
-        );
-
-        if (success && context.mounted) {
-          Navigator.pushNamed(context, RouteNames.setNewPasswordScreen);
-        }
-      },
-    );
-  }
-
-  Widget _buildOtpResendLink(VerifyOtpViewmodel provider) {
+  Widget _buildOtpResendLink(ForgetPasswordProvider provider) {
     return Center(
       child: RichText(
         text: TextSpan(
