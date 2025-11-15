@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
@@ -10,6 +12,18 @@ class HeadOfficeProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController _firstNameControler = TextEditingController();
+    final TextEditingController _lastNameController = TextEditingController();
+    final TextEditingController _occupationController = TextEditingController();
+    final TextEditingController _dathOfBirthController =
+        TextEditingController();
+    final TextEditingController _phoneNumberController =
+        TextEditingController();
+    final TextEditingController _cityController = TextEditingController();
+    final TextEditingController _addressController = TextEditingController();
+
+    File _image;
+
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
       appBar: AppBar(
@@ -74,7 +88,10 @@ class HeadOfficeProfileScreen extends StatelessWidget {
               title: 'Change Password',
               isDestructive: true,
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.headOfficeChangePasswordScreen);
+                Navigator.pushNamed(
+                  context,
+                  RouteNames.headOfficeChangePasswordScreen,
+                );
               },
             ),
             Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
@@ -83,7 +100,10 @@ class HeadOfficeProfileScreen extends StatelessWidget {
               title: 'Change info',
               isDestructive: true,
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.headOfficeChangeInfoScreen);
+                Navigator.pushNamed(
+                  context,
+                  RouteNames.headOfficeChangeInfoScreen,
+                );
               },
             ),
           ],

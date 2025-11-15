@@ -4,11 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/route/route_names.dart';
-import '../../../../view_model/auth/login_viewmodel.dart';
-import '../../../../view_model/auth_api/login_viewmodel.dart';
+import '../../../admin_flow/view_model/auth/login_viewmodel.dart';
+import '../../../admin_flow/view_model/auth_api/login_viewmodel.dart';
 import '../../widget/auth_button.dart';
 import '../../widget/level_text.dart';
 import '../../widget/social_auth_buttons.dart';
@@ -21,7 +20,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -32,7 +30,6 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailController.dispose();
     _passwordController.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +98,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildPasswordField() {
     return Consumer<LoginViewModel>(
       builder: (context, viewModel, child) {
-        return TextField(controller: _passwordController,
+        return TextField(
+          controller: _passwordController,
           obscureText: !viewModel.passwordVisible,
           decoration: InputDecoration(
             hintText: 'Enter your password',
@@ -256,13 +254,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 final String? userRole = args?['userRole'] as String?;
 
                 if (userRole == 'admin') {
-                  Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
+                  Navigator.pushReplacementNamed(
+                    context,
+                    RouteNames.mainWrapper,
+                  );
                 } else if (userRole == 'branch_manager') {
-                  Navigator.pushReplacementNamed(context, RouteNames.branchParentScreen);
+                  Navigator.pushReplacementNamed(
+                    context,
+                    RouteNames.branchParentScreen,
+                  );
                 } else if (userRole == 'driver') {
-                  Navigator.pushReplacementNamed(context, RouteNames.driverBranchParentScreen);
+                  Navigator.pushReplacementNamed(
+                    context,
+                    RouteNames.driverBranchParentScreen,
+                  );
                 } else {
-                  Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
+                  Navigator.pushReplacementNamed(
+                    context,
+                    RouteNames.mainWrapper,
+                  );
                 }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -286,7 +296,6 @@ class _LoginScreenState extends State<LoginScreen> {
       },
     );
   }
-
 
   // Widget _buildSignInButton() {
   //   return Consumer<LoginViewModel>(

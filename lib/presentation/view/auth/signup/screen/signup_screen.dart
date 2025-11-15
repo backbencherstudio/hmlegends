@@ -2,12 +2,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/constant/app_text_styles.dart';
 import '../../../../../core/constant/asset_path.dart';
 import '../../../../../core/route/route_names.dart';
-import '../../../../view_model/auth_api/register_viewmodel.dart';
+import '../../../admin_flow/view_model/auth_api/register_viewmodel.dart';
 import '../../widget/auth_button.dart';
 import '../../widget/social_auth_buttons.dart';
 

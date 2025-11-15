@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../view_model/profile/change_pass_provider.dart';
+import '../../../admin_flow/view_model/profile/change_pass_provider.dart';
 
 class ChangePassword extends StatelessWidget {
   const ChangePassword({super.key});

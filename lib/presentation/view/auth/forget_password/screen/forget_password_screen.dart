@@ -5,7 +5,7 @@ import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import '../../../../../core/constant/app_colors.dart';
-import '../../../../view_model/auth_api/forget_password_viewmodel.dart';
+import '../../../admin_flow/view_model/auth_api/forget_password_viewmodel.dart';
 import '../../widget/auth_button.dart';
 import '../../widget/level_text.dart';
 
@@ -45,7 +45,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   Expanded(
                     child: Text(
                       'Please enter your email to reset the password',
-                      style: AppTextStyles.authBodyText.copyWith(fontSize: 15.sp),
+                      style: AppTextStyles.authBodyText.copyWith(
+                        fontSize: 15.sp,
+                      ),
                     ),
                   ),
                 ],
@@ -58,12 +60,18 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 children: [
                   RequiredLabel(labelText: 'Email'),
                   SizedBox(height: 8.h),
-                  _buildTextField('Your email', Icons.email_outlined, _emailController),
+                  _buildTextField(
+                    'Your email',
+                    Icons.email_outlined,
+                    _emailController,
+                  ),
                   SizedBox(height: 20.h),
 
                   // Reset Button
                   provider.isFPLoading
-                      ? const Center(child: CircularProgressIndicator(color: Colors.green))
+                      ? const Center(
+                          child: CircularProgressIndicator(color: Colors.green),
+                        )
                       : _resetPasswordButton(context, provider),
                 ],
               ),
@@ -74,7 +82,10 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     );
   }
 
-  Widget _resetPasswordButton(BuildContext context, ForgetPasswordProvider provider) {
+  Widget _resetPasswordButton(
+    BuildContext context,
+    ForgetPasswordProvider provider,
+  ) {
     return AuthButton(
       text: 'Reset Password',
       color: AppColors.primaryColor,
@@ -83,21 +94,28 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
         if (email.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Please enter your email"), backgroundColor: Colors.red),
+            const SnackBar(
+              content: Text("Please enter your email"),
+              backgroundColor: Colors.red,
+            ),
           );
           return;
         }
 
         final success = await provider.forgetPassword(email: email);
 
+        provider.setEmail(email);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: success ? Colors.green : Colors.red,
-            content: Text(provider.errorMessage.isNotEmpty
-                ? provider.errorMessage
-                : success
-                ? 'Password reset link sent successfully!'
-                : 'Something went wrong.'),
+            content: Text(
+              provider.errorMessage.isNotEmpty
+                  ? provider.errorMessage
+                  : success
+                  ? 'Password reset link sent successfully!'
+                  : 'Something went wrong.',
+            ),
           ),
         );
 
@@ -108,7 +126,11 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     );
   }
 
-  Widget _buildTextField(String hint, IconData icon, TextEditingController controller) {
+  Widget _buildTextField(
+    String hint,
+    IconData icon,
+    TextEditingController controller,
+  ) {
     return Padding(
       padding: EdgeInsets.only(bottom: 8.h),
       child: TextField(
@@ -120,17 +142,26 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
           fillColor: AppColors.authTextFormFieldFillColor,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
+            borderSide: BorderSide(
+              color: AppColors.authTextFormFieldBorderColor,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
+            borderSide: BorderSide(
+              color: AppColors.authTextFormFieldBorderColor,
+            ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
+            borderSide: BorderSide(
+              color: AppColors.authTextFormFieldBorderColor,
+            ),
           ),
-          contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 12.h,
+            horizontal: 16.w,
+          ),
           prefixIcon: Padding(
             padding: EdgeInsets.only(left: 8.w),
             child: Icon(icon, color: AppColors.authBodyTextColor),

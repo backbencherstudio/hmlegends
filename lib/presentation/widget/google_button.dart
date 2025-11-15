@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../core/route/route_names.dart';
 import '../../core/services/auth_services.dart';
-import '../view_model/auth/login_viewmodel.dart';
+import '../view/admin_flow/view_model/auth/login_viewmodel.dart';
 
 class GoogleButton extends StatelessWidget {
   const GoogleButton({super.key, this.alwaysShowChooser = true});

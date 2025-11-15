@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/services/api_service.dart';
-import '../../../core/constant/api_endpoint.dart';
+import '../../../../../core/constant/api_endpoint.dart';
+import '../../../../../core/services/api_service.dart';
 
 class SetPasswordViewModel extends ChangeNotifier {
   String? errorMessage;
