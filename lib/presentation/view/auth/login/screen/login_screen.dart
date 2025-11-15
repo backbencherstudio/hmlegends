@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/route/route_names.dart';
 import '../../../../view_model/auth/login_viewmodel.dart';
+import '../../../../view_model/auth_api/login_viewmodel.dart';
 import '../../widget/auth_button.dart';
 import '../../widget/level_text.dart';
 import '../../widget/social_auth_buttons.dart';
@@ -20,6 +21,19 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildPasswordField() {
     return Consumer<LoginViewModel>(
       builder: (context, viewModel, child) {
-        return TextField(
+        return TextField(controller: _passwordController,
           obscureText: !viewModel.passwordVisible,
           decoration: InputDecoration(
             hintText: 'Enter your password',
@@ -163,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 visualDensity: VisualDensity(horizontal: -4, vertical: -4),
               ),
             ),
-            SizedBox(width: 10.w), // Spacing
+            SizedBox(width: 10.w),
             Text(
               'Remember me',
               style: TextStyle(
@@ -195,18 +209,109 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildSignInButton() {
-    return Consumer<LoginViewModel>(
-      builder: (context, viewModel, child) {
+    return Consumer<LoginScreenProvider>(
+      builder: (context, provider, child) {
         return AuthButton(
-          text: 'Sign In',
+          text: provider.isLoading ? 'Signing In...' : 'Sign In',
           onPressed: () {
-            Navigator.pushNamed(context, RouteNames.mainWrapper);
+            if (provider.isLoading) return;
+
+            () async {
+              FocusScope.of(context).unfocus();
+
+              final email = _emailController.text.trim();
+              final password = _passwordController.text.trim();
+
+              if (email.isEmpty || password.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Please enter both email and password."),
+                    backgroundColor: Colors.redAccent,
+                  ),
+                );
+                return;
+              }
+
+              final success = await provider.login(
+                email: email,
+                password: password,
+              );
+
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.green.shade600,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    content: Text(
+                      provider.errorMessage ?? "Login successful!",
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                );
+
+                final args = ModalRoute.of(context)?.settings.arguments as Map?;
+                final String? userRole = args?['userRole'] as String?;
+
+                if (userRole == 'admin') {
+                  Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
+                } else if (userRole == 'branch_manager') {
+                  Navigator.pushReplacementNamed(context, RouteNames.branchParentScreen);
+                } else if (userRole == 'driver') {
+                  Navigator.pushReplacementNamed(context, RouteNames.driverBranchParentScreen);
+                } else {
+                  Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.redAccent,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    content: Text(
+                      provider.errorMessage ?? "Login failed. Try again.",
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                );
+              }
+            }();
           },
           color: AppColors.primaryColor,
         );
       },
     );
   }
+
+
+  // Widget _buildSignInButton() {
+  //   return Consumer<LoginViewModel>(
+  //     builder: (context, viewModel, child) {
+  //       return AuthButton(
+  //         text: 'Sign In',
+  //         onPressed: () {
+  //           final args = ModalRoute.of(context)?.settings.arguments as Map?;
+  //           final String? userRole = args?['userRole'] as String?;
+  //
+  //           if (userRole == 'admin') {
+  //             Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
+  //           } else if (userRole == 'branch_manager') {
+  //             Navigator.pushReplacementNamed(context, RouteNames.branchParentScreen);
+  //           } else if (userRole == 'driver') {
+  //             Navigator.pushReplacementNamed(context, RouteNames.driverBranchParentScreen);
+  //           } else {
+  //             Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
+  //           }
+  //         },
+  //         color: AppColors.primaryColor,
+  //       );
+  //     },
+  //   );
+  // }
 
   Widget _buildOrJoinWithDivider() {
     return Row(
@@ -247,6 +352,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Padding(
       padding: EdgeInsets.only(bottom: 8.h),
       child: TextField(
+        controller: _emailController,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: AppTextStyles.hintText,
@@ -289,7 +395,7 @@ class _LoginScreenState extends State<LoginScreen> {
         text: TextSpan(
           children: [
             TextSpan(
-              text: 'Haven\’t an account?',
+              text: 'Haven’t an account?',
               style: AppTextStyles.hintText,
             ),
             TextSpan(

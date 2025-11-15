@@ -1,19 +1,19 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class TokenStorage {
-  static const _key = "token";
+class UserEmailStorage {
+  static const _key = "userEmail";
 
-  Future<void> saveToken(String userId) async {
+  Future<void> saveUserEmail(String email) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_key, userId);
+    await prefs.setString(_key, email);
   }
 
-  Future<String?> getToken() async {
+  Future<String?> getUserEmail() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_key);
   }
 
-  Future<void> clearToken() async {
+  Future<void> clearUserEmail() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_key);
   }

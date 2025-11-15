@@ -18,7 +18,7 @@ void showDeleteDialog(BuildContext context, Function onDelete,String text) {
         actions: [
 
           DialogButton(text: 'Yes', textColor:Colors.white,onPressed: (){
-            showSuccessDialog(context, onDelete, 'You successfully deleted the item!');
+            showSuccessDialog(context,'You successfully deleted the item!');
           }, color: AppColors.primaryColor),
           DialogButton(text: 'Cancel',textColor:AppColors.authHeaderTextColor, onPressed: (){
             Navigator.pop(context);

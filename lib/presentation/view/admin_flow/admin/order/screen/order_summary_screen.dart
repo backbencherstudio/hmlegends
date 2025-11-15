@@ -8,8 +8,18 @@ import '../../../../widget/custom_app_bar_2.dart';
 import '../../widget/search_filter.dart';
 import '../widget/order_summary_card.dart';
 
-class OrderSummaryScreen extends StatelessWidget {
-  const OrderSummaryScreen({super.key});
+class OrderSummaryScreen extends StatefulWidget {
+  final bool fromBottomNav;
+
+  const OrderSummaryScreen({super.key, required this.fromBottomNav});
+
+  @override
+  State<OrderSummaryScreen> createState() => _OrderSummaryScreenState();
+}
+
+class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
+
+  String selectedPeriod = 'Today';
 
   @override
   Widget build(BuildContext context) {
@@ -32,14 +42,14 @@ class OrderSummaryScreen extends StatelessWidget {
         notificationCount: 4,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
-        onBackTap: () => Navigator.pop(context),
+        useBottomNavBack: widget.fromBottomNav,
       ),
       body: Padding(
-        padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 10.h), // Remove bottom padding
+        padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 10.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SearchField(),
+            const SearchField(hintText: '',),
             SizedBox(height: 20.h),
 
             /// Summary boxes
@@ -73,7 +83,7 @@ class OrderSummaryScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: OrderSummaryCard(
-                    title: "Dlivered Orders",
+                    title: "Delivered Orders",
                     value: "08",
                     isWide: true,
                   ),
@@ -100,121 +110,141 @@ class OrderSummaryScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Row(
-                  children: [
-                    Text("Today", style: TextStyle(fontSize: 14.sp)),
-                    Icon(Icons.keyboard_arrow_down_rounded, size: 20.sp),
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    setState(() {
+                      selectedPeriod = value;
+                    });
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(value: 'Today', child: Text('Today')),
+                    const PopupMenuItem(
+                      value: 'This week',
+                      child: Text('This week'),
+                    ),
+
+                    const PopupMenuItem(
+                      value: 'This month',
+                      child: Text('This month'),
+                    ),
                   ],
+                  color: const Color(0xFFFFF5F5),
+                  child: Row(
+                    children: [
+                      Text(selectedPeriod, style: TextStyle(fontSize: 14.sp)),
+                      Icon(Icons.keyboard_arrow_down_rounded, size: 20.sp),
+                    ],
+                  ),
                 ),
               ],
             ),
             SizedBox(height: 14.h),
 
             /// Order List - Use Expanded to take remaining space
-            Expanded(
-              child: ListView.builder(
-                itemCount: orderData.length,
-                padding: EdgeInsets.only(bottom: 10.h),
-                itemBuilder: (context, index) {
-                  final item = orderData[index];
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: 10.h),
-                    child: Container(
-                      height: 40.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.r),
+        Expanded(
+          child: ListView.builder(
+            itemCount: orderData.length,
+            padding: EdgeInsets.only(bottom: 8.h),
+            itemBuilder: (context, index) {
+              final item = orderData[index];
+              return Padding(
+                padding: EdgeInsets.only(bottom: 8.h),
+                child: Container(
+                  height: 30.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Row(
+                    children: [
+                      // First color section - Branch Name
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD1E4C9),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8.r),
+                              bottomLeft: Radius.circular(8.r),
+                            ),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "${index + 1}. ${item["branch"]}",
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.authBodyTextColor,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      child: Row(
-                        children: [
-                          // First color section - Branch Name
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFD1E4C9),
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(8.r),
-                                  bottomLeft: Radius.circular(8.r),
-                                ),
-                              ),
-                              padding: EdgeInsets.symmetric(horizontal: 12.w),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  "${index + 1}. ${item["branch"]}",
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.authBodyTextColor,
-                                  ),
-                                ),
+
+                      // Second color section - Total Units
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          color: const Color(0xFFE6ECDE),
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Total Units: ${item["units"]}",
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                color: AppColors.authBodyTextColor,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
+                        ),
+                      ),
 
-                          // Second color section - Total Units
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              color: const Color(0xFFE6ECDE),
-                              padding: EdgeInsets.symmetric(horizontal: 12.w),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  "Total Units: ${item["units"]}",
-                                  style: TextStyle(
-                                    fontSize: 13.sp,
-                                    color: AppColors.authBodyTextColor,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
+                      // Third color section - View Button
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE20614),
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(8.r),
+                              bottomRight: Radius.circular(8.r),
                             ),
                           ),
-
-                          // Third color section - View Button
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE20614),
+                          child: TextButton(
+                            onPressed: () {
+                              // Handle View click
+                              Navigator.pushNamed(context, RouteNames.orderSummaryViewScreen);
+                            },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(8.r),
                                   bottomRight: Radius.circular(8.r),
                                 ),
                               ),
-                              child: TextButton(
-                                onPressed: () {
-                                  // Handle View click
-                                  Navigator.pushNamed(context, RouteNames.orderSummaryViewScreen);
-                                },
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(8.r),
-                                      bottomRight: Radius.circular(8.r),
-                                    ),
-                                  ),
-                                ),
-                                child: Text(
-                                  "View",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 13.sp,
-                                  ),
-                                ),
+                            ),
+                            child: Text(
+                              "View",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 13.sp,
                               ),
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
           ],
         ),
       ),

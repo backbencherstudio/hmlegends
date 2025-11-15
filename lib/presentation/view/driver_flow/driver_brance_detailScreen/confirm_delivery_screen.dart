@@ -180,8 +180,6 @@ class ConfirmDeliveryScreen extends StatelessWidget {
 
                       SizedBox(height: 12.h),
 
-                      // Signature box
-                      // Signature Section
                       const SizedBox(height: 20),
                       Text(
                         "Receiver’s Signature",

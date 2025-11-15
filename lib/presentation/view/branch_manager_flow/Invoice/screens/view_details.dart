@@ -1,29 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../../core/constant/asset_path.dart';
+import 'package:hmlegends/core/constant/asset_path.dart';
 import '../../../widget/simple_appbar.dart';
 
-class InvoiceItem {
-  final String no;
-  final String name;
-  final String price;
-  final int quantity;
-  final String total;
-
-  const InvoiceItem(this.no, this.name, this.price, this.quantity, this.total);
-}
-
-final List<InvoiceItem> mockItems = [
-  const InvoiceItem('01', 'Peri Chicken Wrap', '£10', 10, '100'),
-  const InvoiceItem('02', "Billy's Special", '£12', 12, '144'),
-  const InvoiceItem('03', 'Chicken Steak & Chips', '£8', 15, '120'),
-  const InvoiceItem('04', 'The Spicy Dip', '£6.5', 16, '104'),
-  const InvoiceItem('05', 'Chicken Steak & Rice', '£7.5', 16, '120'),
-];
-
-class ViewDetails extends StatelessWidget {
+class ViewDetails extends StatefulWidget {
   const ViewDetails({super.key});
 
+  @override
+  State<ViewDetails> createState() => _ViewDetailsState();
+}
+
+class _ViewDetailsState extends State<ViewDetails> {
+  bool isPaid = false;
+
+  final List<Map<String, dynamic>> mockItems = [
+    {
+      'no': '01',
+      'product_name': 'Peri Chicken',
+      'price': 250,
+      'quantity': 10,
+      'total': 2500,
+    },
+    {
+      'no': '02',
+      'product_name': 'Peri Chicken',
+      'price': 250,
+      'quantity': 10,
+      'total': 2500,
+    },
+    {
+      'no': '03',
+      'product_name': 'Peri Chicken',
+      'price': 250,
+      'quantity': 10,
+      'total': 2500,
+    },
+  ];
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -35,6 +47,7 @@ class ViewDetails extends StatelessWidget {
             profileImage: AssetPaths.personIcon,
             notificationCount: 4,
             title: 'Invoice',
+            navigationType: NavigationType.pop,
           ),
           body: SafeArea(
             child: Column(
@@ -54,17 +67,79 @@ class ViewDetails extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // 1. Invoice From Section
-                            const _AddressSection(
-                              title: 'Invoice From',
-                              name: 'JHON DOE',
-                              address:
-                              '1550 Silky Blue Road San Francisco California',
-                              phone: '(123) 123456-789',
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Expanded(
+                                  child: _AddressSection(
+                                    title: 'Invoice From',
+                                    name: 'JHON DOE',
+                                    address:
+                                    '1550 Silky Blue Road San Francisco California',
+                                    phone: '(123) 123456-789',
+                                  ),
+                                ),
+                                AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 400),
+                                  transitionBuilder:
+                                      (Widget child, Animation<double> anim) {
+                                    return FadeTransition(
+                                      opacity: anim,
+                                      child: SlideTransition(
+                                        position: Tween<Offset>(
+                                          begin: const Offset(0.3, 0),
+                                          end: Offset.zero,
+                                        ).animate(anim),
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                  child: isPaid
+                                      ? Container(
+                                    key: const ValueKey('paid'),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10.w, vertical: 5.h),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF5BB450),
+                                      borderRadius:
+                                      BorderRadius.circular(20.r),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 25.w,
+                                          height: 25.h,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(Icons.check,
+                                              color: Colors.green,
+                                              size: 22.w),
+                                        ),
+                                        SizedBox(width: 6.w),
+                                        Text(
+                                          'Paid',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                      : const SizedBox.shrink(),
+                                ),
+                              ],
                             ),
-                            Divider(height: 35.h, thickness: 1, color: const Color(0xFFE0E0E0)),
 
-                            // 2. Ship To Section
+                            Divider(
+                                height: 35.h,
+                                thickness: 1,
+                                color: const Color(0xFFE0E0E0)),
+
                             const _AddressSection(
                               title: 'Ship to',
                               name: 'JHON DOE',
@@ -72,11 +147,16 @@ class ViewDetails extends StatelessWidget {
                               '1550 Silky Blue Road San Francisco California',
                               phone: '(123) 123456-789',
                             ),
-                            Divider(height: 35.h, thickness: 1, color: const Color(0xFFE0E0E0)),
+                            Divider(
+                                height: 35.h,
+                                thickness: 1,
+                                color: const Color(0xFFE0E0E0)),
+
                             const _DateInvoiceRow(
                               date: '20 APRIL 2025',
                               invoiceNo: 'FS618A',
                             ),
+                            SizedBox(height: 10.h),
                             _InvoiceTable(items: mockItems),
                             SizedBox(height: 20.h),
                             const _SubtotalRow(subtotal: '£588'),
@@ -86,7 +166,15 @@ class ViewDetails extends StatelessWidget {
                     ),
                   ),
                 ),
-                const _BottomActionBar(),
+
+                if (!isPaid)
+                  _BottomActionBar(
+                    onPaid: () {
+                      setState(() {
+                        isPaid = true;
+                      });
+                    },
+                  ),
               ],
             ),
           ),
@@ -117,35 +205,32 @@ class _AddressSection extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF1D1F2C),
-          ),
+              fontSize: 15.sp,
+              color: const Color(0xFF9E9E9E),
+              fontWeight: FontWeight.w600),
         ),
         SizedBox(height: 8.h),
         Text(
           name,
           style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w500,
-            color: const Color(0xff4A4C56),
-          ),
+              fontSize: 15.sp,
+              color: Colors.black,
+              fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 4.h),
+        SizedBox(height: 5.h),
         Text(
           address,
           style: TextStyle(
             fontSize: 14.sp,
-            fontWeight: FontWeight.w400,
-            color: const Color(0xFF4A4C56),
+            color: const Color(0xFF616161),
           ),
         ),
-        SizedBox(height: 4.h),
+        SizedBox(height: 5.h),
         Text(
           phone,
           style: TextStyle(
             fontSize: 14.sp,
-            color: const Color(0xFF757575),
+            color: const Color(0xFF616161),
           ),
         ),
       ],
@@ -157,146 +242,103 @@ class _DateInvoiceRow extends StatelessWidget {
   final String date;
   final String invoiceNo;
 
-  const _DateInvoiceRow({
-    required this.date,
-    required this.invoiceNo,
-  });
+  const _DateInvoiceRow({required this.date, required this.invoiceNo});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'DATE: $date',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xff4A4C56),
-              ),
-            ),
-            Text(
-              'INVOICE NO: $invoiceNo',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xff4A4C56),
-              ),
-            ),
-          ],
+        Text(
+          'Date: $date',
+          style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
         ),
-        SizedBox(height: 10.h,),
-        Divider(height: 1.h),
+        Text(
+          'Invoice No: $invoiceNo',
+          style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+        ),
       ],
     );
   }
 }
 
 class _InvoiceTable extends StatelessWidget {
-  final List<InvoiceItem> items;
+  final List<Map<String, dynamic>> items;
 
   const _InvoiceTable({required this.items});
 
-  Widget _buildHeaderCell(String text,
-      {Alignment alignment = Alignment.centerLeft}) {
-    return Container(
-      alignment: alignment,
-      padding: EdgeInsets.symmetric(vertical: 10.h),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 12.sp,
-          color: Colors.black,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDataCell(String text,
-      {Alignment alignment = Alignment.centerLeft,
-        FontWeight fontWeight = FontWeight.normal}) {
-    return Expanded(
-      child: Container(
-        alignment: alignment,
-        padding: EdgeInsets.symmetric(vertical: 8.h),
-        child: Text(
-          text,
-          style: TextStyle(
-            fontWeight: fontWeight,
-            fontSize: 11.sp,
-            color: Colors.black,
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Table(
+      border: TableBorder.all(color: const Color(0xFFE0E0E0)),
+      columnWidths: const {
+        0: FlexColumnWidth(1.2),
+        1: FlexColumnWidth(4),
+        2: FlexColumnWidth(2),
+        3: FlexColumnWidth(1.5),
+        4: FlexColumnWidth(2),
+      },
       children: [
-        // Table Header
-        Row(
+        TableRow(
+          decoration: const BoxDecoration(color: Color(0xFFF5F5F5)),
           children: [
-            _buildHeaderCell('NO', alignment: Alignment.centerLeft),
-            SizedBox(width: 14.w),
-
-            Expanded(
-              flex: 4,
-              child: Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.symmetric(vertical: 10.h),
-                child: Text(
-                  'Product Name',
+            Padding(
+              padding: EdgeInsets.all(8.w),
+              child: Text('No',
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12.sp,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
+                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
             ),
-            _buildHeaderCell('Price', alignment: Alignment.centerRight),
-            SizedBox(width: 10.w),
-            _buildHeaderCell('Quantity', alignment: Alignment.center),
-            SizedBox(width: 10.w),
-            _buildHeaderCell('Total', alignment: Alignment.centerRight),
+            Padding(
+              padding: EdgeInsets.all(8.w),
+              child: Text('Product Name',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.w),
+              child: Text('Price',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.w),
+              child: Text('Quantity',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.w),
+              child: Text('Total',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
+            ),
           ],
         ),
-        Divider(height: 1.h, thickness: 0.5, color: const Color(0xFFE0E0E0)),
-
-        // Table Data Rows
-        ...items.map((item) {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 2.0.h),
-            child: Row(
-              children: [
-                _buildDataCell(item.no, fontWeight: FontWeight.bold),
-                Expanded(
-                  flex: 5,
-                  child: Container(
-                    alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.symmetric(vertical: 8.h),
-                    child: Text(
-                      item.name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 11.sp,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-                _buildDataCell(item.price, alignment: Alignment.centerRight),
-                _buildDataCell('${item.quantity}', alignment: Alignment.center),
-                _buildDataCell(item.total, alignment: Alignment.centerRight),
-              ],
-            ),
-          );
-        }).toList(),
+        for (var item in items)
+          TableRow(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(8.w),
+                child: Text(item['no']?.toString() ?? ''),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.w),
+                child: Text(item['product_name']?.toString() ?? ''),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.w),
+                child: Text('£${item['price'] ?? 0}'),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.w),
+                child: Text('${item['quantity'] ?? 0}'), // No £ on quantity
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.w),
+                child: Text('£${item['total'] ?? 0}'),
+              ),
+            ],
+          ),
       ],
     );
   }
@@ -309,41 +351,26 @@ class _SubtotalRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Text(
-          'Subtotal:',
-          style: TextStyle(
-            fontSize: 16.sp,
-            color: Colors.black,
-            fontWeight: FontWeight.normal,
-          ),
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Text(
+        'Subtotal: $subtotal',
+        style: TextStyle(
+          fontSize: 16.sp,
+          fontWeight: FontWeight.bold,
         ),
-        SizedBox(width: 10.w),
-        Text(
-          subtotal,
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w900,
-            color: Colors.black,
-          ),
-        ),
-        SizedBox(width: 8.w),
-      ],
+      ),
     );
   }
 }
 
 class _BottomActionBar extends StatelessWidget {
-  const _BottomActionBar();
+  final VoidCallback onPaid;
 
-  void _onPayBill() {
-    print('Paying bill...');
-  }
+  const _BottomActionBar({required this.onPaid});
 
   void _onExport() {
-    print('Exporting invoice...');
+    debugPrint('Exporting invoice...');
   }
 
   @override
@@ -358,7 +385,7 @@ class _BottomActionBar extends StatelessWidget {
         children: [
           SizedBox(width: 120.w),
           ElevatedButton(
-            onPressed: _onPayBill,
+            onPressed: onPaid,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFE20613),
               foregroundColor: Colors.white,
@@ -394,3 +421,4 @@ class _BottomActionBar extends StatelessWidget {
     );
   }
 }
+

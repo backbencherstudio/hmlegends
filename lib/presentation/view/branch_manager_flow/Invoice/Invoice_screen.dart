@@ -18,7 +18,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   String selectedPeriod = 'Today';
   String? expandedDate;
 
-  // Dummy data for invoices
   final Map<String, List<Map<String, dynamic>>> invoiceRecords = {
     'Today': [
       {
@@ -70,6 +69,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         profileImage: AssetPaths.personIcon,
         notificationCount: 4,
         title: 'Invoice',
+        navigationType: NavigationType.none,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -116,194 +116,72 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 15,
               children: [
-                Container(
-                  height: 90.h,
-                  width: 100.w,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.shade100,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedPeriod = 'Today';
+                      expandedDate =
+                          DateFormat('dd/MM/yyyy').format(DateTime.now());
+                    });
+                  },
+                  child: Container(
+                    height: 90.h,
+                    width: 100.w,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(
+                        color: selectedPeriod == 'Today'
+                            ? const Color(0xffE20613)
+                            : Colors.transparent,
+                        width: 2,
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '01',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xff1D1F2C),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.shade100,
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
                         ),
-                      ),
-                      Text(
-                        'Today’s\nInvoices',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff4A4C56),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '01',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff1D1F2C),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 90.h,
-                  width: 100.w,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.shade100,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '01',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xff1D1F2C),
+                        const Text(
+                          'Today’s\nInvoices',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xff4A4C56),
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Paid\nInvoice',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff4A4C56),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-                Container(
-                  height: 90.h,
-                  width: 100.w,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.shade100,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '01',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xff1D1F2C),
-                        ),
-                      ),
-                      Text(
-                        'Pending\nInvoice',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff4A4C56),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _invoiceBox('Paid\nInvoice', 1),
+                _invoiceBox('Pending\nInvoice', 1),
               ],
             ),
+
             SizedBox(height: 12.h),
+
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 15,
               children: [
-                Container(
-                  height: 80.h,
-                  width: 150.w,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.shade100,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '01',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xff1D1F2C),
-                        ),
-                      ),
-                      Text(
-                        'Overdue Invoice',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff4A4C56),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 80.h,
-                  width: 150.w,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.shade100,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '01',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xff1D1F2C),
-                        ),
-                      ),
-                      Text(
-                        'Total Invoice',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff4A4C56),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _invoiceBox('Overdue Invoice', 1),
+                _invoiceBox('Total Invoice', 1),
               ],
             ),
             SizedBox(height: 20.h),
@@ -334,7 +212,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       onSelected: (value) {
                         setState(() {
                           selectedPeriod = value;
-                          // Automatically expand first date for Today
                           if (value == 'Today') {
                             expandedDate = DateFormat(
                               'dd/MM/yyyy',
@@ -347,13 +224,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       itemBuilder: (context) => const [
                         PopupMenuItem(value: 'Today', child: Text('Today')),
                         PopupMenuItem(
-                          value: 'This Week',
-                          child: Text('This Week'),
-                        ),
+                            value: 'This Week', child: Text('This Week')),
                         PopupMenuItem(
-                          value: 'This Month',
-                          child: Text('This Month'),
-                        ),
+                            value: 'This Month', child: Text('This Month')),
                       ],
                     ),
                   ],
@@ -362,7 +235,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             ),
             const SizedBox(height: 10),
 
-            // Invoice list
             Expanded(
               child: ListView.builder(
                 itemCount: records.length,
@@ -373,7 +245,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     date: item['date'],
                     totalItems: item['totalItems'],
                     onViewPressed: () {
-                      debugPrint('View pressed for index ${item['index']}');
+                      Navigator.pushNamed(context, RouteNames.viewDetails);
                     },
                   );
                 },
@@ -385,7 +257,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
-  // Reusable widget for invoice summary boxes
   Widget _invoiceBox(String title, int count) {
     return Container(
       height: 90.h,
@@ -426,7 +297,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
-  // Reusable order list item widget
   Widget orderListItem({
     required int index,
     required String date,
@@ -482,9 +352,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               child: SizedBox(
                 height: 35,
                 child: Material(
-                  color: Color(0xffE20613),
+                  color: const Color(0xffE20613),
                   child: InkWell(
-                    onTap: (){Navigator.pushNamed(context, RouteNames.viewDetails);},
+                    onTap: onViewPressed,
                     child: const Center(
                       child: Text(
                         'View',

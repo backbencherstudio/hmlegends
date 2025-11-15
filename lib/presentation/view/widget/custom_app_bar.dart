@@ -117,11 +117,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onProfileTap;
   final VoidCallback? onNotificationTap;
 
-
   const CustomAppBar({
     super.key,
     required this.profileImage,
-     this.backArrow,
+    this.backArrow,
     required this.notificationCount,
     this.onProfileTap,
     this.onNotificationTap,
@@ -145,11 +144,22 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Left Section
                   Row(
                     children: [
-                      backArrow !=null && backArrow!.isNotEmpty ? Image.asset("assets/images/back_arrow.png", height: 38.h):
-                      Image.asset(AssetPaths.headOfficeLogo, height: 38.h),
+                      backArrow != null && backArrow!.isNotEmpty
+                          ? GestureDetector(
+                        onTap: (){
+                          Navigator.pop(context);
+                        },
+                            child: Image.asset(
+                                "assets/images/back_arrow.png",
+                                height: 38.h,
+                              ),
+                          )
+                          : Image.asset(
+                              AssetPaths.headOfficeLogo,
+                              height: 38.h,
+                            ),
                       SizedBox(width: 8.w),
                     ],
                   ),
@@ -158,10 +168,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushNamedAndRemoveUntil(
+                          Navigator.pushNamed(
                             context,
                             RouteNames.notificationScreen,
-                            (route) => false,
                           );
                         },
                         child: Stack(
@@ -193,7 +202,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                       SizedBox(width: 20.w),
                       GestureDetector(
-                        onTap: onProfileTap,
+                        onTap:
+                            onProfileTap ??
+                            () => Navigator.pushNamed(
+                              context,
+                              RouteNames.headOfficeProfileScreen,
+                            ),
                         child: CircleAvatar(
                           radius: 18.r,
                           backgroundImage: AssetImage(profileImage),

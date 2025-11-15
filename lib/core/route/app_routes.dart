@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart';
+import '../../presentation/view/admin_flow/admin/invoice/screen/head_office_invoice_screen.dart';
+import '../../presentation/view/admin_flow/admin/invoice_status/screen/invoice_status_screen.dart';
+import '../../presentation/view/admin_flow/admin/manage_branches/screen/add_new_branches_screen.dart';
+import '../../presentation/view/admin_flow/admin/manage_branches/screen/edit_branch_screen.dart';
+import '../../presentation/view/admin_flow/admin/manage_branches/screen/manage_branches_screen.dart';
+import '../../presentation/view/admin_flow/admin/manage_branches_to_order_summary/screen/manage_branches_to_order_summary_screen.dart';
+import '../../presentation/view/admin_flow/admin/manage_delivery/screen/manage_delivery_screen.dart';
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_screen.dart';
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_view_screen.dart';
+import '../../presentation/view/admin_flow/admin/order/screen/order_summary_view_successful_screen.dart';
+import '../../presentation/view/admin_flow/admin/profile/screen/head_office_change_info_change.dart';
+import '../../presentation/view/admin_flow/admin/profile/screen/head_office_change_password_screen.dart';
+import '../../presentation/view/admin_flow/admin/profile/screen/head_office_profile_screen.dart';
 import '../../presentation/view/admin_flow/admin/stock/screen/edit_stock_screen.dart';
 import '../../presentation/view/auth/forget_password/screen/forget_password_screen.dart';
 import '../../presentation/view/auth/login/screen/login_screen.dart';
@@ -25,7 +36,7 @@ import '../../presentation/view/driver_flow/driver_brance_detailScreen/delivery_
 import '../../presentation/view/driver_flow/driver_brance_detailScreen/driver_brance_detail_screen.dart';
 import '../../presentation/view/driver_flow/driver_screen.dart';
 import '../../presentation/view/driver_flow/parent/parent_screen.dart';
-import '../../presentation/view/onboarding/onboarding/screen/onboarding_screen.dart';
+import '../../presentation/view/onboarding/onboarding/screen/onboarding_screen.dart' hide LoginScreen;
 import '../../presentation/view/splash/splash/screen/splash_screen.dart';
 
 class AppRoutes{
@@ -38,7 +49,7 @@ class AppRoutes{
     RouteNames.loginScreen :(context)=> LoginScreen (),
     RouteNames.forgetPasswordScreen  :(context)=>  ForgetPasswordScreen (),
     RouteNames.otpVerifyScreen  :(context)=>  OtpVerifyScreen(),
-    RouteNames.setNewPasswordScreen   :(context)=>  SetNewPasswordScreen (),
+    // RouteNames.setNewPasswordScreen   :(context)=>  SetNewPasswordScreen (),
     RouteNames.mainWrapper   :(context)=>  MainWrapper(),
     RouteNames.branchHomeScreen   :(context)=>  BranchHomeScreen(),
     RouteNames.branchParentScreen   :(context)=>  BranchParentScreen(),
@@ -56,10 +67,21 @@ class AppRoutes{
     RouteNames.driverBranchParentScreen   :(context)=>  DriverBranchParentScreen(),
     RouteNames.editStockScreen   :(context)=>  EditStockScreen (),
     RouteNames.driverBranseDetailScreen   :(context)=>  DriverBranchDetailScreen(),
-    RouteNames.orderSummaryScreen   :(context)=>  OrderSummaryScreen(),
+    RouteNames.orderSummaryScreen   :(context)=>  OrderSummaryScreen(fromBottomNav: false,),
     RouteNames.orderSummaryViewScreen  :(context)=>  OrderSummaryViewScreen(),
     RouteNames.confirmDeliveryScreen   :(context)=>  ConfirmDeliveryScreen(),
     RouteNames.deliverySummeryScreen   :(context)=>  DeliverySummeryScreen(),
+    RouteNames.orderSummaryViewSuccessfulScreen  :(context)=>  OrderSummaryViewSuccessfulScreen(),
+    RouteNames.headOfficeInvoiceScreen  :(context)=>  HeadOfficeInvoiceScreen(fromBottomNav: false,),
+    RouteNames.manageBranchesScreen  :(context)=>  ManageBranchesScreen(),
+    RouteNames.addNewBranchesScreen  :(context)=>  AddNewBranchesScreen(),
+    RouteNames.invoiceStatusScreen :(context)=>  InvoiceStatusScreen(),
+    RouteNames.headOfficeProfileScreen :(context)=>  HeadOfficeProfileScreen(),
+    RouteNames.headOfficeChangePasswordScreen :(context)=>  HeadOfficeChangePasswordScreen(),
+    RouteNames.headOfficeChangeInfoScreen :(context)=>  HeadOfficeChangeInfoScreen(),
+    RouteNames.manageDeliveryScreen:(context)=>  ManageDeliveryScreen(),
+    RouteNames.manageBranchesToOrderSummaryScreen :(context)=>  ManageBranchesToOrderSummaryScreen(),
+    RouteNames.editBranchScreen :(context)=>  EditBranchScreen(),
 
 
   };

@@ -28,6 +28,17 @@ class RouteNames{
   static const String orderSummaryViewScreen = '/orderSummaryViewScreen';
   static const String confirmDeliveryScreen  = '/confirmDeliveryScreen ';
   static const String deliverySummeryScreen  = '/deliverySummeryScreen ';
+  static const String orderSummaryViewSuccessfulScreen  = '/orderSummaryViewSuccessfulScreen';
+  static const String headOfficeInvoiceScreen  = '/headOfficeInvoiceScreen';
+  static const String manageBranchesScreen  = '/manageBranchesScreen';
+  static const String addNewBranchesScreen  = '/addNewBranchesScreen';
+  static const String invoiceStatusScreen  = '/invoiceStatusScreen';
+  static const String headOfficeProfileScreen  = '/headOfficeProfileScreen';
+  static const String headOfficeChangePasswordScreen  = '/headOfficeChangePasswordScreen';
+  static const String headOfficeChangeInfoScreen  = '/headOfficeChangeInfoScreen';
+  static const String manageDeliveryScreen = '/manageDeliveryScreen';
+  static const String manageBranchesToOrderSummaryScreen = '/manageBranchesToOrderSummaryScreen';
+  static const String editBranchScreen = '/editBranchScreen';
 
 
 }

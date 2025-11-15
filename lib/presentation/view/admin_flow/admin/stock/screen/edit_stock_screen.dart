@@ -196,7 +196,7 @@ class _EditStockScreenState extends State<EditStockScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.add, color: Colors.redAccent),
+                Image.asset(AssetPaths.addIcon1,height: 20.h,width: 20.w,),
                 SizedBox(width: 6.w),
                 const Text(
                   'Upload photos',

@@ -1,108 +1,3 @@
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:hmlegends/core/constant/app_colors.dart';
-// import 'package:hmlegends/core/constant/asset_path.dart';
-//
-// class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-//   final String title;
-//   final String profileImage;
-//   final int notificationCount;
-//   final VoidCallback? onProfileTap;
-//   final VoidCallback? onNotificationTap;
-//
-//   const CustomAppBar({
-//     super.key,
-//     required this.title,
-//     required this.profileImage,
-//     required this.notificationCount,
-//     this.onProfileTap,
-//     this.onNotificationTap,
-//   });
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Material(
-//       color: Colors.transparent,
-//       elevation: 1,
-//       shadowColor: Colors.black26,
-//       child: Container(
-//         color: Colors.white,
-//         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-//         child: SafeArea(
-//           bottom: false,
-//           child: Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               // Left Section
-//               Row(
-//                 children: [
-//                   Image.asset(AssetPaths.headOfficeLogo, height: 38.h),
-//                   SizedBox(width: 8.w),
-//                   Text(
-//                     title,
-//                     style: TextStyle(
-//                       fontSize: 18.sp,
-//                       fontWeight: FontWeight.bold,
-//                       color: Colors.black87,
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//               // Right Section
-//               Row(
-//                 children: [
-//                   GestureDetector(
-//                     onTap: onNotificationTap,
-//                     child: Stack(
-//                       clipBehavior: Clip.none,
-//                       children: [
-//                         Icon(CupertinoIcons.bell, size: 28.sp),
-//                         if (notificationCount > 0)
-//                           Positioned(
-//                             right: 1.w,
-//                             top: -7.h,
-//                             child: Container(
-//                               padding: EdgeInsets.all(3.w),
-//                               decoration: const BoxDecoration(
-//                                 color: Color(0xFFB5050F),
-//                                 shape: BoxShape.circle,
-//                               ),
-//                               child: Text(
-//                                 '$notificationCount',
-//                                 style: TextStyle(
-//                                   fontSize: 11.sp,
-//                                   color: Colors.white,
-//                                   fontWeight: FontWeight.bold,
-//                                 ),
-//                               ),
-//                             ),
-//                           ),
-//                       ],
-//                     ),
-//                   ),
-//                   SizedBox(width: 16.w),
-//                   GestureDetector(
-//                     onTap: onProfileTap,
-//                     child: CircleAvatar(
-//                       radius: 18.r,
-//                       backgroundImage: AssetImage(profileImage),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   @override
-//   Size get preferredSize => Size.fromHeight(75.h);
-// }
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -110,20 +5,41 @@ import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 
+/// Defines the type of navigation to perform when back button is tapped
+enum NavigationType {
+  pop,
+  pushNamed,
+  pushReplacementNamed,
+  popUntilFirst,
+  none,
+}
+
 class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
   final String profileImage;
   final int notificationCount;
   final VoidCallback? onProfileTap;
   final VoidCallback? onNotificationTap;
-  final String title;
+
+  /// Determines the navigation behavior of the back button
+  final NavigationType navigationType;
+
+  /// Route path used when [navigationType] = pushNamed / pushReplacementNamed
+  final String? navigationPath;
+
+  /// Optional callback if you want to override all navigation
+  final VoidCallback? customNavigationAction;
 
   const SimpleAppbar({
     super.key,
+    required this.title,
     required this.profileImage,
     required this.notificationCount,
     this.onProfileTap,
     this.onNotificationTap,
-    required this.title,
+    this.navigationType = NavigationType.pop,
+    this.navigationPath,
+    this.customNavigationAction,
   });
 
   @override
@@ -135,7 +51,6 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Main app bar content
           Container(
             color: AppColors.bgColor,
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -144,26 +59,26 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Left Section
+                  // 👇 Left Section: Back button (optional) + title
                   Row(
                     spacing: 4,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Icon(Icons.arrow_back_ios),
-                      ),
+                      if (navigationType != NavigationType.none)
+                        GestureDetector(
+                          onTap: () => _handleNavigation(context),
+                          child: const Icon(Icons.arrow_back_ios),
+                        ),
                       Text(
                         title,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 20,
+                          fontSize: 20.sp,
                         ),
                       ),
                     ],
                   ),
-                  // Right Section
+
+                  // 👇 Right Section: Notification + Profile
                   Row(
                     children: [
                       GestureDetector(
@@ -173,7 +88,10 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, RouteNames.notificationScreen);
+                                Navigator.pushNamed(
+                                  context,
+                                  RouteNames.notificationScreen,
+                                );
                               },
                               child: Icon(CupertinoIcons.bell, size: 28.sp),
                             ),
@@ -218,6 +136,36 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
     );
+  }
+
+  /// Handles navigation behavior based on the [navigationType]
+  void _handleNavigation(BuildContext context) {
+    if (customNavigationAction != null) {
+      customNavigationAction!();
+      return;
+    }
+
+    switch (navigationType) {
+      case NavigationType.pop:
+        Navigator.pop(context);
+        break;
+      case NavigationType.pushNamed:
+        if (navigationPath != null) {
+          Navigator.pushNamed(context, navigationPath!);
+        }
+        break;
+      case NavigationType.pushReplacementNamed:
+        if (navigationPath != null) {
+          Navigator.pushReplacementNamed(context, navigationPath!);
+        }
+        break;
+      case NavigationType.popUntilFirst:
+        Navigator.popUntil(context, (route) => route.isFirst);
+        break;
+      case NavigationType.none:
+      // no navigation, and no icon shown
+        break;
+    }
   }
 
   @override
