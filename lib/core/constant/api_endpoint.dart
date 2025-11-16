@@ -14,6 +14,8 @@ class ApiEndpoints {
   static const String setNewPassword = '$baseUrl/api/auth/reset-password';
   static const String adminProfileUpdate = '$baseUrl/api/auth/update';
   static const String adminCheckMe = '$baseUrl/api/auth/me';
+  static const String adminStatus = '$baseUrl/api/auth/admin/stats';
+  static const String adminAllProduct = '$baseUrl/api/product';
 
   //Branch
 

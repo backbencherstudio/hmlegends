@@ -11,10 +11,12 @@ import '../../presentation/view/admin_flow/view_model/auth_api/login_viewmodel.d
 import '../../presentation/view/admin_flow/view_model/auth_api/register_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth_api/set_new_pass_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth_api/verify_otp_viewmodel.dart';
+import '../../presentation/view/admin_flow/view_model/home/home_screen_provider.dart';
 import '../../presentation/view/admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/parent/manage_delivery_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/parent/stock_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
+import '../../presentation/view/admin_flow/view_model/stock/stock_screen_provider.dart';
 import '../../presentation/view/driver_flow/driver_provider/branch_product_provider.dart';
 
 class AppProviders {
@@ -28,12 +30,6 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => BranchProductProvider()),
     ChangeNotifierProvider(create: (_) => ManageDeliveryViewModel()),
 
-    ChangeNotifierProvider(
-      create: (_) => StockViewModel(
-        GetProductsUseCase(ProductRepositoryImpl(ProductLocalDataSource())),
-      ),
-    ),
-
     //auth_api
     ChangeNotifierProvider(create: (_) => RegisterProvider()),
     ChangeNotifierProvider(create: (_) => LoginScreenProvider()),
@@ -41,6 +37,8 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => VerifyOtpViewmodel()),
     ChangeNotifierProvider(create: (_) => SetNewPasswordViewModel()),
     ChangeNotifierProvider(create: (_) => SetPasswordViewModel()),
+    ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
+    ChangeNotifierProvider(create: (_) => StockScreenProvider()),
   ];
 
   static List<SingleChildWidget> getProviders() {

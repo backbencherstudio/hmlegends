@@ -4,7 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/home/home_screen_provider.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
+import 'package:provider/provider.dart';
+
 import '../widget/info_card.dart';
 import '../widget/weekly_bar_chart.dart';
 
@@ -13,6 +16,8 @@ class HeadOfficeHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final homeScreenProvider = Provider.of<HomeScreenProvider>(context);
+
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: CustomAppBar(
@@ -26,8 +31,10 @@ class HeadOfficeHomeScreen extends StatelessWidget {
           children: [
             SizedBox(height: 6.h),
             _stockCard(context),
+
             SizedBox(height: 16.h),
-            _gridCards(context),
+            _gridCards(context, homeScreenProvider),
+
             SizedBox(height: 16.h),
             Text(
               'Items Ordered (Last 7 Days)',
@@ -70,7 +77,9 @@ class HeadOfficeHomeScreen extends StatelessWidget {
             _stockChip(),
           ],
         ),
+
         SizedBox(height: 10.h),
+
         Text(
           'Stock Management',
           style: TextStyle(
@@ -79,7 +88,9 @@ class HeadOfficeHomeScreen extends StatelessWidget {
             fontSize: 18.sp,
           ),
         ),
+
         SizedBox(height: 10.h),
+
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -97,17 +108,8 @@ class HeadOfficeHomeScreen extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: 8.h),
-        // ClipRRect(
-        //   borderRadius: BorderRadius.circular(10.r),
-        //   child: LinearProgressIndicator(
-        //     value: 0.15,
-        //     backgroundColor: Colors.white24,
-        //     color: Colors.white,
-        //     minHeight: 12.h,
-        //   ),
-        // ),
 
+        SizedBox(height: 8.h),
         Container(
           height: 12.h,
           decoration: BoxDecoration(
@@ -116,17 +118,15 @@ class HeadOfficeHomeScreen extends StatelessWidget {
           ),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              double progress = 0.15;
+              double progress = 0.15; // 15%
               return Stack(
                 children: [
-                  // Background bar
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white24,
-                      borderRadius: BorderRadius.circular(10.r),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                   ),
-                  // Foreground progress bar
                   Container(
                     width: constraints.maxWidth * progress,
                     decoration: BoxDecoration(
@@ -138,8 +138,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
               );
             },
           ),
-        )
-
+        ),
       ],
     ),
   );
@@ -151,8 +150,6 @@ class HeadOfficeHomeScreen extends StatelessWidget {
       borderRadius: BorderRadius.circular(16.r),
     ),
     child: Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Icon(
           CupertinoIcons.exclamationmark_triangle_fill,
@@ -167,7 +164,6 @@ class HeadOfficeHomeScreen extends StatelessWidget {
             style: TextStyle(
               color: AppColors.headOfficeRadiusColor,
               fontSize: 14.sp,
-              fontWeight: FontWeight.w400,
             ),
           ),
         ),
@@ -175,58 +171,82 @@ class HeadOfficeHomeScreen extends StatelessWidget {
     ),
   );
 
-  Widget _gridCards(context) => GridView.count(
-    crossAxisCount: 2,
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    crossAxisSpacing: 12.w,
-    mainAxisSpacing: 12.h,
-    childAspectRatio: 1.2,
-    children: [
-       InfoCard(
-         onTaps: (){
-           Navigator.pushNamed(context, RouteNames.invoiceStatusScreen);
-         },
-        title: 'Invoices',
-        subtitle: 'Status',
-        label1: 'Paid Invoices',
-        value1: '4/6',
-        iconPath: AssetPaths.invoiceIcon,
+  Widget _gridCards(BuildContext context, HomeScreenProvider provider) {
+    final data = provider.invoiceStatusModel?.data;
+
+    final totalInvoice = data?.invoice?.totalInvoice ?? 0;
+    final paidInvoice = data?.invoice?.paidInvoice ?? 0;
+
+    final activeBranch = data?.branch?.activeBranch ?? 0;
+    final lockedBranch = data?.branch?.lockedBranch ?? 0;
+
+    final totalOrder = data?.order?.totalOrder ?? 0;
+    final completedOrder = data?.order?.totalCompletedOrder ?? 0;
+
+    final toDaysDelivery = data?.delivery?.todaysDelivery ?? 0;
+    final assignedDelivery = data?.delivery?.assignedDelivery ?? 0;
+
+    return GridView.builder(
+      itemCount: 4,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12.w,
+        mainAxisSpacing: 12.h,
+        childAspectRatio: 1.2,
       ),
-      InfoCard(
-        onTaps: (){
-          Navigator.pushNamed(context, RouteNames.manageBranchesScreen);
-        },
-        title: 'Manage',
-        subtitle: 'Branches',
-        label1: 'Active',
-        value1: '8',
-        label2: 'Locked',
-        value2: '0',
-        iconPath: AssetPaths.branchIcon,
-      ),
-       InfoCard(
-        onTaps: (){
-          Navigator.pushNamed(context, RouteNames.orderSummaryScreen);
-        },
-        title: 'Orders',
-        subtitle: 'Summery',
-        label1: 'Total Orders',
-        value1: '6/8',
-        iconPath: AssetPaths.orderIcon,
-      ),
-      InfoCard(
-        onTaps: (){
-          Navigator.pushNamed(context, RouteNames.manageDeliveryScreen);
-        },
-        title: 'Manage',
-        subtitle: 'Delivery',
-        label1: "Today's Delivery",
-        value1: '08',
-        label2: 'Assigned Delivery',
-        value2: '00',
-        iconPath: AssetPaths.deliveryIcon,
-      ),
-    ],
-  );
+      itemBuilder: (context, index) {
+        switch (index) {
+          case 0:
+            return InfoCard(
+              onTaps: () =>
+                  Navigator.pushNamed(context, RouteNames.invoiceStatusScreen),
+              title: 'Invoices',
+              subtitle: 'Status',
+              label1: 'Paid Invoices',
+              value1: "$paidInvoice/$totalInvoice",
+              iconPath: AssetPaths.invoiceIcon,
+            );
+
+          case 1:
+            return InfoCard(
+              onTaps: () =>
+                  Navigator.pushNamed(context, RouteNames.manageBranchesScreen),
+              title: 'Manage',
+              subtitle: 'Branches',
+              label1: 'Active',
+              value1: "$activeBranch",
+              label2: 'Locked',
+              value2: "$lockedBranch",
+              iconPath: AssetPaths.branchIcon,
+            );
+
+          case 2:
+            return InfoCard(
+              onTaps: () =>
+                  Navigator.pushNamed(context, RouteNames.orderSummaryScreen),
+              title: 'Orders',
+              subtitle: 'Summary',
+              label1: 'Completed Orders',
+              value1: "$completedOrder/$totalOrder",
+              iconPath: AssetPaths.orderIcon,
+            );
+
+          default:
+            return InfoCard(
+              onTaps: () =>
+                  Navigator.pushNamed(context, RouteNames.manageDeliveryScreen),
+              title: 'Manage',
+              subtitle: 'Delivery',
+              label1: "Today's Delivery",
+              value1: "$toDaysDelivery",
+              label2: 'Assigned Delivery',
+              value2: "$assignedDelivery",
+              iconPath: AssetPaths.deliveryIcon,
+            );
+        }
+      },
+    );
+  }
 }
