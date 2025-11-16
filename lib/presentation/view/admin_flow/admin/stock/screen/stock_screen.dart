@@ -74,10 +74,10 @@ class _StockScreenState extends State<StockScreen> {
                           child: Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: 17.w,
-                              vertical: 8.h,
+                              vertical: 4.h,
                             ),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30.r),
+                              borderRadius: BorderRadius.circular(25.r),
                               color: isSelected
                                   ? const Color(0xFFFCEBE9)
                                   : const Color(0xFFF1F0EE),
@@ -89,7 +89,7 @@ class _StockScreenState extends State<StockScreen> {
                                   color: isSelected
                                       ? const Color(0xFFE20613)
                                       : const Color(0xFF4A4C56),
-                                  fontSize: 16.sp,
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
