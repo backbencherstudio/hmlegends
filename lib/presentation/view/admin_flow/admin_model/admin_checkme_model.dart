@@ -10,7 +10,7 @@ class AdminInfoModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['success'] = this.success;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
@@ -21,15 +21,17 @@ class AdminInfoModel {
 
 class Data {
   String? id;
-  Null? firstName;
-  Null? lastName;
-  Null? occupation;
+  String? firstName;
+  String? lastName;
+  String? occupation;
   String? email;
-  Null? avatar;
-  Null? address;
-  Null? phoneNumber;
+  String? avatar;
+  String? address;
+  String? phoneNumber;
   String? type;
   String? createdAt;
+  String? city;
+  String? dateOfBirth;
 
   Data({
     this.id,
@@ -42,33 +44,39 @@ class Data {
     this.phoneNumber,
     this.type,
     this.createdAt,
+    this.city,
+    this.dateOfBirth,
   });
 
   Data.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    firstName = json['first_name'];
-    lastName = json['last_name'];
-    occupation = json['occupation'];
-    email = json['email'];
-    avatar = json['avatar'];
-    address = json['address'];
-    phoneNumber = json['phone_number'];
-    type = json['type'];
-    createdAt = json['created_at'];
+    id = json['id'] as String?;
+    firstName = json['first_name'] as String?;
+    lastName = json['last_name'] as String?;
+    occupation = json['occupation'] as String?;
+    email = json['email'] as String?;
+    avatar = json['avatar'] as String?;
+    address = json['address'] as String?;
+    phoneNumber = json['phone_number'] as String?;
+    type = json['type'] as String?;
+    createdAt = json['created_at'] as String?;
+    city = json['city'] as String?;
+    dateOfBirth = json['date_of_birth'] as String?;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['first_name'] = this.firstName;
-    data['last_name'] = this.lastName;
-    data['occupation'] = this.occupation;
-    data['email'] = this.email;
-    data['avatar'] = this.avatar;
-    data['address'] = this.address;
-    data['phone_number'] = this.phoneNumber;
-    data['type'] = this.type;
-    data['created_at'] = this.createdAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['first_name'] = firstName;
+    data['last_name'] = lastName;
+    data['occupation'] = occupation;
+    data['email'] = email;
+    data['avatar'] = avatar;
+    data['address'] = address;
+    data['phone_number'] = phoneNumber;
+    data['type'] = type;
+    data['created_at'] = createdAt;
+    data['city'] = city;
+    data['date_of_birth'] = dateOfBirth;
     return data;
   }
 }
