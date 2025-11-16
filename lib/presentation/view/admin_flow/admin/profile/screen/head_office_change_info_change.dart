@@ -1,184 +1,179 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/constant/api_endpoint.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import '../../../../../../core/constant/asset_path.dart';
+import '../../../view_model/profile/change_pass_provider.dart';
 
-class HeadOfficeChangeInfoScreen extends StatelessWidget {
+class HeadOfficeChangeInfoScreen extends StatefulWidget {
   const HeadOfficeChangeInfoScreen({super.key});
 
-  void _showSubmitDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18.r),
-        ),
-        contentPadding: EdgeInsets.fromLTRB(24.w, 22.h, 24.w, 20.h),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Discard Changes?',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF1E1E1E),
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              'Unsaved changes will be lost.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: const Color(0xFF777980),
-                height: 1.4,
-              ),
-            ),
-            SizedBox(height: 24.h),
-            Column(
-              children: [
-                // Yes button
-                SizedBox(
-                  width: double.infinity,
-                  height: 46.h,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      // discard logic here
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xffE20613),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.r),
-                      ),
-                      elevation: 2,
-                    ),
-                    child: Text(
-                      'Yes, Discard',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 12.h),
-                // No button
-                SizedBox(
-                  width: double.infinity,
-                  height: 46.h,
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xffE20613), width: 1.2),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.r),
-                      ),
-                    ),
-                    child: Text(
-                      'No, Keep Editing',
-                      style: TextStyle(
-                        color: const Color(0xffE20613),
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+  @override
+  State<HeadOfficeChangeInfoScreen> createState() =>
+      _HeadOfficeChangeInfoScreenState();
+}
+
+class _HeadOfficeChangeInfoScreenState
+    extends State<HeadOfficeChangeInfoScreen> {
+  // Controllers
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController occupationController = TextEditingController();
+  final TextEditingController dateOfBirthController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+
+  File? selectedImage; // picked image
+  String? existingImageUrl; // image from server
+
+  @override
+  void initState() {
+    super.initState();
+    loadProfileData();
+  }
+
+  Future<void> loadProfileData() async {
+    final provider = Provider.of<ChangePasswordProvider>(
+      context,
+      listen: false,
     );
+    await provider.adminCheckMe();
+    final data = provider.adminInfoModel?.data;
+
+    if (data != null) {
+      firstNameController.text = data.firstName ?? "";
+      lastNameController.text = data.lastName ?? "";
+      occupationController.text = data.occupation ?? "";
+      dateOfBirthController.text = data.dateOfBirth ?? "";
+      phoneController.text = data.phoneNumber ?? "";
+      cityController.text = data.city ?? "";
+      addressController.text = data.address ?? "";
+      existingImageUrl = data.avatar; // store server image URL
+    }
+
+    setState(() {});
+  }
+
+  Future<void> chooseImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        selectedImage = File(pickedFile.path);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ChangePasswordProvider>(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xffFFF6F7),
+      appBar: AppBar(
+        title: const Text("Update Profile"),
+        backgroundColor: const Color(0xFFE20613),
+      ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 28.h),
+            _ProfileHeader(
+              pickedImage: selectedImage,
+              imageUrl: existingImageUrl,
+              fname: firstNameController.text,
+              lname: lastNameController.text,
+              onImagePick: chooseImage,
+            ),
 
-            // AppBar Section
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
-              color: Colors.white,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Cancel Button
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(
-                        color: const Color(0xffE20613),
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.2,
+            LabeledInputField(
+              label: "First Name",
+              placeholder: "",
+              controller: firstNameController,
+            ),
+            LabeledInputField(
+              label: "Last Name",
+              placeholder: "",
+              controller: lastNameController,
+            ),
+            LabeledInputField(
+              label: "Occupation",
+              placeholder: "",
+              controller: occupationController,
+            ),
+            LabeledInputField(
+              label: "Date of Birth",
+              placeholder: "YYYY-MM-DD",
+              controller: dateOfBirthController,
+            ),
+            LabeledInputField(
+              label: "Phone Number",
+              placeholder: "",
+              controller: phoneController,
+              isNumeric: true,
+            ),
+            LabeledInputField(
+              label: "City",
+              placeholder: "",
+              controller: cityController,
+            ),
+            LabeledInputField(
+              label: "Address",
+              placeholder: "",
+              controller: addressController,
+              isMultiline: true,
+            ),
+
+            SizedBox(height: 20.h),
+
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final success = await provider.updateAdminProfile(
+                    firstName: firstNameController.text,
+                    lastName: lastNameController.text,
+                    occupation: occupationController.text,
+                    dateOfBirth: dateOfBirthController.text,
+                    phoneNumber: phoneController.text,
+                    city: cityController.text,
+                    address: addressController.text,
+                    image: selectedImage,
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success
+                            ? "Profile updated successfully"
+                            : "Failed to update profile",
                       ),
                     ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE20613),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 40.w,
+                    vertical: 15.h,
                   ),
-
-                  // Title
-                  Text(
-                    'Personal Information',
-                    style: TextStyle(
-                      color: const Color(0xFF111111),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 17.sp,
-                      letterSpacing: 0.2,
-                    ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.r),
                   ),
-
-                  // Save Button
-                  TextButton(
-                    onPressed: () => _showSubmitDialog(context),
-                    child: Text(
-                      'Save',
-                      style: TextStyle(
-                        color: const Color(0xffE20613),
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
+                child: Text(
+                  "Save",
+                  style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                ),
               ),
             ),
 
-            const _ProfileHeader(),
-            SizedBox(height: 18.h),
-
-            // Input Fields
-            const LabeledInputField(label: 'First Name', placeholder: 'Shahzalal'),
-            const LabeledInputField(label: 'Last Name', placeholder: 'Boy'),
-            const LabeledInputField(
-              label: 'Occupation',
-              placeholder: "Head of Legends's branch-02",
-            ),
-            const LabeledInputField(label: 'Date of Birth', placeholder: '10/06/1990'),
-            const LabeledInputField(
-              label: 'Phone Number',
-              placeholder: '+123-254-2530',
-              isNumeric: true,
-            ),
-            const LabeledInputField(label: 'City', placeholder: 'Boston, MA'),
-            const LabeledInputField(
-              label: 'Address',
-              placeholder: '123 Main St, Apt 4B',
-              isMultiline: true,
-            ),
-            SizedBox(height: 50.h),
+            SizedBox(height: 30.h),
           ],
         ),
       ),
@@ -186,14 +181,53 @@ class HeadOfficeChangeInfoScreen extends StatelessWidget {
   }
 }
 
-// 🧑‍💼 Profile Header Card
+/// ----------------------
+/// PROFILE HEADER
+/// ----------------------
 class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader();
+  final File? pickedImage;
+  final String? imageUrl;
+  final String fname;
+  final String lname;
+  final VoidCallback onImagePick;
+
+  const _ProfileHeader({
+    this.pickedImage,
+    this.imageUrl,
+    required this.fname,
+    required this.lname,
+    required this.onImagePick,
+  });
 
   @override
   Widget build(BuildContext context) {
+    Widget displayImage;
+
+    if (pickedImage != null) {
+      displayImage = Image.file(
+        pickedImage!,
+        width: 100.w,
+        height: 100.w,
+        fit: BoxFit.cover,
+      );
+    } else if (imageUrl != null && imageUrl!.isNotEmpty) {
+      displayImage = Image.network(
+        "${ApiEndpoints.baseUrl}/storage/avatar/$imageUrl",
+        width: 100.w,
+        height: 100.w,
+        fit: BoxFit.cover,
+      );
+    } else {
+      displayImage = Image.asset(
+        AssetPaths.personIcon,
+        width: 100.w,
+        height: 100.w,
+        fit: BoxFit.cover,
+      );
+    }
+
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 25.w, vertical: 10.h),
+      margin: EdgeInsets.symmetric(horizontal: 25.w, vertical: 15.h),
       padding: EdgeInsets.all(25.w),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -216,31 +250,23 @@ class _ProfileHeader extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                ClipOval(
-                  child: Image.asset(
-                    AssetPaths.personIcon,
-                    scale: 2.7,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.person, size: 60, color: Colors.white),
-                  ),
-                ),
+                ClipOval(child: displayImage),
                 Positioned(
                   bottom: -6.h,
                   right: -6.w,
-                  child: Container(
-                    padding: EdgeInsets.all(5.w),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(color: Colors.black26, blurRadius: 2)
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.camera_alt_outlined,
-                      color: Color(0xFFE20613),
-                      size: 18.sp,
+                  child: GestureDetector(
+                    onTap: onImagePick,
+                    child: Container(
+                      padding: EdgeInsets.all(5.w),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.camera_alt_outlined,
+                        color: Color(0xFFE20613),
+                        size: 18.sp,
+                      ),
                     ),
                   ),
                 ),
@@ -248,12 +274,11 @@ class _ProfileHeader extends StatelessWidget {
             ),
             SizedBox(height: 15.h),
             Text(
-              'Hamza Chowdhury',
+              "$fname $lname",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
               ),
             ),
             SizedBox(height: 5.h),
@@ -262,7 +287,6 @@ class _ProfileHeader extends StatelessWidget {
               style: TextStyle(
                 color: Colors.white.withOpacity(0.9),
                 fontSize: 15.sp,
-                fontWeight: FontWeight.w400,
               ),
             ),
           ],
@@ -272,17 +296,21 @@ class _ProfileHeader extends StatelessWidget {
   }
 }
 
-// 🧾 Custom Input Field
+/// ----------------------
+/// CUSTOM INPUT FIELD
+/// ----------------------
 class LabeledInputField extends StatelessWidget {
   final String label;
   final String placeholder;
   final bool isNumeric;
   final bool isMultiline;
+  final TextEditingController controller;
 
   const LabeledInputField({
     super.key,
     required this.label,
     required this.placeholder,
+    required this.controller,
     this.isNumeric = false,
     this.isMultiline = false,
   });
@@ -300,38 +328,18 @@ class LabeledInputField extends StatelessWidget {
               fontWeight: FontWeight.w600,
               fontSize: 15.sp,
               color: const Color(0xFF333333),
-              letterSpacing: 0.2,
             ),
           ),
           SizedBox(height: 6.h),
           TextField(
+            controller: controller,
             maxLines: isMultiline ? 3 : 1,
             keyboardType: isNumeric ? TextInputType.phone : TextInputType.text,
-            style: TextStyle(
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w500,
-              color: const Color(0xFF111111),
-            ),
             decoration: InputDecoration(
               hintText: placeholder,
-              hintStyle: TextStyle(
-                color: Colors.grey.shade500,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w400,
-              ),
               filled: true,
               fillColor: Colors.white,
-              contentPadding:
-              EdgeInsets.symmetric(vertical: 14.h, horizontal: 18.w),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.r),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              focusedBorder:  OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15.r),
                 borderSide: BorderSide(color: Colors.grey.shade300),
               ),

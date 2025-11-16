@@ -81,10 +81,12 @@ class ChangePasswordProvider with ChangeNotifier {
     try {
       final url = Uri.parse(ApiEndpoints.adminProfileUpdate);
       final token = await _tokenStorage.getToken();
+
       var request = http.MultipartRequest("PATCH", url);
       request.headers['Authorization'] = "Bearer $token";
       request.headers['Accept'] = "application/json";
 
+      // Add form fields
       request.fields['first_name'] = firstName;
       request.fields['last_name'] = lastName;
       request.fields['occupation'] = occupation;
@@ -92,66 +94,33 @@ class ChangePasswordProvider with ChangeNotifier {
       request.fields['phone_number'] = phoneNumber;
       request.fields['city'] = city;
       request.fields['address'] = address;
-      Future<bool> updateAdminProfile({
-        required String firstName,
-        required String lastName,
-        required String occupation,
-        required String dateOfBirth,
-        required String phoneNumber,
-        required String city,
-        required String address,
-        File? image, // Use File type for image
-      }) async {
-        try {
-          final url = Uri.parse(ApiEndpoints.adminProfileUpdate);
-          final token = await _tokenStorage.getToken();
 
-          var request = http.MultipartRequest("PATCH", url);
-
-          request.headers['Authorization'] = "Bearer $token";
-          request.headers['Accept'] = "application/json";
-
-          request.fields['first_name'] = firstName;
-          request.fields['last_name'] = lastName;
-          request.fields['occupation'] = occupation;
-          request.fields['date_of_birth'] = dateOfBirth;
-          request.fields['phone_number'] = phoneNumber;
-          request.fields['city'] = city;
-          request.fields['address'] = address;
-
-          if (image != null) {
-            request.files.add(
-              await http.MultipartFile.fromPath('image', image.path),
-            );
-          }
-          final streamedResponse = await request.send();
-          final response = await http.Response.fromStream(streamedResponse);
-
-          debugPrint("STATUS: ${response.statusCode}");
-          debugPrint("RESPONSE: ${response.body}");
-
-          if (response.statusCode == 200 || response.statusCode == 201) {
-            return true;
-          }
-
-          return false;
-        } catch (error) {
-          debugPrint("Admin Profile Update Error: $error");
-          return false;
-        }
+      // Add image file if provided
+      if (image != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath('image', image.path),
+        );
+      } else {
+        debugPrint("No image provided for upload.");
       }
 
+      // Send request
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
+      // Decode response
+      final decodeData = jsonDecode(response.body);
+
       debugPrint("STATUS: ${response.statusCode}");
-      debugPrint("RESPONSE: ${response.body}");
+      debugPrint("RESPONSE: $decodeData");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint("Profile updated successfully.");
         return true;
+      } else {
+        debugPrint("Profile update failed.");
+        return false;
       }
-
-      return false;
     } catch (error) {
       debugPrint("Admin Profile Update Error: $error");
       return false;
