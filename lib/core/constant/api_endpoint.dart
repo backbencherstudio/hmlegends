@@ -1,8 +1,9 @@
+import 'dart:math';
+
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl =
-      'https://creative-wanted-clause-trainers.trycloudflare.com';
+  static const String baseUrl = 'http://192.168.5.232:4050';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
 
@@ -16,6 +17,10 @@ class ApiEndpoints {
   static const String adminCheckMe = '$baseUrl/api/auth/me';
   static const String adminStatus = '$baseUrl/api/auth/admin/stats';
   static const String adminAllProduct = '$baseUrl/api/product';
+  static const String adminCreateProduct = '$baseUrl/api/product';
+  static  String updateProduct(String pid) => '$baseUrl/api/product/$pid';
+  static  String fetchSingleProduct(String pid) => '$baseUrl/api/product/$pid';
+  static  String deleteProduct(String pid) => '$baseUrl/api/product/$pid';
 
   //Branch
 
