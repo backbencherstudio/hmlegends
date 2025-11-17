@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar_2.dart';
+import '../../../view_model/order/order_screen_provider.dart';
 import '../../widget/search_filter.dart';
 import '../widget/order_summary_card.dart';
 
@@ -23,6 +25,15 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final provider = Provider.of<OrderScreenProvider>(context);
+
+    final total_order =provider.orderAdminModel?.data?.stats?.total ?? 0;
+    final pending_order =provider.orderAdminModel?.data?.stats?.pending ?? 0;
+    final invoiced_order =provider.orderAdminModel?.data?.stats?.invoiced ?? 0;
+    final delivered_order =provider.orderAdminModel?.data?.stats?.delivered ?? 0;
+    final total_unit_ordered =provider.orderAdminModel?.data?.stats?.totalUnitOrdered ?? 0;
+
     final List<Map<String, dynamic>> orderData = [
       {"branch": "Branch Name", "units": 75},
       {"branch": "Branch Name", "units": 85},
@@ -52,13 +63,13 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             const SearchField(hintText: '',),
             SizedBox(height: 20.h),
 
-            /// Summary boxes
+
             Row(
               children: [
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Total Orders",
-                    value: "08",
+                    value: "$total_order",
                     isHighlighted: true,
                   ),
                 ),
@@ -66,14 +77,14 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Pending Orders",
-                    value: "04",
+                    value:"$pending_order" ?? "0",
                   ),
                 ),
                 SizedBox(width: 10.w),
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Invoiced Orders",
-                    value: "07",
+                    value: "$invoiced_order",
                   ),
                 ),
               ],
@@ -84,7 +95,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Delivered Orders",
-                    value: "08",
+                    value: "$delivered_order",
                     isWide: true,
                   ),
                 ),
@@ -92,7 +103,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Units of items ordered",
-                    value: "350",
+                    value: "$total_unit_ordered",
                     isWide: true,
                   ),
                 ),

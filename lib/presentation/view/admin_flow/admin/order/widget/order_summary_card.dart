@@ -66,10 +66,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 
 class OrderSummaryCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final bool isHighlighted;
-  final bool isWide;
+  final String title;        // Title of the card (e.g., "Pending Orders")
+  final String value;        // Value to display (e.g., "12")
+  final bool isHighlighted;  // If true, card gets a red border
+  final bool isWide;         // If true, card stretches full width
 
   const OrderSummaryCard({
     super.key,
@@ -82,8 +82,8 @@ class OrderSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: isWide ? double.infinity : null,
-      height: 100.h,
+      width: isWide ? double.infinity : null, // Full width if wide
+      height: 100.h,                          // Fixed height
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -110,7 +110,7 @@ class OrderSummaryCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w600,
-                color: isHighlighted ? Colors.black : Colors.black,
+                color: Colors.black,
               ),
               textAlign: TextAlign.center,
               maxLines: 1,
@@ -125,8 +125,7 @@ class OrderSummaryCard extends StatelessWidget {
               style: TextStyle(
                   fontSize: 14.sp,
                   color: AppColors.authBodyTextColor,
-                  fontWeight: FontWeight.w500
-              ),
+                  fontWeight: FontWeight.w500),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),

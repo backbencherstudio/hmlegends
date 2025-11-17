@@ -21,6 +21,7 @@ class ApiEndpoints {
   static  String updateProduct(String pid) => '$baseUrl/api/product/$pid';
   static  String fetchSingleProduct(String pid) => '$baseUrl/api/product/$pid';
   static  String deleteProduct(String pid) => '$baseUrl/api/product/$pid';
+  static  String adminOrder = '$baseUrl/api/order/admin';
 
   //Branch
 
