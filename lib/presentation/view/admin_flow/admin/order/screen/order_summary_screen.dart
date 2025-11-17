@@ -155,12 +155,12 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 itemCount: provider.orderAdminModel?.data?.orders?.length,
                 padding: EdgeInsets.only(bottom: 8.h),
                 itemBuilder: (context, index) {
-                  final orderDataInfo =provider.orderAdminModel?.data?.orders;
+                  final orderDataInfo = provider.orderAdminModel?.data?.orders;
                   final item = orderDataInfo?[index];
                   return Padding(
                     padding: EdgeInsets.only(bottom: 8.h),
                     child: Container(
-                      height: 30.h,
+                      height: 40.h,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8.r),
                       ),
@@ -181,7 +181,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                               child: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  "${index + 1}. ${item?.id}",
+                                  "${index + 1}",
                                   style: TextStyle(
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w500,
@@ -201,7 +201,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                               child: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  "Total Units: ${item?.user}",
+                                  "Total Units: ${item?.user?.name}",
                                   style: TextStyle(
                                     fontSize: 13.sp,
                                     color: AppColors.authBodyTextColor,
