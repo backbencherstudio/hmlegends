@@ -20,19 +20,19 @@ class OrderSummaryScreen extends StatefulWidget {
 }
 
 class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
-
   String selectedPeriod = 'Today';
 
   @override
   Widget build(BuildContext context) {
-
     final provider = Provider.of<OrderScreenProvider>(context);
 
-    final total_order =provider.orderAdminModel?.data?.stats?.total ?? 0;
-    final pending_order =provider.orderAdminModel?.data?.stats?.pending ?? 0;
-    final invoiced_order =provider.orderAdminModel?.data?.stats?.invoiced ?? 0;
-    final delivered_order =provider.orderAdminModel?.data?.stats?.delivered ?? 0;
-    final total_unit_ordered =provider.orderAdminModel?.data?.stats?.totalUnitOrdered ?? 0;
+    final total_order = provider.orderAdminModel?.data?.stats?.total ?? 0;
+    final pending_order = provider.orderAdminModel?.data?.stats?.pending ?? 0;
+    final invoiced_order = provider.orderAdminModel?.data?.stats?.invoiced ?? 0;
+    final delivered_order =
+        provider.orderAdminModel?.data?.stats?.delivered ?? 0;
+    final total_unit_ordered =
+        provider.orderAdminModel?.data?.stats?.totalUnitOrdered ?? 0;
 
     final List<Map<String, dynamic>> orderData = [
       {"branch": "Branch Name", "units": 75},
@@ -60,9 +60,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SearchField(hintText: '',),
+            const SearchField(hintText: ''),
             SizedBox(height: 20.h),
-
 
             Row(
               children: [
@@ -77,7 +76,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Pending Orders",
-                    value:"$pending_order" ?? "0",
+                    value: "$pending_order" ?? "0",
                   ),
                 ),
                 SizedBox(width: 10.w),
@@ -151,111 +150,114 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             ),
             SizedBox(height: 14.h),
 
-            /// Order List - Use Expanded to take remaining space
-        Expanded(
-          child: ListView.builder(
-            itemCount: orderData.length,
-            padding: EdgeInsets.only(bottom: 8.h),
-            itemBuilder: (context, index) {
-              final item = orderData[index];
-              return Padding(
+            Expanded(
+              child: ListView.builder(
+                itemCount: provider.orderAdminModel?.data?.orders?.length,
                 padding: EdgeInsets.only(bottom: 8.h),
-                child: Container(
-                  height: 30.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Row(
-                    children: [
-                      // First color section - Branch Name
-                      Expanded(
-                        flex: 2,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD1E4C9),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8.r),
-                              bottomLeft: Radius.circular(8.r),
-                            ),
-                          ),
-                          padding: EdgeInsets.symmetric(horizontal: 12.w),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "${index + 1}. ${item["branch"]}",
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.authBodyTextColor,
+                itemBuilder: (context, index) {
+                  final orderDataInfo =provider.orderAdminModel?.data?.orders;
+                  final item = orderDataInfo?[index];
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 8.h),
+                    child: Container(
+                      height: 30.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Row(
+                        children: [
+                          // First color section - Branch Name
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFD1E4C9),
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(8.r),
+                                  bottomLeft: Radius.circular(8.r),
+                                ),
+                              ),
+                              padding: EdgeInsets.symmetric(horizontal: 12.w),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "${index + 1}. ${item?.id}",
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.authBodyTextColor,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
 
-                      // Second color section - Total Units
-                      Expanded(
-                        flex: 2,
-                        child: Container(
-                          color: const Color(0xFFE6ECDE),
-                          padding: EdgeInsets.symmetric(horizontal: 12.w),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Total Units: ${item["units"]}",
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                color: AppColors.authBodyTextColor,
-                                fontWeight: FontWeight.w500,
+                          // Second color section - Total Units
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              color: const Color(0xFFE6ECDE),
+                              padding: EdgeInsets.symmetric(horizontal: 12.w),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "Total Units: ${item?.user}",
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    color: AppColors.authBodyTextColor,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
 
-                      // Third color section - View Button
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE20614),
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(8.r),
-                              bottomRight: Radius.circular(8.r),
-                            ),
-                          ),
-                          child: TextButton(
-                            onPressed: () {
-                              // Handle View click
-                              Navigator.pushNamed(context, RouteNames.orderSummaryViewScreen);
-                            },
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
+                          // Third color section - View Button
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE20614),
                                 borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(8.r),
                                   bottomRight: Radius.circular(8.r),
                                 ),
                               ),
-                            ),
-                            child: Text(
-                              "View",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 13.sp,
+                              child: TextButton(
+                                onPressed: () {
+                                  // Handle View click
+                                  Navigator.pushNamed(
+                                    context,
+                                    RouteNames.orderSummaryViewScreen,
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(8.r),
+                                      bottomRight: Radius.circular(8.r),
+                                    ),
+                                  ),
+                                ),
+                                child: Text(
+                                  "View",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 13.sp,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
