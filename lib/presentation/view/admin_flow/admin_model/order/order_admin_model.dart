@@ -106,13 +106,12 @@ class Stats {
   int? delivered;
   int? totalUnitOrdered;
 
-  Stats({
-    this.total,
-    this.pending,
-    this.invoiced,
-    this.delivered,
-    this.totalUnitOrdered,
-  });
+  Stats(
+      {this.total,
+        this.pending,
+        this.invoiced,
+        this.delivered,
+        this.totalUnitOrdered});
 
   Stats.fromJson(Map<String, dynamic> json) {
     total = json['total'];
