@@ -8,11 +8,10 @@ class LoginViewModel with ChangeNotifier {
   bool _passwordVisible = false;
   bool _rememberMe = false;
   final TokenStorage _tokenStorage = TokenStorage();
-  // Getters
+
   bool get passwordVisible => _passwordVisible;
   bool get rememberMe => _rememberMe;
 
-  // Methods to update state
   void togglePasswordVisibility() {
     _passwordVisible = !_passwordVisible;
     notifyListeners();

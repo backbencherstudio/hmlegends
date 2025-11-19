@@ -1,120 +1,141 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:provider/provider.dart';
 
 import '../widget/logout_dialog.dart';
+import '../../../../../../core/constant/api_endpoint.dart';
+import '../../../view_model/profile/change_pass_provider.dart';
 
 class HeadOfficeProfileScreen extends StatelessWidget {
   const HeadOfficeProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _firstNameControler = TextEditingController();
-    final TextEditingController _lastNameController = TextEditingController();
-    final TextEditingController _occupationController = TextEditingController();
-    final TextEditingController _dathOfBirthController =
-        TextEditingController();
-    final TextEditingController _phoneNumberController =
-        TextEditingController();
-    final TextEditingController _cityController = TextEditingController();
-    final TextEditingController _addressController = TextEditingController();
+    final provider = context.read<ChangePasswordProvider>();
 
-    File _image;
+    return FutureBuilder(
+      future: provider.adminCheckMe(),
+      builder: (context, snapshot) {
+        final data = provider.adminInfoModel?.data;
 
-    return Scaffold(
-      backgroundColor: const Color(0xffFFF6F7),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          'Profile',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20.sp),
-        ),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back_ios),
-        ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 8.w),
-            child: IconButton(
-              icon: Icon(Icons.settings_outlined, size: 24.w),
-              onPressed: () {},
+        final String fname = data?.firstName ?? "";
+        final String lname = data?.lastName ?? "";
+        final String occupation = data?.occupation ?? "";
+        final String phone = data?.phoneNumber ?? "";
+        final String address = data?.address ?? "";
+        final String? avatar = data?.avatar;
+
+        return Scaffold(
+          backgroundColor: const Color(0xffFFF6F7),
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: Text(
+              'Profile',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20.sp),
+            ),
+            leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back_ios),
+            ),
+            actions: [
+              Padding(
+                padding: EdgeInsets.only(right: 8.w),
+                child: IconButton(
+                  icon: Icon(Icons.settings_outlined, size: 24.w),
+                  onPressed: () {},
+                ),
+              ),
+            ],
+          ),
+
+          body: SingleChildScrollView(
+            padding: EdgeInsets.only(bottom: 20.h, left: 2.w, right: 2.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 15.h),
+
+                _ProfileHeader(
+                  fname: fname,
+                  lname: lname,
+                  occupation: occupation,
+                  avatar: avatar,
+                ),
+
+                SizedBox(height: 15.h),
+
+                _ProfileInfoTile(
+                  icon: Icons.phone_outlined,
+                  title: 'Phone Number',
+                  value: phone,
+                ),
+                Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+
+                _ProfileInfoTile(
+                  icon: Icons.mail_outline,
+                  title: 'Email',
+                  value: data?.email ?? "",
+                ),
+                Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+
+                _ProfileInfoTile(
+                  icon: Icons.location_on_outlined,
+                  title: 'Address',
+                  value: address,
+                ),
+
+                Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+
+                _ProfileActionTile(
+                  icon: Icons.logout,
+                  title: 'Log out',
+                  isDestructive: true,
+                  onTap: () => logoutShowSubmitDialog(context),
+                ),
+
+                Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+
+                _ProfileActionTile(
+                  icon: Icons.lock_outline,
+                  title: 'Change Password',
+                  isDestructive: true,
+                  onTap: () =>
+                      Navigator.pushNamed(context, RouteNames.headOfficeChangePasswordScreen),
+                ),
+
+                Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+
+                _ProfileActionTile(
+                  icon: Icons.info_outline,
+                  title: 'Change info',
+                  isDestructive: true,
+                  onTap: () =>
+                      Navigator.pushNamed(context, RouteNames.headOfficeChangeInfoScreen),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(bottom: 20.h, left: 2.w, right: 2.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 15.h),
-            const _ProfileHeader(),
-            SizedBox(height: 15.h),
-            const _ProfileInfoTile(
-              icon: Icons.phone_outlined,
-              title: 'Phone Number',
-              value: '+123-456-7890',
-            ),
-            Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
-            const _ProfileInfoTile(
-              icon: Icons.mail_outline,
-              title: 'Email',
-              value: 'camwill056@gmail.com',
-            ),
-            Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
-            const _ProfileInfoTile(
-              icon: Icons.location_on_outlined,
-              title: 'Address',
-              value: '2715 Ash Dr. San Jose, South\nDakota 83475',
-            ),
-            Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
-            _ProfileActionTile(
-              icon: Icons.logout,
-              title: 'Log out',
-              isDestructive: true,
-              onTap: () {
-                logoutShowSubmitDialog(context);
-              },
-            ),
-            Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
-            _ProfileActionTile(
-              icon: Icons.lock_outline,
-              title: 'Change Password',
-              isDestructive: true,
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  RouteNames.headOfficeChangePasswordScreen,
-                );
-              },
-            ),
-            Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
-            _ProfileActionTile(
-              icon: Icons.info_outline,
-              title: 'Change info',
-              isDestructive: true,
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  RouteNames.headOfficeChangeInfoScreen,
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+        );
+      },
     );
   }
 }
 
 class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader();
+  final String fname;
+  final String lname;
+  final String occupation;
+  final String? avatar;
+
+  const _ProfileHeader({
+    required this.fname,
+    required this.lname,
+    required this.occupation,
+    required this.avatar,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -135,55 +156,40 @@ class _ProfileHeader extends StatelessWidget {
       child: Center(
         child: Column(
           children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                ClipOval(
-                  child: Image.asset(
-                    AssetPaths.personIcon,
-                    scale: 2.7,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Icon(Icons.person, size: 50.w, color: Colors.grey),
-                  ),
-                ),
-                Positioned(
-                  bottom: -5.h,
-                  right: -5.w,
-                  child: Container(
-                    padding: EdgeInsets.all(4.w),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(color: Colors.black26, blurRadius: 2.r),
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.camera_alt_outlined,
-                      color: const Color(0xFFD32F2F),
-                      size: 19.w,
-                    ),
-                  ),
-                ),
-              ],
+            ClipOval(
+              child: avatar != null && avatar!.isNotEmpty
+                  ? Image.network(
+                "${ApiEndpoints.baseUrl}/storage/avatar/$avatar",
+                width: 90.w,
+                height: 90.w,
+                fit: BoxFit.cover,
+              )
+                  : Image.asset(
+                AssetPaths.personIcon,
+                width: 90.w,
+                height: 90.w,
+                fit: BoxFit.cover,
+              ),
             ),
+
             SizedBox(height: 15.h),
+
             Text(
-              'Hamza Chowdhury',
+              "$fname $lname",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
+
             SizedBox(height: 4.h),
+
             Text(
-              "Owner of Legends",
+              occupation,
               style: TextStyle(
                 color: const Color(0xFFF0F0F0),
                 fontSize: 16.sp,
-                fontWeight: FontWeight.w400,
               ),
             ),
           ],

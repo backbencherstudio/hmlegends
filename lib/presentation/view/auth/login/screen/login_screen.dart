@@ -158,33 +158,33 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (context, viewModel, child) {
         return Row(
           children: [
-            SizedBox(
-              width: 20,
-              height: 20,
-              child: Checkbox(
-                value: viewModel.rememberMe,
-                onChanged: (value) {
-                  viewModel.setRememberMe(value ?? false);
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4.r),
-                ),
-                side: BorderSide(color: AppColors.primaryColor),
-                activeColor: AppColors.primaryColor,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-              ),
-            ),
-            SizedBox(width: 10.w),
-            Text(
-              'Remember me',
-              style: TextStyle(
-                fontSize: 12.sp,
-                letterSpacing: 0.5,
-                color: AppColors.authBodyTextColor,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            // SizedBox(
+            //   width: 20,
+            //   height: 20,
+            //   child: Checkbox(
+            //     value: viewModel.rememberMe,
+            //     onChanged: (value) {
+            //       viewModel.setRememberMe(value ?? false);
+            //     },
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(4.r),
+            //     ),
+            //     side: BorderSide(color: AppColors.primaryColor),
+            //     activeColor: AppColors.primaryColor,
+            //     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            //     visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+            //   ),
+            // ),
+
+            // Text(
+            //   'Remember me',
+            //   style: TextStyle(
+            //     fontSize: 12.sp,
+            //     letterSpacing: 0.5,
+            //     color: AppColors.authBodyTextColor,
+            //     fontWeight: FontWeight.w500,
+            //   ),
+            // ),
             Spacer(),
             TextButton(
               onPressed: () {
@@ -258,7 +258,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     context,
                     RouteNames.mainWrapper,
                   );
-                } else if (userRole == 'branch_manager') {
+                } else if (userRole == 'manager') {
                   Navigator.pushReplacementNamed(
                     context,
                     RouteNames.branchParentScreen,
