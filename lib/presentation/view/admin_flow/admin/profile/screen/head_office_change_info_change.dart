@@ -17,7 +17,7 @@ class HeadOfficeChangeInfoScreen extends StatefulWidget {
 
 class _HeadOfficeChangeInfoScreenState
     extends State<HeadOfficeChangeInfoScreen> {
-  // Controllers
+
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController occupationController = TextEditingController();
@@ -26,8 +26,8 @@ class _HeadOfficeChangeInfoScreenState
   final TextEditingController cityController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
 
-  File? selectedImage; // picked image
-  String? existingImageUrl; // image from server
+  File? selectedImage;
+  String? existingImageUrl;
 
   @override
   void initState() {
@@ -51,7 +51,7 @@ class _HeadOfficeChangeInfoScreenState
       phoneController.text = data.phoneNumber ?? "";
       cityController.text = data.city ?? "";
       addressController.text = data.address ?? "";
-      existingImageUrl = data.avatar; // store server image URL
+      existingImageUrl = data.avatar;
     }
 
     setState(() {});
@@ -73,11 +73,20 @@ class _HeadOfficeChangeInfoScreenState
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ChangePasswordProvider>(context);
+    final provider = context.watch<ChangePasswordProvider>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Update Profile"),
+        automaticallyImplyLeading: false,
+        leading: GestureDetector(
+            onTap: (){
+              Navigator.pop(context);
+            },
+            child: Icon(Icons.arrow_back_ios,color: Colors.white,)),
+        title: const Text(
+          "Update Profile",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color(0xFFE20613),
       ),
       body: SingleChildScrollView(
@@ -89,6 +98,9 @@ class _HeadOfficeChangeInfoScreenState
               fname: firstNameController.text,
               lname: lastNameController.text,
               onImagePick: chooseImage,
+              occupation: occupationController.text,
+              phoneController: phoneController.text,
+              addressController: addressController.text,
             ),
 
             LabeledInputField(
@@ -146,6 +158,11 @@ class _HeadOfficeChangeInfoScreenState
                     image: selectedImage,
                   );
 
+                  if(success){
+                    debugPrint('========');
+                  await context.read<ChangePasswordProvider>().adminCheckMe();
+                  }
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -181,14 +198,14 @@ class _HeadOfficeChangeInfoScreenState
   }
 }
 
-/// ----------------------
-/// PROFILE HEADER
-/// ----------------------
 class _ProfileHeader extends StatelessWidget {
   final File? pickedImage;
   final String? imageUrl;
   final String fname;
   final String lname;
+  final String occupation;
+  final String phoneController;
+  final String addressController;
   final VoidCallback onImagePick;
 
   const _ProfileHeader({
@@ -197,11 +214,16 @@ class _ProfileHeader extends StatelessWidget {
     required this.fname,
     required this.lname,
     required this.onImagePick,
+    required this.occupation,
+    required this.phoneController,
+    required this.addressController,
   });
 
   @override
   Widget build(BuildContext context) {
     Widget displayImage;
+
+    final provider =  context.watch<ChangePasswordProvider>();
 
     if (pickedImage != null) {
       displayImage = Image.file(
@@ -274,7 +296,7 @@ class _ProfileHeader extends StatelessWidget {
             ),
             SizedBox(height: 15.h),
             Text(
-              "$fname $lname",
+              "${provider.adminInfoModel?.data?.firstName} ${provider.adminInfoModel?.data?.lastName}",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20.sp,
@@ -283,7 +305,7 @@ class _ProfileHeader extends StatelessWidget {
             ),
             SizedBox(height: 5.h),
             Text(
-              "Head of Legends",
+                provider.adminInfoModel?.data?.occupation ?? '',
               style: TextStyle(
                 color: Colors.white.withOpacity(0.9),
                 fontSize: 15.sp,
@@ -296,9 +318,6 @@ class _ProfileHeader extends StatelessWidget {
   }
 }
 
-/// ----------------------
-/// CUSTOM INPUT FIELD
-/// ----------------------
 class LabeledInputField extends StatelessWidget {
   final String label;
   final String placeholder;
