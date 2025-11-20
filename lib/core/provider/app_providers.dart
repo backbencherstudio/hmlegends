@@ -18,6 +18,7 @@ import '../../presentation/view/admin_flow/view_model/parent/manage_delivery_vie
 import '../../presentation/view/admin_flow/view_model/parent/stock_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../presentation/view/admin_flow/view_model/stock/stock_screen_provider.dart';
+import '../../presentation/view/branch_manager_flow/Invoice/view_model/get_all_invoice_viewmodel.dart';
 import '../../presentation/view/driver_flow/driver_provider/branch_product_provider.dart';
 
 class AppProviders {
@@ -41,6 +42,7 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
     ChangeNotifierProvider(create: (_) => StockScreenProvider()),
     ChangeNotifierProvider(create: (_) => OrderScreenProvider()),
+    ChangeNotifierProvider(create: (_) => InvoiceViewModel()),
   ];
 
   static List<SingleChildWidget> getProviders() {

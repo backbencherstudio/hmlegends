@@ -82,6 +82,7 @@ class RegisterProvider extends ChangeNotifier {
       "type": _type,
     };
 
+    debugPrint('Type show ............$data');
     try {
       final response = await _apiService.post(
         ApiEndpoints.register,

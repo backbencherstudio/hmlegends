@@ -24,6 +24,7 @@ class ApiEndpoints {
   static  String adminOrder = '$baseUrl/api/order/admin';
 
   //Branch
+  static  String getInvoices = '$baseUrl/api/invoice';
 
   //Driver
 
