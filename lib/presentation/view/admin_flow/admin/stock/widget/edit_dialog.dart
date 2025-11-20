@@ -52,7 +52,8 @@ class EditDialog extends StatelessWidget {
             }
 
             return AlertDialog(
-              title: Text("Edit Product: $productId"),
+              backgroundColor: Colors.white,
+              title: Center(child: Text("Edit Product")),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

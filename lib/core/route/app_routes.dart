@@ -15,6 +15,7 @@ import '../../presentation/view/admin_flow/admin/profile/screen/head_office_chan
 import '../../presentation/view/admin_flow/admin/profile/screen/head_office_change_password_screen.dart';
 import '../../presentation/view/admin_flow/admin/profile/screen/head_office_profile_screen.dart';
 import '../../presentation/view/admin_flow/admin/stock/screen/edit_stock_screen.dart';
+import '../../presentation/view/admin_flow/admin/stock/screen/stock_screen.dart';
 import '../../presentation/view/auth/forget_password/screen/forget_password_screen.dart';
 import '../../presentation/view/auth/login/screen/login_screen.dart';
 import '../../presentation/view/auth/otp_verify/screen/otp_verify_screen.dart';

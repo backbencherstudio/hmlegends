@@ -1,14 +1,20 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/stock/screen/successfully_deleted.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../../../core/constant/app_colors.dart';
 import '../../../../../../core/constant/asset_path.dart';
+import '../../../../../../core/route/route_names.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../../widget/custom_text_field.dart';
+import '../../../../widget/dialog_button.dart';
 import '../../../admin_model/admin_product_model.dart';
 import '../../../view_model/stock/stock_screen_provider.dart';
+import '../../order/widget/approve_show_dialog.dart';
 import '../widget/edit_dialog.dart';
+import 'delete_stock.dart';
 
 class StockScreen extends StatefulWidget {
   final bool fromBottomNav;
@@ -38,6 +44,98 @@ class _StockScreenState extends State<StockScreen> {
     _priceController.clear();
     _stockController.clear();
     image = null;
+  }
+
+  void showDeleteStockDialog(BuildContext context, String text, String productId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            DialogButton(
+              text: 'Yes',
+              textColor: Colors.white,
+              onPressed: () async {
+                Navigator.of(context).pop();
+
+                await context.read<StockScreenProvider>().deleteProduct(productId);
+
+                SuccessDeleteStock(context, 'You have successfully Deleted the stock!');
+              },
+              color: AppColors.primaryColor,
+            ),
+            DialogButton(
+              text: 'Cancel',
+              textColor: AppColors.authHeaderTextColor,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              color: const Color(0xFFE9E9EA),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  void SuccessDeleteStock(BuildContext context, String text) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        Future.delayed(Duration(seconds: 1), () {
+          Navigator.of(dialogContext).pop();
+          Navigator.of(
+            dialogContext,
+          ).pushReplacementNamed(RouteNames.mainWrapper);
+        });
+
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14.r),
+          ),
+          child: Container(
+            width: 335.w,
+            height: 451.h,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14.r),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  AssetPaths.successfulIcon,
+                  height: 100.h,
+                  width: 100.w,
+                ),
+                SizedBox(height: 30.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Text(
+                    text,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _pickImage() async {
@@ -120,6 +218,7 @@ class _StockScreenState extends State<StockScreen> {
                                       ? const Color(0xFFE20613)
                                       : const Color(0xFF4A4C56),
                                   fontSize: 14.sp,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
@@ -151,7 +250,6 @@ class _StockScreenState extends State<StockScreen> {
                       child: Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
                               color: const Color(0xffE20613),
                               borderRadius: BorderRadius.circular(7),
@@ -184,14 +282,18 @@ class _StockScreenState extends State<StockScreen> {
                               margin: EdgeInsets.symmetric(vertical: 6.h),
                               padding: EdgeInsets.all(12.w),
                               decoration: BoxDecoration(
-                                color: Colors.grey[100],
+                                color: Colors.white,
+                                border: Border.all(
+                                  color: Colors.grey.shade300,
+                                  width: 1.4,
+                                ),
                                 borderRadius: BorderRadius.circular(12.r),
                               ),
                               child: Row(
                                 children: [
                                   Container(
-                                    width: 60.w,
-                                    height: 60.w,
+                                    width: 90.w,
+                                    height: 90.w,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8.r),
                                       image: product.image != null
@@ -233,25 +335,69 @@ class _StockScreenState extends State<StockScreen> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              "Stock: ${product.stock}",
+                                              "Stock: ${product.stock} pcs",
                                               style: TextStyle(
                                                 fontSize: 14.sp,
-                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.grey.shade800,
                                               ),
                                             ),
-                                            Text(
-                                              product.stockStatus ?? "",
-                                              style: TextStyle(
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w600,
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 8.w,
+                                                vertical: 4.h,
+                                              ),
+                                              decoration: BoxDecoration(
                                                 color:
                                                     product.stockStatus ==
                                                         "IN_STOCK"
-                                                    ? Colors.green
+                                                    ? Colors.green.withOpacity(
+                                                        0.15,
+                                                      )
                                                     : product.stockStatus ==
                                                           "LOW_STOCK"
-                                                    ? Colors.orange
-                                                    : Colors.red,
+                                                    ? Colors.orange.withOpacity(
+                                                        0.15,
+                                                      )
+                                                    : Colors.red.withOpacity(
+                                                        0.15,
+                                                      ),
+                                                borderRadius:
+                                                    BorderRadius.circular(30.r),
+                                              ),
+                                              child: Row(
+                                                spacing: 5,
+                                                children: [
+                                                  Icon(
+                                                    Icons.circle,
+                                                    size: 12.sp,
+                                                    color:
+                                                        product.stockStatus ==
+                                                            "IN_STOCK"
+                                                        ? Colors.green
+                                                        : product.stockStatus ==
+                                                              "LOW_STOCK"
+                                                        ? Colors.orange
+                                                        : Colors.red,
+                                                  ),
+
+                                                  Text(
+                                                    product.stockStatus ?? "",
+                                                    style: TextStyle(
+                                                      fontSize: 12.sp,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color:
+                                                          product.stockStatus ==
+                                                              "IN_STOCK"
+                                                          ? Colors.green
+                                                          : product.stockStatus ==
+                                                                "LOW_STOCK"
+                                                          ? Colors.orange
+                                                          : Colors.red,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
@@ -280,20 +426,34 @@ class _StockScreenState extends State<StockScreen> {
                                                       product.id ?? "",
                                                     );
                                               },
-                                              icon: const Icon(
-                                                Icons.edit_outlined,
+                                              icon: Image.asset(
+                                                'assets/icons/edit_icon.png',
+                                                scale: 3.5,
                                               ),
                                             ),
 
-                                            IconButton(
-                                              onPressed: () async {
-                                                await vm.deleteProduct(
+                                            // IconButton(
+                                            //   onPressed: () async {
+                                            //     await vm.deleteProduct(
+                                            //       product.id ?? "",
+                                            //     );
+                                            //   },
+                                            //   icon: Image.asset(
+                                            //         'assets/icons/deleteIcon.png',
+                                            //         scale: 3,
+                                            //       ),
+                                            // ),
+                                            InkWell(
+                                              onTap: () async {
+                                                showDeleteStockDialog(
+                                                  context,
+                                                  'Are you sure you want to delete this item?',
                                                   product.id ?? "",
                                                 );
                                               },
-                                              icon: const Icon(
-                                                Icons.delete,
-                                                color: Colors.red,
+                                              child: Image.asset(
+                                                'assets/icons/deleteIcon.png',
+                                                scale: 3,
                                               ),
                                             ),
                                           ],
@@ -315,9 +475,6 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  // ===============================
-  // ADD PRODUCT POPUP
-  // ===============================
   void _showAddProductDialog() {
     showDialog(
       context: context,
