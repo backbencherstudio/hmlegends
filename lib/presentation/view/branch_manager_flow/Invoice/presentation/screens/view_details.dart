@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
-import '../../../widget/simple_appbar.dart';
+import '../../../../widget/simple_appbar.dart';
+import '../../view_model/get_all_invoice_viewmodel.dart';
 
 class ViewDetails extends StatefulWidget {
-  const ViewDetails({super.key});
+  final String invoiceId;
+
+  const ViewDetails({super.key, required this.invoiceId});
 
   @override
   State<ViewDetails> createState() => _ViewDetailsState();
@@ -13,173 +17,157 @@ class ViewDetails extends StatefulWidget {
 class _ViewDetailsState extends State<ViewDetails> {
   bool isPaid = false;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<InvoiceViewModel>().fetchInvoices();
+    });
+  }
+
+  String _formatDate(DateTime date) {
+    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+
   final List<Map<String, dynamic>> mockItems = [
-    {
-      'no': '01',
-      'product_name': 'Peri Chicken',
-      'price': 250,
-      'quantity': 10,
-      'total': 2500,
-    },
-    {
-      'no': '02',
-      'product_name': 'Peri Chicken',
-      'price': 250,
-      'quantity': 10,
-      'total': 2500,
-    },
-    {
-      'no': '03',
-      'product_name': 'Peri Chicken',
-      'price': 250,
-      'quantity': 10,
-      'total': 2500,
-    },
+    {'no': '01', 'product_name': 'Peri Chicken', 'price': 250, 'quantity': 10, 'total': 2500},
+    {'no': '02', 'product_name': 'Peri Chicken', 'price': 250, 'quantity': 10, 'total': 2500},
+    {'no': '03', 'product_name': 'Peri Chicken', 'price': 250, 'quantity': 10, 'total': 2500},
   ];
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(375, 812),
-      builder: (context, child) {
-        return Scaffold(
-          backgroundColor: const Color(0xffFFF6F7),
-          appBar: SimpleAppbar(
-            profileImage: AssetPaths.personIcon,
-            notificationCount: 4,
-            title: 'Invoice',
-            navigationType: NavigationType.pop,
-          ),
-          body: SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.all(15.0.w),
-                    child: Card(
-                      color: Colors.white,
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.r),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 24.0.w, vertical: 30.0.h),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Expanded(
-                                  child: _AddressSection(
-                                    title: 'Invoice From',
-                                    name: 'JHON DOE',
-                                    address:
-                                    '1550 Silky Blue Road San Francisco California',
-                                    phone: '(123) 123456-789',
+      builder: (context, child) => Scaffold(
+        backgroundColor: const Color(0xffFFF6F7),
+        appBar: SimpleAppbar(
+          profileImage: AssetPaths.personIcon,
+          notificationCount: 4,
+          title: 'Invoice',
+          navigationType: NavigationType.pop,
+        ),
+        body: SafeArea(
+          child: Consumer<InvoiceViewModel>(
+            builder: (context, vm, child) {
+              if (vm.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (vm.errorMessage != null) {
+                return Center(child: Text('Error: ${vm.errorMessage}'));
+              }
+              if (vm.invoices.isEmpty) {
+                return const Center(child: Text('No invoices found'));
+              }
+
+              final invoice = vm.invoices.firstWhere(
+                    (inv) => inv.id == widget.invoiceId,
+                orElse: () => vm.invoices[0],
+              );
+
+              final creator = invoice.creator;
+              final receiver = invoice.receiver;
+
+              return Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.all(15.w),
+                      child: Card(
+                        color: Colors.white,
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 30.h),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Invoice From
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: _AddressSection(
+                                      title: 'Invoice From',
+                                      name: '${creator.firstName} ${creator.lastName}',
+                                      address: creator.address,
+                                      phone: creator.phoneNumber,
+                                    ),
                                   ),
-                                ),
-                                AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 400),
-                                  transitionBuilder:
-                                      (Widget child, Animation<double> anim) {
-                                    return FadeTransition(
+                                  AnimatedSwitcher(
+                                    duration: const Duration(milliseconds: 400),
+                                    transitionBuilder: (child, anim) => FadeTransition(
                                       opacity: anim,
                                       child: SlideTransition(
-                                        position: Tween<Offset>(
-                                          begin: const Offset(0.3, 0),
-                                          end: Offset.zero,
-                                        ).animate(anim),
+                                        position: Tween(begin: const Offset(0.3, 0), end: Offset.zero).animate(anim),
                                         child: child,
                                       ),
-                                    );
-                                  },
-                                  child: isPaid
-                                      ? Container(
-                                    key: const ValueKey('paid'),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 10.w, vertical: 5.h),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF5BB450),
-                                      borderRadius:
-                                      BorderRadius.circular(20.r),
                                     ),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 25.w,
-                                          height: 25.h,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.circle,
+                                    child: isPaid
+                                        ? Container(
+                                      key: const ValueKey('paid'),
+                                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF5BB450),
+                                        borderRadius: BorderRadius.circular(20.r),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 25.w,
+                                            height: 25.h,
+                                            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                            child: Icon(Icons.check, color: Colors.green, size: 22.w),
                                           ),
-                                          child: Icon(Icons.check,
-                                              color: Colors.green,
-                                              size: 22.w),
-                                        ),
-                                        SizedBox(width: 6.w),
-                                        Text(
-                                          'Paid',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                      : const SizedBox.shrink(),
-                                ),
-                              ],
-                            ),
+                                          SizedBox(width: 6.w),
+                                          Text('Paid', style: TextStyle(color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w600)),
+                                        ],
+                                      ),
+                                    )
+                                        : const SizedBox.shrink(),
+                                  ),
+                                ],
+                              ),
 
-                            Divider(
-                                height: 35.h,
-                                thickness: 1,
-                                color: const Color(0xFFE0E0E0)),
+                              Divider(height: 35.h, thickness: 1, color: const Color(0xFFE0E0E0)),
 
-                            const _AddressSection(
-                              title: 'Ship to',
-                              name: 'JHON DOE',
-                              address:
-                              '1550 Silky Blue Road San Francisco California',
-                              phone: '(123) 123456-789',
-                            ),
-                            Divider(
-                                height: 35.h,
-                                thickness: 1,
-                                color: const Color(0xFFE0E0E0)),
+                              // Ship to
+                              _AddressSection(
+                                title: 'Ship to',
+                                name: '${receiver.firstName} ${receiver.lastName}',
+                                address: receiver.address,
+                                phone: receiver.phoneNumber,
+                              ),
 
-                            const _DateInvoiceRow(
-                              date: '20 APRIL 2025',
-                              invoiceNo: 'FS618A',
-                            ),
-                            SizedBox(height: 10.h),
-                            _InvoiceTable(items: mockItems),
-                            SizedBox(height: 20.h),
-                            const _SubtotalRow(subtotal: '£588'),
-                          ],
+                              Divider(height: 35.h, thickness: 1, color: const Color(0xFFE0E0E0)),
+
+                              // Date & Invoice No
+                              _DateInvoiceRow(
+                                date: _formatDate(invoice.createdAt),
+                                invoiceNo: invoice.sku,
+                              ),
+
+                              SizedBox(height: 10.h),
+                              _InvoiceTable(items: mockItems),
+                              SizedBox(height: 20.h),
+                              const _SubtotalRow(subtotal: '£588'),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
 
-                if (!isPaid)
-                  _BottomActionBar(
-                    onPaid: () {
-                      setState(() {
-                        isPaid = true;
-                      });
-                    },
-                  ),
-              ],
-            ),
+                  if (!isPaid)
+                    _BottomActionBar(onPaid: () => setState(() => isPaid = true)),
+                ],
+              );
+            },
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

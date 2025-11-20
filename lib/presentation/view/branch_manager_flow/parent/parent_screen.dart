@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
-import '../Invoice/Invoice_screen.dart';
+import '../Invoice/presentation/Invoice_screen.dart';
 import '../home/home_screen.dart';
 import '../orders/orders_screen.dart';
 import '../profile/profile_screen.dart';

@@ -21,8 +21,8 @@ import '../../presentation/view/auth/login/screen/login_screen.dart';
 import '../../presentation/view/auth/otp_verify/screen/otp_verify_screen.dart';
 import '../../presentation/view/auth/set_new_password/screen/set_new_password_screen.dart';
 import '../../presentation/view/auth/signup/screen/signup_screen.dart';
-import '../../presentation/view/branch_manager_flow/Invoice/Invoice_screen.dart';
-import '../../presentation/view/branch_manager_flow/Invoice/screens/view_details.dart';
+import '../../presentation/view/branch_manager_flow/Invoice/presentation/Invoice_screen.dart';
+import '../../presentation/view/branch_manager_flow/Invoice/presentation/screens/view_details.dart';
 import '../../presentation/view/branch_manager_flow/home/home_screen.dart';
 import '../../presentation/view/branch_manager_flow/notification/notification_screen.dart';
 import '../../presentation/view/branch_manager_flow/orders/orders_screen.dart';
@@ -58,7 +58,7 @@ class AppRoutes{
     RouteNames.ordersScreen   :(context)=>  OrdersScreen(),
     RouteNames.myOrders   :(context)=>  MyOrders(),
     RouteNames.invoiceScreen   :(context)=>  InvoiceScreen(),
-    RouteNames.viewDetails   :(context)=>  ViewDetails(),
+    RouteNames.viewDetails   :(context)=>  ViewDetails(invoiceId: '',),
     RouteNames.profileScreen   :(context)=>  ProfileScreen(),
     RouteNames.changePassword   :(context)=>  ChangePassword(),
     RouteNames.changeInfo   :(context)=>  ChangeInfo(),
