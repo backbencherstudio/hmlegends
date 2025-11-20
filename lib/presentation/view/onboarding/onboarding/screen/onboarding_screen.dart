@@ -107,7 +107,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         OnBoardingElevatedButton(
           text: 'Start as Branch manager',
           suffixIcon: Icons.arrow_forward,
-          onPressed: () => _navigateToSignUp('branch_manager'),
+          onPressed: () => _navigateToSignUp('manager'),
           height: 49.h,
           width: 280.w,
           borderRadius: 30.r,

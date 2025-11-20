@@ -4,6 +4,8 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
 import 'package:hmlegends/core/services/user_type_storage.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -31,6 +33,8 @@ class _SplashScreenState extends State<SplashScreen>
       final userType = await UserTypeStorage().getUserType();
 
       if (token != null && userType == "admin") {
+        context.read<ChangePasswordProvider>().adminCheckMe();
+
         Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
       } else if (token != null && userType == 'manager') {
         Navigator.pushReplacementNamed(context, RouteNames.branchParentScreen);

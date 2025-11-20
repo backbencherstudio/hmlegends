@@ -55,12 +55,18 @@ class ChangePasswordProvider with ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decodeData = jsonDecode(response.body);
         _adminInfoModel = AdminInfoModel.fromJson(decodeData);
+        debugPrint("The message ${_adminInfoModel!.data!.type}");
         debugPrint("The message ${_adminInfoModel!.data!.id}");
+        debugPrint("The message ${_adminInfoModel!.data!.firstName}");
+        debugPrint("The message ${_adminInfoModel!.data!.lastName}");
         debugPrint("The success message ${decodeData['message']}");
       } else {
         final decodeData = jsonDecode(response.body);
         _adminInfoModel = AdminInfoModel.fromJson(decodeData);
+        debugPrint("The message ${_adminInfoModel!.data!.type}");
         debugPrint("The message ${_adminInfoModel!.data!.id}");
+        debugPrint("The message ${_adminInfoModel!.data!.firstName}");
+        debugPrint("The message ${_adminInfoModel!.data!.lastName}");
         debugPrint("The failed message ${decodeData['message']}");
       }
     } catch (error) {
