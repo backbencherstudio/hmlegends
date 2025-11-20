@@ -40,5 +40,4 @@ class RouteNames{
   static const String manageBranchesToOrderSummaryScreen = '/manageBranchesToOrderSummaryScreen';
   static const String editBranchScreen = '/editBranchScreen';
 
-
 }

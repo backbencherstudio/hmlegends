@@ -25,10 +25,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -40,7 +39,6 @@ class _LoginScreenState extends State<LoginScreen> {
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 10.h),
                 Center(
@@ -65,7 +63,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 8.h),
                     RequiredLabel(labelText: 'Email'),
                     SizedBox(height: 5.h),
                     _buildTextField('Your email', Icons.email_outlined),
@@ -75,7 +72,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     _buildPasswordField(),
                     SizedBox(height: 5.h),
                     _buildRememberMeRow(),
-                    SizedBox(height: 10.h),
                   ],
                 ),
                 SizedBox(height: 10.h),
@@ -86,7 +82,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 SocialAuthButtons(),
                 SizedBox(height: 30.h),
                 _buildSignUpLink(),
-                SizedBox(height: 10.h),
               ],
             ),
           ),
@@ -108,44 +103,28 @@ class _LoginScreenState extends State<LoginScreen> {
             fillColor: AppColors.authTextFormFieldFillColor,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30.r),
-              borderSide: BorderSide(
-                color: AppColors.authTextFormFieldBorderColor,
-              ),
+              borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30.r),
-              borderSide: BorderSide(
-                color: AppColors.authTextFormFieldBorderColor,
-              ),
+              borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30.r),
-              borderSide: BorderSide(
-                color: AppColors.authTextFormFieldBorderColor,
-              ),
+              borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
             ),
-            contentPadding: EdgeInsets.symmetric(
-              vertical: 12.h,
-              horizontal: 16.w,
-            ),
+            contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
             prefixIcon: Padding(
               padding: EdgeInsets.only(left: 8.w),
-              child: Icon(
-                Icons.lock_outline_rounded,
-                color: AppColors.authBodyTextColor,
-              ),
+              child: Icon(Icons.lock_outline_rounded, color: AppColors.authBodyTextColor),
             ),
             suffixIcon: IconButton(
               padding: EdgeInsets.only(right: 8.w),
               icon: Icon(
-                viewModel.passwordVisible
-                    ? Icons.visibility
-                    : Icons.visibility_off,
+                viewModel.passwordVisible ? Icons.visibility : Icons.visibility_off,
                 color: AppColors.authBodyTextColor,
               ),
-              onPressed: () {
-                viewModel.togglePasswordVisibility();
-              },
+              onPressed: viewModel.togglePasswordVisibility,
             ),
           ),
         );
@@ -154,55 +133,23 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildRememberMeRow() {
-    return Consumer<LoginViewModel>(
-      builder: (context, viewModel, child) {
-        return Row(
-          children: [
-            // SizedBox(
-            //   width: 20,
-            //   height: 20,
-            //   child: Checkbox(
-            //     value: viewModel.rememberMe,
-            //     onChanged: (value) {
-            //       viewModel.setRememberMe(value ?? false);
-            //     },
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(4.r),
-            //     ),
-            //     side: BorderSide(color: AppColors.primaryColor),
-            //     activeColor: AppColors.primaryColor,
-            //     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            //     visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-            //   ),
-            // ),
-
-            // Text(
-            //   'Remember me',
-            //   style: TextStyle(
-            //     fontSize: 12.sp,
-            //     letterSpacing: 0.5,
-            //     color: AppColors.authBodyTextColor,
-            //     fontWeight: FontWeight.w500,
-            //   ),
-            // ),
-            Spacer(),
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, RouteNames.forgetPasswordScreen);
-              },
-              child: Text(
-                'Forgot Password?',
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  letterSpacing: 0.5,
-                  color: AppColors.authHeaderTextColor,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+    return Row(
+      children: [
+        Spacer(),
+        TextButton(
+          onPressed: () {
+            Navigator.pushNamed(context, RouteNames.forgetPasswordScreen);
+          },
+          child: Text(
+            'Forgot Password?',
+            style: TextStyle(
+              fontSize: 12.sp,
+              color: AppColors.authHeaderTextColor,
+              fontWeight: FontWeight.w500,
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
     );
   }
 
@@ -211,116 +158,70 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (context, provider, child) {
         return AuthButton(
           text: provider.isLoading ? 'Signing In...' : 'Sign In',
-          onPressed: () {
+          onPressed: () async {
             if (provider.isLoading) return;
 
-            () async {
-              FocusScope.of(context).unfocus();
+            FocusScope.of(context).unfocus();
 
-              final email = _emailController.text.trim();
-              final password = _passwordController.text.trim();
+            final email = _emailController.text.trim();
+            final password = _passwordController.text.trim();
 
-              if (email.isEmpty || password.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Please enter both email and password."),
-                    backgroundColor: Colors.redAccent,
+            if (email.isEmpty || password.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Please enter both email and password."),
+                  backgroundColor: Colors.redAccent,
+                ),
+              );
+              return;
+            }
+
+            final success = await provider.login(email: email, password: password);
+
+            if (success) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: Colors.green.shade600,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                );
-                return;
-              }
-
-              final success = await provider.login(
-                email: email,
-                password: password,
+                  content: Text(provider.errorMessage ?? "Login successful!",
+                      style: const TextStyle(color: Colors.white)),
+                ),
               );
 
-              if (success) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Colors.green.shade600,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    content: Text(
-                      provider.errorMessage ?? "Login successful!",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                );
+              final userRole = provider.userType ?? '';
 
-                final args = ModalRoute.of(context)?.settings.arguments as Map?;
-                final String? userRole = args?['userRole'] as String?;
-
-                if (userRole == 'admin') {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    RouteNames.mainWrapper,
-                  );
-                } else if (userRole == 'manager') {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    RouteNames.branchParentScreen,
-                  );
-                } else if (userRole == 'driver') {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    RouteNames.driverBranchParentScreen,
-                  );
-                } else {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    RouteNames.mainWrapper,
-                  );
-                }
+              if (userRole == 'admin') {
+                Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
+              } else if (userRole == 'manager') {
+                Navigator.pushReplacementNamed(context, RouteNames.branchParentScreen);
+              } else if (userRole == 'driver') {
+                Navigator.pushReplacementNamed(context, RouteNames.driverBranchParentScreen);
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Colors.redAccent,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    content: Text(
-                      provider.errorMessage ?? "Login failed. Try again.",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                );
+                Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
               }
-            }();
+
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: Colors.redAccent,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  content: Text(provider.errorMessage ?? "Login failed. Try again.",
+                      style: const TextStyle(color: Colors.white)),
+                ),
+              );
+            }
           },
           color: AppColors.primaryColor,
         );
       },
     );
   }
-
-  // Widget _buildSignInButton() {
-  //   return Consumer<LoginViewModel>(
-  //     builder: (context, viewModel, child) {
-  //       return AuthButton(
-  //         text: 'Sign In',
-  //         onPressed: () {
-  //           final args = ModalRoute.of(context)?.settings.arguments as Map?;
-  //           final String? userRole = args?['userRole'] as String?;
-  //
-  //           if (userRole == 'admin') {
-  //             Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
-  //           } else if (userRole == 'branch_manager') {
-  //             Navigator.pushReplacementNamed(context, RouteNames.branchParentScreen);
-  //           } else if (userRole == 'driver') {
-  //             Navigator.pushReplacementNamed(context, RouteNames.driverBranchParentScreen);
-  //           } else {
-  //             Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
-  //           }
-  //         },
-  //         color: AppColors.primaryColor,
-  //       );
-  //     },
-  //   );
-  // }
 
   Widget _buildOrJoinWithDivider() {
     return Row(
@@ -337,7 +238,6 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: EdgeInsets.symmetric(horizontal: 8.w),
           child: Text(
             'Or',
-            textAlign: TextAlign.center,
             style: TextStyle(
               color: const Color(0xFF777980),
               fontSize: 14.sp,
@@ -369,26 +269,17 @@ class _LoginScreenState extends State<LoginScreen> {
           fillColor: AppColors.authTextFormFieldFillColor,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(
-              color: AppColors.authTextFormFieldBorderColor,
-            ),
+            borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(
-              color: AppColors.authTextFormFieldBorderColor,
-            ),
+            borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(
-              color: AppColors.authTextFormFieldBorderColor,
-            ),
+            borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
           ),
-          contentPadding: EdgeInsets.symmetric(
-            vertical: 12.h,
-            horizontal: 16.w,
-          ),
+          contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
           prefixIcon: Padding(
             padding: EdgeInsets.only(left: 8.w),
             child: Icon(icon, color: AppColors.authBodyTextColor),
