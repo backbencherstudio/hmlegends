@@ -1,40 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../../../widget/simple_appbar.dart';
-import '../../view_model/get_all_invoice_viewmodel.dart';
+import '../../view_model/get_invoices_details_viewmodel.dart';
 
-class ViewDetails extends StatefulWidget {
-  final String invoiceId;
+class ViewDetails extends StatelessWidget {
+  const ViewDetails({super.key});
 
-  const ViewDetails({super.key, required this.invoiceId});
-
-  @override
-  State<ViewDetails> createState() => _ViewDetailsState();
-}
-
-class _ViewDetailsState extends State<ViewDetails> {
-  bool isPaid = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<InvoiceViewModel>().fetchInvoices();
-    });
+  String _formatDate(String isoString) {
+    final date = DateTime.parse(isoString);
+    return DateFormat('d MMM yyyy').format(date);
   }
-
-  String _formatDate(DateTime date) {
-    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
-  }
-
-  final List<Map<String, dynamic>> mockItems = [
-    {'no': '01', 'product_name': 'Peri Chicken', 'price': 250, 'quantity': 10, 'total': 2500},
-    {'no': '02', 'product_name': 'Peri Chicken', 'price': 250, 'quantity': 10, 'total': 2500},
-    {'no': '03', 'product_name': 'Peri Chicken', 'price': 250, 'quantity': 10, 'total': 2500},
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -42,32 +20,38 @@ class _ViewDetailsState extends State<ViewDetails> {
       designSize: const Size(375, 812),
       builder: (context, child) => Scaffold(
         backgroundColor: const Color(0xffFFF6F7),
-        appBar: SimpleAppbar(
+        appBar: const SimpleAppbar(
           profileImage: AssetPaths.personIcon,
           notificationCount: 4,
           title: 'Invoice',
           navigationType: NavigationType.pop,
         ),
         body: SafeArea(
-          child: Consumer<InvoiceViewModel>(
+          child: Consumer<GetInvoiceDetailViewmodel>(
             builder: (context, vm, child) {
               if (vm.isLoading) {
                 return const Center(child: CircularProgressIndicator());
               }
-              if (vm.errorMessage != null) {
-                return Center(child: Text('Error: ${vm.errorMessage}'));
-              }
-              if (vm.invoices.isEmpty) {
-                return const Center(child: Text('No invoices found'));
-              }
 
-              final invoice = vm.invoices.firstWhere(
-                    (inv) => inv.id == widget.invoiceId,
-                orElse: () => vm.invoices[0],
-              );
+              // if (vm.errorMessage.isNotEmpty) {
+              //   return Center(
+              //     child: Column(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: [
+              //         const Icon(Icons.error, size: 64, color: Colors.red),
+              //         const SizedBox(height: 16),
+              //         Text(vm.errorMessage),
+              //         ElevatedButton(
+              //           onPressed: () => vm.fetchInvoiceDetail(),
+              //           child: const Text("Retry"),
+              //         ),
+              //       ],
+              //     ),
+              //   );
+              // }
 
-              final creator = invoice.creator;
-              final receiver = invoice.receiver;
+              final invoice = vm.invoiceDetail!.data!;
+              final isPaid = invoice.status?.toUpperCase() == 'PAID';
 
               return Column(
                 children: [
@@ -77,82 +61,137 @@ class _ViewDetailsState extends State<ViewDetails> {
                       child: Card(
                         color: Colors.white,
                         elevation: 2,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.r),
+                        ),
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 30.h),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24.w,
+                            vertical: 30.h,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Invoice From
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
                                     child: _AddressSection(
                                       title: 'Invoice From',
-                                      name: '${creator.firstName} ${creator.lastName}',
-                                      address: creator.address,
-                                      phone: creator.phoneNumber,
+                                      name:
+                                          '${invoice.creator?.firstName ?? ''} ${invoice.creator?.lastName ?? ''}'
+                                              .trim(),
+                                      address: invoice.creator?.address ?? '',
+                                      phone: invoice.creator?.phoneNumber ?? '',
                                     ),
                                   ),
                                   AnimatedSwitcher(
                                     duration: const Duration(milliseconds: 400),
-                                    transitionBuilder: (child, anim) => FadeTransition(
-                                      opacity: anim,
-                                      child: SlideTransition(
-                                        position: Tween(begin: const Offset(0.3, 0), end: Offset.zero).animate(anim),
-                                        child: child,
-                                      ),
-                                    ),
                                     child: isPaid
                                         ? Container(
-                                      key: const ValueKey('paid'),
-                                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF5BB450),
-                                        borderRadius: BorderRadius.circular(20.r),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            width: 25.w,
-                                            height: 25.h,
-                                            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                                            child: Icon(Icons.check, color: Colors.green, size: 22.w),
-                                          ),
-                                          SizedBox(width: 6.w),
-                                          Text('Paid', style: TextStyle(color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w600)),
-                                        ],
-                                      ),
-                                    )
+                                            key: const ValueKey('paid'),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 10.w,
+                                              vertical: 5.h,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFF5BB450),
+                                              borderRadius:
+                                                  BorderRadius.circular(20.r),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: 25.w,
+                                                  height: 25.h,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                        color: Colors.white,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                  child: Icon(
+                                                    Icons.check,
+                                                    color: Colors.green,
+                                                    size: 22.w,
+                                                  ),
+                                                ),
+                                                SizedBox(width: 6.w),
+                                                Text(
+                                                  'Paid',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )
                                         : const SizedBox.shrink(),
                                   ),
                                 ],
                               ),
 
-                              Divider(height: 35.h, thickness: 1, color: const Color(0xFFE0E0E0)),
+                              Divider(
+                                height: 35.h,
+                                thickness: 1,
+                                color: const Color(0xFFE0E0E0),
+                              ),
 
                               // Ship to
                               _AddressSection(
                                 title: 'Ship to',
-                                name: '${receiver.firstName} ${receiver.lastName}',
-                                address: receiver.address,
-                                phone: receiver.phoneNumber,
+                                name:
+                                    '${invoice.receiver?.firstName ?? ''} ${invoice.receiver?.lastName ?? ''}'
+                                        .trim(),
+                                address: invoice.receiver?.address ?? '',
+                                phone: invoice.receiver?.phoneNumber ?? '',
                               ),
 
-                              Divider(height: 35.h, thickness: 1, color: const Color(0xFFE0E0E0)),
+                              Divider(
+                                height: 35.h,
+                                thickness: 1,
+                                color: const Color(0xFFE0E0E0),
+                              ),
 
                               // Date & Invoice No
                               _DateInvoiceRow(
-                                date: _formatDate(invoice.createdAt),
-                                invoiceNo: invoice.sku,
+                                date: _formatDate(invoice.createdAt!),
+                                invoiceNo: invoice.sku ?? 'N/A',
                               ),
 
                               SizedBox(height: 10.h),
-                              _InvoiceTable(items: mockItems),
+
+                              // Items Table
+                              _InvoiceTable(
+                                items:
+                                    invoice.order?.orderItems?.map((item) {
+                                      final product = item.product;
+                                      final qty = item.quantity ?? 0;
+                                      final price = item.price ?? 0.0;
+                                      return {
+                                        'no':
+                                            '${invoice.order!.orderItems!.indexOf(item) + 1}'
+                                                .padLeft(2, '0'),
+                                        'product_name':
+                                            product?.name ?? 'Unknown Product',
+                                        'price': price,
+                                        'quantity': qty,
+                                        'total': qty * price,
+                                      };
+                                    }).toList() ??
+                                    [],
+                              ),
+
                               SizedBox(height: 20.h),
-                              const _SubtotalRow(subtotal: '£588'),
+
+                              // Subtotal
+                              _SubtotalRow(
+                                subtotal:
+                                    '৳${invoice.order?.totalAmount?.toStringAsFixed(2) ?? '0.00'}',
+                              ),
                             ],
                           ),
                         ),
@@ -160,8 +199,16 @@ class _ViewDetailsState extends State<ViewDetails> {
                     ),
                   ),
 
-                  if (!isPaid)
-                    _BottomActionBar(onPaid: () => setState(() => isPaid = true)),
+                  // if (!isPaid)
+                  //   _BottomActionBar(
+                  //     onPaid: () {
+                  //       // TODO: Call payment API
+                  //       ScaffoldMessenger.of(context).showSnackBar(
+                  //         const SnackBar(content: Text("Payment successful!")),
+                  //       );
+                  //       vm.fetchInvoiceDetail();
+                  //     },
+                  //   ),
                 ],
               );
             },
@@ -173,11 +220,7 @@ class _ViewDetailsState extends State<ViewDetails> {
 }
 
 class _AddressSection extends StatelessWidget {
-  final String title;
-  final String name;
-  final String address;
-  final String phone;
-
+  final String title, name, address, phone;
   const _AddressSection({
     required this.title,
     required this.name,
@@ -193,33 +236,29 @@ class _AddressSection extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-              fontSize: 15.sp,
-              color: const Color(0xFF9E9E9E),
-              fontWeight: FontWeight.w600),
+            fontSize: 15.sp,
+            color: const Color(0xFF9E9E9E),
+            fontWeight: FontWeight.w600,
+          ),
         ),
         SizedBox(height: 8.h),
         Text(
           name,
           style: TextStyle(
-              fontSize: 15.sp,
-              color: Colors.black,
-              fontWeight: FontWeight.bold),
+            fontSize: 15.sp,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         SizedBox(height: 5.h),
         Text(
           address,
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: const Color(0xFF616161),
-          ),
+          style: TextStyle(fontSize: 14.sp, color: const Color(0xFF616161)),
         ),
         SizedBox(height: 5.h),
         Text(
           phone,
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: const Color(0xFF616161),
-          ),
+          style: TextStyle(fontSize: 14.sp, color: const Color(0xFF616161)),
         ),
       ],
     );
@@ -227,9 +266,7 @@ class _AddressSection extends StatelessWidget {
 }
 
 class _DateInvoiceRow extends StatelessWidget {
-  final String date;
-  final String invoiceNo;
-
+  final String date, invoiceNo;
   const _DateInvoiceRow({required this.date, required this.invoiceNo});
 
   @override
@@ -239,11 +276,11 @@ class _DateInvoiceRow extends StatelessWidget {
       children: [
         Text(
           'Date: $date',
-          style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500),
         ),
         Text(
           'Invoice No: $invoiceNo',
-          style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500),
         ),
       ],
     );
@@ -252,7 +289,6 @@ class _DateInvoiceRow extends StatelessWidget {
 
 class _InvoiceTable extends StatelessWidget {
   final List<Map<String, dynamic>> items;
-
   const _InvoiceTable({required this.items});
 
   @override
@@ -269,61 +305,40 @@ class _InvoiceTable extends StatelessWidget {
       children: [
         TableRow(
           decoration: const BoxDecoration(color: Color(0xFFF5F5F5)),
-          children: [
-            Padding(
-              padding: EdgeInsets.all(8.w),
-              child: Text('No',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.w),
-              child: Text('Product Name',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.w),
-              child: Text('Price',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.w),
-              child: Text('Quantity',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.w),
-              child: Text('Total',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 11.sp)),
-            ),
-          ],
+          children: ['No', 'Product Name', 'Price', 'Quantity', 'Total']
+              .map(
+                (header) => Padding(
+                  padding: EdgeInsets.all(8.w),
+                  child: Text(
+                    header,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11.sp,
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
         ),
         for (var item in items)
           TableRow(
             children: [
+              Padding(padding: EdgeInsets.all(8.w), child: Text(item['no'])),
               Padding(
                 padding: EdgeInsets.all(8.w),
-                child: Text(item['no']?.toString() ?? ''),
+                child: Text(item['product_name']),
               ),
               Padding(
                 padding: EdgeInsets.all(8.w),
-                child: Text(item['product_name']?.toString() ?? ''),
+                child: Text('৳${item['price']}'),
               ),
               Padding(
                 padding: EdgeInsets.all(8.w),
-                child: Text('£${item['price'] ?? 0}'),
+                child: Text('${item['quantity']}'),
               ),
               Padding(
                 padding: EdgeInsets.all(8.w),
-                child: Text('${item['quantity'] ?? 0}'), // No £ on quantity
-              ),
-              Padding(
-                padding: EdgeInsets.all(8.w),
-                child: Text('£${item['total'] ?? 0}'),
+                child: Text('৳${item['total']}'),
               ),
             ],
           ),
@@ -334,7 +349,6 @@ class _InvoiceTable extends StatelessWidget {
 
 class _SubtotalRow extends StatelessWidget {
   final String subtotal;
-
   const _SubtotalRow({required this.subtotal});
 
   @override
@@ -343,10 +357,7 @@ class _SubtotalRow extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: Text(
         'Subtotal: $subtotal',
-        style: TextStyle(
-          fontSize: 16.sp,
-          fontWeight: FontWeight.bold,
-        ),
+        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -354,24 +365,16 @@ class _SubtotalRow extends StatelessWidget {
 
 class _BottomActionBar extends StatelessWidget {
   final VoidCallback onPaid;
-
   const _BottomActionBar({required this.onPaid});
-
-  void _onExport() {
-    debugPrint('Exporting invoice...');
-  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 150.h,
-      padding: EdgeInsets.symmetric(horizontal: 5.0.w, vertical: 50.0.h),
-      color: Colors.transparent,
+      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 50.h),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(width: 120.w),
           ElevatedButton(
             onPressed: onPaid,
             style: ElevatedButton.styleFrom(
@@ -385,15 +388,12 @@ class _BottomActionBar extends StatelessWidget {
             ),
             child: Text(
               'Pay bill',
-              style: TextStyle(
-                fontSize: 15.sp,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(width: 15.w),
           TextButton.icon(
-            onPressed: _onExport,
+            onPressed: () => debugPrint('Exporting...'),
             icon: Image.asset('assets/icons/export.png', scale: 3.5),
             label: Text(
               'Export',
@@ -409,4 +409,3 @@ class _BottomActionBar extends StatelessWidget {
     );
   }
 }
-
