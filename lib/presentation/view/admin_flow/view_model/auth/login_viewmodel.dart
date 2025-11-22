@@ -54,7 +54,7 @@ class LoginViewModel with ChangeNotifier {
         // debugPrint("User Id: ${data['user']['_id']}");
         debugPrint("Access Token: ${data['authorization']['access_token']}");
         debugPrint("refresh Token: ${data['authorization']['refresh_token']}");
-        _tokenStorage.saveToken(data['authorization']['access_token']);
+        await _tokenStorage.saveToken(data['authorization']['access_token']);
 
         debugPrint("data: $data");
         debugPrint("Login success");

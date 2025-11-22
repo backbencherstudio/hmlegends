@@ -1,54 +1,55 @@
-import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:hmlegends/core/constant/api_endpoint.dart';
 
-import 'package:flutter/cupertino.dart';
-import '../../../../../core/constant/api_endpoint.dart';
 import '../../../../../core/services/api_service.dart';
-import '../../../admin_flow/admin_model/invoice_status_model.dart';
 import '../data/get_all_invoice_model.dart';
 
-class InvoiceViewModel extends ChangeNotifier {
+class GetAllInvoiceProvider extends ChangeNotifier {
   bool _isLoading = false;
-  String? _errorMessage;
-  List<Invoices> _invoices = [];
-
   bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
-  List<Invoices> get invoices => _invoices;
+
+  String _errorMessage = '';
+  String get errorMessage => _errorMessage;
+
+  GetAllInvoices? _invoiceResponse;
+  GetAllInvoices? get invoiceResponse => _invoiceResponse;
 
   final ApiService _apiService = ApiService();
 
-  Future<void> fetchInvoices() async {
+  Future<bool> fetchAllInvoices() async {
     _isLoading = true;
-    _errorMessage = null;
-    print("Fetching invoices...");
+    _errorMessage = '';
     notifyListeners();
 
     try {
       final response = await _apiService.get(ApiEndpoints.getInvoices);
 
-      print("API Response: ${response.statusCode}");
-      print("API Response: ${response.data}");
+      debugPrint("=== RAW API RESPONSE ===");
+      debugPrint("Status Code: ${response.statusCode}");
+      debugPrint("Response Body: ${response.data}");
+      debugPrint("=========================");
 
-      final Map<String, dynamic> jsonMap = response.data is String
-          ? jsonDecode(response.data)
-          : response.data;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _invoiceResponse = GetAllInvoices.fromJson(response.data);
 
-      print("Success: ${jsonMap['success']}");
+        debugPrint("Parsed Invoices Count: ${_invoiceResponse?.data?.invoices?[0].creator?.firstName ?? 'N/A'}");
+        debugPrint("Stats: ${_invoiceResponse?.data?.stats?.toJson()}");
 
-      if (jsonMap['success'] == true) {
-        final List<dynamic> list = jsonMap['data']['invoices'];
-        print("Found ${list.length} invoices");
-
-        _invoices = list.map((e) => Invoices.fromJson(e)).toList();
+        _isLoading = false;
+        notifyListeners();
+        return true;
       } else {
-        _errorMessage = jsonMap['message'] ?? 'Failed';
+        _errorMessage = response.data['message'] ?? 'Failed to fetch invoices.';
+        _isLoading = false;
+        notifyListeners();
+        return false;
       }
     } catch (e) {
-      print("Error: $e");
-      _errorMessage = 'Error: $e';
+      debugPrint("Error fetching invoices: $e");
+      _errorMessage = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 }

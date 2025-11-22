@@ -120,7 +120,9 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                       SizedBox(width: 20.w),
                       GestureDetector(
-                        onTap: onProfileTap,
+                        onTap: (){
+                          Navigator.pushNamed(context, RouteNames.headOfficeProfileScreen);
+                        },
                         child: CircleAvatar(
                           radius: 18.r,
                           backgroundImage: AssetImage(profileImage),
