@@ -3,7 +3,7 @@ import 'dart:math';
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'http://192.168.5.232:4050';
+  static const String baseUrl = 'https://saskatchewan-lights-oliver-plastics.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
 
@@ -22,6 +22,7 @@ class ApiEndpoints {
   static String fetchSingleProduct(String pid) => '$baseUrl/api/product/$pid';
   static String deleteProduct(String pid) => '$baseUrl/api/product/$pid';
   static String adminOrder = '$baseUrl/api/order/admin';
+  static String getAllInvoice = '$baseUrl/api/invoice';
 
   //Branch
 

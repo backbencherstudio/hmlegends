@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constant/api_endpoint.dart';
 import '../../../../../core/services/api_service.dart';
 
-
 class RegisterProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -43,7 +42,8 @@ class RegisterProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
 
   void setTypeFromRoute(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final String? userRole = args?['userRole'] as String?;
 
     if (userRole != null && userRole != _type) {
@@ -69,7 +69,8 @@ class RegisterProvider extends ChangeNotifier {
     notifyListeners();
 
     if (_type.isEmpty) {
-      _errorMessage = 'User type not selected. Please go back and choose a role.';
+      _errorMessage =
+          'User type not selected. Please go back and choose a role.';
       _isLoading = false;
       notifyListeners();
       return false;
@@ -81,6 +82,8 @@ class RegisterProvider extends ChangeNotifier {
       "password": password,
       "type": _type,
     };
+
+    debugPrint("The user type with body $data");
 
     try {
       final response = await _apiService.post(

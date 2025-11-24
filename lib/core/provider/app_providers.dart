@@ -3,6 +3,7 @@ import 'package:provider/single_child_widget.dart';
 import '../../data/datasources/product_local_datasource.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/usecase/get_product_usecase.dart';
+import '../../presentation/view/admin_flow/admin/invoice/view_model/admin_invoic_provider.dart';
 import '../../presentation/view/admin_flow/view_model/auth/login_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth/set_new_password_viewModel.dart';
 import '../../presentation/view/admin_flow/view_model/auth/signup_viewmodel.dart';
@@ -41,6 +42,7 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
     ChangeNotifierProvider(create: (_) => StockScreenProvider()),
     ChangeNotifierProvider(create: (_) => OrderScreenProvider()),
+    ChangeNotifierProvider(create: (_) => AdminInvoiceProvider()),
   ];
 
   static List<SingleChildWidget> getProviders() {
