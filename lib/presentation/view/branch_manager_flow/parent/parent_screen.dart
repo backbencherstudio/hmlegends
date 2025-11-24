@@ -5,7 +5,7 @@ import '../../admin_flow/admin/profile/screen/head_office_profile_screen.dart';
 import '../../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 import '../Invoice/presentation/Invoice_screen.dart';
 import '../home/home_screen.dart';
-import '../orders/orders_screen.dart';
+import '../orders/presentation/view/orders_screen.dart';
 import '../profile/profile_screen.dart';
 import 'bottom_nav_bar.dart';
 
