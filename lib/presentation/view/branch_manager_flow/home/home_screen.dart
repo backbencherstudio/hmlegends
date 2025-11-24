@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import '../../../../core/constant/asset_path.dart';
 import '../../widget/custom_app_bar.dart';
 
@@ -139,20 +140,27 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: _onLockAccountPressed,
-                            child: const CustomFeatureBox(
+                            onTap: (){
+                              Navigator.pushNamed(context, RouteNames.invoiceScreen);
+                            },
+                            child: CustomFeatureBox(
                               imagePath: 'assets/icons/third_box.png',
                               text: 'Invoices',
                             ),
                           ),
                         ],
                       ),
-                      const Column(
+                       Column(
                         spacing: 10,
                         children: [
-                          CustomFeatureBox(
-                            imagePath: 'assets/icons/second_box.png',
-                            text: 'My orders',
+                          GestureDetector(
+                            onTap:(){
+                              Navigator.pushNamed(context, RouteNames.ordersScreen);
+                            },
+                            child: CustomFeatureBox(
+                              imagePath: 'assets/icons/second_box.png',
+                              text: 'My orders',
+                            ),
                           ),
                           CustomFeatureBox(
                             imagePath: 'assets/icons/fourth_box.png',

@@ -29,9 +29,9 @@ void logoutShowSubmitDialog(BuildContext context) {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 6.w),
                   child: ElevatedButton(
-                    onPressed: () {
-                      token.clearToken();
-                      userType.clearUserType();
+                    onPressed: () async {
+                      await token.clearToken();
+                      await userType.clearUserType();
                       Navigator.pushNamedAndRemoveUntil(
                         context,
                         RouteNames.loginScreen,

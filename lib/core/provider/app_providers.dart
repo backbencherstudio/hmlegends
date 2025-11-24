@@ -1,3 +1,4 @@
+import 'package:hmlegends/presentation/view/branch_manager_flow/orders/viewmodel/create_order_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import '../../data/datasources/product_local_datasource.dart';
@@ -20,6 +21,7 @@ import '../../presentation/view/admin_flow/view_model/profile/change_pass_provid
 import '../../presentation/view/admin_flow/view_model/stock/stock_screen_provider.dart';
 import '../../presentation/view/branch_manager_flow/Invoice/view_model/get_all_invoice_viewmodel.dart';
 import '../../presentation/view/branch_manager_flow/Invoice/view_model/get_invoices_details_viewmodel.dart';
+import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_all_product_viewmodel.dart';
 import '../../presentation/view/driver_flow/driver_provider/branch_product_provider.dart';
 
 class AppProviders {
@@ -40,11 +42,15 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => VerifyOtpViewmodel()),
     ChangeNotifierProvider(create: (_) => SetNewPasswordViewModel()),
     ChangeNotifierProvider(create: (_) => SetPasswordViewModel()),
+
     ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
+
     ChangeNotifierProvider(create: (_) => StockScreenProvider()),
     ChangeNotifierProvider(create: (_) => OrderScreenProvider()),
     ChangeNotifierProvider(create: (_) => GetAllInvoiceProvider()),
     ChangeNotifierProvider(create: (_) => GetInvoiceDetailViewmodel()),
+    ChangeNotifierProvider(create: (_) => GetProductsViewmodel()),
+    ChangeNotifierProvider(create: (_) => OrderViewmodel()),
   ];
 
   static List<SingleChildWidget> getProviders() {

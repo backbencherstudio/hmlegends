@@ -25,8 +25,8 @@ import '../../presentation/view/branch_manager_flow/Invoice/presentation/Invoice
 import '../../presentation/view/branch_manager_flow/Invoice/presentation/screens/view_details.dart';
 import '../../presentation/view/branch_manager_flow/home/home_screen.dart';
 import '../../presentation/view/branch_manager_flow/notification/notification_screen.dart';
-import '../../presentation/view/branch_manager_flow/orders/orders_screen.dart';
-import '../../presentation/view/branch_manager_flow/orders/screens/my_orders.dart';
+import '../../presentation/view/branch_manager_flow/orders/presentation/view/orders_screen.dart';
+import '../../presentation/view/branch_manager_flow/orders/presentation/view/screens/my_orders.dart';
 import '../../presentation/view/branch_manager_flow/parent/bottom_nav_bar.dart';
 import '../../presentation/view/branch_manager_flow/parent/parent_screen.dart';
 import '../../presentation/view/branch_manager_flow/profile/profile_screen.dart';
