@@ -21,8 +21,8 @@ import '../../presentation/view/auth/login/screen/login_screen.dart';
 import '../../presentation/view/auth/otp_verify/screen/otp_verify_screen.dart';
 import '../../presentation/view/auth/set_new_password/screen/set_new_password_screen.dart';
 import '../../presentation/view/auth/signup/screen/signup_screen.dart';
-import '../../presentation/view/branch_manager_flow/Invoice/Invoice_screen.dart';
-import '../../presentation/view/branch_manager_flow/Invoice/screens/view_details.dart';
+import '../../presentation/view/branch_manager_flow/Invoice/presentation/Invoice_screen.dart';
+import '../../presentation/view/branch_manager_flow/Invoice/presentation/screens/view_details.dart';
 import '../../presentation/view/branch_manager_flow/home/home_screen.dart';
 import '../../presentation/view/branch_manager_flow/notification/notification_screen.dart';
 import '../../presentation/view/branch_manager_flow/orders/orders_screen.dart';
@@ -37,7 +37,7 @@ import '../../presentation/view/driver_flow/driver_brance_detailScreen/delivery_
 import '../../presentation/view/driver_flow/driver_brance_detailScreen/driver_brance_detail_screen.dart';
 import '../../presentation/view/driver_flow/driver_screen.dart';
 import '../../presentation/view/driver_flow/parent/parent_screen.dart';
-import '../../presentation/view/onboarding/onboarding/screen/onboarding_screen.dart' hide LoginScreen;
+import '../../presentation/view/onboarding/onboarding/screen/onboarding_screen.dart';
 import '../../presentation/view/splash/splash/screen/splash_screen.dart';
 
 class AppRoutes{
@@ -86,6 +86,7 @@ class AppRoutes{
 
 
   };
+
 
 
 

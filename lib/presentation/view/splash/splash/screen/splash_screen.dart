@@ -43,6 +43,7 @@ class _SplashScreenState extends State<SplashScreen>
           context,
           RouteNames.driverBranchParentScreen,
         );
+
       } else {
         Navigator.pushReplacementNamed(context, RouteNames.onboardingScreen);
       }

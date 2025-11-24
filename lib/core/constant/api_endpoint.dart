@@ -25,6 +25,8 @@ class ApiEndpoints {
   static String getAllInvoice = '$baseUrl/api/invoice';
 
   //Branch
+  static  String getInvoices = '$baseUrl/api/invoice';
+  static  String getInvoiceDetail(String orderId) => '$baseUrl/api/invoice/order/$orderId';
 
   //Driver
 
