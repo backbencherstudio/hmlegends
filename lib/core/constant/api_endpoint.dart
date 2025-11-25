@@ -5,7 +5,6 @@ class ApiEndpoints {
       'https://witnesses-empire-pest-ears.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
-
   // Admin
   static const String register = '$baseUrl/api/auth/register';
   static const String login = '$baseUrl/api/auth/login';

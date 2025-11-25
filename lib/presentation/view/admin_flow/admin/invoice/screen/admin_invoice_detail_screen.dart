@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../model/invoice_detail_model.dart';
 import '../view_model/admin_invoic_provider.dart';
@@ -16,9 +17,7 @@ class AdminInvoiceDetailScreen extends StatelessWidget {
           if (provider.isLoading) {
             return Center(child: CircularProgressIndicator());
           }
-
           final invoice = provider.invoiceDetailModel!.data;
-
           return SingleChildScrollView(
             padding: EdgeInsets.all(16),
             child: Column(
@@ -49,9 +48,7 @@ class AdminInvoiceDetailScreen extends StatelessWidget {
                       ),
 
                       SizedBox(height: 10),
-
                       _itemsTable(invoice.order.orderItems),
-
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
@@ -65,23 +62,19 @@ class AdminInvoiceDetailScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                SizedBox(height: 25),
-
+                SizedBox(height: 25.h),
                 Text(
                   "Branch name’s invoice is ready. Now you can send/export it.",
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
-
-                SizedBox(height: 20),
-
+                SizedBox(height: 20.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: Color(0xffE20614),
                           padding: EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
@@ -90,19 +83,17 @@ class AdminInvoiceDetailScreen extends StatelessWidget {
                         onPressed: () {
                           openInvoice(invoice.url);
                         },
-                        child: const Text(
+                        child: Text(
                           "Send Invoice",
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                     ),
                     SizedBox(width: 12),
-
-                    ElevatedButton.icon(
+                    TextButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.red,
-                        side: BorderSide(color: Colors.red),
                         padding: EdgeInsets.symmetric(
                           vertical: 14,
                           horizontal: 20,
@@ -114,8 +105,12 @@ class AdminInvoiceDetailScreen extends StatelessWidget {
                       onPressed: () {
                         openInvoice(invoice.url);
                       },
-                      icon: Icon(Icons.picture_as_pdf),
-                      label: Text("Export PDF"),
+                      child: Row(
+                        children: [
+                          Icon(Icons.picture_as_pdf),
+                          Text("Export PDF"),
+                        ],
+                      ),
                     ),
                   ],
                 ),
