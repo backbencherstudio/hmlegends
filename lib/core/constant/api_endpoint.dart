@@ -26,9 +26,14 @@ class ApiEndpoints {
       '$baseUrl/api/invoice/order/$orderId';
 
   //Branch
-  static String getInvoices = '$baseUrl/api/invoice';
+  //static String getInvoices = '$baseUrl/api/invoice';
   static String getInvoiceDetail(String orderId) =>
       '$baseUrl/api/invoice/order/$orderId';
+  static String getInvoices = '$baseUrl/api/invoice?search=manager';
+  //static  String getInvoiceDetail(String orderId) => '$baseUrl/api/invoice/order/$orderId';
+  //orders
+  static String getAllProducts = '$baseUrl/api/product';
+  static String placeOrder = '$baseUrl/api/order';
 
   //Driver
 

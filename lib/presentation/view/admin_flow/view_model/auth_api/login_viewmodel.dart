@@ -38,6 +38,7 @@ class LoginScreenProvider extends ChangeNotifier {
 
         final token = decodeData['authorization']?['access_token'];
         if (token != null) {
+          await _tokenStorage.clearToken();
           await _tokenStorage.saveToken(token);
         }
 
