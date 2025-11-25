@@ -141,13 +141,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             SizedBox(height: 14.h),
 
             Expanded(
-              child: orders.isEmpty
-                  ? Center(
-                      child: Text(
-                        "No orders found",
-                        style: TextStyle(fontSize: 14.sp),
-                      ),
-                    )
+              child: provider.isLoading
+                  ? Center(child: CircularProgressIndicator())
                   : ListView.builder(
                       itemCount: orders.length,
                       padding: EdgeInsets.only(bottom: 8.h),

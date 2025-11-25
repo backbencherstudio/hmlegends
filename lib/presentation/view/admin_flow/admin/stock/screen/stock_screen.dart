@@ -46,7 +46,11 @@ class _StockScreenState extends State<StockScreen> {
     image = null;
   }
 
-  void showDeleteStockDialog(BuildContext context, String text, String productId) {
+  void showDeleteStockDialog(
+    BuildContext context,
+    String text,
+    String productId,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -65,9 +69,14 @@ class _StockScreenState extends State<StockScreen> {
               onPressed: () async {
                 Navigator.of(context).pop();
 
-                await context.read<StockScreenProvider>().deleteProduct(productId);
+                await context.read<StockScreenProvider>().deleteProduct(
+                  productId,
+                );
 
-                SuccessDeleteStock(context, 'You have successfully Deleted the stock!');
+                SuccessDeleteStock(
+                  context,
+                  'You have successfully Deleted the stock!',
+                );
               },
               color: AppColors.primaryColor,
             ),
@@ -84,7 +93,6 @@ class _StockScreenState extends State<StockScreen> {
       },
     );
   }
-
 
   void SuccessDeleteStock(BuildContext context, String text) {
     showDialog(
@@ -271,8 +279,8 @@ class _StockScreenState extends State<StockScreen> {
                 ),
                 SizedBox(height: 10.h),
                 Expanded(
-                  child: filteredProducts.isEmpty
-                      ? const Center(child: Text("No products found"))
+                  child: vm.isLoading
+                      ? const Center(child: CircularProgressIndicator())
                       : ListView.builder(
                           itemCount: filteredProducts.length,
                           itemBuilder: (context, index) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart';
+import '../../presentation/view/admin_flow/admin/invoice/screen/admin_invoice_detail_screen.dart';
 import '../../presentation/view/admin_flow/admin/invoice/screen/head_office_invoice_screen.dart';
 import '../../presentation/view/admin_flow/admin/invoice_status/screen/invoice_status_screen.dart';
 import '../../presentation/view/admin_flow/admin/manage_branches/screen/add_new_branches_screen.dart';
@@ -83,6 +84,7 @@ class AppRoutes{
     RouteNames.manageDeliveryScreen:(context)=>  ManageDeliveryScreen(),
     RouteNames.manageBranchesToOrderSummaryScreen :(context)=>  ManageBranchesToOrderSummaryScreen(),
     RouteNames.editBranchScreen :(context)=>  EditBranchScreen(),
+    RouteNames.adminInvoiceDetailScreen :(context)=>  AdminInvoiceDetailScreen(),
 
 
   };

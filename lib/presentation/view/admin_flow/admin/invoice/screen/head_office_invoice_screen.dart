@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
 import '../../../../../../core/constant/asset_path.dart';
 import '../../../../widget/custom_app_bar_2.dart';
@@ -7,7 +8,6 @@ import '../view_model/admin_invoic_provider.dart';
 
 class HeadOfficeInvoiceScreen extends StatefulWidget {
   final bool fromBottomNav;
-
   const HeadOfficeInvoiceScreen({super.key, required this.fromBottomNav});
 
   @override
@@ -48,7 +48,6 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               child: Column(
                 children: [
-                  // Stats Wrap
                   if (stats != null)
                     Wrap(
                       spacing: 12.w,
@@ -66,7 +65,6 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
                       ],
                     ),
                   SizedBox(height: 12.h),
-                  // Invoice list
                   Expanded(
                     child: ListView.separated(
                       itemCount: invoiceData.length,
@@ -75,9 +73,8 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
                         final invoice = invoiceData[index];
                         final fName = invoice.receiver?.firstName ?? "Unknown";
                         final lName = invoice.receiver?.lastName ?? "Unknown";
-                        // final invoiceStatus = invoice.status ?? "Pending";
-                        // final invoiceDate = invoice.createdAt ?? "";
-                        // final invoiceId = invoice.id ?? "-";
+                        final invoiceId = invoice.orderId ?? "-";
+                        // final invoiceUrl = invoice. ?? "";
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,60 +82,109 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 51,
-                                    vertical: 5.h,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xffD1E4C9),
-                                    borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(8),
-                                      topLeft: Radius.circular(8),
+                                Expanded(
+                                  child: Container(
+                                    height: 40.h,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8.r),
                                     ),
-                                  ),
-                                  child: Text("${index + 1}"),
-                                ),
-
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 59,
-                                    vertical: 5.h,
-                                  ),
-
-                                  decoration: BoxDecoration(
-                                    color: Color(0xffD1E4C9),
-                                  ),
-                                  child: Text("$fName $lName "),
-                                ),
-
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 4.w,
-                                    vertical: 4.h,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.only(
-                                      bottomRight: Radius.circular(8),
-                                      topRight: Radius.circular(8),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        "View",
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.white,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          flex: 2,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFD1E4C9),
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(8.r),
+                                                bottomLeft: Radius.circular(
+                                                  8.r,
+                                                ),
+                                              ),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 12.w,
+                                            ),
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              "${index + 1}.  $fName $lName",
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                      Icon(
-                                        Icons.keyboard_arrow_down_sharp,
-                                        color: Colors.white,
-                                      ),
-                                    ],
+                                        Expanded(
+                                          flex: 2,
+                                          child: Container(
+                                            color: const Color(0xFFE6ECDE),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 12.w,
+                                            ),
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              "Total Units: ${invoice.receiver?.firstName ?? ""}",
+                                              style: TextStyle(
+                                                fontSize: 13.sp,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFE20614),
+                                              borderRadius: BorderRadius.only(
+                                                topRight: Radius.circular(8.r),
+                                                bottomRight: Radius.circular(
+                                                  8.r,
+                                                ),
+                                              ),
+                                            ),
+                                            child: TextButton(
+                                              onPressed: () async {
+                                                await provider
+                                                    .fetchInvoiceDetail(
+                                                      invoiceId,
+                                                    );
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  RouteNames
+                                                      .adminInvoiceDetailScreen,
+                                                );
+                                              },
+                                              style: TextButton.styleFrom(
+                                                padding: EdgeInsets.zero,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                        topRight:
+                                                            Radius.circular(
+                                                              8.r,
+                                                            ),
+                                                        bottomRight:
+                                                            Radius.circular(
+                                                              8.r,
+                                                            ),
+                                                      ),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                "View",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 13.sp,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -155,10 +201,9 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
     );
   }
 
-  // Helper function to create a stat card
   Widget _buildStatCard(String title, int value) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 10.h),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),

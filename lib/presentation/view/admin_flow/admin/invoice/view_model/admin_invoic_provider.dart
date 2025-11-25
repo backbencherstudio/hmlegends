@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
 import 'package:http/http.dart' as http;
-
 import '../model/all_invoice_model.dart';
+import '../model/invoice_detail_model.dart';
 
 class AdminInvoiceProvider extends ChangeNotifier {
   final TokenStorage _tokenStorage = TokenStorage();
@@ -53,6 +53,61 @@ class AdminInvoiceProvider extends ChangeNotifier {
       _errorMessage = "Exception occurred: $e";
       debugPrint(_errorMessage);
     } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  InvoiceDetailModel? _invoiceDetailModel;
+  InvoiceDetailModel? get invoiceDetailModel => _invoiceDetailModel;
+
+  Future<void> fetchInvoiceDetail(String orderID) async {
+    _isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
+
+    try {
+      debugPrint("Inside detail order ID is  $orderID");
+
+      final token = await _tokenStorage.getToken();
+      final url = Uri.parse(ApiEndpoints.getInvoiceDetail(orderID));
+
+      final response = await http.get(
+        url,
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      debugPrint("=== INVOICE DETAIL API RESPONSE ===");
+      debugPrint("Status Code: ${response.statusCode}");
+      debugPrint("Response Body: ${response.body}");
+
+      final decodeData = jsonDecode(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _invoiceDetailModel = InvoiceDetailModel.fromJson(decodeData);
+
+        debugPrint("Invoice SKU: ${_invoiceDetailModel!.data.sku}");
+        debugPrint("Success message: ${decodeData['message']}");
+        debugPrint(
+          "Order Total: ${_invoiceDetailModel!.data.order.totalAmount}",
+        );
+        debugPrint(
+          "Items Count: ${_invoiceDetailModel!.data.order.orderItems.length}",
+        );
+
+        _isLoading = false;
+        notifyListeners();
+      } else {
+        _errorMessage = decodeData["message"] ?? "Something went wrong";
+
+        debugPrint("API returned error: $_errorMessage");
+
+        _isLoading = false;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint("Error fetching invoice detail: $e");
+      _errorMessage = "Network error. Please check your connection.";
       _isLoading = false;
       notifyListeners();
     }
