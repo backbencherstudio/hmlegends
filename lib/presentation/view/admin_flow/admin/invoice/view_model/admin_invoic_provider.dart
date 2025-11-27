@@ -86,13 +86,11 @@ class AdminInvoiceProvider extends ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         _invoiceDetailModel = InvoiceDetailModel.fromJson(decodeData);
 
-        debugPrint("Invoice SKU: ${_invoiceDetailModel!.data.sku}");
+        debugPrint("Invoice SKU: ${_invoiceDetailModel!.data?.sku.length}");
         debugPrint("Success message: ${decodeData['message']}");
+        debugPrint("Order Total: ${_invoiceDetailModel!.data?.order.status}");
         debugPrint(
-          "Order Total: ${_invoiceDetailModel!.data.order.totalAmount}",
-        );
-        debugPrint(
-          "Items Count: ${_invoiceDetailModel!.data.order.orderItems.length}",
+          "Items Count: ${_invoiceDetailModel!.data?.order.orderItems.length}",
         );
 
         _isLoading = false;

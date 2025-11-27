@@ -1,7 +1,11 @@
+// =============================
+//      INVOICE DETAIL MODEL
+// =============================
+
 class InvoiceDetailModel {
   final bool success;
   final String message;
-  final InvoiceData data;
+  final InvoiceData? data;
 
   InvoiceDetailModel({
     required this.success,
@@ -11,17 +15,23 @@ class InvoiceDetailModel {
 
   factory InvoiceDetailModel.fromJson(Map<String, dynamic> json) =>
       InvoiceDetailModel(
-        success: json["success"],
-        message: json["message"],
-        data: InvoiceData.fromJson(json["data"]),
+        success: json["success"] ?? false,
+        message: json["message"] ?? "",
+        data: json["data"] != null
+            ? InvoiceData.fromJson(json["data"])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
     "success": success,
     "message": message,
-    "data": data.toJson(),
+    "data": data?.toJson(),
   };
 }
+
+// =============================
+//          INVOICE DATA
+// =============================
 
 class InvoiceData {
   final String id;
@@ -29,7 +39,8 @@ class InvoiceData {
   final String sku;
   final String status;
   final String createdAt;
-  final String url; // Added URL field
+  final String url;
+
   final Person creator;
   final Person receiver;
   final Order order;
@@ -40,22 +51,22 @@ class InvoiceData {
     required this.sku,
     required this.status,
     required this.createdAt,
-    required this.url, // Added URL
+    required this.url,
     required this.creator,
     required this.receiver,
     required this.order,
   });
 
   factory InvoiceData.fromJson(Map<String, dynamic> json) => InvoiceData(
-    id: json["id"],
-    orderId: json["order_id"],
-    sku: json["sku"],
-    status: json["status"],
-    createdAt: json["created_at"],
-    url: json["url"], // Parse URL
-    creator: Person.fromJson(json["creator"]),
-    receiver: Person.fromJson(json["receiver"]),
-    order: Order.fromJson(json["order"]),
+    id: json["id"]?.toString() ?? "",
+    orderId: json["order_id"]?.toString() ?? "",
+    sku: json["sku"] ?? "",
+    status: json["status"] ?? "",
+    createdAt: json["created_at"] ?? "",
+    url: json["url"] ?? "",
+    creator: Person.fromJson(json["creator"] ?? {}),
+    receiver: Person.fromJson(json["receiver"] ?? {}),
+    order: Order.fromJson(json["order"] ?? {}),
   );
 
   Map<String, dynamic> toJson() => {
@@ -64,12 +75,16 @@ class InvoiceData {
     "sku": sku,
     "status": status,
     "created_at": createdAt,
-    "url": url, // Include URL in JSON
+    "url": url,
     "creator": creator.toJson(),
     "receiver": receiver.toJson(),
     "order": order.toJson(),
   };
 }
+
+// =============================
+//            PERSON
+// =============================
 
 class Person {
   final String firstName;
@@ -85,10 +100,10 @@ class Person {
   });
 
   factory Person.fromJson(Map<String, dynamic> json) => Person(
-    firstName: json["first_name"],
-    lastName: json["last_name"],
-    address: json["address"],
-    phoneNumber: json["phone_number"],
+    firstName: json["first_name"] ?? "",
+    lastName: json["last_name"] ?? "",
+    address: json["address"] ?? "",
+    phoneNumber: json["phone_number"] ?? "",
   );
 
   Map<String, dynamic> toJson() => {
@@ -98,6 +113,10 @@ class Person {
     "phone_number": phoneNumber,
   };
 }
+
+// =============================
+//             ORDER
+// =============================
 
 class Order {
   final String id;
@@ -115,13 +134,13 @@ class Order {
   });
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
-    id: json["id"],
-    status: json["status"],
-    totalAmount: json["total_amount"],
-    totalQuantity: json["total_quantity"],
-    orderItems: List<OrderItem>.from(
-      json["order_items"].map((x) => OrderItem.fromJson(x)),
-    ),
+    id: json["id"]?.toString() ?? "",
+    status: json["status"] ?? "",
+    totalAmount: json["total_amount"] ?? 0,
+    totalQuantity: json["total_quantity"] ?? 0,
+    orderItems: (json["order_items"] as List? ?? [])
+        .map((x) => OrderItem.fromJson(x))
+        .toList(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -129,9 +148,13 @@ class Order {
     "status": status,
     "total_amount": totalAmount,
     "total_quantity": totalQuantity,
-    "order_items": List<dynamic>.from(orderItems.map((x) => x.toJson())),
+    "order_items": orderItems.map((x) => x.toJson()).toList(),
   };
 }
+
+// =============================
+//          ORDER ITEM
+// =============================
 
 class OrderItem {
   final int quantity;
@@ -145,9 +168,9 @@ class OrderItem {
   });
 
   factory OrderItem.fromJson(Map<String, dynamic> json) => OrderItem(
-    quantity: json["quantity"],
-    price: json["price"],
-    product: Product.fromJson(json["product"]),
+    quantity: json["quantity"] ?? 0,
+    price: json["price"] ?? 0,
+    product: Product.fromJson(json["product"] ?? {}),
   );
 
   Map<String, dynamic> toJson() => {
@@ -157,14 +180,23 @@ class OrderItem {
   };
 }
 
+// =============================
+//            PRODUCT
+// =============================
+
 class Product {
   final String name;
   final int price;
 
   Product({required this.name, required this.price});
 
-  factory Product.fromJson(Map<String, dynamic> json) =>
-      Product(name: json["name"], price: json["price"]);
+  factory Product.fromJson(Map<String, dynamic> json) => Product(
+    name: json["name"] ?? "",
+    price: json["price"] ?? 0,
+  );
 
-  Map<String, dynamic> toJson() => {"name": name, "price": price};
+  Map<String, dynamic> toJson() => {
+    "name": name,
+    "price": price,
+  };
 }

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+
 import '../model/invoice_detail_model.dart';
 import '../view_model/admin_invoic_provider.dart';
 import 'iInvoiceWebViewScreen.dart';
 
 class AdminInvoiceDetailScreen extends StatelessWidget {
   const AdminInvoiceDetailScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,10 +16,28 @@ class AdminInvoiceDetailScreen extends StatelessWidget {
       appBar: AppBar(title: Text("Invoice")),
       body: Consumer<AdminInvoiceProvider>(
         builder: (context, provider, _) {
+
+          /// ------------------------------
+          /// ------------------------------
           if (provider.isLoading) {
             return Center(child: CircularProgressIndicator());
           }
+
+          /// ----------------------------------------------
+          /// ----------------------------------------------
+          if (provider.invoiceDetailModel == null ||
+              provider.invoiceDetailModel!.data == null) {
+            return Center(
+              child: Text(
+                "No invoice data found.",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            );
+          }
+
+          /// If safe → extract invoice
           final invoice = provider.invoiceDetailModel!.data;
+
           return SingleChildScrollView(
             padding: EdgeInsets.all(16),
             child: Column(
@@ -32,12 +52,15 @@ class AdminInvoiceDetailScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _title("Invoice From"),
-                      _addressCard(invoice.creator),
+                      _addressCard(invoice!.creator),
+
                       SizedBox(height: 16),
                       _title("Ship to"),
                       _addressCard(invoice.receiver),
+
                       SizedBox(height: 20),
                       Divider(),
+
                       Text(
                         "DATE: ${invoice.createdAt}",
                         style: TextStyle(fontWeight: FontWeight.w500),
@@ -49,6 +72,7 @@ class AdminInvoiceDetailScreen extends StatelessWidget {
 
                       SizedBox(height: 10),
                       _itemsTable(invoice.order.orderItems),
+
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
@@ -62,11 +86,13 @@ class AdminInvoiceDetailScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+
                 SizedBox(height: 25.h),
                 Text(
                   "Branch name’s invoice is ready. Now you can send/export it.",
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
+
                 SizedBox(height: 20.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -150,6 +176,7 @@ class AdminInvoiceDetailScreen extends StatelessWidget {
     );
   }
 
+  // Items Table
   Widget _itemsTable(List<OrderItem> items) {
     return Column(
       children: [
@@ -188,7 +215,6 @@ class AdminInvoiceDetailScreen extends StatelessWidget {
     );
   }
 
-  static double colWidth = 70;
   static Widget _tableHeader(String text) {
     return Expanded(
       child: Text(
@@ -199,6 +225,8 @@ class AdminInvoiceDetailScreen extends StatelessWidget {
   }
 
   static Widget _tableCell(String text) {
-    return Expanded(child: Text(text, style: TextStyle(fontSize: 14)));
+    return Expanded(
+      child: Text(text, style: TextStyle(fontSize: 14)),
+    );
   }
 }

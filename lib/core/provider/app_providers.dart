@@ -24,6 +24,7 @@ import '../../presentation/view/branch_manager_flow/Invoice/view_model/get_all_i
 import '../../presentation/view/branch_manager_flow/Invoice/view_model/get_invoices_details_viewmodel.dart';
 import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_all_product_viewmodel.dart';
 import '../../presentation/view/driver_flow/driver_provider/branch_product_provider.dart';
+import '../../presentation/view/driver_flow/model_view/delivery_provideer_Admin.dart';
 
 class AppProviders {
   static final List<SingleChildWidget> providers = [
@@ -53,6 +54,7 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => GetProductsViewmodel()),
     ChangeNotifierProvider(create: (_) => OrderViewmodel()),
     ChangeNotifierProvider(create: (_) => AdminInvoiceProvider()),
+    ChangeNotifierProvider(create: (_) => DeliveryProviderAdmin()),
   ];
 
   static List<SingleChildWidget> getProviders() {
