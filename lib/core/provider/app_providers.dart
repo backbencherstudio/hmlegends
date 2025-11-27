@@ -55,13 +55,10 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => GetInvoiceDetailViewmodel()),
     ChangeNotifierProvider(create: (_) => GetProductsViewmodel()),
     ChangeNotifierProvider(create: (_) => OrderViewmodel()),
-<<<<<<< HEAD
     ChangeNotifierProvider(create: (_) => GetOrdersViewModel()),
     ChangeNotifierProvider(create: (_) => PayInvoiceViewModel()),
-=======
     ChangeNotifierProvider(create: (_) => AdminInvoiceProvider()),
     ChangeNotifierProvider(create: (_) => DeliveryProviderAdmin()),
->>>>>>> 8d0e4b853c0f0e43be07c1dcaf949d0ecb792fca
   ];
 
   static List<SingleChildWidget> getProviders() {
