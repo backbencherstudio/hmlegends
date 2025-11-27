@@ -109,9 +109,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:provider/provider.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String profileImage;
+import '../../../core/constant/api_endpoint.dart';
+import '../admin_flow/view_model/profile/change_pass_provider.dart';
+
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String? backArrow;
   final int notificationCount;
   final VoidCallback? onProfileTap;
@@ -119,7 +122,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const CustomAppBar({
     super.key,
-    required this.profileImage,
     this.backArrow,
     required this.notificationCount,
     this.onProfileTap,
@@ -127,7 +129,31 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
+
+  @override
+  // TODO: implement preferredSize
+  Size get preferredSize => Size.fromHeight(64.h);
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<ChangePasswordProvider>().adminCheckMe();
+    });
+
+
+  }
+  @override
   Widget build(BuildContext context) {
+    final provider = context.watch<ChangePasswordProvider>();
+    final avatar = provider.adminInfoModel?.data?.avatarUrl;
+  debugPrint('----------------------------------- $avatar');
+
     return Material(
       color: Colors.transparent,
       elevation: 1,
@@ -135,7 +161,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Main app bar content
           Container(
             color: AppColors.bgColor,
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -146,38 +171,33 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   Row(
                     children: [
-                      backArrow != null && backArrow!.isNotEmpty
+                      widget.backArrow != null && widget.backArrow!.isNotEmpty
                           ? GestureDetector(
-                        onTap: (){
-                          Navigator.pop(context);
-                        },
-                            child: Image.asset(
-                                "assets/images/back_arrow.png",
-                                height: 38.h,
-                              ),
-                          )
+                        onTap: () => Navigator.pop(context),
+                        child: Image.asset(
+                          "assets/images/back_arrow.png",
+                          height: 38.h,
+                        ),
+                      )
                           : Image.asset(
-                              AssetPaths.headOfficeLogo,
-                              height: 38.h,
-                            ),
+                        AssetPaths.headOfficeLogo,
+                        height: 38.h,
+                      ),
                       SizedBox(width: 8.w),
                     ],
                   ),
-                  // Right Section
+
+                  /// Right Section
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            RouteNames.notificationScreen,
-                          );
-                        },
+                        onTap: () =>
+                            Navigator.pushNamed(context, RouteNames.notificationScreen),
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
                             Icon(CupertinoIcons.bell, size: 28.sp),
-                            if (notificationCount > 0)
+                            if (widget.notificationCount > 0)
                               Positioned(
                                 right: 1.w,
                                 top: -7.h,
@@ -188,7 +208,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                     shape: BoxShape.circle,
                                   ),
                                   child: Text(
-                                    '$notificationCount',
+                                    '${widget.notificationCount}',
                                     style: TextStyle(
                                       fontSize: 11.sp,
                                       color: Colors.white,
@@ -200,17 +220,29 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ],
                         ),
                       ),
+
                       SizedBox(width: 20.w),
+
+                      /// Profile Avatar
                       GestureDetector(
-                        onTap:
-                            onProfileTap ??
-                            () => Navigator.pushNamed(
-                              context,
-                              RouteNames.headOfficeProfileScreen,
-                            ),
-                        child: CircleAvatar(
-                          radius: 18.r,
-                          backgroundImage: AssetImage(profileImage),
+                        onTap: widget.onProfileTap ??
+                                () => Navigator.pushNamed(
+                                context, RouteNames.headOfficeProfileScreen),
+                        child: ClipOval(
+                          child:Image.network(
+                            avatar ?? '',
+                            width: 30.w,
+                            height: 30.w,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) {
+                              return Image.asset(
+                                AssetPaths.personIcon,
+                                width: 30.w,
+                                height: 30.w,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ],
@@ -225,6 +257,5 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  @override
-  Size get preferredSize => Size.fromHeight(64.h);
+
 }

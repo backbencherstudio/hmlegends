@@ -15,7 +15,7 @@ class ConfirmDeliveryScreen extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         notificationCount: 12,
-        profileImage: "assets/images/wahab.png",
+        // profileImage: "assets/images/wahab.png",
         backArrow: "back_arrow",
       ),
       body: SafeArea(

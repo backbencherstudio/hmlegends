@@ -19,7 +19,7 @@ class _DriverScreenState extends State<DriverScreen> {
       builder: (context, child) {
         return Scaffold(
           appBar: CustomAppBar(
-            profileImage: AssetPaths.personIcon,
+            // profileImage: AssetPaths.personIcon,
             notificationCount: 4,
           ),
           body: Stack(

@@ -16,6 +16,9 @@ class OrderViewmodel extends ChangeNotifier {
   OrderData? _orderData;
   OrderData? get orderData => _orderData;
 
+  bool _hasPlacedToday = false;   // ✅ new flag
+  bool get hasPlacedToday => _hasPlacedToday;
+
   List<ProductSelectModel> _productList = [];
   List<ProductSelectModel> get productList => _productList;
 
@@ -23,10 +26,8 @@ class OrderViewmodel extends ChangeNotifier {
     final index = _productList.indexWhere((e) => e.productId == product.productId);
 
     if (index != -1) {
-      // Update quantity if already exists
       _productList[index] = product;
     } else {
-      // Add new product
       _productList.add(product);
     }
 
@@ -40,7 +41,6 @@ class OrderViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-
   Future<bool> placeOrder() async {
     _isLoading = true;
     _errorMessage = '';
@@ -48,27 +48,20 @@ class OrderViewmodel extends ChangeNotifier {
     notifyListeners();
 
     try {
-
       final body = {
-        "products":[
+        "products": [
           {
-            "product_id":"cmia5qjk80005ctonnrxrq0p8",
-            "quantity":3
+            "product_id": "cmia5qjk80005ctonnrxrq0p8",
+            "quantity": 3
           }
         ]
       };
 
       debugPrint("=== PLACE ORDER API CALLED ===");
-      debugPrint("URL: ${ApiEndpoints.placeOrder}");
-      debugPrint("BODY: $body");
-
       final response = await _apiService.post(
         ApiEndpoints.placeOrder,
         data: body,
       );
-
-      debugPrint("Status Code: ${response.statusCode}");
-      debugPrint("Response Body: ${response.data}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonResponse = response.data as Map<String, dynamic>;
@@ -76,25 +69,20 @@ class OrderViewmodel extends ChangeNotifier {
 
         _orderData = orderResponse.order;
 
-        debugPrint("ORDER PLACED → ID: ${_orderData?.id}");
-        debugPrint("Total Amount: ${_orderData?.totalAmount}");
-        debugPrint("Total Items: ${_orderData?.orderItems?.length}");
+        _hasPlacedToday = true;   // ✅ set flag here
 
         _isLoading = false;
         notifyListeners();
         return true;
       } else {
-        final msg =
-            response.data['message'] ?? 'Failed to place order. Try again.';
+        final msg = response.data['message'] ?? 'Failed to place order. Try again.';
         _errorMessage = msg;
-        debugPrint("API Error: $msg");
       }
     } on DioException catch (e) {
       String msg = 'Network error';
 
       if (e.response != null) {
-        msg = e.response?.data['message'] ??
-            'Server error ${e.response?.statusCode}';
+        msg = e.response?.data['message'] ?? 'Server error ${e.response?.statusCode}';
       } else if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout ||
           e.type == DioExceptionType.sendTimeout) {
@@ -104,10 +92,8 @@ class OrderViewmodel extends ChangeNotifier {
       }
 
       _errorMessage = msg;
-      debugPrint("Dio Error: $msg");
     } catch (e) {
       _errorMessage = 'Unexpected error occurred';
-      debugPrint("Unexpected Error: $e");
     }
 
     _isLoading = false;
@@ -119,6 +105,7 @@ class OrderViewmodel extends ChangeNotifier {
     _orderData = null;
     _errorMessage = '';
     _isLoading = false;
+    _hasPlacedToday = false;
     notifyListeners();
   }
 }

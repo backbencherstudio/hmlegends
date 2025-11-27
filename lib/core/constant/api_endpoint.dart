@@ -3,7 +3,7 @@ import 'dart:math';
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'https://saskatchewan-lights-oliver-plastics.trycloudflare.com';
+  static const String baseUrl = 'https://estimation-knowledge-holders-supporting.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
 
@@ -29,7 +29,13 @@ class ApiEndpoints {
   //orders
   static  String getAllProducts = '$baseUrl/api/product';
   static  String placeOrder = '$baseUrl/api/order';
+  static  String getMyOrders = '$baseUrl/api/order';
+  // core/constant/api_endpoint.dart
 
+  static String paymentPaid(String invoiceId) =>
+  '$baseUrl/api/invoice/$invoiceId/pay';
+
+  static const String avatarPath = "/storage/avatar";
 
   //Driver
 
