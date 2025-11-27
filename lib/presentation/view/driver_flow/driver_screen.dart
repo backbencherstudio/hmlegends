@@ -1,21 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/core/route/route_names.dart';
+import 'package:provider/provider.dart';
+
 import '../../../core/constant/asset_path.dart';
+import '../../../core/route/route_names.dart';
 import '../widget/custom_app_bar.dart';
+import 'model_view/delivery_provideer_Admin.dart';
 
 class DriverScreen extends StatefulWidget {
   const DriverScreen({super.key});
 
   @override
-  State<DriverScreen> createState() => _DriverScreenState();
+  _DriverScreenState createState() => _DriverScreenState();
 }
 
 class _DriverScreenState extends State<DriverScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<DeliveryProviderAdmin>(
+        context,
+        listen: false,
+      );
+      provider.getAllDeliveryAdmin();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(375, 812), // base design size (iPhone X style)
+      designSize: const Size(375, 812),
       builder: (context, child) {
         return Scaffold(
           appBar: CustomAppBar(
@@ -34,13 +49,31 @@ class _DriverScreenState extends State<DriverScreen> {
               ),
               Padding(
                 padding: EdgeInsets.all(20.0.w),
-                child: ListView.builder(
-                  itemCount: 6,
-                  itemBuilder: (context, index) {
-                    return BranchInfoCard(
-                      branchName: 'Branch Name-01',
-                      address: '4140 Parker Rd. Allentown, New Mexico 31134',
-                      totalProducts: 216,
+                child: Consumer<DeliveryProviderAdmin>(
+                  builder: (context, provider, child) {
+                    final deliveries =
+                        provider.allDeliveryModelDriver?.data ?? [];
+
+                    if (provider.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (deliveries.isEmpty) {
+                      return const Center(child: Text("No deliveries found"));
+                    }
+
+                    return ListView.builder(
+                      itemCount: deliveries.length,
+                      itemBuilder: (context, index) {
+                        final delivery = deliveries[index];
+                        return _branchInfoCard(
+                          branchName: delivery.user?.city ?? 'Unknown City',
+                          address: delivery.user?.address ?? 'No Address',
+                          totalProducts: delivery.totalQuantity ?? 0,
+                          deliveryId: delivery.delivery?.id ?? '',
+                          provider: provider,
+                        );
+                      },
                     );
                   },
                 ),
@@ -51,27 +84,27 @@ class _DriverScreenState extends State<DriverScreen> {
       },
     );
   }
-}
 
-class BranchInfoCard extends StatelessWidget {
-  final String branchName;
-  final String address;
-  final int totalProducts;
-
-  const BranchInfoCard({
-    super.key,
-    required this.branchName,
-    required this.address,
-    required this.totalProducts,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  // Widget getter for BranchInfoCard
+  Widget _branchInfoCard({
+    required String branchName,
+    required String address,
+    required int totalProducts,
+    required String deliveryId,
+    required DeliveryProviderAdmin provider,
+  }) {
     return Column(
       children: [
         GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, RouteNames.driverBranseDetailScreen);
+          onTap: () async {
+            if (deliveryId.isNotEmpty) {
+              await provider.getSingleDeliveryAdmin(deliveryId);
+              Navigator.pushNamed(context, RouteNames.driverBranseDetailScreen);
+            } else {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text("Delivery Id not found")));
+            }
           },
           child: Container(
             width: double.infinity,
@@ -81,6 +114,13 @@ class BranchInfoCard extends StatelessWidget {
               color: const Color(0xFFFFF6F7),
               borderRadius: BorderRadius.circular(8.r),
               border: Border.all(color: Colors.grey.shade300),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.shade200,
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +135,6 @@ class BranchInfoCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 8.h),
-
                 // Address Row
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,9 +157,7 @@ class BranchInfoCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 SizedBox(height: 10.h),
-
                 // Total Products
                 RichText(
                   text: TextSpan(

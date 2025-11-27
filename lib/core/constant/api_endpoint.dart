@@ -2,10 +2,9 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://witnesses-empire-pest-ears.trycloudflare.com';
+      'https://estimation-knowledge-holders-supporting.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
-
   // Admin
   static const String register = '$baseUrl/api/auth/register';
   static const String login = '$baseUrl/api/auth/login';
@@ -37,7 +36,10 @@ class ApiEndpoints {
 
   //Driver
 
-  // static const String getBanners = '/api/getBanners';
+  static const String getAllDeliveryAdmin = '$baseUrl/api/delivery';
+  static  String getSingleDeliveryDriver(String Id) => '$baseUrl/api/delivery/$Id';
+  static  String deliveryReceivedAdmin(String Id) => '$baseUrl/api/delivery/$Id';
+  static  String deliveryConfirmAdmin(String Id) => '$baseUrl/api/delivery/$Id';
   // static const String getProducts = '/api/products';
   // static const String getUsers = '/api/users';
 }
