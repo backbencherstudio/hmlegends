@@ -60,6 +60,7 @@ class ChangePasswordProvider with ChangeNotifier {
         debugPrint("The message ${_adminInfoModel!.data!.firstName}");
         debugPrint("The message ${_adminInfoModel!.data!.lastName}");
         debugPrint("The success message ${decodeData['message']}");
+        notifyListeners();
       } else {
         final decodeData = jsonDecode(response.body);
         _adminInfoModel = AdminInfoModel.fromJson(decodeData);
@@ -68,7 +69,9 @@ class ChangePasswordProvider with ChangeNotifier {
         debugPrint("The message ${_adminInfoModel!.data!.firstName}");
         debugPrint("The message ${_adminInfoModel!.data!.lastName}");
         debugPrint("The failed message ${decodeData['message']}");
+        notifyListeners();
       }
+      notifyListeners();
     } catch (error) {
       debugPrint("THe error message is $error");
     }

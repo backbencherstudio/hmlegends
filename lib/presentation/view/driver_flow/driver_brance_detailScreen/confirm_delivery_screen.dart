@@ -153,7 +153,7 @@ class _ConfirmDeliveryScreenState extends State<ConfirmDeliveryScreen> {
     return Scaffold(
       appBar: const CustomAppBar(
         notificationCount: 12,
-        profileImage: "assets/images/wahab.png",
+        // profileImage: "assets/images/wahab.png",
         backArrow: "back_arrow",
       ),
       body: SafeArea(

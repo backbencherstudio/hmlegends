@@ -21,7 +21,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: CustomAppBar(
-        profileImage: AssetPaths.personIcon,
+        // profileImage: AssetPaths.personIcon,
         notificationCount: 4,
       ),
       body: SingleChildScrollView(

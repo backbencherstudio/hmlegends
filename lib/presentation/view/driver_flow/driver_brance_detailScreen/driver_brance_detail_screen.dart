@@ -39,7 +39,7 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         notificationCount: 12,
-        profileImage: "assets/images/wahab.png",
+        // profileImage: "assets/images/wahab.png",
         backArrow: "back_arrow",
       ),
       body: SafeArea(
