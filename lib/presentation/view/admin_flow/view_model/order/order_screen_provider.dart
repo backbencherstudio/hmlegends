@@ -11,10 +11,22 @@ class OrderScreenProvider extends ChangeNotifier {
   }
 
   final TokenStorage _tokenStorage = TokenStorage();
+
+  // ---------------- Loading State ----------------
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  // ---------------- Order Data ----------------
   OrderAdminModel? _orderAdminModel;
   OrderAdminModel? get orderAdminModel => _orderAdminModel;
 
   Future<void> getAdminOrder() async {
+    _setLoading(true); // start loading
     try {
       final token = await _tokenStorage.getToken();
 
@@ -34,15 +46,17 @@ class OrderScreenProvider extends ChangeNotifier {
       debugPrint("Status Code: ${response.statusCode}");
 
       final decodeData = jsonDecode(response.body);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         _orderAdminModel = OrderAdminModel.fromJson(decodeData);
         debugPrint("Success: ${decodeData['message']}");
-        notifyListeners();
       } else {
         debugPrint("Failed: ${decodeData['message']}");
       }
     } catch (error) {
       debugPrint("Error fetching admin orders: $error");
+    } finally {
+      _setLoading(false); // stop loading
     }
   }
 }

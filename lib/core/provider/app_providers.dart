@@ -4,6 +4,7 @@ import 'package:provider/single_child_widget.dart';
 import '../../data/datasources/product_local_datasource.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/usecase/get_product_usecase.dart';
+import '../../presentation/view/admin_flow/admin/invoice/view_model/admin_invoic_provider.dart';
 import '../../presentation/view/admin_flow/view_model/auth/login_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth/set_new_password_viewModel.dart';
 import '../../presentation/view/admin_flow/view_model/auth/signup_viewmodel.dart';
@@ -25,6 +26,7 @@ import '../../presentation/view/branch_manager_flow/Invoice/view_model/paid_paym
 import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_all_product_viewmodel.dart';
 import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_my_orders_viewmodel.dart';
 import '../../presentation/view/driver_flow/driver_provider/branch_product_provider.dart';
+import '../../presentation/view/driver_flow/model_view/delivery_provideer_Admin.dart';
 
 class AppProviders {
   static final List<SingleChildWidget> providers = [
@@ -53,8 +55,13 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => GetInvoiceDetailViewmodel()),
     ChangeNotifierProvider(create: (_) => GetProductsViewmodel()),
     ChangeNotifierProvider(create: (_) => OrderViewmodel()),
+<<<<<<< HEAD
     ChangeNotifierProvider(create: (_) => GetOrdersViewModel()),
     ChangeNotifierProvider(create: (_) => PayInvoiceViewModel()),
+=======
+    ChangeNotifierProvider(create: (_) => AdminInvoiceProvider()),
+    ChangeNotifierProvider(create: (_) => DeliveryProviderAdmin()),
+>>>>>>> 8d0e4b853c0f0e43be07c1dcaf949d0ecb792fca
   ];
 
   static List<SingleChildWidget> getProviders() {

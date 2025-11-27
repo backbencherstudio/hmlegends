@@ -34,7 +34,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: _currentPage == 0 ? _buildPage1Decoration() : _buildPage2Decoration(),
+        decoration: _currentPage == 0
+            ? _buildPage1Decoration()
+            : _buildPage2Decoration(),
         child: SafeArea(
           child: Column(
             children: [

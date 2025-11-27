@@ -4,6 +4,7 @@ import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
 import '../../widget/custom_app_bar.dart';
 import '../driver_provider/branch_product_provider.dart';
+import '../model_view/delivery_provideer_Admin.dart';
 
 class DriverBranchDetailScreen extends StatefulWidget {
   const DriverBranchDetailScreen({super.key});
@@ -15,19 +16,21 @@ class DriverBranchDetailScreen extends StatefulWidget {
 
 class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
   bool deliveryStarted = false;
+  List<bool> selectedItems = [];
 
   @override
   void initState() {
     super.initState();
     Future.microtask(() async {
-      final provider =
-      Provider.of<BranchProductProvider>(context, listen: false);
+      final provider = Provider.of<BranchProductProvider>(
+        context,
+        listen: false,
+      );
       await provider.fetchBranchProducts();
 
       for (var p in provider.products) {
         p.isSelected = false;
       }
-      provider.notifyListeners();
     });
   }
 
@@ -44,6 +47,7 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // Branch info container
               Center(
                 child: Container(
                   padding: EdgeInsets.all(10.r),
@@ -67,7 +71,7 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                         ),
                       ),
                       SizedBox(height: 7.h),
-                      Consumer<BranchProductProvider>(
+                      Consumer<DeliveryProviderAdmin>(
                         builder: (context, provider, _) {
                           return RichText(
                             text: TextSpan(
@@ -81,7 +85,8 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                                   ),
                                 ),
                                 TextSpan(
-                                  text: "${provider.products.length}",
+                                  text:
+                                      "${provider.singleDeliveryModelDriver?.data?.order?.totalQuantity ?? 0}",
                                   style: TextStyle(
                                     color: const Color(0xff1D1F2C),
                                     fontWeight: FontWeight.w600,
@@ -97,8 +102,9 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                   ),
                 ),
               ),
-        
-              Consumer<BranchProductProvider>(
+
+              const SizedBox(height: 10),
+              Consumer<DeliveryProviderAdmin>(
                 builder: (context, provider, _) {
                   if (provider.isLoading) {
                     return const Padding(
@@ -106,8 +112,14 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                       child: Center(child: CircularProgressIndicator()),
                     );
                   }
-        
-                  if (provider.products.isEmpty) {
+
+                  final orderItems = provider
+                      .singleDeliveryModelDriver
+                      ?.data
+                      ?.order
+                      ?.orderItems;
+
+                  if (orderItems == null || orderItems.isEmpty) {
                     return const Center(
                       child: Padding(
                         padding: EdgeInsets.all(16.0),
@@ -115,134 +127,137 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                       ),
                     );
                   }
-        
+
+                  // Initialize selection list if empty
+                  if (selectedItems.length != orderItems.length) {
+                    selectedItems = List<bool>.filled(orderItems.length, false);
+                  }
+
                   return ListView.builder(
-                    itemCount: provider.products.length,
+                    itemCount: orderItems.length,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
-                      final product = provider.products[index];
-                      final bool isSelected = product.isSelected ?? false;
-        
-                      return Container(
+                      final orderItem = orderItems[index];
+                      final isSelected = selectedItems[index];
+
+                      return Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        decoration:
-                        const BoxDecoration(color: Color(0xffFFF6F7)),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Text("${index + 1}."),
-                                Checkbox(
-                                  checkColor: Colors.white,
-                                  activeColor: const Color(0xffE20613),
-                                  value: isSelected,
-                                  onChanged: (val) {
-                                    if (!deliveryStarted) {
-                                      provider.toggleProductSelection(index);
-                                    }
-                                  },
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    product.name,
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      decoration: (deliveryStarted && isSelected)
-                                          ? TextDecoration.lineThrough
-                                          : TextDecoration.none,
-                                      color: (deliveryStarted && isSelected)
-                                          ? Colors.grey
-                                          : Colors.black,
-                                    ),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          margin: EdgeInsets.symmetric(vertical: 4.h),
+                          decoration: const BoxDecoration(
+                            color: Color(0xffFFF6F7),
+                          ),
+                          child: Row(
+                            children: [
+                              Text("${index + 1}."),
+                              Checkbox(
+                                checkColor: Colors.white,
+                                activeColor: const Color(0xffE20613),
+                                value: isSelected,
+                                onChanged: (val) {
+                                  if (!deliveryStarted) {
+                                    setState(() {
+                                      selectedItems[index] = val!;
+                                    });
+                                  }
+                                },
+                              ),
+                              Expanded(
+                                child: Text(
+                                  orderItem.product?.name ?? "Unknown",
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    decoration: (deliveryStarted && isSelected)
+                                        ? TextDecoration.lineThrough
+                                        : TextDecoration.none,
+                                    color: (deliveryStarted && isSelected)
+                                        ? Colors.grey
+                                        : Colors.black,
                                   ),
                                 ),
-                                RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: "${product.quantity} ",
-                                        style: TextStyle(
-                                          color: const Color(0xff4A4C56),
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: product.unit,
-                                        style: TextStyle(
-                                          color: const Color(0xff777980),
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Divider(),
-                          ],
+                              ),
+                              Text("${orderItem.quantity} pcs"),
+                            ],
+                          ),
                         ),
                       );
                     },
                   );
                 },
               ),
-        
+
               SizedBox(height: 8.h),
-        
-              Consumer<BranchProductProvider>(
-                builder: (context, provider, _) {
+
+              Builder(
+                builder: (context) {
                   return SizedBox(
                     width: MediaQuery.of(context).size.width * 0.9,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xffE20613),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(36),
-                        ),
-                      ),
-                      onPressed: () {
-                        final hasSelected = provider.products
-                            .any((p) => p.isSelected == true);
-        
-                        if (!hasSelected) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Please select at least one item."),
+                    child: Consumer<DeliveryProviderAdmin>(
+                      builder: (context, provider, _) {
+                        final orderItems = provider
+                            .singleDeliveryModelDriver
+                            ?.data
+                            ?.order
+                            ?.orderItems;
+
+                        // Enable button only if all items are selected
+                        bool allSelected =
+                            selectedItems.isNotEmpty &&
+                            selectedItems.every((e) => e);
+
+                        return ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: allSelected
+                                ? const Color(0xffE20613)
+                                : Colors.grey,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
                             ),
-                          );
-                          return;
-                        }
-        
-                        if (!deliveryStarted) {
-                          setState(() {
-                            deliveryStarted = true;
-                          });
-                        } else {
-                          Navigator.pushNamed(
-                            context,
-                            RouteNames.confirmDeliveryScreen,
-                          );
-                        }
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(36),
+                            ),
+                          ),
+                          onPressed: allSelected
+                              ? () async {
+                                  if (!deliveryStarted) {
+                                    setState(() {
+                                      deliveryStarted = true;
+                                    });
+                                    await provider.deliveryReceivedAdmin(
+                                      provider
+                                              .singleDeliveryModelDriver
+                                              ?.data!
+                                              .id ??
+                                          "",
+                                    );
+                                    await provider.setDeliveryId(
+                                      provider.deliveryId ?? "",
+                                    );
+                                  } else {
+                                    Navigator.pushNamed(
+                                      context,
+                                      RouteNames.confirmDeliveryScreen,
+                                    );
+                                  }
+                                }
+                              : null,
+                          child: Text(
+                            deliveryStarted
+                                ? "Proceed to Delivery Note"
+                                : "Start Delivery",
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        );
                       },
-                      child: Text(
-                        deliveryStarted
-                            ? "Proceed to Delivery Note"
-                            : "Start Delivery",
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
                     ),
                   );
                 },
               ),
-        
+
               const SizedBox(height: 30),
             ],
           ),

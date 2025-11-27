@@ -13,12 +13,23 @@ class StockScreenProvider extends ChangeNotifier {
   StockScreenProvider() {
     getProduct();
   }
+
   final TokenStorage _tokenStorage = TokenStorage();
 
+  // ---------------- Loading State ----------------
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  // ---------------- UI Selection ----------------
   int _selectIndex = 0;
   int get selectIndex => _selectIndex;
 
-  toggleSelect(int index) {
+  void toggleSelect(int index) {
     _selectIndex = index;
     notifyListeners();
   }
@@ -29,16 +40,17 @@ class StockScreenProvider extends ChangeNotifier {
     "Stock Low",
     "Out of Stock",
   ];
-
   List<String>? get data => _data;
 
   String _selectedFilter = "All Products";
-
   String get selectedFilter => _selectedFilter;
 
+  // ---------------- Product List ----------------
   AdminProductModel? _adminProductModel;
   AdminProductModel? get adminProductModel => _adminProductModel;
+
   Future<void> getProduct() async {
+    _setLoading(true);
     try {
       final url = Uri.parse(ApiEndpoints.adminAllProduct);
       final token = await _tokenStorage.getToken();
@@ -55,19 +67,21 @@ class StockScreenProvider extends ChangeNotifier {
         _adminProductModel = AdminProductModel.fromJson(decodeData);
         debugPrint("Success: ${decodeData['message']}");
       } else {
-        debugPrint("Failed====: ${decodeData['message']}");
+        debugPrint("Failed: ${decodeData['message']}");
       }
-      notifyListeners();
     } catch (error) {
       debugPrint("Error fetching products: $error");
+    } finally {
+      _setLoading(false);
     }
   }
 
+  // ---------------- Single Product ----------------
   SingleProductModel? _singleProductModel;
   SingleProductModel? get singleProductModel => _singleProductModel;
 
   Future<void> getSingleProductProduct(String pId) async {
-    debugPrint("THe product id is $pId");
+    _setLoading(true);
     try {
       final url = Uri.parse(ApiEndpoints.fetchSingleProduct(pId));
       final token = await _tokenStorage.getToken();
@@ -79,23 +93,23 @@ class StockScreenProvider extends ChangeNotifier {
         },
       );
 
+      final decodeData = jsonDecode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final decodeData = jsonDecode(response.body);
-
         _singleProductModel = SingleProductModel.fromJson(decodeData);
         debugPrint("Success single Product: ${decodeData['message']}");
       } else {
-        final decodeData = jsonDecode(response.body);
-
-        debugPrint("Failed======: ${decodeData['message']}");
+        debugPrint("Failed single Product: ${decodeData['message']}");
       }
-      notifyListeners();
     } catch (error) {
-      debugPrint("Error fetching products: $error");
+      debugPrint("Error fetching single product: $error");
+    } finally {
+      _setLoading(false);
     }
   }
 
+  // ---------------- Delete Product ----------------
   Future<void> deleteProduct(String pid) async {
+    _setLoading(true);
     try {
       final url = Uri.parse(ApiEndpoints.deleteProduct(pid));
       final token = await _tokenStorage.getToken();
@@ -110,21 +124,25 @@ class StockScreenProvider extends ChangeNotifier {
       final decodeData = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint("The product delete successfully ${decodeData['message']}");
+        debugPrint("Product deleted successfully: ${decodeData['message']}");
       } else {
-        debugPrint("The product delete failed ${decodeData['message']}");
+        debugPrint("Failed to delete product: ${decodeData['message']}");
       }
     } catch (error) {
-      debugPrint("The error message is $error");
+      debugPrint("Error deleting product: $error");
+    } finally {
+      _setLoading(false);
     }
   }
 
+  // ---------------- Create Product ----------------
   Future<void> createProduct({
     required String name,
     required String stock,
     required String price,
     File? image,
   }) async {
+    _setLoading(true);
     try {
       final url = Uri.parse(ApiEndpoints.adminCreateProduct);
       final token = await _tokenStorage.getToken();
@@ -141,38 +159,40 @@ class StockScreenProvider extends ChangeNotifier {
           await http.MultipartFile.fromPath("image", image.path),
         );
       }
+
       final streamData = await request.send();
       final response = await http.Response.fromStream(streamData);
       final decodeData = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _adminProductModel = AdminProductModel.fromJson(decodeData);
-        debugPrint("Success: ${decodeData['message']}");
+        debugPrint("Product created successfully: ${decodeData['message']}");
       } else {
-        debugPrint("Failed: ${decodeData['message']}");
+        debugPrint("Failed to create product: ${decodeData['message']}");
       }
-      notifyListeners();
     } catch (error) {
-      debugPrint("Error fetching products: $error");
+      debugPrint("Error creating product: $error");
+    } finally {
+      _setLoading(false);
     }
   }
 
+  // ---------------- Edit Product ----------------
   Future<void> editProduct({
-    required pId,
+    required String pId,
     required String name,
     required String stock,
     required String price,
     File? image,
   }) async {
+    _setLoading(true);
     try {
-      final token = await _tokenStorage.getToken();
       final url = Uri.parse(ApiEndpoints.updateProduct(pId));
-
+      final token = await _tokenStorage.getToken();
       final request = http.MultipartRequest("PATCH", url);
 
       request.headers['Authorization'] = "Bearer $token";
       request.headers['Accept'] = "application/json";
-
       request.fields['name'] = name;
       request.fields['stock'] = stock;
       request.fields['price'] = price;
@@ -186,13 +206,16 @@ class StockScreenProvider extends ChangeNotifier {
       final streamData = await request.send();
       final response = await http.Response.fromStream(streamData);
       final decodeData = jsonDecode(response.body);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint("The product update successfully ${decodeData['message']}");
+        debugPrint("Product updated successfully: ${decodeData['message']}");
       } else {
-        debugPrint("The product update failed ${decodeData['message']}");
+        debugPrint("Failed to update product: ${decodeData['message']}");
       }
     } catch (error) {
-      debugPrint("The error message $error");
+      debugPrint("Error updating product: $error");
+    } finally {
+      _setLoading(false);
     }
   }
 }
