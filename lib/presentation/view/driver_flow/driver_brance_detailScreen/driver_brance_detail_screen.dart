@@ -196,13 +196,12 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                     width: MediaQuery.of(context).size.width * 0.9,
                     child: Consumer<DeliveryProviderAdmin>(
                       builder: (context, provider, _) {
-                        final orderItems = provider
-                            .singleDeliveryModelDriver
-                            ?.data
-                            ?.order
-                            ?.orderItems;
+                        // final orderItems = provider
+                        //     .singleDeliveryModelDriver
+                        //     ?.data
+                        //     ?.order
+                        //     ?.orderItems;
 
-                        // Enable button only if all items are selected
                         bool allSelected =
                             selectedItems.isNotEmpty &&
                             selectedItems.every((e) => e);
@@ -223,20 +222,18 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                           ),
                           onPressed: allSelected
                               ? () async {
-                                  if (!deliveryStarted) {
+                                  final id =
+                                      provider
+                                          .singleDeliveryModelDriver
+                                          ?.data
+                                          ?.id ??
+                                      "";
+                                  if (!deliveryStarted && id.isNotEmpty) {
                                     setState(() {
                                       deliveryStarted = true;
                                     });
-                                    await provider.deliveryReceivedAdmin(
-                                      provider
-                                              .singleDeliveryModelDriver
-                                              ?.data!
-                                              .id ??
-                                          "",
-                                    );
-                                    await provider.setDeliveryId(
-                                      provider.deliveryId ?? "",
-                                    );
+                                    await provider.deliveryReceivedAdmin(id);
+                                    provider.setDeliveryId(id);
                                   } else {
                                     Navigator.pushNamed(
                                       context,

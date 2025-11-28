@@ -65,7 +65,6 @@ class _ConfirmDeliveryScreenState extends State<ConfirmDeliveryScreen> {
         );
 
         await provider.deliveryConfirmAdmin(
-          widget.deliveryId ?? "", // pass non-null deliveryId
           noteText,
           signatureFile,
         );

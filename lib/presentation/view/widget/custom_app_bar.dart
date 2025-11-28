@@ -110,8 +110,10 @@ import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 
+import '../../../core/constant/api_endpoint.dart';
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String profileImage;
+  final String? profileImage;
   final String? backArrow;
   final int notificationCount;
   final VoidCallback? onProfileTap;
@@ -119,7 +121,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const CustomAppBar({
     super.key,
-    required this.profileImage,
+    this.profileImage,
     this.backArrow,
     required this.notificationCount,
     this.onProfileTap,
@@ -148,14 +150,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       backArrow != null && backArrow!.isNotEmpty
                           ? GestureDetector(
-                        onTap: (){
-                          Navigator.pop(context);
-                        },
-                            child: Image.asset(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Image.asset(
                                 "assets/images/back_arrow.png",
                                 height: 38.h,
                               ),
-                          )
+                            )
                           : Image.asset(
                               AssetPaths.headOfficeLogo,
                               height: 38.h,
@@ -210,7 +212,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             ),
                         child: CircleAvatar(
                           radius: 18.r,
-                          backgroundImage: AssetImage(profileImage),
+                          backgroundImage:
+                              profileImage != null && profileImage!.isNotEmpty
+                              ? NetworkImage(
+                                  "${ApiEndpoints.baseUrl}/storage/avatar/$profileImage",
+                                )
+                              : AssetImage(AssetPaths.personIcon)
+                                    as ImageProvider,
                         ),
                       ),
                     ],
