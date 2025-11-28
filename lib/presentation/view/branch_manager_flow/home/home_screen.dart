@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:provider/provider.dart';
+
 import '../../../../core/constant/asset_path.dart';
 import '../../widget/custom_app_bar.dart';
+import '../orders/viewmodel/create_order_viewmodel.dart';
 
 class BranchHomeScreen extends StatefulWidget {
   const BranchHomeScreen({super.key});
@@ -15,43 +18,22 @@ class BranchHomeScreen extends StatefulWidget {
 class _BranchHomeScreenState extends State<BranchHomeScreen> {
   String _currentBar = "first";
 
-  bool _orderPlaced = false;
-
-  void _onPlaceOrderPressed() {
-    setState(() {
-      _orderPlaced = true;
-      _currentBar = "second";
-    });
-  }
-
-  void _onLockAccountPressed() {
-    setState(() {
-      _currentBar = "third";
-    });
-  }
-
-  Widget _getCurrentTopBar() {
-    switch (_currentBar) {
-      case "second":
-        return const AlignTopBarSecond();
-      case "third":
-        return const AlignTopBarThird();
-      default:
-        return const AlignTopBarFirst();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final orderVm = Provider.of<OrderViewmodel>(context);
+
+    /// Automatically switch UI when API success
+    if (orderVm.hasPlacedToday && _currentBar != "second") {
+      _currentBar = "second";
+    }
+
     return Scaffold(
-      appBar: CustomAppBar(
-        profileImage: AssetPaths.personIcon,
-        notificationCount: 4,
-      ),
+      appBar: CustomAppBar(notificationCount: 4),
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
 
+          // BACKGROUND
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -61,6 +43,7 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
             ),
           ),
 
+          // FOOD IMAGE
           Positioned(
             bottom: -60,
             child: SizedBox(
@@ -69,113 +52,118 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
             ),
           ),
 
-          Positioned(
-              bottom: 220,
-              right: 150,
-              child: SvgPicture.asset('assets/icons/Star 2.svg',
-                  width: 30.w, height: 30.h)),
-          Positioned(
-              bottom: 200,
-              right: 200,
-              child: SvgPicture.asset('assets/icons/Star 2.svg',
-                  width: 20.w, height: 20.h)),
-          Positioned(
-              bottom: 260,
-              right: 280,
-              child: SvgPicture.asset('assets/icons/Star 2.svg',
-                  width: 20.w, height: 20.h)),
-          Positioned(
-              bottom: 230,
-              right: 320,
-              child: SvgPicture.asset('assets/icons/Star 2.svg',
-                  width: 12.w, height: 12.h)),
-          Positioned(
-              bottom: 250,
-              right: 360,
-              child: SvgPicture.asset('assets/icons/Star 2.svg',
-                  width: 12.w, height: 12.h)),
-          Positioned(
-              bottom: 240,
-              right: 390,
-              child: SvgPicture.asset('assets/icons/Star 2.svg',
-                  width: 12.w, height: 12.h)),
-          Positioned(
-              bottom: 240,
-              left: 390,
-              child: SvgPicture.asset('assets/icons/Star 2.svg',
-                  width: 15.w, height: 15.h)),
-          Positioned(
-              bottom: 260,
-              left: 370,
-              child: SvgPicture.asset('assets/icons/Star 2.svg',
-                  width: 20.w, height: 20.h)),
-          Positioned(
-              bottom: 260,
-              left: 320,
-              child: SvgPicture.asset('assets/icons/Star 2.svg',
-                  width: 17.w, height: 17.h)),
+          // STARS
+          ...[
+            Positioned(bottom: 220, right: 150, child: _star(30)),
+            Positioned(bottom: 200, right: 200, child: _star(20)),
+            Positioned(bottom: 260, right: 280, child: _star(20)),
+            Positioned(bottom: 230, right: 320, child: _star(12)),
+            Positioned(bottom: 250, right: 360, child: _star(12)),
+            Positioned(bottom: 240, right: 390, child: _star(12)),
+            Positioned(bottom: 240, left: 390, child: _star(15)),
+            Positioned(bottom: 260, left: 370, child: _star(20)),
+            Positioned(bottom: 260, left: 320, child: _star(17)),
+          ],
 
           Align(
             alignment: Alignment.topCenter,
-              child: Column(
-                children: [
-                  SizedBox(height: 10.h,),
-                  Text('Branch Name – (BR001)',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 18),),
-                  SizedBox(height: 10.h,),
-                  _getCurrentTopBar(),
-                  SizedBox(height: 40.h,),
-                  Row(crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 12,
-                    children: [
-                      Column(
-                        spacing: 10,
-                        children: [
-                          GestureDetector(
-                            onTap: _onPlaceOrderPressed,
-                            child: CustomFeatureBox(
-                              imagePath: 'assets/icons/first_box.png',
-                              text: 'Place Order',
-                              isDisabled: _orderPlaced,
-                            ),
+            child: Column(
+              children: [
+                SizedBox(height: 10.h),
+                Text(
+                  'Branch Name – (BR001)',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                ),
+                SizedBox(height: 10.h),
+
+                /// TOP BARS SWITCH
+                _getTopBarWidget(orderVm),
+
+                SizedBox(height: 40.h),
+
+                /// BUTTON GRID
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 12,
+                  children: [
+                    Column(
+                      spacing: 10,
+                      children: [
+                        GestureDetector(
+                          onTap: orderVm.isLoading
+                              ? null
+                              : () async {
+                            final success = await orderVm.placeOrder();
+                            if (success) {
+                              setState(() {
+                                _currentBar = "second";
+                              });
+                            }
+                          },
+                          child: CustomFeatureBox(
+                            imagePath: 'assets/icons/first_box.png',
+                            text: 'Place Order',
+                            isDisabled: orderVm.hasPlacedToday,
                           ),
-                          GestureDetector(
-                            onTap: (){
-                              Navigator.pushNamed(context, RouteNames.invoiceScreen);
-                            },
-                            child: CustomFeatureBox(
-                              imagePath: 'assets/icons/third_box.png',
-                              text: 'Invoices',
-                            ),
+                        ),
+
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, RouteNames.invoiceScreen);
+                          },
+                          child: CustomFeatureBox(
+                            imagePath: 'assets/icons/third_box.png',
+                            text: 'Invoices',
                           ),
-                        ],
-                      ),
-                       Column(
-                        spacing: 10,
-                        children: [
-                          GestureDetector(
-                            onTap:(){
-                              Navigator.pushNamed(context, RouteNames.ordersScreen);
-                            },
-                            child: CustomFeatureBox(
-                              imagePath: 'assets/icons/second_box.png',
-                              text: 'My orders',
-                            ),
+                        ),
+                      ],
+                    ),
+
+                    Column(
+                      spacing: 10,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, RouteNames.ordersScreen);
+                          },
+                          child: CustomFeatureBox(
+                            imagePath: 'assets/icons/second_box.png',
+                            text: 'My orders',
                           ),
-                          CustomFeatureBox(
-                            imagePath: 'assets/icons/fourth_box.png',
-                            text: 'My Delivery',
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              )
+                        ),
+                        CustomFeatureBox(
+                          imagePath: 'assets/icons/fourth_box.png',
+                          text: 'My Delivery',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
+  }
+
+  /// STAR widget helper
+  Widget _star(double size) {
+    return SvgPicture.asset(
+      'assets/icons/Star 2.svg',
+      width: size.w,
+      height: size.h,
+    );
+  }
+
+  /// Select which top bar to show
+  Widget _getTopBarWidget(OrderViewmodel vm) {
+    if (vm.hasPlacedToday) return const AlignTopBarSecond();
+    if (_currentBar == "third") return const AlignTopBarThird();
+    return const AlignTopBarFirst();
   }
 }
 
@@ -184,20 +172,17 @@ class AlignTopBarFirst extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      top: 20,
-      child: Container(
-        width: double.infinity,
-        height: 40.h,
-        color: const Color(0xff5BB450),
-        child: Center(
-          child: Text(
-            'You can place today’s order. Time left: 2h 30m.',
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 13.sp,
-              color: Colors.white,
-            ),
+    return Container(
+      width: double.infinity,
+      height: 40.h,
+      color: const Color(0xff5BB450),
+      child: Center(
+        child: Text(
+          'You can place today’s order. Time left: 2h 30m.',
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 13.sp,
+            color: Colors.white,
           ),
         ),
       ),
@@ -210,20 +195,17 @@ class AlignTopBarSecond extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Container(
-        width: double.infinity,
-        height: 40.h,
-        color: const Color(0xffA5A5AB),
-        child: Center(
-          child: Text(
-            'You have already placed today’s order.',
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 13.sp,
-              color: Colors.white,
-            ),
+    return Container(
+      width: double.infinity,
+      height: 40.h,
+      color: const Color(0xffA5A5AB),
+      child: Center(
+        child: Text(
+          'You have already placed today’s order.',
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 13.sp,
+            color: Colors.white,
           ),
         ),
       ),
@@ -236,55 +218,51 @@ class AlignTopBarThird extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Container(
-        width: double.infinity,
-        height: 45.h,
-        color: const Color(0xffFAD33E),
-        child: Center(
-          child: Row(
-            spacing: 15,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('assets/icons/Vector.png', scale: 3),
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text:
-                      'Your account is locked due to unpaid invoices.\n',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13.sp,
-                        color: const Color(0xff777980),
-                      ),
+    return Container(
+      width: double.infinity,
+      height: 45.h,
+      color: const Color(0xffFAD33E),
+      child: Center(
+        child: Row(
+          spacing: 15,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/icons/Vector.png', scale: 3),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Your account is locked due to unpaid invoices.\n',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13.sp,
+                      color: const Color(0xff777980),
                     ),
-                    TextSpan(
-                      text: 'Please clear ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13.sp,
-                        color: const Color(0xff777980),
-                      ),
+                  ),
+                  TextSpan(
+                    text: 'Please clear ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13.sp,
+                      color: const Color(0xff777980),
                     ),
-                    TextSpan(
-                      text: 'payment.',
-                      style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        decorationColor: const Color(0xff777980),
-                        decorationThickness: 2,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13.sp,
-                        color: Colors.red,
-                      ),
+                  ),
+                  TextSpan(
+                    text: 'payment.',
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      decorationColor: Color(0xff777980),
+                      decorationThickness: 2,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13.sp,
+                      color: Colors.red,
                     ),
-                  ],
-                ),
-              )
-            ],
-          ),
+                  ),
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );

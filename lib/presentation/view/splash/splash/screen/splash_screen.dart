@@ -33,9 +33,9 @@ class _SplashScreenState extends State<SplashScreen>
       final userType = await UserTypeStorage().getUserType();
 
       if (token != null && userType == "admin") {
-        context.read<ChangePasswordProvider>().adminCheckMe();
+        await context.read<ChangePasswordProvider>().adminCheckMe();
+                    Future.delayed(Duration(seconds: 2)).then((_) {Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);});
 
-        Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
       } else if (token != null && userType == 'manager') {
         Navigator.pushReplacementNamed(context, RouteNames.branchParentScreen);
       } else if (token != null && userType == "driver") {
