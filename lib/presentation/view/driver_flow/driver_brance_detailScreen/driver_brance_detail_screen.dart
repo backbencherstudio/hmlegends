@@ -47,7 +47,6 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Branch info container
               Center(
                 child: Container(
                   padding: EdgeInsets.all(10.r),
@@ -113,11 +112,12 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                     );
                   }
 
-                  final orderItems = provider
-                      .singleDeliveryModelDriver
-                      ?.data
-                      ?.order
-                      ?.orderItems;
+                  final orderItems =
+                      provider
+                          .singleDeliveryModelDriver
+                          ?.data
+                          ?.order
+                          ?.orderItems;
 
                   if (orderItems == null || orderItems.isEmpty) {
                     return const Center(
@@ -169,12 +169,14 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                                   orderItem.product?.name ?? "Unknown",
                                   style: TextStyle(
                                     fontSize: 14.sp,
-                                    decoration: (deliveryStarted && isSelected)
-                                        ? TextDecoration.lineThrough
-                                        : TextDecoration.none,
-                                    color: (deliveryStarted && isSelected)
-                                        ? Colors.grey
-                                        : Colors.black,
+                                    decoration:
+                                        (deliveryStarted && isSelected)
+                                            ? TextDecoration.lineThrough
+                                            : TextDecoration.none,
+                                    color:
+                                        (deliveryStarted && isSelected)
+                                            ? Colors.grey
+                                            : Colors.black,
                                   ),
                                 ),
                               ),
@@ -208,9 +210,10 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
 
                         return ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: allSelected
-                                ? const Color(0xffE20613)
-                                : Colors.grey,
+                            backgroundColor:
+                                allSelected
+                                    ? const Color(0xffE20613)
+                                    : Colors.grey,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 24,
@@ -220,28 +223,29 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                               borderRadius: BorderRadius.circular(36),
                             ),
                           ),
-                          onPressed: allSelected
-                              ? () async {
-                                  final id =
-                                      provider
-                                          .singleDeliveryModelDriver
-                                          ?.data
-                                          ?.id ??
-                                      "";
-                                  if (!deliveryStarted && id.isNotEmpty) {
-                                    setState(() {
-                                      deliveryStarted = true;
-                                    });
-                                    await provider.deliveryReceivedAdmin(id);
-                                    provider.setDeliveryId(id);
-                                  } else {
-                                    Navigator.pushNamed(
-                                      context,
-                                      RouteNames.confirmDeliveryScreen,
-                                    );
+                          onPressed:
+                              allSelected
+                                  ? () async {
+                                    final id =
+                                        provider
+                                            .singleDeliveryModelDriver
+                                            ?.data
+                                            ?.id ??
+                                        "";
+                                    if (!deliveryStarted && id.isNotEmpty) {
+                                      setState(() {
+                                        deliveryStarted = true;
+                                      });
+                                      await provider.deliveryReceivedAdmin(id);
+                                      provider.setDeliveryId(id);
+                                    } else {
+                                      Navigator.pushNamed(
+                                        context,
+                                        RouteNames.confirmDeliveryScreen,
+                                      );
+                                    }
                                   }
-                                }
-                              : null,
+                                  : null,
                           child: Text(
                             deliveryStarted
                                 ? "Proceed to Delivery Note"

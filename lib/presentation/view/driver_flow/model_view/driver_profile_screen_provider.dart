@@ -8,6 +8,9 @@ import 'package:http/http.dart' as http;
 import '../model/check_me_driver.dart';
 
 class DriverProfileScreenProvider extends ChangeNotifier {
+  DriverProfileScreenProvider() {
+    checkMeDriver();
+  }
   final TokenStorage _tokenStorage = TokenStorage();
 
   CheckMeModelDriver? _checkMeModelDriver;
