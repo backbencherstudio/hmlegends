@@ -9,13 +9,13 @@ import '../model/single_delivery_admin.dart';
 
 class DeliveryProviderAdmin extends ChangeNotifier {
   final TokenStorage _tokenStorage = TokenStorage();
-  String? deliveryId; // nullable initially
+  String? deliveryId;
 
   setDeliveryId(String deliveredId) {
+    debugPrint("The order Id set $deliveredId");
     deliveryId = deliveredId;
     notifyListeners();
   }
-
 
   AllDeliveryModelDriver? _allDeliveryModelDriver;
   AllDeliveryModelDriver? get allDeliveryModelDriver => _allDeliveryModelDriver;
@@ -128,13 +128,13 @@ class DeliveryProviderAdmin extends ChangeNotifier {
     }
   }
 
-  Future<void> deliveryConfirmAdmin(String deliveryId,String text, File? signatureImage) async {
+  Future<void> deliveryConfirmAdmin(String text, File? signatureImage) async {
     _isLoading = true;
     notifyListeners();
 
     try {
       final token = await _tokenStorage.getToken();
-      final url = Uri.parse(ApiEndpoints.deliveryConfirmAdmin(deliveryId));
+      final url = Uri.parse(ApiEndpoints.deliveryConfirmAdmin(deliveryId!));
 
       final request = http.MultipartRequest("PATCH", url);
 
@@ -145,6 +145,7 @@ class DeliveryProviderAdmin extends ChangeNotifier {
       if (text.isNotEmpty) {
         request.fields["note"] = text;
       }
+      request.fields["check_type"] = "DELIVERED";
 
       if (signatureImage != null) {
         request.files.add(
@@ -161,7 +162,7 @@ class DeliveryProviderAdmin extends ChangeNotifier {
         if (response.statusCode == 200 || response.statusCode == 201) {
           debugPrint("Delivery successfully marked: ${decodeData['message']}");
         } else {
-          debugPrint("Delivery failed: ${decodeData['message']}");
+          debugPrint("Delivery failed-------: ${decodeData['message']}");
         }
       } else {
         debugPrint("Empty response from server.");

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/presentation/view/driver_flow/profile_driver/changeInfo_driver.dart';
 import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart';
 import '../../presentation/view/admin_flow/admin/invoice/screen/admin_invoice_detail_screen.dart';
 import '../../presentation/view/admin_flow/admin/invoice/screen/head_office_invoice_screen.dart';
@@ -85,6 +86,7 @@ class AppRoutes{
     RouteNames.manageBranchesToOrderSummaryScreen :(context)=>  ManageBranchesToOrderSummaryScreen(),
     RouteNames.editBranchScreen :(context)=>  EditBranchScreen(),
     RouteNames.adminInvoiceDetailScreen :(context)=>  AdminInvoiceDetailScreen(),
+    RouteNames.changeInfoDriver :(context)=>  ChangeInfoDriver(),
 
 
   };

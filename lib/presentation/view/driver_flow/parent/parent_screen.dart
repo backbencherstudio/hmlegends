@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 import '../../branch_manager_flow/profile/profile_screen.dart';
+import '../profile_driver/driver_profile.dart';
 import '../driver_screen.dart';
 
 class DriverBottomNavBar extends StatelessWidget {
@@ -104,7 +105,7 @@ class DriverBranchParentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       DriverScreen(),
-      ProfileScreen(),
+      DriverProfile(),
     ];
 
     return Consumer<BottomNavViewModel>(

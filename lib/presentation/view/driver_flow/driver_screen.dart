@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/presentation/view/driver_flow/model_view/driver_profile_screen_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constant/asset_path.dart';
@@ -29,14 +30,18 @@ class _DriverScreenState extends State<DriverScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final profileProvider = Provider.of<DriverProfileScreenProvider>(context);
+    final data = profileProvider.checkMeModelDriver?.data;
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       builder: (context, child) {
         return Scaffold(
           appBar: CustomAppBar(
-            // profileImage: AssetPaths.personIcon,
+            profileImage: data?.avatar,
             notificationCount: 4,
           ),
+
           body: Stack(
             children: [
               Container(
