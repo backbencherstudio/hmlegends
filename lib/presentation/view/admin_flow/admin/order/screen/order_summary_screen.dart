@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
@@ -120,14 +119,18 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                       selectedPeriod = value;
                     });
                   },
-                  itemBuilder: (context) => const [
-                    PopupMenuItem(value: 'Today', child: Text('Today')),
-                    PopupMenuItem(value: 'This week', child: Text('This week')),
-                    PopupMenuItem(
-                      value: 'This month',
-                      child: Text('This month'),
-                    ),
-                  ],
+                  itemBuilder:
+                      (context) => const [
+                        PopupMenuItem(value: 'Today', child: Text('Today')),
+                        PopupMenuItem(
+                          value: 'This week',
+                          child: Text('This week'),
+                        ),
+                        PopupMenuItem(
+                          value: 'This month',
+                          child: Text('This month'),
+                        ),
+                      ],
                   color: const Color(0xFFFFF5F5),
                   child: Row(
                     children: [
@@ -141,114 +144,117 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             SizedBox(height: 14.h),
 
             Expanded(
-              child: provider.isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      itemCount: orders.length,
-                      padding: EdgeInsets.only(bottom: 8.h),
-                      itemBuilder: (context, index) {
-                        final item = orders[index];
+              child:
+                  provider.isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                        itemCount: orders.length,
+                        padding: EdgeInsets.only(bottom: 8.h),
+                        itemBuilder: (context, index) {
+                          final item = orders[index];
 
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: 8.h),
-                          child: Container(
-                            height: 40.h,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFD1E4C9),
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(8.r),
-                                        bottomLeft: Radius.circular(8.r),
-                                      ),
-                                    ),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12.w,
-                                    ),
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        "${index + 1}.  ${item.user?.name ?? ""}",
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppColors.authBodyTextColor,
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: 8.h),
+                            child: Container(
+                              height: 40.h,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFD1E4C9),
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(8.r),
+                                          bottomLeft: Radius.circular(8.r),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                ),
-
-                                Expanded(
-                                  flex: 2,
-                                  child: Container(
-                                    color: const Color(0xFFE6ECDE),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12.w,
-                                    ),
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        "Total Units: ${item.totalQuantity ?? 'Unknown'}",
-                                        style: TextStyle(
-                                          fontSize: 13.sp,
-                                          color: AppColors.authBodyTextColor,
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12.w,
                                       ),
-                                    ),
-                                  ),
-                                ),
-
-                                Expanded(
-                                  flex: 1,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFE20614),
-                                      borderRadius: BorderRadius.only(
-                                        topRight: Radius.circular(8.r),
-                                        bottomRight: Radius.circular(8.r),
-                                      ),
-                                    ),
-                                    child: TextButton(
-                                      onPressed: () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          RouteNames.orderSummaryViewScreen,
-                                        );
-                                      },
-                                      style: TextButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.only(
-                                            topRight: Radius.circular(8.r),
-                                            bottomRight: Radius.circular(8.r),
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          "${index + 1}.  ${item.user?.name ?? ""}",
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.authBodyTextColor,
                                           ),
                                         ),
                                       ),
-                                      child: Text(
-                                        "View",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 13.sp,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Container(
+                                      color: const Color(0xFFE6ECDE),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12.w,
+                                      ),
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          "Total Units: ${item.totalQuantity ?? 'Unknown'}",
+                                          style: TextStyle(
+                                            fontSize: 13.sp,
+                                            color: AppColors.authBodyTextColor,
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFE20614),
+                                        borderRadius: BorderRadius.only(
+                                          topRight: Radius.circular(8.r),
+                                          bottomRight: Radius.circular(8.r),
+                                        ),
+                                      ),
+                                      child: TextButton(
+                                        onPressed: () async {
+                                          await provider.adminSingleOrder(
+                                            item.id ?? "",
+                                          );
+                                          Navigator.pushNamed(
+                                            context,
+                                            RouteNames.orderSummaryViewScreen,
+                                          );
+                                        },
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(8.r),
+                                              bottomRight: Radius.circular(8.r),
+                                            ),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          "View",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 13.sp,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      ),
             ),
           ],
         ),

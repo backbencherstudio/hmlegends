@@ -20,6 +20,8 @@ class ApiEndpoints {
   static String fetchSingleProduct(String pid) => '$baseUrl/api/product/$pid';
   static String deleteProduct(String pid) => '$baseUrl/api/product/$pid';
   static String adminOrder = '$baseUrl/api/order/admin';
+  static String adminSingleOrder(String orderId) => '$baseUrl/api/order/$orderId/admin';
+  static String orderAccept(String orderId) => '$baseUrl/api/order/$orderId/approve/admin';
   static String getAllInvoice = '$baseUrl/api/invoice';
   static String getInvoiceDetailAdmin(String orderId) =>
       '$baseUrl/api/invoice/order/$orderId';

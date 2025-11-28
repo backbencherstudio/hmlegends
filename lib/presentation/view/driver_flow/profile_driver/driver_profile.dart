@@ -29,66 +29,70 @@ class _DriverProfileState extends State<DriverProfile> {
   void _showSubmitDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.r),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              "Are you sure you want to log out?",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+      builder:
+          (_) => AlertDialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.r),
             ),
-            SizedBox(height: 20.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pushReplacementNamed(
-                      context,
-                      RouteNames.loginScreen,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xffE20613),
-                    side: const BorderSide(color: Color(0xffE20613)),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
-                      vertical: 8.h,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.r),
-                    ),
+                Text(
+                  "Are you sure you want to log out?",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w500,
                   ),
-                  child: Text("Log me out"),
                 ),
-                SizedBox(width: 10.w),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xffE20613),
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
-                      vertical: 8.h,
+                SizedBox(height: 20.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pushReplacementNamed(
+                          context,
+                          RouteNames.loginScreen,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xffE20613),
+                        side: const BorderSide(color: Color(0xffE20613)),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 8.h,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.r),
+                        ),
+                      ),
+                      child: Text("Log me out"),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.r),
+                    SizedBox(width: 10.w),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffE20613),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 8.h,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.r),
+                        ),
+                      ),
+                      child: Text("Stay logged in"),
                     ),
-                  ),
-                  child: Text("Stay logged in"),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -160,8 +164,9 @@ class _DriverProfileState extends State<DriverProfile> {
             _ProfileActionTile(
               icon: Icons.info_outline,
               title: "Change Info",
-              onTap: () =>
-                  Navigator.pushNamed(context, RouteNames.changeInfoDriver),
+              onTap:
+                  () =>
+                      Navigator.pushNamed(context, RouteNames.changeInfoDriver),
             ),
 
             Divider(indent: 20.w, endIndent: 20.w),
@@ -216,19 +221,20 @@ class _ProfileHeader extends StatelessWidget {
           Stack(
             children: [
               ClipOval(
-                child: avatarUrl != null && avatarUrl!.isNotEmpty
-                    ? Image.network(
-                        "${ApiEndpoints.baseUrl}/storage/avatar/$avatarUrl",
-                        width: 100.w,
-                        height: 100.w,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        'assets/images/panda.jpeg',
-                        width: 90.w,
-                        height: 90.w,
-                        fit: BoxFit.cover,
-                      ),
+                child:
+                    avatarUrl != null && avatarUrl!.isNotEmpty
+                        ? Image.network(
+                          "${ApiEndpoints.baseUrl}/storage/avatar/$avatarUrl",
+                          width: 100.w,
+                          height: 100.w,
+                          fit: BoxFit.cover,
+                        )
+                        : Image.asset(
+                          'assets/images/panda.jpeg',
+                          width: 90.w,
+                          height: 90.w,
+                          fit: BoxFit.cover,
+                        ),
               ),
               Positioned(
                 bottom: 0,
