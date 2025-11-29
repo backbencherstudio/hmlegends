@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
 import '../../../../../../core/constant/asset_path.dart';
+import '../../../../widget/custom_app_bar.dart';
 import '../../../../widget/custom_app_bar_2.dart';
+import '../../../view_model/profile/change_pass_provider.dart';
 import '../view_model/admin_invoic_provider.dart';
 
 class HeadOfficeInvoiceScreen extends StatefulWidget {
@@ -29,16 +31,13 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
     final provider = context.watch<AdminInvoiceProvider>();
     final invoiceData = provider.allInvoiceModel?.data?.invoices ?? [];
     final stats = provider.allInvoiceModel?.data?.stats;
-
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data ;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
-      appBar: CustomAppBarTwo(
-        title: "Invoice",
-        profileImage: AssetPaths.personIcon,
+      appBar: CustomAppBar(
+        profileImage: data?.avatar,
         notificationCount: 4,
-        colorMain: const Color(0xFFFFF5F5),
-        colorSpace: const Color(0xFFFFF5F5),
-        useBottomNavBack: widget.fromBottomNav,
       ),
       body: provider.allInvoiceModel == null
           ? const Center(child: CircularProgressIndicator())

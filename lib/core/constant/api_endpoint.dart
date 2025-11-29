@@ -20,8 +20,10 @@ class ApiEndpoints {
   static String fetchSingleProduct(String pid) => '$baseUrl/api/product/$pid';
   static String deleteProduct(String pid) => '$baseUrl/api/product/$pid';
   static String adminOrder = '$baseUrl/api/order/admin';
-  static String adminSingleOrder(String orderId) => '$baseUrl/api/order/$orderId/admin';
-  static String orderAccept(String orderId) => '$baseUrl/api/order/$orderId/approve/admin';
+  static String adminSingleOrder(String orderId) =>
+      '$baseUrl/api/order/$orderId/admin';
+  static String orderAccept(String orderId) =>
+      '$baseUrl/api/order/$orderId/approve/admin';
   static String getAllInvoice = '$baseUrl/api/invoice';
   static String getInvoiceDetailAdmin(String orderId) =>
       '$baseUrl/api/invoice/order/$orderId';
@@ -33,13 +35,13 @@ class ApiEndpoints {
   static String getInvoices = '$baseUrl/api/invoice?search=manager';
   //static  String getInvoiceDetail(String orderId) => '$baseUrl/api/invoice/order/$orderId';
   //orders
-  static  String getAllProducts = '$baseUrl/api/product';
-  static  String placeOrder = '$baseUrl/api/order';
-  static  String getMyOrders = '$baseUrl/api/order';
+  static String getAllProducts = '$baseUrl/api/product';
+  static String placeOrder = '$baseUrl/api/order';
+  static String getMyOrders = '$baseUrl/api/order';
   // core/constant/api_endpoint.dart
 
   static String paymentPaid(String invoiceId) =>
-  '$baseUrl/api/invoice/$invoiceId/pay';
+      '$baseUrl/api/invoice/$invoiceId/pay';
 
   static const String avatarPath = "/storage/avatar";
   // static String getAllProducts = '$baseUrl/api/product';

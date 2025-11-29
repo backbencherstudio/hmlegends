@@ -72,14 +72,22 @@ class HeadOfficeProfileScreen extends StatelessWidget {
                   title: 'Phone Number',
                   value: phone,
                 ),
-                Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+                Divider(
+                  indent: 15.w,
+                  endIndent: 15.w,
+                  color: Colors.grey.shade300,
+                ),
 
                 _ProfileInfoTile(
                   icon: Icons.mail_outline,
                   title: 'Email',
                   value: data?.email ?? "",
                 ),
-                Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+                Divider(
+                  indent: 15.w,
+                  endIndent: 15.w,
+                  color: Colors.grey.shade300,
+                ),
 
                 _ProfileInfoTile(
                   icon: Icons.location_on_outlined,
@@ -87,7 +95,11 @@ class HeadOfficeProfileScreen extends StatelessWidget {
                   value: address,
                 ),
 
-                Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+                Divider(
+                  indent: 15.w,
+                  endIndent: 15.w,
+                  color: Colors.grey.shade300,
+                ),
 
                 _ProfileActionTile(
                   icon: Icons.logout,
@@ -96,24 +108,34 @@ class HeadOfficeProfileScreen extends StatelessWidget {
                   onTap: () => logoutShowSubmitDialog(context),
                 ),
 
-                Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
-
-                _ProfileActionTile(
-                  icon: Icons.lock_outline,
-                  title: 'Change Password',
-                  isDestructive: true,
-                  onTap: () =>
-                      Navigator.pushNamed(context, RouteNames.headOfficeChangePasswordScreen),
+                Divider(
+                  indent: 15.w,
+                  endIndent: 15.w,
+                  color: Colors.grey.shade300,
                 ),
 
-                Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+                // _ProfileActionTile(
+                //   icon: Icons.lock_outline,
+                //   title: 'Change Password',
+                //   isDestructive: true,
+                //   onTap: () =>
+                //       Navigator.pushNamed(context, RouteNames.headOfficeChangePasswordScreen),
+                // ),
+                Divider(
+                  indent: 15.w,
+                  endIndent: 15.w,
+                  color: Colors.grey.shade300,
+                ),
 
                 _ProfileActionTile(
                   icon: Icons.info_outline,
                   title: 'Change info',
                   isDestructive: true,
-                  onTap: () =>
-                      Navigator.pushNamed(context, RouteNames.headOfficeChangeInfoScreen),
+                  onTap:
+                      () => Navigator.pushNamed(
+                        context,
+                        RouteNames.headOfficeChangeInfoScreen,
+                      ),
                 ),
               ],
             ),
@@ -157,19 +179,20 @@ class _ProfileHeader extends StatelessWidget {
         child: Column(
           children: [
             ClipOval(
-              child: avatar != null && avatar!.isNotEmpty
-                  ? Image.network(
-                "${ApiEndpoints.baseUrl}/storage/avatar/$avatar",
-                width: 90.w,
-                height: 90.w,
-                fit: BoxFit.cover,
-              )
-                  : Image.asset(
-                AssetPaths.personIcon,
-                width: 90.w,
-                height: 90.w,
-                fit: BoxFit.cover,
-              ),
+              child:
+                  avatar != null && avatar!.isNotEmpty
+                      ? Image.network(
+                        "${ApiEndpoints.baseUrl}/storage/avatar/$avatar",
+                        width: 90.w,
+                        height: 90.w,
+                        fit: BoxFit.cover,
+                      )
+                      : Image.asset(
+                        AssetPaths.personIcon,
+                        width: 90.w,
+                        height: 90.w,
+                        fit: BoxFit.cover,
+                      ),
             ),
 
             SizedBox(height: 15.h),
@@ -187,10 +210,7 @@ class _ProfileHeader extends StatelessWidget {
 
             Text(
               occupation,
-              style: TextStyle(
-                color: const Color(0xFFF0F0F0),
-                fontSize: 16.sp,
-              ),
+              style: TextStyle(color: const Color(0xFFF0F0F0), fontSize: 16.sp),
             ),
           ],
         ),

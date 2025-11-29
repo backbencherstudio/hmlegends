@@ -1,20 +1,18 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:hmlegends/presentation/view/admin_flow/admin/stock/screen/successfully_deleted.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../../../core/constant/asset_path.dart';
 import '../../../../../../core/route/route_names.dart';
-import '../../../../widget/custom_app_bar_2.dart';
+import '../../../../widget/custom_app_bar.dart';
 import '../../../../widget/custom_text_field.dart';
 import '../../../../widget/dialog_button.dart';
 import '../../../admin_model/admin_product_model.dart';
+import '../../../view_model/profile/change_pass_provider.dart';
 import '../../../view_model/stock/stock_screen_provider.dart';
-import '../../order/widget/approve_show_dialog.dart';
 import '../widget/edit_dialog.dart';
-import 'delete_stock.dart';
 
 class StockScreen extends StatefulWidget {
   final bool fromBottomNav;
@@ -175,6 +173,8 @@ class _StockScreenState extends State<StockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data;
     return Consumer<StockScreenProvider>(
       builder: (context, vm, child) {
         final products = vm.adminProductModel?.data ?? [];
@@ -182,15 +182,11 @@ class _StockScreenState extends State<StockScreen> {
 
         return Scaffold(
           backgroundColor: Colors.white,
-          appBar: CustomAppBarTwo(
-            title: 'Stock Management',
-            profileImage: AssetPaths.personIcon,
-            notificationCount: 4,
-            colorMain: Colors.white,
-            colorSpace: Colors.white,
-            useBottomNavBack: widget.fromBottomNav,
-          ),
 
+          appBar: CustomAppBar(
+            profileImage: data?.avatar,
+            notificationCount: 4,
+          ),
           body: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
             child: Column(

@@ -4,8 +4,10 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
 import '../../../../../../core/constant/app_colors.dart';
+import '../../../../widget/custom_app_bar.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
+import '../../../view_model/profile/change_pass_provider.dart';
 import '../../widget/search_filter.dart';
 import '../widget/order_summary_card.dart';
 
@@ -32,16 +34,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     final total_unit_ordered =
         provider.orderAdminModel?.data?.stats?.totalUnitOrdered ?? 0;
     final orders = provider.orderAdminModel?.data?.orders ?? [];
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
-      appBar: CustomAppBarTwo(
-        title: "Order Summary",
-        profileImage: AssetPaths.personIcon,
-        notificationCount: 4,
-        colorMain: const Color(0xFFFFF5F5),
-        colorSpace: const Color(0xFFFFF5F5),
-        useBottomNavBack: widget.fromBottomNav,
-      ),
+      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
 
       body: Padding(
         padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 10.h),

@@ -5,6 +5,7 @@ import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constant/asset_path.dart';
+import '../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../widget/custom_app_bar.dart';
 import '../orders/viewmodel/create_order_viewmodel.dart';
 
@@ -26,13 +27,15 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
     if (orderVm.hasPlacedToday && _currentBar != "second") {
       _currentBar = "second";
     }
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data;
 
     return Scaffold(
-      appBar: CustomAppBar(notificationCount: 4),
+      backgroundColor: const Color(0xffFFF6F7),
+      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-
           // BACKGROUND
           Container(
             decoration: const BoxDecoration(
@@ -91,16 +94,17 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
                       spacing: 10,
                       children: [
                         GestureDetector(
-                          onTap: orderVm.isLoading
-                              ? null
-                              : () async {
-                            final success = await orderVm.placeOrder();
-                            if (success) {
-                              setState(() {
-                                _currentBar = "second";
-                              });
-                            }
-                          },
+                          onTap:
+                              orderVm.isLoading
+                                  ? null
+                                  : () async {
+                                    final success = await orderVm.placeOrder();
+                                    if (success) {
+                                      setState(() {
+                                        _currentBar = "second";
+                                      });
+                                    }
+                                  },
                           child: CustomFeatureBox(
                             imagePath: 'assets/icons/first_box.png',
                             text: 'Place Order',
@@ -111,7 +115,9 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
                         GestureDetector(
                           onTap: () {
                             Navigator.pushNamed(
-                                context, RouteNames.invoiceScreen);
+                              context,
+                              RouteNames.invoiceScreen,
+                            );
                           },
                           child: CustomFeatureBox(
                             imagePath: 'assets/icons/third_box.png',
@@ -127,7 +133,9 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
                         GestureDetector(
                           onTap: () {
                             Navigator.pushNamed(
-                                context, RouteNames.ordersScreen);
+                              context,
+                              RouteNames.ordersScreen,
+                            );
                           },
                           child: CustomFeatureBox(
                             imagePath: 'assets/icons/second_box.png',
@@ -261,7 +269,7 @@ class AlignTopBarThird extends StatelessWidget {
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -98,11 +98,11 @@ class ProfileScreen extends StatelessWidget {
             SizedBox(height: 15.h),
             const _ProfileHeader(),
             SizedBox(height: 15.h),
-            const _ProfileInfoTile(
-              icon: Icons.phone_outlined,
-              title: 'Phone Number',
-              value: '+123-456-7890',
-            ),
+            // const _ProfileInfoTile(
+            //   icon: Icons.phone_outlined,
+            //   title: 'Phone Number',
+            //   value: '+123-456-7890',
+            // ),
             Divider(
               indent: 15.w,
               endIndent: 15.w,

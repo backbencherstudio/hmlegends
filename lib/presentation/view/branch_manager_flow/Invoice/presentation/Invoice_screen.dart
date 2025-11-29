@@ -4,6 +4,8 @@ import 'package:hmlegends/core/route/route_names.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../../../core/constant/asset_path.dart';
+import '../../../admin_flow/view_model/profile/change_pass_provider.dart';
+import '../../../widget/custom_app_bar.dart';
 import '../../../widget/simple_appbar.dart';
 import '../data/get_all_invoice_model.dart';
 import '../view_model/get_all_invoice_viewmodel.dart';
@@ -82,13 +84,14 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data ;
+
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
-      appBar: const SimpleAppbar(
-        profileImage: AssetPaths.personIcon,
+      appBar: CustomAppBar(
+        profileImage: data?.avatar,
         notificationCount: 4,
-        title: 'Invoice',
-        navigationType: NavigationType.none,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

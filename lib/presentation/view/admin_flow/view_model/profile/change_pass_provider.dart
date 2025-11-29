@@ -8,6 +8,10 @@ import 'package:hmlegends/presentation/view/admin_flow/admin_model/admin_checkme
 import 'package:http/http.dart' as http;
 
 class ChangePasswordProvider with ChangeNotifier {
+
+  ChangePasswordProvider(){
+    adminCheckMe();
+  }
   final TokenStorage _tokenStorage = TokenStorage();
   bool _isNewPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
