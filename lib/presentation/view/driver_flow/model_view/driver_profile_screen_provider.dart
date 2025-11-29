@@ -4,9 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
 import 'package:http/http.dart' as http;
-
 import '../model/check_me_driver.dart';
-
 class DriverProfileScreenProvider extends ChangeNotifier {
   DriverProfileScreenProvider() {
     checkMeDriver();

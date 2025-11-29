@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../../../../../../core/constant/asset_path.dart';
+import '../../../../admin_flow/view_model/profile/change_pass_provider.dart';
+import '../../../../widget/custom_app_bar.dart';
 import '../../../../widget/simple_appbar.dart';
 import '../../data/get_all_products_model.dart';
 import '../../data/create_order_model.dart';
@@ -32,14 +34,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     final orderVM = context.watch<OrderViewmodel>();
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data ;
 
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
-      appBar: const SimpleAppbar(
-        profileImage: AssetPaths.personIcon,
+      appBar: CustomAppBar(
+        profileImage: data?.avatar,
         notificationCount: 4,
-        title: 'Place Order',
-        navigationType: NavigationType.none,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.w),

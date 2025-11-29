@@ -2,54 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
-import 'package:hmlegends/presentation/view/admin_flow/admin/order/widget/approve_show_dialog.dart';
+import 'package:provider/provider.dart';
 import '../../../../widget/custom_app_bar_2.dart';
+import '../../../view_model/order/order_screen_provider.dart';
 
 class OrderSummaryViewScreen extends StatelessWidget {
   const OrderSummaryViewScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> orderItems = [
-      {
-        "name": "Peri Chicken Wrap",
-        "qty": 20,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-      {
-        "name": "Billy's Special",
-        "qty": 15,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-      {
-        "name": "Chicken Steak & Chips",
-        "qty": 5,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-      {
-        "name": "Billy's Special",
-        "qty": 12,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-      {
-        "name": "The Spicy Dip",
-        "qty": 10,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-      {
-        "name": "Charlie's Special",
-        "qty": 2,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-      {
-        "name": "Chicken Steak & Rice",
-        "qty": 12,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-    ];
+    final provider = Provider.of<OrderScreenProvider>(context);
+    final singleOrder = provider.adminSingleOrderModel?.order?.orderItems ?? [];
+    final orderId = provider.adminSingleOrderModel?.order?.id ?? "";
 
-    final totalQty =
-    orderItems.fold<int>(0, (sum, item) => sum + (item['qty'] as int));
+    // Calculate total items
+    final totalItems = singleOrder.fold<int>(
+      0,
+      (sum, item) => sum + (item.quantity ?? 0),
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
@@ -66,7 +35,6 @@ class OrderSummaryViewScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Branch Row
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               decoration: BoxDecoration(
@@ -77,23 +45,37 @@ class OrderSummaryViewScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Branch Name",
+                    provider.adminSingleOrderModel?.order?.user?.name ??
+                        "Branch Name",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 15.sp,
                     ),
                   ),
                   InkWell(
-                    onTap: (){
-                      showApproveDialog(context,  'Are you sure you want to approve today’s order?');
+                    onTap: () async {
+                      await provider.approveOrder(orderId);
+                      if (provider.isSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Order Approved Successfully'),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Order Approved Failed')),
+                        );
+                      }
                     },
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(20.r),
                       ),
-                      padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20.w,
+                        vertical: 8.h,
+                      ),
                       child: const Text(
                         "Approve",
                         style: TextStyle(
@@ -106,42 +88,41 @@ class OrderSummaryViewScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 16.h),
 
-            // List of items with Total Items
+            SizedBox(height: 16.h),
             Expanded(
-              child: ListView.separated(
-                itemCount: orderItems.length + 1,
-                separatorBuilder: (context, index) {
-                  if (index == orderItems.length - 1) {
-                    return SizedBox(height: 10.h);
-                  }
-                  return Divider(
-                    color: const Color(0xFFEFEFEF),
-                    thickness: 1,
-                    height: 16.h,
-                  );
-                },
+              child: ListView.builder(
+                itemCount: singleOrder.length + 1,
                 itemBuilder: (context, index) {
-                  // Total Items row
-                  if (index == orderItems.length) {
+                  if (index == singleOrder.length) {
                     return Padding(
-                      padding:EdgeInsets.symmetric(horizontal: 16.h,vertical: 16.w),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 5.w,
+                        vertical: 18.h,
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             "Total Items:",
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                               fontSize: 15.sp,
                             ),
                           ),
-                          Text(
-                            "$totalQty pcs",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15.sp,
+
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "$totalItems",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                TextSpan(
+                                  text: "  PCS",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -149,48 +130,54 @@ class OrderSummaryViewScreen extends StatelessWidget {
                     );
                   }
 
-                  // Regular item rows
-                  final item = orderItems[index];
-                  return Row(
-                    children: [
-                      Text(
-                        "${index + 1}.",
-                        style: TextStyle(
-                          color: AppColors.authBodyTextColor,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(width: 8.w),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6.r),
-                        child: Image.asset(
-                          item["image"],
-                          height: 40.h,
-                          width: 40.h,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      SizedBox(width: 10.w),
-                      Expanded(
-                        child: Text(
-                          item["name"],
+                  // ---------------- Item Row ----------------
+                  final data = singleOrder[index];
+
+                  return Container(
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    child: Row(
+                      children: [
+                        // Index Number
+                        Text(
+                          "${index + 1}.",
                           style: TextStyle(
+                            color: AppColors.authBodyTextColor,
                             fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black87,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ),
-                      Text(
-                        "${item["qty"].toString().padLeft(2, '0')} pcs",
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black54,
+
+                        SizedBox(width: 12.w),
+
+                        // Product Name
+                        Expanded(
+                          child: Text(
+                            data.product?.name ?? "Product",
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+
+                        // Quantity]
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                style: TextStyle(color: Colors.black),
+                                text: "${data.quantity}",
+                              ),
+                              TextSpan(
+                                text: "  PCS",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
@@ -201,5 +188,3 @@ class OrderSummaryViewScreen extends StatelessWidget {
     );
   }
 }
-
-

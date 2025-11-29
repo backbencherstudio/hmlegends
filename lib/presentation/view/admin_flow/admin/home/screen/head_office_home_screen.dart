@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/profile/screen/head_office_profile_screen.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/home/home_screen_provider.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -17,13 +19,15 @@ class HeadOfficeHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final homeScreenProvider = Provider.of<HomeScreenProvider>(context);
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data ;
 
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      appBar: CustomAppBar(
-        // profileImage: AssetPaths.personIcon,
-        notificationCount: 4,
-      ),
+          appBar: CustomAppBar(
+          profileImage: data?.avatar,
+          notificationCount: 4,
+          ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         child: Column(
