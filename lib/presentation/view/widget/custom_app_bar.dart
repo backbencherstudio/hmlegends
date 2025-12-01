@@ -172,7 +172,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         onTap: () {
                           Navigator.pushNamed(
                             context,
-                            RouteNames.notificationScreen,
+                            RouteNames.adminNotificationScreen,
                           );
                         },
                         child: Stack(

@@ -14,6 +14,7 @@ import '../../presentation/view/admin_flow/view_model/auth_api/register_viewmode
 import '../../presentation/view/admin_flow/view_model/auth_api/set_new_pass_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth_api/verify_otp_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/home/home_screen_provider.dart';
+import '../../presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import '../../presentation/view/admin_flow/view_model/order/order_screen_provider.dart';
 import '../../presentation/view/admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/parent/manage_delivery_viewmodel.dart';
@@ -61,6 +62,7 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => AdminInvoiceProvider()),
     ChangeNotifierProvider(create: (_) => DeliveryProviderAdmin()),
     ChangeNotifierProvider(create: (_) => DriverProfileScreenProvider()),
+    ChangeNotifierProvider(create: (_) => AdminNotificationProvider()),
   ];
 
   static List<SingleChildWidget> getProviders() {

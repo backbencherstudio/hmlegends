@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://formatting-memorabilia-roommate-node.trycloudflare.com';
+      'https://promised-achieve-xml-turbo.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
   // Admin
@@ -27,6 +27,7 @@ class ApiEndpoints {
   static String getAllInvoice = '$baseUrl/api/invoice';
   static String getInvoiceDetailAdmin(String orderId) =>
       '$baseUrl/api/invoice/order/$orderId';
+  static const String adminNotification = "$baseUrl/api/notification";
 
   //Branch
   //static String getInvoices = '$baseUrl/api/invoice';
@@ -39,6 +40,7 @@ class ApiEndpoints {
   static String placeOrder = '$baseUrl/api/order';
   static String getMyOrders = '$baseUrl/api/order';
   // core/constant/api_endpoint.dart
+
 
   static String paymentPaid(String invoiceId) =>
       '$baseUrl/api/invoice/$invoiceId/pay';

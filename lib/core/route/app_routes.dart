@@ -10,6 +10,7 @@ import '../../presentation/view/admin_flow/admin/manage_branches/screen/edit_bra
 import '../../presentation/view/admin_flow/admin/manage_branches/screen/manage_branches_screen.dart';
 import '../../presentation/view/admin_flow/admin/manage_branches_to_order_summary/screen/manage_branches_to_order_summary_screen.dart';
 import '../../presentation/view/admin_flow/admin/manage_delivery/screen/manage_delivery_screen.dart';
+import '../../presentation/view/admin_flow/admin/notification_admin/admin_notification_screen.dart';
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_screen.dart';
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_view_screen.dart';
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_view_successful_screen.dart';
@@ -87,6 +88,7 @@ class AppRoutes{
     RouteNames.editBranchScreen :(context)=>  EditBranchScreen(),
     RouteNames.adminInvoiceDetailScreen :(context)=>  AdminInvoiceDetailScreen(),
     RouteNames.changeInfoDriver :(context)=>  ChangeInfoDriver(),
+    RouteNames.adminNotificationScreen :(context)=>  AdminNotificationScreen(),
 
 
   };

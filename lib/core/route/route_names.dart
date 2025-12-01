@@ -44,4 +44,5 @@ class RouteNames {
   static const String editBranchScreen = '/editBranchScreen';
   static const String adminInvoiceDetailScreen = '/adminInvoiceDetailScreen';
   static const String changeInfoDriver = '/changeInfoDriver';
+  static const String adminNotificationScreen = '/adminNotificationScreen';
 }
