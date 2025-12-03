@@ -1,42 +1,52 @@
 import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
-import 'package:hmlegends/core/constant/api_endpoint.dart';
-import 'package:hmlegends/core/services/token_storage.dart';
-import 'package:hmlegends/presentation/view/admin_flow/admin_model/admin_notification_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+
+import '../../../../../core/constant/api_endpoint.dart';
+import '../../../../../core/services/token_storage.dart';
+import '../../admin_model/admin_notification_model.dart';
 
 class AdminNotificationProvider extends ChangeNotifier {
   AdminNotificationProvider() {
     getAdminNotification();
-    notifyListeners();
   }
+
   final TokenStorage _tokenStorage = TokenStorage();
 
   AdminNotificationModel? _adminNotificationModel;
   AdminNotificationModel? get adminNotificationModel => _adminNotificationModel;
+
+  Future<void> refreshNotifications() async {
+    await getAdminNotification();
+    notifyListeners();
+  }
+
   Future<void> getAdminNotification() async {
     try {
-      final url = Uri.parse(ApiEndpoints.adminNotification);
       final token = await _tokenStorage.getToken();
+      final url = Uri.parse(ApiEndpoints.adminNotification);
 
       final response = await http.get(
         url,
         headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json",
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
         },
       );
-      final decodeData = jsonDecode(response.body);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        _adminNotificationModel = AdminNotificationModel.fromJson(decodeData);
-        debugPrint("The success message ${decodeData['message']}");
-        debugPrint("The notification length ==== ${_adminNotificationModel?.data?.length}");
+        final decoded = jsonDecode(response.body);
+        _adminNotificationModel = AdminNotificationModel.fromJson(decoded);
+        debugPrint(
+          'Admin notifications fetched: ${_adminNotificationModel?.data?.length ?? 0}',
+        );
       } else {
-        debugPrint("The failed message ${decodeData['message']}");
+        debugPrint(
+          'Failed to fetch notifications: ${response.statusCode} - ${response.body}',
+        );
       }
-    } catch (error) {
-      debugPrint("THe error message $error");
+    } catch (e) {
+      debugPrint('Error fetching admin notifications: $e');
     }
   }
 }

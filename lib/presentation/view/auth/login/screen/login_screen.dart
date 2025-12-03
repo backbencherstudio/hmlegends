@@ -6,6 +6,7 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:provider/provider.dart';
 import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/route/route_names.dart';
+import '../../../../../core/services/fm_token_storage.dart';
 import '../../../admin_flow/view_model/auth/login_viewmodel.dart';
 import '../../../admin_flow/view_model/auth_api/login_viewmodel.dart';
 import '../../widget/auth_button.dart';
@@ -103,25 +104,39 @@ class _LoginScreenState extends State<LoginScreen> {
             fillColor: AppColors.authTextFormFieldFillColor,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30.r),
-              borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
+              borderSide: BorderSide(
+                color: AppColors.authTextFormFieldBorderColor,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30.r),
-              borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
+              borderSide: BorderSide(
+                color: AppColors.authTextFormFieldBorderColor,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30.r),
-              borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
+              borderSide: BorderSide(
+                color: AppColors.authTextFormFieldBorderColor,
+              ),
             ),
-            contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+            contentPadding: EdgeInsets.symmetric(
+              vertical: 12.h,
+              horizontal: 16.w,
+            ),
             prefixIcon: Padding(
               padding: EdgeInsets.only(left: 8.w),
-              child: Icon(Icons.lock_outline_rounded, color: AppColors.authBodyTextColor),
+              child: Icon(
+                Icons.lock_outline_rounded,
+                color: AppColors.authBodyTextColor,
+              ),
             ),
             suffixIcon: IconButton(
               padding: EdgeInsets.only(right: 8.w),
               icon: Icon(
-                viewModel.passwordVisible ? Icons.visibility : Icons.visibility_off,
+                viewModel.passwordVisible
+                    ? Icons.visibility
+                    : Icons.visibility_off,
                 color: AppColors.authBodyTextColor,
               ),
               onPressed: viewModel.togglePasswordVisibility,
@@ -175,8 +190,12 @@ class _LoginScreenState extends State<LoginScreen> {
               );
               return;
             }
-
-            final success = await provider.login(email: email, password: password);
+            final fcmToken = await FcmTokenStorage().getFcmToken() ?? "";
+            final success = await provider.login(
+              email: email,
+              password: password,
+              fcmToken: fcmToken,
+            );
 
             if (success) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -186,8 +205,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  content: Text(provider.errorMessage ?? "Login successful!",
-                      style: const TextStyle(color: Colors.white)),
+                  content: Text(
+                    provider.errorMessage ?? "Login successful!",
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
               );
 
@@ -196,13 +217,18 @@ class _LoginScreenState extends State<LoginScreen> {
               if (userRole == 'admin') {
                 Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
               } else if (userRole == 'manager') {
-                Navigator.pushReplacementNamed(context, RouteNames.branchParentScreen);
+                Navigator.pushReplacementNamed(
+                  context,
+                  RouteNames.branchParentScreen,
+                );
               } else if (userRole == 'driver') {
-                Navigator.pushReplacementNamed(context, RouteNames.driverBranchParentScreen);
+                Navigator.pushReplacementNamed(
+                  context,
+                  RouteNames.driverBranchParentScreen,
+                );
               } else {
                 Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
               }
-
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -211,8 +237,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  content: Text(provider.errorMessage ?? "Login failed. Try again.",
-                      style: const TextStyle(color: Colors.white)),
+                  content: Text(
+                    provider.errorMessage ?? "Login failed. Try again.",
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
               );
             }
@@ -269,17 +297,26 @@ class _LoginScreenState extends State<LoginScreen> {
           fillColor: AppColors.authTextFormFieldFillColor,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
+            borderSide: BorderSide(
+              color: AppColors.authTextFormFieldBorderColor,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
+            borderSide: BorderSide(
+              color: AppColors.authTextFormFieldBorderColor,
+            ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(color: AppColors.authTextFormFieldBorderColor),
+            borderSide: BorderSide(
+              color: AppColors.authTextFormFieldBorderColor,
+            ),
           ),
-          contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 12.h,
+            horizontal: 16.w,
+          ),
           prefixIcon: Padding(
             padding: EdgeInsets.only(left: 8.w),
             child: Icon(icon, color: AppColors.authBodyTextColor),
@@ -305,10 +342,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
               ),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  Navigator.pushNamed(context, RouteNames.signUpScreen);
-                },
+              recognizer:
+                  TapGestureRecognizer()
+                    ..onTap = () {
+                      Navigator.pushNamed(context, RouteNames.signUpScreen);
+                    },
             ),
           ],
         ),

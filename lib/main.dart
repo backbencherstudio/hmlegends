@@ -10,6 +10,8 @@ import 'core/route/route_names.dart';
 import 'core/services/notification_service.dart';
 import 'firebase_options.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -35,16 +37,18 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _notificationService.init(context);
+
+    /// FIX: Send navigatorKey (not context)
+    _notificationService.init(navigatorKey);
   }
 
   @override
   Widget build(BuildContext context) {
     return AppProviders.getProviders().isNotEmpty
         ? MultiProvider(
-          providers: AppProviders.getProviders(),
-          child: _buildScreenUtilInit(),
-        )
+      providers: AppProviders.getProviders(),
+      child: _buildScreenUtilInit(),
+    )
         : _buildScreenUtilInit();
   }
 
@@ -59,34 +63,30 @@ class _MyAppState extends State<MyApp> {
 
   Widget _buildMaterialApp() {
     return MaterialApp(
+      navigatorKey: navigatorKey, // FIX HERE
       debugShowCheckedModeBanner: false,
       theme: ThemeData(scaffoldBackgroundColor: Colors.white),
       initialRoute: RouteNames.splashScreen,
       routes: AppRoutes.routes,
-      onUnknownRoute:
-          (settings) => MaterialPageRoute(
-            builder:
-                (context) => Scaffold(
-                  appBar: AppBar(title: const Text('Route Error')),
-                  body: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('No route defined for: ${settings.name}'),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed:
-                              () => Navigator.pushNamed(
-                                context,
-                                RouteNames.splashScreen,
-                              ),
-                          child: const Text('Go to Home'),
-                        ),
-                      ],
-                    ),
-                  ),
+      onUnknownRoute: (settings) => MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(title: const Text('Route Error')),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('No route defined for: ${settings.name}'),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () =>
+                      Navigator.pushNamed(context, RouteNames.splashScreen),
+                  child: const Text('Go to Home'),
                 ),
+              ],
+            ),
           ),
+        ),
+      ),
     );
   }
 }

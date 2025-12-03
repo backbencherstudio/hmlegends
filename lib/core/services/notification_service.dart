@@ -1,105 +1,121 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:hmlegends/core/services/fm_token_storage.dart';
+import 'package:provider/provider.dart';
 
-/// Background message handler
+import '../../presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print('Handling a background message: ${message.messageId}');
+  debugPrint('Handling background message: ${message.messageId}');
 }
 
 class NotificationService {
-  /// Singleton pattern
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
   NotificationService._internal();
 
+  final FcmTokenStorage _fcmTokenStorage = FcmTokenStorage();
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  String? _fcmToken;
 
-  String? get fcmToken => _fcmToken;
-
-  /// Initialize FCM
-  Future<void> init(BuildContext context) async {
-    // Background handler
+  Future<void> init(GlobalKey<NavigatorState> navigatorKey) async {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-    // Request permissions
     await _requestPermission();
-
-    // Get token
     await _getToken();
-
-    // Setup listeners
-    _setupListeners(context);
+    _setupListeners(navigatorKey);
   }
 
-  /// Request notification permission
   Future<void> _requestPermission() async {
-    NotificationSettings settings = await _messaging.requestPermission(
+    final settings = await _messaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
     );
+    debugPrint('User granted permission: ${settings.authorizationStatus}');
+  }
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted notification permission');
-    } else {
-      print('User declined or has not accepted permission');
+  Future<void> _getToken() async {
+    final token = await _messaging.getToken();
+    debugPrint('FCM token: $token');
+
+    if (token != null) {
+      _fcmTokenStorage.saveFcmToken(token);
+      debugPrint('FCM token save: $token');
+    }
+
+    _messaging.onTokenRefresh.listen((newToken) {
+      debugPrint('FCM token refreshed: $newToken');
+      _fcmTokenStorage.saveFcmToken(newToken);
+      // sendTokenToServer(newToken); // if needed
+    });
+  }
+
+  void _setupListeners(GlobalKey<NavigatorState> navigatorKey) {
+    // Foreground messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      debugPrint('FCM onMessage: ${message.notification?.title}');
+      _refreshNotificationsIfPossible(navigatorKey);
+
+      final ctx = navigatorKey.currentContext;
+      if (ctx != null && message.notification != null) {
+        _showDialog(
+          ctx,
+          message.notification!.title,
+          message.notification!.body,
+        );
+      }
+    });
+
+    // Background → Foreground
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      debugPrint('FCM onMessageOpenedApp');
+      _refreshNotificationsIfPossible(navigatorKey);
+    });
+
+    // Terminated → Opened
+    _messaging.getInitialMessage().then((message) {
+      if (message != null) {
+        debugPrint('FCM getInitialMessage');
+        _refreshNotificationsIfPossible(navigatorKey);
+      }
+    });
+  }
+
+  void _refreshNotificationsIfPossible(GlobalKey<NavigatorState> navigatorKey) {
+    final ctx = navigatorKey.currentContext;
+    if (ctx == null) {
+      debugPrint('No context available to refresh provider');
+      return;
+    }
+
+    try {
+      final provider = Provider.of<AdminNotificationProvider>(
+        ctx,
+        listen: false,
+      );
+      provider.refreshNotifications();
+    } catch (e) {
+      debugPrint('Failed to refresh notifications: $e');
     }
   }
 
-  /// Get FCM token
-  Future<void> _getToken() async {
-    _fcmToken = await _messaging.getToken();
-
-    // Debug print token
-    debugPrint('FCM Token: $_fcmToken');
-
-    // Listen for token refresh
-    _messaging.onTokenRefresh.listen((newToken) {
-      _fcmToken = newToken;
-      debugPrint("FCM Token refreshed: $_fcmToken");
-    });
-  }
-
-
-  /// Setup foreground & background listeners
-  void _setupListeners(BuildContext context) {
-    // Foreground messages
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Foreground message: ${message.notification?.title}');
-      if (message.notification != null) {
-        _showDialog(context, message.notification!.title, message.notification!.body);
-      }
-    });
-
-    // App opened from background
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('App opened from background by notification');
-    });
-
-    // App opened from terminated state
-    _messaging.getInitialMessage().then((message) {
-      if (message != null) {
-        print('App opened from terminated state by notification');
-      }
-    });
-  }
-
   void _showDialog(BuildContext context, String? title, String? body) {
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(title ?? ''),
-        content: Text(body ?? ''),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+      builder:
+          (_) => AlertDialog(
+            title: Text(title ?? ''),
+            content: Text(body ?? ''),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }
