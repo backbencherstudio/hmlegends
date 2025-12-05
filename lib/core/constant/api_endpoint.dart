@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://arkansas-commons-worldwide-polyphonic.trycloudflare.com';
+      'https://psp-occupied-qualify-eng.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
   // Admin
@@ -28,6 +28,8 @@ class ApiEndpoints {
   static String getInvoiceDetailAdmin(String orderId) =>
       '$baseUrl/api/invoice/order/$orderId';
   static const String adminNotification = "$baseUrl/api/notification";
+  static const String pendingUser = "$baseUrl/api/auth/pending-approvals";
+  static  String acceptRequest(String userId) => "$baseUrl/api/auth/update-approval/$userId";
 
   //Branch
   //static String getInvoices = '$baseUrl/api/invoice';

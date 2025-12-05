@@ -45,4 +45,5 @@ class RouteNames {
   static const String adminInvoiceDetailScreen = '/adminInvoiceDetailScreen';
   static const String changeInfoDriver = '/changeInfoDriver';
   static const String adminNotificationScreen = '/adminNotificationScreen';
+  static const String pendingUserList = '/pendingUserList';
 }

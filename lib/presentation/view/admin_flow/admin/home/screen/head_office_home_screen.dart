@@ -4,12 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
-import 'package:hmlegends/presentation/view/admin_flow/admin/profile/screen/head_office_profile_screen.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/home/home_screen_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
 import 'package:provider/provider.dart';
-
 import '../widget/info_card.dart';
 import '../widget/weekly_bar_chart.dart';
 
@@ -20,14 +18,11 @@ class HeadOfficeHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final homeScreenProvider = Provider.of<HomeScreenProvider>(context);
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
-    final data = profileProvider.adminInfoModel?.data ;
+    final data = profileProvider.adminInfoModel?.data;
 
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-          appBar: CustomAppBar(
-          profileImage: data?.avatar,
-          notificationCount: 4,
-          ),
+      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         child: Column(
@@ -191,7 +186,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
     final assignedDelivery = data?.delivery?.assignedDelivery ?? 0;
 
     return GridView.builder(
-      itemCount: 4,
+      itemCount: 5,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -204,8 +199,11 @@ class HeadOfficeHomeScreen extends StatelessWidget {
         switch (index) {
           case 0:
             return InfoCard(
-              onTaps: () =>
-                  Navigator.pushNamed(context, RouteNames.invoiceStatusScreen),
+              onTaps:
+                  () => Navigator.pushNamed(
+                    context,
+                    RouteNames.invoiceStatusScreen,
+                  ),
               title: 'Invoices',
               subtitle: 'Status',
               label1: 'Paid Invoices',
@@ -215,8 +213,11 @@ class HeadOfficeHomeScreen extends StatelessWidget {
 
           case 1:
             return InfoCard(
-              onTaps: () =>
-                  Navigator.pushNamed(context, RouteNames.manageBranchesScreen),
+              onTaps:
+                  () => Navigator.pushNamed(
+                    context,
+                    RouteNames.manageBranchesScreen,
+                  ),
               title: 'Manage',
               subtitle: 'Branches',
               label1: 'Active',
@@ -228,19 +229,24 @@ class HeadOfficeHomeScreen extends StatelessWidget {
 
           case 2:
             return InfoCard(
-              onTaps: () =>
-                  Navigator.pushNamed(context, RouteNames.orderSummaryScreen),
+              onTaps:
+                  () => Navigator.pushNamed(
+                    context,
+                    RouteNames.orderSummaryScreen,
+                  ),
               title: 'Orders',
               subtitle: 'Summary',
               label1: 'Completed Orders',
               value1: "$completedOrder/$totalOrder",
               iconPath: AssetPaths.orderIcon,
             );
-
-          default:
+          case 3:
             return InfoCard(
-              onTaps: () =>
-                  Navigator.pushNamed(context, RouteNames.manageDeliveryScreen),
+              onTaps:
+                  () => Navigator.pushNamed(
+                    context,
+                    RouteNames.manageDeliveryScreen,
+                  ),
               title: 'Manage',
               subtitle: 'Delivery',
               label1: "Today's Delivery",
@@ -248,6 +254,26 @@ class HeadOfficeHomeScreen extends StatelessWidget {
               label2: 'Assigned Delivery',
               value2: "$assignedDelivery",
               iconPath: AssetPaths.deliveryIcon,
+            );
+
+          default:
+            return Consumer<HomeScreenProvider>(
+              builder: (context, provider, child) {
+                return InfoCard(
+                  onTaps: () async {
+                    await provider.getPendingUser();
+                    Navigator.pushNamed(context, RouteNames.pendingUserList);
+                  },
+
+                  title: 'User',
+                  subtitle: 'Approval',
+                  label1: "Pending User",
+                  value1: "${provider.pendingUserModel?.data?.total}",
+                  label2: 'See All Pending',
+                  value2: "",
+                  iconPath: "assets/icons/person.png" ,
+                );
+              },
             );
         }
       },

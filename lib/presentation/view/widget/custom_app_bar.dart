@@ -109,6 +109,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/constant/api_endpoint.dart';
 
@@ -168,39 +170,45 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   // Right Section
                   Row(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            RouteNames.adminNotificationScreen,
-                          );
-                        },
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Icon(CupertinoIcons.bell, size: 28.sp),
-                            if (notificationCount > 0)
-                              Positioned(
-                                right: 1.w,
-                                top: -7.h,
-                                child: Container(
-                                  padding: EdgeInsets.all(3.w),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFB5050F),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Text(
-                                    '$notificationCount',
-                                    style: TextStyle(
-                                      fontSize: 11.sp,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
+                      Consumer<AdminNotificationProvider>(
+                        builder: (context,provider,child){
+                          return GestureDetector(
+                            onTap: () async{
+                              await provider.getAdminNotification();
+                              Navigator.pushNamed(
+                                context,
+                                RouteNames.adminNotificationScreen,
+                              );
+                            },
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Icon(CupertinoIcons.bell, size: 28.sp),
+                                if (notificationCount > 0)
+                                  Positioned(
+                                    right: 1.w,
+                                    top: -7.h,
+                                    child: Container(
+                                      padding: EdgeInsets.all(3.w),
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFFB5050F),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Text(
+                                        '$notificationCount',
+                                        style: TextStyle(
+                                          fontSize: 11.sp,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                          ],
-                        ),
+                              ],
+                            ),
+                          );
+                        },
+
                       ),
                       SizedBox(width: 20.w),
                       GestureDetector(

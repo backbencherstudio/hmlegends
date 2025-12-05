@@ -46,9 +46,12 @@ class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
     final notificationData = provider.adminNotificationModel?.data ?? [];
 
     return Scaffold(
+      backgroundColor: Color(0xffFFF6F7),
       appBar: AppBar(
+        surfaceTintColor: Color(0xffFFF6F7),
+        elevation: 0,
         title: Text("Admin Notification"),
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xffFFF6F7),
         centerTitle: true,
       ),
 
@@ -69,7 +72,7 @@ class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
                   return Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey,
+                      color: Color(0xffFFEDED),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.grey.shade800),
                     ),
