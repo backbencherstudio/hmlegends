@@ -29,6 +29,7 @@ import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_my_orde
 import '../../presentation/view/driver_flow/driver_provider/branch_product_provider.dart';
 import '../../presentation/view/driver_flow/model_view/delivery_provideer_Admin.dart';
 import '../../presentation/view/driver_flow/model_view/driver_profile_screen_provider.dart';
+import '../../presentation/view/driver_flow/tracking/tracking_provider.dart';
 
 class AppProviders {
   static final List<SingleChildWidget> providers = [
@@ -63,6 +64,7 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => DeliveryProviderAdmin()),
     ChangeNotifierProvider(create: (_) => DriverProfileScreenProvider()),
     ChangeNotifierProvider(create: (_) => AdminNotificationProvider()),
+    ChangeNotifierProvider(create: (_) => TrackingProvider()),
   ];
 
   static List<SingleChildWidget> getProviders() {
