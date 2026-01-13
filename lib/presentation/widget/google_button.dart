@@ -21,6 +21,7 @@ class GoogleButton extends StatelessWidget {
         builder: (context, loginProvider, _) {
           final isLoading = loginProvider.isLoadingForGoogle;
 
+
           return Opacity(
             opacity: isLoading ? 0.7 : 1.0,
             child: InkWell(
