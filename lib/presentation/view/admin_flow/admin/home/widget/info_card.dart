@@ -43,7 +43,7 @@ class InfoCard extends StatelessWidget {
               color: Colors.black12.withOpacity(.03),
               blurRadius: 4,
               offset: const Offset(0, 2),
-            )
+            ),
           ],
         ),
         child: Column(
@@ -52,11 +52,26 @@ class InfoCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(
-                  iconPath,
-                  width: 42.w,
-                  height: 42.h,
-                ),
+                title == "User"
+                    ? Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Color(0xffFCE6E7),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Image.asset(
+                        iconPath,
+                        width: 30.w,
+                        height: 30.h,
+                        color: title == "User" ? Colors.red : null,
+                      ),
+                    )
+                    : Image.asset(
+                      iconPath,
+                      width: 42.w,
+                      height: 42.h,
+                      color: title == "User" ? Colors.red : null,
+                    ),
                 SizedBox(width: 12.w),
 
                 Expanded(
@@ -104,7 +119,6 @@ class InfoCard extends StatelessWidget {
     );
   }
 
-  /// ROW BUILDER
   Widget _row(String label, String value, bool bold) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -112,9 +126,13 @@ class InfoCard extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: AppColors.authBodyTextColor,
+            color:
+                label == "See All Pending"
+                    ? Colors.black
+                    : AppColors.authBodyTextColor,
             fontSize: 12.sp,
-            fontWeight: FontWeight.w500,
+            fontWeight:
+                label == "See All Pending" ? FontWeight.bold : FontWeight.w400,
           ),
         ),
         Text(

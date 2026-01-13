@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/presentation/view/driver_flow/model_view/driver_profile_screen_provider.dart';
+import 'package:hmlegends/presentation/view/driver_flow/tracking/tracking_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../../../core/constant/asset_path.dart';
 import '../../../core/route/route_names.dart';
 import '../widget/custom_app_bar.dart';
 import 'model_view/delivery_provideer_Admin.dart';
@@ -30,7 +29,6 @@ class _DriverScreenState extends State<DriverScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final profileProvider = Provider.of<DriverProfileScreenProvider>(context);
     final data = profileProvider.checkMeModelDriver?.data;
     return ScreenUtilInit(
@@ -113,7 +111,7 @@ class _DriverScreenState extends State<DriverScreen> {
           },
           child: Container(
             width: double.infinity,
-            height: 120.h,
+            //  height: 120.h,
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
               color: const Color(0xFFFFF6F7),
@@ -130,7 +128,6 @@ class _DriverScreenState extends State<DriverScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Branch Name
                 Text(
                   branchName,
                   style: TextStyle(
@@ -183,6 +180,18 @@ class _DriverScreenState extends State<DriverScreen> {
                       ),
                     ],
                   ),
+                ),
+                Consumer<TrackingProvider>(
+                  builder: (context, provider, child) {
+                    return ElevatedButton(
+                      onPressed: () async {
+                        provider.setDeliveryId(deliveryId);
+
+                        Navigator.pushNamed(context, RouteNames.trackingScreen);
+                      },
+                      child: Text("Start your Tracking"),
+                    );
+                  },
                 ),
               ],
             ),

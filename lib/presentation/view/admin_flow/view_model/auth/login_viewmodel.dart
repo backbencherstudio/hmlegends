@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:hmlegends/core/services/fm_token_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import '../../../../../core/constant/api_endpoint.dart';
@@ -8,6 +9,8 @@ class LoginViewModel with ChangeNotifier {
   bool _passwordVisible = false;
   bool _rememberMe = false;
   final TokenStorage _tokenStorage = TokenStorage();
+  FcmTokenStorage _fcmTokenStorage = FcmTokenStorage();
+  FcmTokenStorage get fcmTokenStorage => _fcmTokenStorage;
 
   bool get passwordVisible => _passwordVisible;
   bool get rememberMe => _rememberMe;

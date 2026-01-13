@@ -21,71 +21,73 @@ class GoogleButton extends StatelessWidget {
         builder: (context, loginProvider, _) {
           final isLoading = loginProvider.isLoadingForGoogle;
 
+
           return Opacity(
             opacity: isLoading ? 0.7 : 1.0,
             child: InkWell(
-              onTap: isLoading
-                  ? null
-                  : () async {
-                      loginProvider.setLoadingForGoogle(true);
+              onTap:
+                  isLoading
+                      ? null
+                      : () async {
+                        loginProvider.setLoadingForGoogle(true);
 
-                      try {
-                        final userCredential = await authServices
-                            .loginWithGoogle(
-                              forceAccountPicker: alwaysShowChooser,
+                        try {
+                          final userCredential = await authServices
+                              .loginWithGoogle(
+                                forceAccountPicker: alwaysShowChooser,
+                              );
+
+                          final user = FirebaseAuth.instance.currentUser;
+
+                          if (userCredential != null && user != null) {
+                            final firebaseToken = await user.getIdToken();
+
+                            final result = await loginProvider.googleSignIn(
+                              firebaseToken: firebaseToken,
                             );
 
-                        final user = FirebaseAuth.instance.currentUser;
-
-                        if (userCredential != null && user != null) {
-                          final firebaseToken = await user.getIdToken();
-
-                          final result = await loginProvider.googleSignIn(
-                            firebaseToken: firebaseToken,
-                          );
-
-                          if (result['success'] == true && context.mounted) {
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              RouteNames.driverBottomNavBar,
-                              (route) => false,
-                            );
-                          } else if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  result['message'] ??
-                                      "Google sign-in failed. Please try again.",
+                            if (result['success'] == true && context.mounted) {
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                RouteNames.driverBottomNavBar,
+                                (route) => false,
+                              );
+                            } else if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    result['message'] ??
+                                        "Google sign-in failed. Please try again.",
+                                  ),
+                                  backgroundColor: Colors.red,
                                 ),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
+                              );
+                            }
+                          } else {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Google sign-in failed. Please try again.",
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
                           }
-                        } else {
+                        } catch (error) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  "Google sign-in failed. Please try again.",
-                                ),
+                              SnackBar(
+                                content: Text("Login failed: $error"),
                                 backgroundColor: Colors.red,
                               ),
                             );
                           }
+                        } finally {
+                          loginProvider.setLoadingForGoogle(false);
                         }
-                      } catch (error) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("Login failed: $error"),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      } finally {
-                        loginProvider.setLoadingForGoogle(false);
-                      }
-                    },
+                      },
               borderRadius: BorderRadius.circular(32.r),
               child: Ink(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 6.h),
@@ -98,21 +100,22 @@ class GoogleButton extends StatelessWidget {
                   children: [
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 180),
-                      child: isLoading
-                          ? SizedBox(
-                              key: const ValueKey('spinner'),
-                              height: 22.h,
-                              width: 22.h,
-                              child: const CircularProgressIndicator(
-                                strokeWidth: 2,
+                      child:
+                          isLoading
+                              ? SizedBox(
+                                key: const ValueKey('spinner'),
+                                height: 22.h,
+                                width: 22.h,
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : Image.asset(
+                                'assets/icons/google_icon.png',
+                                key: const ValueKey('icon'),
+                                height: 25.h,
+                                width: 25.h,
                               ),
-                            )
-                          : Image.asset(
-                              'assets/icons/google_icon.png',
-                              key: const ValueKey('icon'),
-                              height: 25.h,
-                              width: 25.h,
-                            ),
                     ),
                     SizedBox(width: 10.w),
                     Text(

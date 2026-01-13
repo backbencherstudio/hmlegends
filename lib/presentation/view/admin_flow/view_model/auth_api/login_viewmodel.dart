@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../../../core/constant/api_endpoint.dart';
+import '../../../../../core/services/fm_token_storage.dart';
 import '../../../../../core/services/token_storage.dart';
 import '../../../../../core/services/user_type_storage.dart';
 
@@ -13,12 +14,19 @@ class LoginScreenProvider extends ChangeNotifier {
 
   final TokenStorage _tokenStorage = TokenStorage();
   final UserTypeStorage _userTypeStorage = UserTypeStorage();
+  FcmTokenStorage _fcmTokenStorage = FcmTokenStorage();
+  FcmTokenStorage get fcmTokenStorage => _fcmTokenStorage;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   String? get userType => _userType;
 
-  Future<bool> login({required String email, required String password}) async {
+  Future<bool> login({
+    required String email,
+    required String password,
+    required String fcmToken, // <-- requires non-nullable String
+  })
+ async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -28,7 +36,11 @@ class LoginScreenProvider extends ChangeNotifier {
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"email": email, "password": password}),
+        body: jsonEncode({
+          "email": email,
+          "password": password,
+          "fcm_token": fcmToken,
+        }),
       );
 
       final decodeData = jsonDecode(response.body);

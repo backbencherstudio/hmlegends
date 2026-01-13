@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-
 import 'core/provider/app_providers.dart';
 import 'core/route/app_routes.dart';
 import 'core/route/route_names.dart';
 import 'core/services/notification_service.dart';
 import 'firebase_options.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +36,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _notificationService.init(context);
+
+    /// FIX: Send navigatorKey (not context)
+    _notificationService.init(navigatorKey);
   }
 
   @override
@@ -59,6 +62,7 @@ class _MyAppState extends State<MyApp> {
 
   Widget _buildMaterialApp() {
     return MaterialApp(
+      navigatorKey: navigatorKey, // FIX HERE
       debugShowCheckedModeBanner: false,
       theme: ThemeData(scaffoldBackgroundColor: Colors.white),
       initialRoute: RouteNames.splashScreen,

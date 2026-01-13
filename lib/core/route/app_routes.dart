@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/driver_flow/profile_driver/changeInfo_driver.dart';
 import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart';
+import '../../presentation/view/admin_flow/admin/home/screen/pending_user_list.dart';
 import '../../presentation/view/admin_flow/admin/invoice/screen/admin_invoice_detail_screen.dart';
 import '../../presentation/view/admin_flow/admin/invoice/screen/head_office_invoice_screen.dart';
 import '../../presentation/view/admin_flow/admin/invoice_status/screen/invoice_status_screen.dart';
@@ -10,6 +11,7 @@ import '../../presentation/view/admin_flow/admin/manage_branches/screen/edit_bra
 import '../../presentation/view/admin_flow/admin/manage_branches/screen/manage_branches_screen.dart';
 import '../../presentation/view/admin_flow/admin/manage_branches_to_order_summary/screen/manage_branches_to_order_summary_screen.dart';
 import '../../presentation/view/admin_flow/admin/manage_delivery/screen/manage_delivery_screen.dart';
+import '../../presentation/view/admin_flow/admin/notification_admin/admin_notification_screen.dart';
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_screen.dart';
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_view_screen.dart';
 import '../../presentation/view/admin_flow/admin/order/screen/order_summary_view_successful_screen.dart';
@@ -39,6 +41,7 @@ import '../../presentation/view/driver_flow/driver_brance_detailScreen/delivery_
 import '../../presentation/view/driver_flow/driver_brance_detailScreen/driver_brance_detail_screen.dart';
 import '../../presentation/view/driver_flow/driver_screen.dart';
 import '../../presentation/view/driver_flow/parent/parent_screen.dart';
+import '../../presentation/view/driver_flow/tracking/tracking_screen.dart';
 import '../../presentation/view/onboarding/onboarding/screen/onboarding_screen.dart';
 import '../../presentation/view/splash/splash/screen/splash_screen.dart';
 
@@ -87,6 +90,9 @@ class AppRoutes{
     RouteNames.editBranchScreen :(context)=>  EditBranchScreen(),
     RouteNames.adminInvoiceDetailScreen :(context)=>  AdminInvoiceDetailScreen(),
     RouteNames.changeInfoDriver :(context)=>  ChangeInfoDriver(),
+    RouteNames.adminNotificationScreen :(context)=>  AdminNotificationScreen(),
+    RouteNames.pendingUserList :(context)=>  PendingUserList(),
+    RouteNames.trackingScreen :(context)=>  TrackingScreen(),
 
 
   };

@@ -8,6 +8,7 @@ import '../../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 import '../../branch_manager_flow/profile/profile_screen.dart';
 import '../profile_driver/driver_profile.dart';
 import '../driver_screen.dart';
+import '../tracking/tracking_screen.dart';
 
 class DriverBottomNavBar extends StatelessWidget {
   const DriverBottomNavBar({super.key});
@@ -60,10 +61,16 @@ class DriverBottomNavBar extends StatelessWidget {
                       isActive: bottomProvider.currentIndex == 0,
                     ),
                     _buildBottomNavItem(
+                      iconPath: 'assets/icons/mynaui_home.svg',
+                      activeIconPath: 'assets/icons/mynaui_home.svg',
+                      label: 'Tacking',
+                      isActive: bottomProvider.currentIndex == 1,
+                    ),
+                    _buildBottomNavItem(
                       iconPath: 'assets/icons/user.svg',
                       activeIconPath: 'assets/icons/user.svg',
                       label: 'Profile',
-                      isActive: bottomProvider.currentIndex == 3,
+                      isActive: bottomProvider.currentIndex == 2,
                     ),
                   ],
                 );
@@ -105,6 +112,7 @@ class DriverBranchParentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       DriverScreen(),
+      TrackingScreen(),
       DriverProfile(),
     ];
 

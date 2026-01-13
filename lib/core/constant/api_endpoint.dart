@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://formatting-memorabilia-roommate-node.trycloudflare.com';
+      'https://ottawa-among-parenting-marine.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
   // Admin
@@ -27,6 +27,10 @@ class ApiEndpoints {
   static String getAllInvoice = '$baseUrl/api/invoice';
   static String getInvoiceDetailAdmin(String orderId) =>
       '$baseUrl/api/invoice/order/$orderId';
+  static const String adminNotification = "$baseUrl/api/notification";
+  static const String pendingUser = "$baseUrl/api/auth/pending-approvals";
+  static String acceptRequest(String userId) =>
+      "$baseUrl/api/auth/update-approval/$userId";
 
   //Branch
   //static String getInvoices = '$baseUrl/api/invoice';
@@ -56,6 +60,10 @@ class ApiEndpoints {
   static String deliveryConfirmAdmin(String Id) => '$baseUrl/api/delivery/$Id';
   static String driverCheckMe = '$baseUrl/api/auth/me';
   static const String driverProfileUpdate = '$baseUrl/api/auth/update';
+  static String initializedTracking(String deliveryId) =>
+      '$baseUrl/api/delivery-tracking/update-checkpoints/$deliveryId';
+  static String realTimeUpdate =
+      '$baseUrl/api/delivery-tracking/update-location';
   // static const String getProducts = '/api/products';
   // static const String getUsers = '/api/users';
 }
