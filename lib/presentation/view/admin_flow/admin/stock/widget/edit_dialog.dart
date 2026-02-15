@@ -8,41 +8,39 @@ class EditDialog extends StatelessWidget {
   const EditDialog({super.key});
 
   static Future<void> showEditDialog(
-    BuildContext context,
-    String productId,
-  ) async {
-    final provider = Provider.of<StockScreenProvider>(context, listen: false);
+      BuildContext context, {
+        required String productId,
+      }) async {
+    final provider =
+    Provider.of<StockScreenProvider>(context, listen: false);
 
-    await provider.getSingleProductProduct(productId);
+    final product = provider.singleProductModel?.data;
 
-    if (provider.singleProductModel == null ||
-        provider.singleProductModel?.data == null) {
-      debugPrint(" Single product not loaded");
+    if (product == null) {
+      debugPrint("Product data is null");
       return;
     }
 
-    final TextEditingController _nameController = TextEditingController(
-      text: provider.singleProductModel!.data!.name ?? "",
-    );
-    final TextEditingController _priceController = TextEditingController(
-      text: provider.singleProductModel!.data!.price?.toString() ?? "",
-    );
-    final TextEditingController _stockController = TextEditingController(
-      text: provider.singleProductModel!.data!.stock?.toString() ?? "",
-    );
+    final nameController =
+    TextEditingController(text: product.name ?? "");
+
+    final priceController =
+    TextEditingController(text: product.price?.toString() ?? "");
+
+    final stockController =
+    TextEditingController(text: product.stock?.toString() ?? "");
 
     File? image;
 
-    showDialog(
+    await showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (dialogContext) {
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (dialogContext, setState) {
             Future<void> pickImage() async {
               final picker = ImagePicker();
-              final pickedFile = await picker.pickImage(
-                source: ImageSource.gallery,
-              );
+              final pickedFile =
+              await picker.pickImage(source: ImageSource.gallery);
 
               if (pickedFile != null) {
                 setState(() {
@@ -53,66 +51,67 @@ class EditDialog extends StatelessWidget {
 
             return AlertDialog(
               backgroundColor: Colors.white,
-              title: Center(child: Text("Edit Product")),
+              title: const Center(child: Text("Edit Product")),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(labelText: "Name"),
+                      controller: nameController,
+                      decoration:
+                      const InputDecoration(labelText: "Name"),
                     ),
                     TextField(
-                      controller: _priceController,
+                      controller: priceController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: "Price"),
+                      decoration:
+                      const InputDecoration(labelText: "Price"),
                     ),
                     TextField(
-                      controller: _stockController,
+                      controller: stockController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: "Stock"),
+                      decoration:
+                      const InputDecoration(labelText: "Stock"),
                     ),
-
                     const SizedBox(height: 10),
-
                     ElevatedButton(
                       onPressed: pickImage,
                       child: const Text("Pick Image"),
                     ),
+                    const SizedBox(height: 10),
 
+                    // Show new picked image
                     if (image != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Image.file(image!, height: 100),
-                      ),
+                      Image.file(image!, height: 100),
 
-                    if (image == null &&
-                        provider.singleProductModel!.data!.image != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Image.network(
-                          provider.singleProductModel!.data!.image!,
-                          height: 100,
-                        ),
+                    // Show existing network image
+                    if (image == null && product.image != null)
+                      Image.network(
+                        product.image!,
+                        height: 100,
                       ),
                   ],
                 ),
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () =>
+                      Navigator.of(dialogContext).pop(),
                   child: const Text('Cancel'),
                 ),
                 TextButton(
-                  onPressed: () {
-                    provider.editProduct(
+                  onPressed: () async {
+                    await provider.editProduct(
                       pId: productId,
-                      name: _nameController.text,
-                      price: _priceController.text,
-                      stock: _stockController.text,
+                      name: nameController.text,
+                      price: priceController.text,
+                      stock: stockController.text,
                       image: image,
                     );
-                    Navigator.of(context).pop();
+
+                    if (!dialogContext.mounted) return;
+
+                    Navigator.of(dialogContext).pop();
                   },
                   child: const Text('Save'),
                 ),

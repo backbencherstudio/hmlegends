@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://ottawa-among-parenting-marine.trycloudflare.com';
+      'https://dvds-binding-prisoner-marking.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
   // Admin

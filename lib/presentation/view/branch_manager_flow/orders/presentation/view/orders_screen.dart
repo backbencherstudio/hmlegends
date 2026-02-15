@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import '../../../../../../core/constant/asset_path.dart';
 import '../../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../../widget/custom_app_bar.dart';
-import '../../../../widget/simple_appbar.dart';
 import '../../data/get_all_products_model.dart';
 import '../../data/create_order_model.dart';
 import '../../viewmodel/create_order_viewmodel.dart';
 import '../../viewmodel/get_all_product_viewmodel.dart';
-
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
 
@@ -35,14 +32,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     final orderVM = context.watch<OrderViewmodel>();
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
-    final data = profileProvider.adminInfoModel?.data ;
+    final data = profileProvider.adminInfoModel?.data;
 
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
-      appBar: CustomAppBar(
-        profileImage: data?.avatar,
-        notificationCount: 4,
-      ),
+      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
       body: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -220,12 +214,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     width: 92.w,
                     height: 100.h,
                     fit: BoxFit.cover,
-                    imageErrorBuilder: (_, __, ___) => Container(
-                      width: 92.w,
-                      height: 100.h,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.broken_image, color: Colors.red),
-                    ),
+                    imageErrorBuilder:
+                        (_, __, ___) => Container(
+                          width: 92.w,
+                          height: 100.h,
+                          color: Colors.grey[300],
+                          child: const Icon(
+                            Icons.broken_image,
+                            color: Colors.red,
+                          ),
+                        ),
                   ),
                 ],
               ),
@@ -256,7 +254,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           color: Colors.grey.shade700,
                         ),
                       ),
-                      SizedBox(width: 30.w),
+                      SizedBox(width: 20.w),
 
                       Container(
                         padding: EdgeInsets.symmetric(
@@ -267,13 +265,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           color:
                               product.stockStatus == 'IN_STOCK'
                                   ? Colors.green.shade100
+                                  : product.stockStatus == 'LOW_STOCK'
+                                  ? Colors.orange.shade100
                                   : Colors.red.shade100,
                           borderRadius: BorderRadius.circular(15.r),
                         ),
                         child: Text(
-                          product.stockStatus == 'IN_STOCK'
-                              ? 'In Stock'
-                              : 'Out of Stock',
+                          product.stockStatus,
                           style: TextStyle(
                             color:
                                 product.stockStatus == 'IN_STOCK'
@@ -382,16 +380,24 @@ class _OrdersScreenState extends State<OrdersScreen> {
             title: const Text(
               'Can’t edit after submission',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600,fontSize: 16),
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
             ),
             content: const Text(
               'Are you sure you want to submit today’s order?',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w800,fontSize: 20),
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w800,
+                fontSize: 20,
+              ),
             ),
             actions: [
-
-              Row(spacing: 20,
+              Row(
+                spacing: 20,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -403,7 +409,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xffE20613),
                     ),
-                    child:  Text('Yes',style: TextStyle(color: Colors.white,fontSize: 15)),
+                    child: Text(
+                      'Yes',
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                    ),
                   ),
 
                   TextButton(
@@ -411,7 +420,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.grey.shade400,
                     ),
-                    child: const Text('Cancel',style: TextStyle(color: Color(0xff777980),fontSize: 15),),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: Color(0xff777980), fontSize: 15),
+                    ),
                   ),
                 ],
               ),
@@ -433,7 +445,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     final success = await orderVM.placeOrder();
 
-    Navigator.pop(context); // Close loader
+    Navigator.pop(context);
 
     if (!success) {
       showDialog(
@@ -467,7 +479,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
               borderRadius: BorderRadius.circular(20.r),
             ),
             content: GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.pop(context);
                 Navigator.pushReplacementNamed(context, '/myOrders');
               },
