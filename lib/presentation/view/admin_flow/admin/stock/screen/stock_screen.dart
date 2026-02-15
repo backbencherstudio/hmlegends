@@ -13,7 +13,6 @@ import '../../../admin_model/admin_product_model.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
 import '../../../view_model/stock/stock_screen_provider.dart';
 import '../widget/edit_dialog.dart';
-
 class StockScreen extends StatefulWidget {
   final bool fromBottomNav;
   const StockScreen({super.key, required this.fromBottomNav});
@@ -212,8 +211,8 @@ class _StockScreenState extends State<StockScreen> {
                               borderRadius: BorderRadius.circular(25.r),
                               color:
                                   isSelected
-                                      ? const Color(0xFFFCEBE9)
-                                      : const Color(0xFFF1F0EE),
+                                      ?  Color(0xFFFCEBE9)
+                                      :  Color(0xFFF1F0EE),
                             ),
                             child: Center(
                               child: Text(
@@ -221,8 +220,8 @@ class _StockScreenState extends State<StockScreen> {
                                 style: TextStyle(
                                   color:
                                       isSelected
-                                          ? const Color(0xFFE20613)
-                                          : const Color(0xFF4A4C56),
+                                          ?  Color(0xFFE20613)
+                                          :  Color(0xFF4A4C56),
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -329,9 +328,9 @@ class _StockScreenState extends State<StockScreen> {
                                     ),
 
                                     SizedBox(width: 12.w),
-
                                     Expanded(
                                       child: Column(
+
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
@@ -436,14 +435,22 @@ class _StockScreenState extends State<StockScreen> {
                                               const Spacer(),
                                               IconButton(
                                                 onPressed: () async {
+                                                  final provider =
+                                                  Provider.of<StockScreenProvider>(context, listen: false);
+
+                                                  await provider.getSingleProductProduct(product.id ?? "");
+
+                                                  if (!context.mounted) return;
+
+                                                  if (provider.singleProductModel?.data == null) {
+                                                    debugPrint("Single product not loaded");
+                                                    return;
+                                                  }
+
                                                   EditDialog.showEditDialog(
                                                     context,
-                                                    product.id ?? "",
+                                                    productId: product.id ?? "",
                                                   );
-                                                  await vm
-                                                      .getSingleProductProduct(
-                                                        product.id ?? "",
-                                                      );
                                                 },
                                                 icon: Image.asset(
                                                   'assets/icons/edit_icon.png',
@@ -462,6 +469,7 @@ class _StockScreenState extends State<StockScreen> {
                                               //         scale: 3,
                                               //       ),
                                               // ),
+
                                               InkWell(
                                                 onTap: () async {
                                                   showDeleteStockDialog(
