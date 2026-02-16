@@ -69,7 +69,6 @@ class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Branch Row - Fixed the Row structure
             Container(
               padding: EdgeInsets.symmetric(vertical: 10.h),
               decoration: BoxDecoration(
