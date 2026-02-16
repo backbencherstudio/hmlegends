@@ -51,7 +51,7 @@ class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
 
     final totalQty = orderItems.fold<int>(
       0,
-          (sum, item) => sum + (item['qty'] as int),
+      (sum, item) => sum + (item['qty'] as int),
     );
 
     return Scaffold(
@@ -71,13 +71,12 @@ class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
           children: [
             // Branch Row - Fixed the Row structure
             Container(
-              padding: EdgeInsets.symmetric( vertical: 10.h),
+              padding: EdgeInsets.symmetric(vertical: 10.h),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Row(
                 children: [
-                  // First color section - Branch Name
                   Expanded(
                     flex: 2,
                     child: Container(
@@ -88,7 +87,10 @@ class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
                           bottomLeft: Radius.circular(8.r),
                         ),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 8.h,
+                      ),
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -108,7 +110,10 @@ class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
                     flex: 2,
                     child: Container(
                       color: const Color(0xFFE6ECDE),
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 8.h,
+                      ),
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -170,7 +175,10 @@ class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
                   // Total Items row
                   if (index == orderItems.length) {
                     return Padding(
-                      padding:EdgeInsets.symmetric(horizontal: 16.h,vertical: 16.w),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.h,
+                        vertical: 16.w,
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -262,7 +270,10 @@ class OrderSummaryViewSuccessfulScreen extends StatelessWidget {
                     text: 'Make Invoice',
                     onPressed: () {
                       // Handle make invoice action
-                      Navigator.pushNamed(context, RouteNames.headOfficeInvoiceScreen);
+                      Navigator.pushNamed(
+                        context,
+                        RouteNames.headOfficeInvoiceScreen,
+                      );
                     },
                     color: AppColors.primaryColor,
                   ),

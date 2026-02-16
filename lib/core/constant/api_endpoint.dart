@@ -71,6 +71,8 @@ class ApiEndpoints {
                         // Manage Branch
   static String allBranch =
       '$baseUrl/api/auth/all-managers';
+  static String singleBranch(String userId) =>
+      '$baseUrl/api/auth/manager/$userId';
 
 
 
