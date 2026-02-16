@@ -5,6 +5,8 @@ import '../../data/datasources/product_local_datasource.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/usecase/get_product_usecase.dart';
 import '../../presentation/view/admin_flow/admin/invoice/view_model/admin_invoic_provider.dart';
+import '../../presentation/view/admin_flow/admin/manage_branches/screen/manage_branches_screen.dart';
+import '../../presentation/view/admin_flow/admin/manage_branches/view_model/manage_branch_provider.dart';
 import '../../presentation/view/admin_flow/view_model/auth/login_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth/set_new_password_viewModel.dart';
 import '../../presentation/view/admin_flow/view_model/auth/signup_viewmodel.dart';
@@ -65,6 +67,7 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => DriverProfileScreenProvider()),
     ChangeNotifierProvider(create: (_) => AdminNotificationProvider()),
     ChangeNotifierProvider(create: (_) => TrackingProvider()),
+    ChangeNotifierProvider(create: (_) => ManageBranchProvider()),
   ];
 
   static List<SingleChildWidget> getProviders() {

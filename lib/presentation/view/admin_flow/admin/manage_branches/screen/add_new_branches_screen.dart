@@ -143,43 +143,5 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
   );
 
   // Upload Image Box
-  Widget _buildImageUploader() => Container(
-    width: double.infinity,
-    height: 160.h,
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12.r),
-      border: Border.all(color: const Color(0xFFD2D2D5)),
-      color: AppColors.editTextFieldColor,
-    ),
-    child: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(color: Colors.redAccent, width: 1.2),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(AssetPaths.addIcon1,height: 20.h,width: 20.w,),
-                SizedBox(width: 6.w),
-                const Text(
-                  'Upload photos',
-                  style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            "JPEG, PNG up to 50 MB",
-            style: TextStyle(color: Colors.grey[600], fontSize: 13.sp),
-          ),
-        ],
-      ),
-    ),
-  );
+
 }

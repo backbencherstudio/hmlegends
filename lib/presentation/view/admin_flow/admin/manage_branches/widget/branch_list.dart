@@ -1,48 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../model/manage_branch_model.dart';
 
 class BranchList extends StatelessWidget {
-  const BranchList({super.key});
+  final List<Managers> managers;
+
+  const BranchList({super.key, required this.managers});
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> data = [
-      {
-        "image": "assets/images/user1.png",
-        "name": "Branch 1",
-        "isActive": false,
-        "location": "2118 Thornridge Cir. Syracuse, Connecticut 35624",
-      },
-      {
-        "image": "assets/images/user2.png",
-        "name": "Branch 2",
-        "isActive": true,
+    if (managers.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Text("No Branches Found"),
+        ),
+      );
+    }
 
-        "location": "1901 Thornridge Cir. Shiloh, Hawaii 81063",
-      },
-      {
-        "image": "assets/images/user3.png",
-        "name": "Branch 3",
-        "isActive": false,
-
-        "location": "1901 Thornridge Cir. Shiloh, Hawaii 81063",
-      },
-      {
-        "image": "assets/images/user1.png",
-        "name": "Branch 4",
-        "isActive": true,
-
-        "location": "1901 Thornridge Cir. Shiloh, Hawaii 81063",
-      },
-    ];
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: data.length,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: managers.length,
       itemBuilder: (context, index) {
-        final items = data[index];
+        final items = managers[index];
+        final bool isActive = items.status == "ACTIVE";
+
         return Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Container(
             padding: EdgeInsets.all(9.w),
             decoration: BoxDecoration(
@@ -54,58 +39,75 @@ class BranchList extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Circular branch image
-                    ClipOval(
-                      child: Image.asset(
-                        items['image'] ?? "",
-                        height: 80.h,
-                        width: 80.w,
-                        fit: BoxFit.cover,
+                    Container(
+                      height: 80.h,
+                      width: 80.w,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.r),
+                        color: Colors.grey.shade200,
+                        image:
+                            items.avatar != null
+                                ? DecorationImage(
+                                  image: NetworkImage(items.avatar!),
+                                  fit: BoxFit.cover,
+                                )
+                                : null,
                       ),
+                      child:
+                          items.avatar == null
+                              ? const Icon(Icons.person, size: 40)
+                              : null,
                     ),
+
                     SizedBox(width: 12.w),
 
-                    // Branch name and location
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Branch name
+                          /// Name + Status Row
                           Row(
                             children: [
-                              Text(
-                                items['name'] ?? "N/A",
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold,
+                              Expanded(
+                                child: Text(
+                                  items.name ?? "N/A",
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                              Spacer(),
+
                               Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Color(0xffDEF0DC),
-                                  borderRadius: BorderRadius.circular(15),
+                                  color:
+                                      isActive
+                                          ? const Color(0xffDEF0DC)
+                                          : const Color(0xffFCE6E7),
+                                  borderRadius: BorderRadius.circular(15.r),
                                 ),
                                 child: Text(
-                                  items['isActive'] ?? "N/A"
-                                      ? "Active"
-                                      : "Locked",
+                                  isActive ? "Active" : "Locked",
                                   style: TextStyle(
                                     fontSize: 14.sp,
-                                    color: Color(0xff5BB450),
+                                    color:
+                                        isActive
+                                            ? const Color(0xff5BB450)
+                                            : Colors.red,
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
                               ),
                             ],
                           ),
+
                           SizedBox(height: 6.h),
 
-                          // Location row with icon
+                          /// Location Row (Exact same layout)
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -117,7 +119,7 @@ class BranchList extends StatelessWidget {
                               SizedBox(width: 6.w),
                               Expanded(
                                 child: Text(
-                                  items['location'] ?? "N/A",
+                                  items.address ?? "No address available",
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   softWrap: true,
@@ -134,39 +136,17 @@ class BranchList extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 15),
+
+                SizedBox(height: 15.h),
+
+                /// 🔥 Bottom Action Buttons (Restored exactly)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Color(0xffFCE6E7),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.file_present_rounded,
-                        color: Colors.red,
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Color(0xffFCE6E7),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.edit, color: Colors.red),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Color(0xffFCE6E7),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.lock_person_outlined,
-                        color: Colors.red,
-                      ),
+                    _actionButton(Icons.file_present_rounded),
+                    _actionButton(Icons.edit),
+                    _actionButton(
+                      isActive ? Icons.lock_person_outlined : Icons.lock_open,
                     ),
                   ],
                 ),
@@ -175,6 +155,17 @@ class BranchList extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _actionButton(IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: const BoxDecoration(
+        color: Color(0xffFCE6E7),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, color: Colors.red),
     );
   }
 }

@@ -1,103 +1,156 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 
+import '../view_model/manage_branch_provider.dart';
 import '../widget/branch_list.dart';
 import '../widget/custom_appbar.dart';
 import '../widget/manage_branches_card.dart';
 
-class ManageBranchesScreen extends StatelessWidget {
+class ManageBranchesScreen extends StatefulWidget {
   const ManageBranchesScreen({super.key});
 
   @override
+  State<ManageBranchesScreen> createState() => _ManageBranchesScreenState();
+}
+
+class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<ManageBranchProvider>(context, listen: false).allBranch();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      backgroundColor: Color(0xffFFF6F7),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              CustomAppbar(
-                title: "Manage Branches",
-                back: Icons.arrow_back_ios,
-                img: "assets/images/wahab.png",
-                notification: Icons.notification_add_rounded,
-              ),
-              SizedBox(height: 10),
-              Divider(color: Colors.grey),
-              TextFormField(
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xffEFEFEF),
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: Color(0xffFEECEE), width: 1),
+      backgroundColor: const Color(0xffFFF6F7),
+      body: Consumer<ManageBranchProvider>(
+        builder: (context, provider, child) {
+
+          final summary = provider.manageBranchModel?.data?.summary;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+
+                  CustomAppbar(
+                    title: "Manage Branches",
+                    back: Icons.arrow_back_ios,
+                    img: "assets/images/wahab.png",
+                    notification: Icons.notification_add_rounded,
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: Color(0xffFEECEE), width: 1),
+
+                  const SizedBox(height: 10),
+                  const Divider(color: Colors.grey),
+
+                  TextFormField(
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color(0xffEFEFEF),
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: const BorderSide(
+                            color: Color(0xffFEECEE), width: 1),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: const BorderSide(
+                            color: Color(0xffFEECEE), width: 1),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: const BorderSide(
+                            color: Color(0xffFEECEE), width: 1),
+                      ),
+                      hintText: "Search",
+                    ),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: Color(0xffFEECEE), width: 1),
-                  ),
-                  hint: Text("Search"),
-                ),
-              ),
-          
-              SizedBox(height: 30),
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        "Manage Branches",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 17,
+
+                  SizedBox(height: 30.h),
+
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Manage Branches",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 17,
+                          ),
                         ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(1),
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Icon(Icons.add, color: Colors.white),
+                        const SizedBox(width: 20),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              RouteNames.addNewBranchesScreen,
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              const Text(
+                                "Add New Branch",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ],
                           ),
-                          SizedBox(width: 4),
-                          Text(
-                            "Add New Branch",
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+
+                  SizedBox(height: 20.h),
+
+
+                  if (provider.isLoading)
+                    const Center(child: CircularProgressIndicator())
+                  else
+                    ManageBranchesCard(
+                      totalBranches: summary?.totalBranch ?? 0,
+                      activeBranches: summary?.totalActiveBranch ?? 0,
+                      lockedBranches: summary?.totalLockedBranch ?? 0,
+                    ),
+
+                  const SizedBox(height: 20),
+
+                  BranchList(
+                    managers: provider.manageBranchModel?.data?.managers ?? [],
+                  ),
+                ],
               ),
-          
-              SizedBox(height: 20.h),
-              ManageBranchesCard(),
-              BranchList(),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

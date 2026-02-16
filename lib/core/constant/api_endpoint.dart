@@ -66,4 +66,13 @@ class ApiEndpoints {
       '$baseUrl/api/delivery-tracking/update-location';
   // static const String getProducts = '/api/products';
   // static const String getUsers = '/api/users';
+
+
+                        // Manage Branch
+  static String allBranch =
+      '$baseUrl/api/auth/all-managers';
+
+
+
+
 }

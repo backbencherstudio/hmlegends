@@ -2,49 +2,69 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ManageBranchesCard extends StatelessWidget {
-  const ManageBranchesCard({super.key});
+
+  final int totalBranches;
+  final int activeBranches;
+  final int lockedBranches;
+
+  const ManageBranchesCard({
+    super.key,
+    required this.totalBranches,
+    required this.activeBranches,
+    required this.lockedBranches,
+  });
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, String>> data = [
-      {"number": "08", "text": "Total Branches"},
-      {"number": "15", "text": "Active Branches"},
-      {"number": "03", "text": "Locked Branches"},
+
+    final List<Map<String, dynamic>> data = [
+      {"number": totalBranches, "text": "Total Branches"},
+      {"number": activeBranches, "text": "Active Branches"},
+      {"number": lockedBranches, "text": "Locked Branches"},
     ];
 
     return SizedBox(
-      height: 120,
+      height: 120.h,
       child: ListView.builder(
         itemCount: data.length,
-        shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
+
           final value = data[index];
+
           return Padding(
-            padding: EdgeInsets.all(4.0),
+            padding: const EdgeInsets.all(6.0),
             child: Container(
-              padding: EdgeInsets.all(4),
+              width: 130.w,
+              padding: EdgeInsets.all(10.w),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
-                  color: index == 0 ? Colors.red : Colors.white
-                )
+                  color: index == 0 ? Colors.red : Colors.transparent,
+                ),
               ),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: 8.h),
+
                   Text(
-                    value['number'] ?? "",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 6),
-                  Expanded(
-                    child: Text(
-                      value['text'] ?? "",
-                      style: const TextStyle(fontSize: 15, color: Colors.grey),
-                      textAlign: TextAlign.center,
+                    value['number'].toString(),
+                    style: TextStyle(
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.bold,
                     ),
+                  ),
+
+                  SizedBox(height: 8.h),
+
+                  Text(
+                    value['text'],
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.grey,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
