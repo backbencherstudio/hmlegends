@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://dvds-binding-prisoner-marking.trycloudflare.com';
+      'https://springer-builders-cho-yours.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
   // Admin
@@ -66,4 +66,16 @@ class ApiEndpoints {
       '$baseUrl/api/delivery-tracking/update-location';
   // static const String getProducts = '/api/products';
   // static const String getUsers = '/api/users';
+
+
+                        // Manage Branch
+  static String allBranch =
+      '$baseUrl/api/auth/all-managers';
+
+  static String addNewBranch =
+      '$baseUrl/api/auth/create-manager';
+
+
+
+
 }

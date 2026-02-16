@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/view_model/manage_branch_provider.dart';
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar_2.dart';
@@ -14,12 +16,19 @@ class AddNewBranchesScreen extends StatefulWidget {
 }
 
 class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
+  /// ------------ Text Field Controllers ------------
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   // Dropdown values
   String? selectedProduct;
   String? selectedStockStatus;
 
   // Dropdown options
-  final List<String> stockStatusOptions = ['Active', 'Inactive',];
+  final List<String> stockStatusOptions = ['Active', 'Inactive'];
 
   @override
   Widget build(BuildContext context) {
@@ -35,36 +44,130 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildLabel("Branch name"),
-            _buildTextField("Branch name with ID"),
+        child: Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildLabel("Branch name"),
+              _buildTextField(
+                "Branch name with ID",
+                controller: _nameController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the branch name';
+                  }
+                  return null;
+                },
+              ),
 
-            SizedBox(height: 16.h),
-            _buildLabel("Branch location"),
-            _buildTextField("Add location"),
+              SizedBox(height: 16.h),
+              _buildLabel("Branch location"),
+              _buildTextField(
+                "Add location",
+                controller: _addressController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the branch location';
+                  }
+                  return null;
+                },
+              ),
 
-            SizedBox(height: 16.h),
-            _buildLabel("Status"),
-            _buildStockStatusDropdown(),
+              SizedBox(height: 16.h),
+              _buildLabel("Status"),
+              _buildStockStatusDropdown(),
 
-            SizedBox(height: 16.h),
-            _buildLabel("Email"),
-            _buildTextField("Enter your email"),
+              SizedBox(height: 16.h),
+              _buildLabel("Email"),
+              _buildTextField(
+                "Enter your email",
+                controller: _emailController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  // Basic email validation
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                    return 'Please enter a valid email address';
+                  }
+                  return null;
+                },
+              ),
 
-            SizedBox(height: 16.h),
-            _buildLabel("Password"),
-            _buildTextField("Enter your password"),
+              SizedBox(height: 16.h),
+              _buildLabel("Password"),
+              _buildTextField(
+                "Enter your password",
+                controller: _passwordController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  if (value.length < 8) {
+                    return 'Password must be at least 6 characters long';
+                  }
+                  return null;
+                },
+              ),
 
+              SizedBox(height: 40.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: AuthButton(
+                  text: 'Save & Update',
+                  onPressed: () async {
+                    // Example of using the form data
+                    if (_formKey.currentState!.validate()) {
+                      // Call the provider method to add a new branch
+                      final result = await context
+                          .read<ManageBranchProvider>()
+                          .addNewBranch(
+                            name: _nameController.text,
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                            address: _addressController.text,
+                            status: selectedStockStatus ?? 'Inactive',
+                          );
 
-
-            SizedBox(height: 40.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: AuthButton(text: 'Save & Update', onPressed: (){}, color: AppColors.primaryColor),
-            )
-          ],
+                      if (mounted) {
+                        if (result['success']) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(result['message'].toString()),
+                              backgroundColor: Colors.green,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                          // Clear the form
+                          _formKey.currentState!.reset();
+                          _nameController.clear();
+                          _emailController.clear();
+                          _passwordController.clear();
+                          _addressController.clear();
+                          setState(() {
+                            selectedStockStatus = null;
+                          });
+                          // Navigate back
+                          Navigator.pop(context);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(result['message'].toString()),
+                              backgroundColor: Colors.red,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      }
+                    }
+                  },
+                  color: AppColors.primaryColor,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -84,7 +187,13 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
   );
 
   // TextField
-  Widget _buildTextField(String hint) => TextField(
+  Widget _buildTextField(
+    String hint, {
+    TextEditingController? controller,
+    String? Function(String?)? validator,
+  }) => TextFormField(
+    controller: controller,
+    validator: validator,
     decoration: InputDecoration(
       hintText: hint,
       hintStyle: TextStyle(color: Colors.grey[500]),
@@ -106,7 +215,6 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
     ),
   );
 
-
   // Stock Status Dropdown
   Widget _buildStockStatusDropdown() => Container(
     decoration: BoxDecoration(
@@ -120,19 +228,15 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
         value: selectedStockStatus,
         isExpanded: true,
         icon: const Icon(Icons.arrow_drop_down),
-        hint: Text(
-          "Select",
-          style: TextStyle(color: Colors.grey[500]),
-        ),
-        dropdownColor: AppColors.editTextFieldColor, // Dropdown menu background color
+        hint: Text("Select", style: TextStyle(color: Colors.grey[500])),
+        dropdownColor:
+            AppColors.editTextFieldColor, // Dropdown menu background color
         borderRadius: BorderRadius.circular(8.r), // Dropdown menu border radius
         style: TextStyle(color: Colors.grey[600]), // Dropdown item text color
-        items: stockStatusOptions.map((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
+        items:
+            stockStatusOptions.map((String value) {
+              return DropdownMenuItem<String>(value: value, child: Text(value));
+            }).toList(),
         onChanged: (String? newValue) {
           setState(() {
             selectedStockStatus = newValue;
@@ -143,43 +247,4 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
   );
 
   // Upload Image Box
-  Widget _buildImageUploader() => Container(
-    width: double.infinity,
-    height: 160.h,
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12.r),
-      border: Border.all(color: const Color(0xFFD2D2D5)),
-      color: AppColors.editTextFieldColor,
-    ),
-    child: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(color: Colors.redAccent, width: 1.2),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(AssetPaths.addIcon1,height: 20.h,width: 20.w,),
-                SizedBox(width: 6.w),
-                const Text(
-                  'Upload photos',
-                  style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            "JPEG, PNG up to 50 MB",
-            style: TextStyle(color: Colors.grey[600], fontSize: 13.sp),
-          ),
-        ],
-      ),
-    ),
-  );
 }
