@@ -106,7 +106,7 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
                     return 'Please enter your password';
                   }
                   if (value.length < 8) {
-                    return 'Password must be at least 6 characters long';
+                    return 'Password must be at least 8 characters long';
                   }
                   return null;
                 },

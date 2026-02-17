@@ -8,7 +8,7 @@ import 'dart:convert';
 import 'package:logger/web.dart';
 
 class ManageBranchProvider extends ChangeNotifier {
-  final TokenStorage _tokenStorage = TokenStorage();
+  final _tokenStorage = TokenStorage();
   ManageBranchModel? _manageBranchModel;
 
   ManageBranchModel? get manageBranchModel => _manageBranchModel;
@@ -62,14 +62,14 @@ class ManageBranchProvider extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      final token = await _tokenStorage.getToken();
+       final token = await _tokenStorage.getToken();
 
       var url = Uri.parse(ApiEndpoints.addNewBranch);
 
       var response = await http.post(
         url,
         headers: {
-          "Authorization": "Bearer $token",
+           "Authorization": "Bearer $token",
           "Content-Type": "application/json",
         },
         body: jsonEncode({
@@ -80,6 +80,10 @@ class ManageBranchProvider extends ChangeNotifier {
           "status": status,
         }),
       );
+
+      logger.i("Response url : ${response.request?.url}");
+      logger.i("Response status code: ${response.statusCode}");
+      logger.i("Response body: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         logger.i("Branch response: ${response.body}");
@@ -92,7 +96,7 @@ class ManageBranchProvider extends ChangeNotifier {
         };
       }
     } catch (error) {
-      logger.i("The error message ${error}");
+      logger.i("The error message $error");
       return {"success": false, "message": "Error: $error"};
     } finally {
       isLoading = false;
