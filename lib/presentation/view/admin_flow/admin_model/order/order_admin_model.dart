@@ -8,13 +8,13 @@ class OrderAdminModel {
   OrderAdminModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ?  Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
+    final Map<String, dynamic> data =  {};
+    data['success'] = success;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -32,19 +32,19 @@ class Data {
     if (json['orders'] != null) {
       orders = <Orders>[];
       json['orders'].forEach((v) {
-        orders!.add(new Orders.fromJson(v));
+        orders!.add( Orders.fromJson(v));
       });
     }
-    stats = json['stats'] != null ? new Stats.fromJson(json['stats']) : null;
+    stats = json['stats'] != null ?  Stats.fromJson(json['stats']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.orders != null) {
-      data['orders'] = this.orders!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data =  {};
+    if (orders != null) {
+      data['orders'] = orders!.map((v) => v.toJson()).toList();
     }
-    if (this.stats != null) {
-      data['stats'] = this.stats!.toJson();
+    if (stats != null) {
+      data['stats'] = stats!.toJson();
     }
     return data;
   }
@@ -64,17 +64,17 @@ class Orders {
     totalQuantity = json['total_quantity'];
     createdAt = json['created_at'];
     status = json['status'];
-    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['total_quantity'] = this.totalQuantity;
-    data['created_at'] = this.createdAt;
-    data['status'] = this.status;
-    if (this.user != null) {
-      data['user'] = this.user!.toJson();
+    final Map<String, dynamic> data =  {};
+    data['id'] = id;
+    data['total_quantity'] = totalQuantity;
+    data['created_at'] = createdAt;
+    data['status'] = status;
+    if (user != null) {
+      data['user'] = user!.toJson();
     }
     return data;
   }
@@ -92,9 +92,9 @@ class User {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
+    final Map<String, dynamic> data =  {};
+    data['id'] = id;
+    data['name'] = name;
     return data;
   }
 }
@@ -122,12 +122,12 @@ class Stats {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total'] = this.total;
-    data['pending'] = this.pending;
-    data['invoiced'] = this.invoiced;
-    data['delivered'] = this.delivered;
-    data['total_unit_ordered'] = this.totalUnitOrdered;
+    final Map<String, dynamic> data =  {};
+    data['total'] = total;
+    data['pending'] = pending;
+    data['invoiced'] = invoiced;
+    data['delivered'] = delivered;
+    data['total_unit_ordered'] = totalUnitOrdered;
     return data;
   }
 }

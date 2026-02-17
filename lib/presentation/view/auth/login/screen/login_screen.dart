@@ -172,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Consumer<LoginScreenProvider>(
       builder: (context, provider, child) {
         return AuthButton(
-          text: provider.isLoading ? 'Signing In...' : 'Sign In',
+          text: Text(provider.isLoading ? 'Signing In...' : 'Sign In'),
           onPressed: () async {
             if (provider.isLoading) return;
 

@@ -9,17 +9,24 @@ import 'dart:convert';
 import 'package:logger/web.dart';
 
 class ManageBranchProvider extends ChangeNotifier {
+  ManageBranchProvider() {
+    allBranch();
+    notifyListeners();
+  }
+
   final _tokenStorage = TokenStorage();
   ManageBranchModel? _manageBranchModel;
 
   ManageBranchModel? get manageBranchModel => _manageBranchModel;
   SingleBranchModel? _singleBranchModel;
-  SingleBranchModel? get singleBranchModel => _singleBranchModel;
 
+  SingleBranchModel? get singleBranchModel => _singleBranchModel;
 
   bool isLoading = false;
 
   final logger = Logger();
+
+  /// ---------------------------- Get All Branch ------------------------------
 
   Future<void> allBranch() async {
     try {
@@ -56,7 +63,9 @@ class ManageBranchProvider extends ChangeNotifier {
     }
   }
 
-  Future<Map<String, dynamic>> addNewBranch({
+  /// ---------------------------- Post Add New Branch -------------------------
+
+  Future<dynamic> addNewBranch({
     required String name,
     required String email,
     required String password,
@@ -67,68 +76,83 @@ class ManageBranchProvider extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-       final token = await _tokenStorage.getToken();
+      final token = await _tokenStorage.getToken();
 
       var url = Uri.parse(ApiEndpoints.addNewBranch);
-
+      final body = jsonEncode({
+        "name": name,
+        "email": email,
+        "password": password,
+        "address": address,
+        "status": status,
+      });
       var response = await http.post(
         url,
         headers: {
-           "Authorization": "Bearer $token",
+          "Authorization": "Bearer $token",
           "Content-Type": "application/json",
         },
-        body: jsonEncode({
-          "name": name,
-          "email": email,
-          "password": password,
-          "address": address,
-          "status": status,
-        }),
+        body: body,
       );
 
+      isLoading = false;
+      notifyListeners();
+      logger.d("The body data is $body");
       logger.i("Response url : ${response.request?.url}");
       logger.i("Response status code: ${response.statusCode}");
       logger.i("Response body: ${response.body}");
-
+      final decodeData = jsonDecode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        logger.i("Branch response: ${response.body}");
-        return {"success": true, "message": "Branch added successfully"};
+        final message = decodeData['message'];
+        logger.d("The success message ${decodeData['message']}");
+        return {"success": true, "message": message};
       } else {
+        final message = decodeData['message'];
         logger.i("Failed to add branch: ${response.statusCode}");
-        return {
-          "success": false,
-          "message": "Failed to add branch: ${response.statusCode}",
-        };
+        return {"success": false, "message": message};
       }
     } catch (error) {
       logger.i("The error message $error");
-      return {"success": false, "message": "Error: $error"};
+      return error;
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> getSingleBranch(String userId)async{
+  /// ---------------------------- Get Single Branch ---------------------------
 
-    try{
+  Future<void> getSingleBranch(String userId, {String period = 'today'}) async {
+    try {
+      isLoading = true;
+      notifyListeners();
       final token = await _tokenStorage.getToken();
-      final url = Uri.parse(ApiEndpoints.singleBranch(userId));
-      final response = await http.get(url,
-      headers: {
-        "Authorization":"bearer $token"
-      });
-      if(response.statusCode == 200 || response.statusCode == 201){
-
+      final url = Uri.parse(ApiEndpoints.singleBranch(userId, period: period));
+      final response = await http.get(
+        url,
+        headers: {"Authorization": "bearer $token"},
+      );
+      logger.i("Response url : ${response.request?.url}");
+      logger.i("Response status code: ${response.statusCode}");
+      logger.i("Response body: ${response.body}");
+      isLoading = false;
+      notifyListeners();
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final decodeData = jsonDecode(response.body);
+        logger.d("The success message ${decodeData['message']}");
         _singleBranchModel = SingleBranchModel.fromJson(decodeData);
-      }else{
-
+      } else {
+        logger.d("The error message ${response.statusCode}");
+        _singleBranchModel = null;
+        notifyListeners();
       }
-
-    }catch(error){
-      debugPrint("The errir message ${error}");
+    } catch (error) {
+      logger.i("The error message $error");
+      _singleBranchModel = null;
+      notifyListeners();
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
-
   }
 }

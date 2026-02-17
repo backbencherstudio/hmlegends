@@ -13,7 +13,7 @@ class OrderScreenProvider extends ChangeNotifier {
 
   final TokenStorage _tokenStorage = TokenStorage();
 
-  // ---------------- Loading State ----------------
+  ///--------------------------- Loading State -------------------------------
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 

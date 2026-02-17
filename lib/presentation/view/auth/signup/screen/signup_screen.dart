@@ -131,7 +131,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildSignUpButton() => Consumer<RegisterProvider>(
     builder: (context, provider, child) {
       return AuthButton(
-        text: 'Sign Up',
+        text: Text('Sign Up'),
         onPressed: () async {
           final success = await provider.registerUser(
             name: _nameController.text.trim(),

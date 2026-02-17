@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://got-canyon-watt-relation.trycloudflare.com';
+      'https://sent-palace-concrete-cute.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
   // Admin
@@ -67,17 +67,10 @@ class ApiEndpoints {
   // static const String getProducts = '/api/products';
   // static const String getUsers = '/api/users';
 
+  // Manage Branch
+  static String allBranch = '$baseUrl/api/auth/all-managers';
+  static String singleBranch(String userId, {String period = 'today'}) =>
+      '$baseUrl/api/auth/manager/$userId?period=$period';
 
-                        // Manage Branch
-  static String allBranch =
-      '$baseUrl/api/auth/all-managers';
-  static String singleBranch(String userId) =>
-      '$baseUrl/api/auth/manager/$userId';
-
-  static String addNewBranch =
-      '$baseUrl/api/auth/create-manager';
-
-
-
-
+  static String addNewBranch = '$baseUrl/api/auth/create-manager';
 }

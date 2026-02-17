@@ -91,7 +91,7 @@ void showSendInvoiceBottomSheet(BuildContext context) {
 
             // === Send Button ===
             AuthButton(
-              text: 'Send',
+              text: Text('Send'),
               onPressed: () {
                 final email = emailController.text.trim();
                 if (email.isNotEmpty) {

@@ -64,7 +64,7 @@ class SetNewPasswordScreen extends StatelessWidget {
                     return provider.isFPLoading
                         ? const CircularProgressIndicator(color: Colors.green)
                         : AuthButton(
-                            text: 'Update Password',
+                            text: Text('Update Password'),
                             color: AppColors.primaryColor,
                             onPressed: () async {
                               final password = _passwordController.text.trim();

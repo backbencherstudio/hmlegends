@@ -4,7 +4,6 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/view_model/manage_branch_provider.dart';
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 
@@ -28,7 +27,7 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
   String? selectedStockStatus;
 
   // Dropdown options
-  final List<String> stockStatusOptions = ['Active', 'Inactive'];
+  final List<String> stockStatusOptions = ['ACTIVE', 'LOCKED'];
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +115,25 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: AuthButton(
-                  text: 'Save & Update',
+                  text:
+                      context.watch<ManageBranchProvider>().isLoading
+                          ? SizedBox(
+                            height: 16.h,
+                            width: 16.w,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation(Colors.white),
+                            ),
+                          )
+                          : Center(
+                            child: Text(
+                              'Add New Branch',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                   onPressed: () async {
                     // Example of using the form data
                     if (_formKey.currentState!.validate()) {
@@ -128,11 +145,15 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
                             email: _emailController.text,
                             password: _passwordController.text,
                             address: _addressController.text,
-                            status: selectedStockStatus ?? 'Inactive',
+                            status: selectedStockStatus ?? 'ACTIVE',
                           );
 
                       if (mounted) {
                         if (result['success']) {
+                          await context
+                              .read<ManageBranchProvider>()
+                              .allBranch();
+
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(result['message'].toString()),
@@ -194,6 +215,7 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
   }) => TextFormField(
     controller: controller,
     validator: validator,
+    textInputAction: TextInputAction.next,
     decoration: InputDecoration(
       hintText: hint,
       hintStyle: TextStyle(color: Colors.grey[500]),
@@ -229,10 +251,12 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
         isExpanded: true,
         icon: const Icon(Icons.arrow_drop_down),
         hint: Text("Select", style: TextStyle(color: Colors.grey[500])),
-        dropdownColor:
-            AppColors.editTextFieldColor, // Dropdown menu background color
-        borderRadius: BorderRadius.circular(8.r), // Dropdown menu border radius
-        style: TextStyle(color: Colors.grey[600]), // Dropdown item text color
+        dropdownColor: AppColors.editTextFieldColor,
+        // Dropdown menu background color
+        borderRadius: BorderRadius.circular(8.r),
+        // Dropdown menu border radius
+        style: TextStyle(color: Colors.grey[600]),
+        // Dropdown item text color
         items:
             stockStatusOptions.map((String value) {
               return DropdownMenuItem<String>(value: value, child: Text(value));

@@ -60,7 +60,7 @@ class _EditStockScreenState extends State<EditStockScreen> {
             SizedBox(height: 24.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: AuthButton(text: 'Save & Update', onPressed: (){}, color: AppColors.primaryColor),
+              child: AuthButton(text: Text('Save & Update'), onPressed: (){}, color: AppColors.primaryColor),
             )
           ],
         ),

@@ -144,10 +144,17 @@ class BranchList extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     GestureDetector(
-                        onTap: (){
-                          Navigator.pushNamed(context, RouteNames.orderSummaryViewSuccessfulScreen);
-                        },
-                        child: _actionButton(Icons.file_present_rounded)),
+                      onTap: () {
+                        debugPrint("THe userIUD : ${items.id}");
+
+                        Navigator.pushNamed(
+                          context,
+                          RouteNames.orderSummaryViewSuccessfulScreen,
+                          arguments: items.id,
+                        );
+                      },
+                      child: _actionButton(Icons.file_present_rounded),
+                    ),
                     _actionButton(Icons.edit),
                     _actionButton(
                       isActive ? Icons.lock_person_outlined : Icons.lock_open,
