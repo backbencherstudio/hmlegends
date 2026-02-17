@@ -136,16 +136,18 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                     const Center(child: CircularProgressIndicator())
                   else
                     ManageBranchesCard(
-                      totalBranches: summary?.totalBranch ?? 0,
-                      activeBranches: summary?.totalActiveBranch ?? 0,
-                      lockedBranches: summary?.totalLockedBranch ?? 0,
+                      totalBranches: provider.manageBranchModel?.data?.summary?.totalBranch ?? 0,
+                      activeBranches: provider.manageBranchModel?.data?.summary?.totalActiveBranch ?? 0,
+                      lockedBranches: provider.manageBranchModel?.data?.summary?.totalLockedBranch ?? 0,
                     ),
+
 
                   const SizedBox(height: 20),
 
                   BranchList(
                     managers: provider.manageBranchModel?.data?.managers ?? [],
                   ),
+
                 ],
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import '../model/manage_branch_model.dart';
 
 class BranchList extends StatelessWidget {
@@ -65,7 +66,6 @@ class BranchList extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          /// Name + Status Row
                           Row(
                             children: [
                               Expanded(
@@ -143,7 +143,11 @@ class BranchList extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _actionButton(Icons.file_present_rounded),
+                    GestureDetector(
+                        onTap: (){
+                          Navigator.pushNamed(context, RouteNames.orderSummaryViewSuccessfulScreen);
+                        },
+                        child: _actionButton(Icons.file_present_rounded)),
                     _actionButton(Icons.edit),
                     _actionButton(
                       isActive ? Icons.lock_person_outlined : Icons.lock_open,

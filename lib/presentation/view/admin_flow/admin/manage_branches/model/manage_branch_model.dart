@@ -76,9 +76,9 @@ class Summary {
 class Managers {
   String? id;
   String? name;
-  Null? address;
+  String? address; // ✅ now can be String or null
   String? status;
-  Null? avatar;
+  String? avatar; // ✅ now can be String or null
   String? createdAt;
   String? updatedAt;
 
@@ -103,14 +103,14 @@ class Managers {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['address'] = this.address;
-    data['status'] = this.status;
-    data['avatar'] = this.avatar;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    return data;
+    return {
+      'id': id,
+      'name': name,
+      'address': address,
+      'status': status,
+      'avatar': avatar,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
   }
 }
