@@ -44,9 +44,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            //------------------ Search Field ----------------------------------
             const SearchField(hintText: ''),
             SizedBox(height: 20.h),
 
+            ///------------------ Order Summary Cards --------------------------
             Row(
               children: [
                 Expanded(
@@ -97,6 +99,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
 
             SizedBox(height: 28.h),
 
+            /// ------------------ Total Orders List -----------------------------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -138,6 +141,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             ),
             SizedBox(height: 14.h),
 
+            /// ------------------ Orders List from server -----------------------------------
             Expanded(
               child:
                   provider.isLoading
@@ -216,13 +220,18 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                                       ),
                                       child: TextButton(
                                         onPressed: () async {
+                                          final navigator = Navigator.of(
+                                            context,
+                                          );
                                           await provider.adminSingleOrder(
                                             item.id ?? "",
                                           );
-                                          Navigator.pushNamed(
-                                            context,
-                                            RouteNames.orderSummaryViewScreen,
-                                          );
+                                          if (mounted) {
+                                            navigator.pushNamed(
+                                              RouteNames.orderSummaryViewScreen,
+                                              arguments: item.id ?? "",
+                                            );
+                                          }
                                         },
                                         style: TextButton.styleFrom(
                                           padding: EdgeInsets.zero,

@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../model/invoice_detail_model.dart';
-import '../view_model/admin_invoic_provider.dart';
+import '../view_model/admin_invoice_provider.dart';
 import 'iInvoiceWebViewScreen.dart';
 
 class AdminInvoiceDetailScreen extends StatelessWidget {

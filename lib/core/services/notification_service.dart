@@ -57,11 +57,11 @@ class NotificationService {
 
       final ctx = navigatorKey.currentContext;
       if (ctx != null && message.notification != null) {
-        _showDialog(
-          ctx,
-          message.notification!.title,
-          message.notification!.body,
-        );
+        // _showDialog(
+        //   ctx,
+        //   message.notification!.title,
+        //   message.notification!.body,
+        // );
       }
     });
 
@@ -98,7 +98,7 @@ class NotificationService {
     }
   }
 
-  void _showDialog(BuildContext context, String? title, String? body) {
+  static void showDialogBox(BuildContext context, String? title, String? body) {
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
     }
@@ -107,7 +107,7 @@ class NotificationService {
       context: context,
       builder:
           (_) => AlertDialog(
-            title: Text(title ?? ''),
+            title: Text("$title"),
             content: Text(body ?? ''),
             actions: [
               TextButton(

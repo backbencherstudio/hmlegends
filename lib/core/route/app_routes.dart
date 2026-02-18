@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/order/screen/order_summary_make_invoice_screen.dart';
 import 'package:hmlegends/presentation/view/driver_flow/profile_driver/changeInfo_driver.dart';
 import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart';
 import '../../presentation/view/admin_flow/admin/home/screen/pending_user_list.dart';
@@ -19,7 +20,6 @@ import '../../presentation/view/admin_flow/admin/profile/screen/head_office_chan
 import '../../presentation/view/admin_flow/admin/profile/screen/head_office_change_password_screen.dart';
 import '../../presentation/view/admin_flow/admin/profile/screen/head_office_profile_screen.dart';
 import '../../presentation/view/admin_flow/admin/stock/screen/edit_stock_screen.dart';
-import '../../presentation/view/admin_flow/admin/stock/screen/stock_screen.dart';
 import '../../presentation/view/auth/forget_password/screen/forget_password_screen.dart';
 import '../../presentation/view/auth/login/screen/login_screen.dart';
 import '../../presentation/view/auth/otp_verify/screen/otp_verify_screen.dart';
@@ -77,6 +77,7 @@ class AppRoutes{
     RouteNames.orderSummaryViewScreen  :(context)=>  OrderSummaryViewScreen(),
     RouteNames.confirmDeliveryScreen   :(context)=>  ConfirmDeliveryScreen(),
     RouteNames.deliverySummeryScreen   :(context)=>  DeliverySummeryScreen(),
+    RouteNames.orderSummaryMakeInvoiceScreen  :(context)=>  OrderSummaryMakeInvoiceScreen(),
     RouteNames.orderSummaryViewSuccessfulScreen  :(context)=>  OrderSummaryViewSuccessfulScreen(),
     RouteNames.headOfficeInvoiceScreen  :(context)=>  HeadOfficeInvoiceScreen(fromBottomNav: false,),
     RouteNames.manageBranchesScreen  :(context)=>  ManageBranchesScreen(),

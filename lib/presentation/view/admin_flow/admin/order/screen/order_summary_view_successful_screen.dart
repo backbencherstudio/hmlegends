@@ -63,7 +63,7 @@ class _OrderSummaryViewSuccessfulScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               /// --------------- Branch Name ------------------------------------
-              Consumer<ManageBranchProvider>(
+              Consumer<ManageBranchProvider>( 
                 builder: (
                   BuildContext context,
                   ManageBranchProvider provider,

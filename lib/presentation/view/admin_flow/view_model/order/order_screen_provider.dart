@@ -105,6 +105,7 @@ class OrderScreenProvider extends ChangeNotifier {
     }
   }
 
+  ///----------------------- Approve Order --------------------------------
   Future<void> approveOrder(String orderId) async {
     try {
       _setLoading(true);
@@ -121,7 +122,7 @@ class OrderScreenProvider extends ChangeNotifier {
         },
       );
 
-      debugPrint("Status Code: ${response.statusCode}");
+      logger.i("Status Code: ${response.statusCode}");
 
       final decodeData = jsonDecode(response.body);
 

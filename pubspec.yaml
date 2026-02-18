@@ -60,6 +60,7 @@ dependencies:
   geolocator: ^14.0.2
   geocoding: ^4.0.0
   logger: ^2.6.2
+  fluttertoast: ^9.0.0
 
 
 

@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://sent-palace-concrete-cute.trycloudflare.com';
+      'https://rescue-wishing-reproduce-architectural.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
   // Admin
@@ -54,10 +54,10 @@ class ApiEndpoints {
   //Driver
 
   static const String getAllDeliveryAdmin = '$baseUrl/api/delivery';
-  static String getSingleDeliveryDriver(String Id) =>
-      '$baseUrl/api/delivery/$Id';
-  static String deliveryReceivedAdmin(String Id) => '$baseUrl/api/delivery/$Id';
-  static String deliveryConfirmAdmin(String Id) => '$baseUrl/api/delivery/$Id';
+  static String getSingleDeliveryDriver(String id) =>
+      '$baseUrl/api/delivery/$id';
+  static String deliveryReceivedAdmin(String id) => '$baseUrl/api/delivery/$id';
+  static String deliveryConfirmAdmin(String id) => '$baseUrl/api/delivery/$id';
   static String driverCheckMe = '$baseUrl/api/auth/me';
   static const String driverProfileUpdate = '$baseUrl/api/auth/update';
   static String initializedTracking(String deliveryId) =>

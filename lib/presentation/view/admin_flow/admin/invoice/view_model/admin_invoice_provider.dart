@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
+import 'package:logger/web.dart';
 import '../model/all_invoice_model.dart';
 import '../model/invoice_detail_model.dart';
 
@@ -15,13 +17,19 @@ class AdminInvoiceProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  final logger = Logger();
+
   Future<void> getAllInvoice() async {
-    _isLoading = true;
+    _setLoading(true);
     _errorMessage = null;
-    notifyListeners();
 
     try {
       final token = await _tokenStorage.getToken();
@@ -38,23 +46,22 @@ class AdminInvoiceProvider extends ChangeNotifier {
         _allInvoiceModel = AllInvoiceModel.fromJson(jsonData);
 
         final invoices = _allInvoiceModel?.data?.invoices ?? [];
-        debugPrint("Total invoices fetched: ${invoices.length}");
+        logger.i("Total invoices fetched: ${invoices.length}");
         for (int i = 0; i < invoices.length; i++) {
           final receiverName = invoices[i].receiver?.firstName ?? "Unknown";
-          debugPrint("Invoice #$i Receiver: $receiverName");
+          logger.i("Invoice #$i Receiver: $receiverName");
         }
       } else {
         _errorMessage =
             "Failed to fetch invoices • Status: ${response.statusCode}";
-        debugPrint(_errorMessage);
-        debugPrint("Server Message: ${response.body}");
+        logger.e(_errorMessage);
+        logger.e("Server Message: ${response.body}");
       }
     } catch (e) {
       _errorMessage = "Exception occurred: $e";
-      debugPrint(_errorMessage);
+      logger.e(_errorMessage);
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 
@@ -62,12 +69,11 @@ class AdminInvoiceProvider extends ChangeNotifier {
   InvoiceDetailModel? get invoiceDetailModel => _invoiceDetailModel;
 
   Future<void> fetchInvoiceDetail(String orderID) async {
-    _isLoading = true;
+    _setLoading(true);
     _errorMessage = '';
-    notifyListeners();
 
     try {
-      debugPrint("Inside detail order ID is  $orderID");
+      logger.i("Inside detail order ID is  $orderID");
 
       final token = await _tokenStorage.getToken();
       final url = Uri.parse(ApiEndpoints.getInvoiceDetail(orderID));
@@ -77,37 +83,24 @@ class AdminInvoiceProvider extends ChangeNotifier {
         headers: {"Authorization": "Bearer $token"},
       );
 
-      debugPrint("=== INVOICE DETAIL API RESPONSE ===");
-      debugPrint("Status Code: ${response.statusCode}");
-      debugPrint("Response Body: ${response.body}");
+      logger.i("=== INVOICE DETAIL API RESPONSE ===");
+      logger.i("Status Code: ${response.statusCode}");
+      logger.i("Response Body: ${response.body}");
 
       final decodeData = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _invoiceDetailModel = InvoiceDetailModel.fromJson(decodeData);
-
-        debugPrint("Invoice SKU: ${_invoiceDetailModel!.data?.sku.length}");
-        debugPrint("Success message: ${decodeData['message']}");
-        debugPrint("Order Total: ${_invoiceDetailModel!.data?.order.status}");
-        debugPrint(
-          "Items Count: ${_invoiceDetailModel!.data?.order.orderItems.length}",
-        );
-
-        _isLoading = false;
-        notifyListeners();
       } else {
         _errorMessage = decodeData["message"] ?? "Something went wrong";
 
-        debugPrint("API returned error: $_errorMessage");
-
-        _isLoading = false;
-        notifyListeners();
+        logger.e("API returned error: $_errorMessage");
       }
+      _setLoading(false);
     } catch (e) {
-      debugPrint("Error fetching invoice detail: $e");
+      logger.e("Error fetching invoice detail: $e");
       _errorMessage = "Network error. Please check your connection.";
-      _isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 }
