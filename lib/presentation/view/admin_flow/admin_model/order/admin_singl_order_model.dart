@@ -8,15 +8,15 @@ class AdminSingleOrderModel {
   AdminSingleOrderModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    order = json['order'] != null ? new Order.fromJson(json['order']) : null;
+    order = json['order'] != null ? Order.fromJson(json['order']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
-    if (this.order != null) {
-      data['order'] = this.order!.toJson();
+    final Map<String, dynamic> data = {};
+    data['success'] = success;
+    data['message'] = message;
+    if (order != null) {
+      data['order'] = order!.toJson();
     }
     return data;
   }
@@ -46,23 +46,23 @@ class Order {
     if (json['order_items'] != null) {
       orderItems = <OrderItems>[];
       json['order_items'].forEach((v) {
-        orderItems!.add(new OrderItems.fromJson(v));
+        orderItems!.add(OrderItems.fromJson(v));
       });
     }
-    user = json['user'] != null ? new Product.fromJson(json['user']) : null;
+    user = json['user'] != null ? Product.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['total_quantity'] = this.totalQuantity;
-    data['created_at'] = this.createdAt;
-    data['status'] = this.status;
-    if (this.orderItems != null) {
-      data['order_items'] = this.orderItems!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['total_quantity'] = totalQuantity;
+    data['created_at'] = createdAt;
+    data['status'] = status;
+    if (orderItems != null) {
+      data['order_items'] = orderItems!.map((v) => v.toJson()).toList();
     }
-    if (this.user != null) {
-      data['user'] = this.user!.toJson();
+    if (user != null) {
+      data['user'] = user!.toJson();
     }
     return data;
   }
@@ -79,15 +79,15 @@ class OrderItems {
     id = json['id'];
     quantity = json['quantity'];
     product =
-    json['product'] != null ? new Product.fromJson(json['product']) : null;
+    json['product'] != null ? Product.fromJson(json['product']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['quantity'] = this.quantity;
-    if (this.product != null) {
-      data['product'] = this.product!.toJson();
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['quantity'] = quantity;
+    if (product != null) {
+      data['product'] = product!.toJson();
     }
     return data;
   }
@@ -105,9 +105,9 @@ class Product {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['name'] = name;
     return data;
   }
 }

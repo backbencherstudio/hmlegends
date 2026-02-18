@@ -65,10 +65,10 @@ class Summary {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['totalBranch'] = this.totalBranch;
-    data['totalActiveBranch'] = this.totalActiveBranch;
-    data['totalLockedBranch'] = this.totalLockedBranch;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['totalBranch'] = totalBranch;
+    data['totalActiveBranch'] = totalActiveBranch;
+    data['totalLockedBranch'] = totalLockedBranch;
     return data;
   }
 }

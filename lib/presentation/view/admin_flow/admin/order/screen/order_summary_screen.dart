@@ -24,12 +24,12 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<OrderScreenProvider>(context);
-    final total_order = provider.orderAdminModel?.data?.stats?.total ?? 0;
-    final pending_order = provider.orderAdminModel?.data?.stats?.pending ?? 0;
-    final invoiced_order = provider.orderAdminModel?.data?.stats?.invoiced ?? 0;
-    final delivered_order =
+    final totalOrder = provider.orderAdminModel?.data?.stats?.total ?? 0;
+    final pendingOrder = provider.orderAdminModel?.data?.stats?.pending ?? 0;
+    final invoicedOrder = provider.orderAdminModel?.data?.stats?.invoiced ?? 0;
+    final deliveredOrder =
         provider.orderAdminModel?.data?.stats?.delivered ?? 0;
-    final total_unit_ordered =
+    final totalUnitOrdered =
         provider.orderAdminModel?.data?.stats?.totalUnitOrdered ?? 0;
     final orders = provider.orderAdminModel?.data?.orders ?? [];
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
@@ -52,7 +52,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Total Orders",
-                    value: "$total_order",
+                    value: "$totalOrder",
                     isHighlighted: true,
                   ),
                 ),
@@ -60,14 +60,14 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Pending Orders",
-                    value: "$pending_order",
+                    value: "$pendingOrder",
                   ),
                 ),
                 SizedBox(width: 10.w),
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Invoiced Orders",
-                    value: "$invoiced_order",
+                    value: "$invoicedOrder",
                   ),
                 ),
               ],
@@ -80,7 +80,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Delivered Orders",
-                    value: "$delivered_order",
+                    value: "$deliveredOrder",
                     isWide: true,
                   ),
                 ),
@@ -88,7 +88,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Units of items ordered",
-                    value: "$total_unit_ordered",
+                    value: "$totalUnitOrdered",
                     isWide: true,
                   ),
                 ),
