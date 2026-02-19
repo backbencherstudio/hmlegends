@@ -39,7 +39,7 @@ class SearchField extends  StatelessWidget {
             minWidth: 44.w,
             minHeight: 48.h,
           ),
-          hintText:hintText.isNotEmpty?hintText:'Search',
+          hintText:hintText.isNotEmpty?hintText:'Search by branch name',
           hintStyle: AppTextStyles.hintText,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,

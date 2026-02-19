@@ -19,7 +19,7 @@ class OrderSummaryScreen extends StatefulWidget {
 }
 
 class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
-  String selectedPeriod = 'Today';
+  String _selectedPeriod = 'Today';
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +114,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 PopupMenuButton<String>(
                   onSelected: (value) {
                     setState(() {
-                      selectedPeriod = value;
+                      _selectedPeriod = value;
                     });
                   },
                   itemBuilder:
@@ -132,7 +132,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                   color: const Color(0xFFFFF5F5),
                   child: Row(
                     children: [
-                      Text(selectedPeriod, style: TextStyle(fontSize: 14.sp)),
+                      Text(_selectedPeriod, style: TextStyle(fontSize: 14.sp)),
                       Icon(Icons.keyboard_arrow_down_rounded, size: 20.sp),
                     ],
                   ),
