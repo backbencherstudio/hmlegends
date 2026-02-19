@@ -41,16 +41,18 @@ class AdminInvoiceProvider extends ChangeNotifier {
         headers: {"Authorization": "Bearer $token"},
       );
 
+      logger.i("=== ALL INVOICE API RESPONSE ===");
+      logger.i("Response url: ${response.request?.url}");
+      logger.i("Status Code: ${response.statusCode}");
+      logger.i("Response Body: ${response.body}");
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonData = jsonDecode(response.body);
         _allInvoiceModel = AllInvoiceModel.fromJson(jsonData);
 
         final invoices = _allInvoiceModel?.data?.invoices ?? [];
         logger.i("Total invoices fetched: ${invoices.length}");
-        for (int i = 0; i < invoices.length; i++) {
-          final receiverName = invoices[i].receiver?.firstName ?? "Unknown";
-          logger.i("Invoice #$i Receiver: $receiverName");
-        }
+
       } else {
         _errorMessage =
             "Failed to fetch invoices • Status: ${response.statusCode}";
@@ -84,6 +86,7 @@ class AdminInvoiceProvider extends ChangeNotifier {
       );
 
       logger.i("=== INVOICE DETAIL API RESPONSE ===");
+      logger.i("Response url: ${response.request?.url}");
       logger.i("Status Code: ${response.statusCode}");
       logger.i("Response Body: ${response.body}");
 
