@@ -22,11 +22,11 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
   final _addressController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  // Dropdown values
+  ///-------------------- Dropdown values --------------------------------------
   String? selectedProduct;
   String? selectedStockStatus;
 
-  // Dropdown options
+  /// -------------------- Dropdown options ------------------------------------
   final List<String> stockStatusOptions = ['ACTIVE', 'LOCKED'];
 
   @override
