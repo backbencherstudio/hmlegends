@@ -24,12 +24,10 @@ class AdminInfoModel {
 
 class AdminData {
   final String? id;
-  final String? firstName;
-  final String? lastName;
+  final String? name;
   final String? occupation;
   final String? email;
   final String? avatar;
-  final String? avatarUrl;
   final String? address;
   final String? phoneNumber;
   final String? type;
@@ -39,12 +37,10 @@ class AdminData {
 
   AdminData({
     this.id,
-    this.firstName,
-    this.lastName,
+    this.name,
     this.occupation,
     this.email,
     this.avatar,
-    this.avatarUrl,
     this.address,
     this.phoneNumber,
     this.type,
@@ -56,12 +52,10 @@ class AdminData {
   factory AdminData.fromJson(Map<String, dynamic> json) {
     return AdminData(
       id: json['id'],
-      firstName: json['first_name'],
-      lastName: json['last_name'],
+      name: json['name'],
       occupation: json['occupation'],
       email: json['email'],
       avatar: json['avatar'],
-      avatarUrl: json['avatar_url'],
       address: json['address'],
       phoneNumber: json['phone_number'],
       type: json['type'],
@@ -74,12 +68,10 @@ class AdminData {
   Map<String, dynamic> toJson() {
     return {
       "id": id,
-      "first_name": firstName,
-      "last_name": lastName,
+      "name": name,
       "occupation": occupation,
       "email": email,
       "avatar": avatar,
-      "avatar_url": avatarUrl,
       "address": address,
       "phone_number": phoneNumber,
       "type": type,

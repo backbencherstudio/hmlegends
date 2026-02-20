@@ -11,7 +11,7 @@ plugins {
 android {
     namespace = "com.example.hmlegends"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"   // <-- FIXED (string)
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

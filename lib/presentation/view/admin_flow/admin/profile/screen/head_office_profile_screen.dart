@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
@@ -21,20 +20,25 @@ class HeadOfficeProfileScreen extends StatelessWidget {
       builder: (context, snapshot) {
         final data = provider.adminInfoModel?.data;
 
-        final String fname = data?.firstName ?? "";
-        final String lname = data?.lastName ?? "";
-        final String occupation = data?.occupation ?? "";
-        final String phone = data?.phoneNumber ?? "";
-        final String address = data?.address ?? "";
+        final String name = data?.name ?? "Not Found Name";
+        final String occupation = data?.occupation ?? "Not Found Occupation";
+        final String phone = data?.phoneNumber ?? "Not Found Number";
+        final String address = data?.address ?? "Not Found Address";
         final String? avatar = data?.avatar;
 
         return Scaffold(
           backgroundColor: const Color(0xffFFF6F7),
+
+          /// --------------------- App Bar ------------------------------------
           appBar: AppBar(
             automaticallyImplyLeading: false,
             title: Text(
               'Profile',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20.sp),
+              style: TextStyle(
+                color: Color(0xFF1D1F2C),
+                fontWeight: FontWeight.w600,
+                fontSize: 20.sp,
+              ),
             ),
             leading: IconButton(
               onPressed: () => Navigator.pop(context),
@@ -56,17 +60,18 @@ class HeadOfficeProfileScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 15.h),
+                SizedBox(height: 16.h),
 
+                /// ----------- Name / Occupation / Avatar ---------------------
                 _ProfileHeader(
-                  fname: fname,
-                  lname: lname,
+                  name: name,
                   occupation: occupation,
                   avatar: avatar,
                 ),
 
-                SizedBox(height: 15.h),
+                SizedBox(height: 16.h),
 
+                ///------------------ Phone Number / Email / Address -----------
                 _ProfileInfoTile(
                   icon: Icons.phone_outlined,
                   title: 'Phone Number',
@@ -81,7 +86,7 @@ class HeadOfficeProfileScreen extends StatelessWidget {
                 _ProfileInfoTile(
                   icon: Icons.mail_outline,
                   title: 'Email',
-                  value: data?.email ?? "",
+                  value: data?.email ?? "Not Found Email",
                 ),
                 Divider(
                   indent: 15.w,
@@ -114,13 +119,14 @@ class HeadOfficeProfileScreen extends StatelessWidget {
                   color: Colors.grey.shade300,
                 ),
 
-                // _ProfileActionTile(
-                //   icon: Icons.lock_outline,
-                //   title: 'Change Password',
-                //   isDestructive: true,
-                //   onTap: () =>
-                //       Navigator.pushNamed(context, RouteNames.headOfficeChangePasswordScreen),
-                // ),
+                _ProfileActionTile(
+                  icon: Icons.lock_outline,
+                  title: 'Change Password',
+                  isDestructive: true,
+                  onTap: () {
+                    Navigator.pushNamed(context, RouteNames.headOfficeChangePasswordScreen);
+                  },
+                ),
                 Divider(
                   indent: 15.w,
                   endIndent: 15.w,
@@ -147,14 +153,12 @@ class HeadOfficeProfileScreen extends StatelessWidget {
 }
 
 class _ProfileHeader extends StatelessWidget {
-  final String fname;
-  final String lname;
+  final String name;
   final String occupation;
   final String? avatar;
 
   const _ProfileHeader({
-    required this.fname,
-    required this.lname,
+    required this.name,
     required this.occupation,
     required this.avatar,
   });
@@ -169,7 +173,7 @@ class _ProfileHeader extends StatelessWidget {
         borderRadius: BorderRadius.circular(15.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10.r,
             offset: Offset(0, 5.h),
           ),
@@ -198,7 +202,7 @@ class _ProfileHeader extends StatelessWidget {
             SizedBox(height: 15.h),
 
             Text(
-              "$fname $lname",
+              name,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20.sp,
@@ -237,8 +241,8 @@ class _ProfileInfoTile extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Colors.black87, size: 24.w),
-          SizedBox(width: 15.w),
+          Icon(icon, color: Color(0xFF4A4C56), size: 24.w),
+          SizedBox(width: 16.w),
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -249,7 +253,7 @@ class _ProfileInfoTile extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16.sp,
                     color: const Color(0xff1D1F2C),
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
                 SizedBox(height: 4.h),
@@ -274,7 +278,6 @@ class _ProfileInfoTile extends StatelessWidget {
 class _ProfileActionTile extends StatelessWidget {
   final IconData icon;
   final String title;
-  final Color? iconColor;
   final bool isDestructive;
   final VoidCallback onTap;
 
@@ -282,7 +285,6 @@ class _ProfileActionTile extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.onTap,
-    this.iconColor,
     this.isDestructive = false,
   });
 
@@ -296,7 +298,7 @@ class _ProfileActionTile extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
         child: Row(
           children: [
-            Icon(icon, color: iconColor ?? const Color(0xff4A4C56), size: 24.w),
+            Icon(icon, color: Color(0xff4A4C56), size: 24.w),
             SizedBox(width: 15.w),
             Text(
               title,

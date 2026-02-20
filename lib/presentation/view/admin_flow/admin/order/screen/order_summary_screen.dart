@@ -23,6 +23,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    /// ------------- Dependency Injection OrderScreenProvider -----------------
     final provider = Provider.of<OrderScreenProvider>(context);
     final totalOrder = provider.orderAdminModel?.data?.stats?.total ?? 0;
     final pendingOrder = provider.orderAdminModel?.data?.stats?.pending ?? 0;
@@ -44,7 +45,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //------------------ Search Field ----------------------------------
+            ///------------------ Search Field ----------------------------------
             const SearchField(hintText: ''),
             SizedBox(height: 20.h),
 
@@ -99,7 +100,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
 
             SizedBox(height: 28.h),
 
-            /// ------------------ Total Orders List -----------------------------------
+            /// ------------------ Total Orders List ---------------------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -141,7 +142,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             ),
             SizedBox(height: 14.h),
 
-            /// ------------------ Orders List from server -----------------------------------
+            /// ------------------ Orders List from server ---------------------
             Expanded(
               child:
                   provider.isLoading

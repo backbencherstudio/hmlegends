@@ -67,7 +67,7 @@ class ApiEndpoints {
   // static const String getProducts = '/api/products';
   // static const String getUsers = '/api/users';
 
-  // Manage Branch
+  /// ----------------------- Manage Branch -----------------------------------
   static String allBranch = '$baseUrl/api/auth/all-managers';
   static String singleBranch(String userId, {String period = 'today'}) =>
       '$baseUrl/api/auth/manager/$userId?period=$period';

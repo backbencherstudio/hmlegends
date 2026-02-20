@@ -46,8 +46,11 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                 child: Column(
                   children: [
+                    /// ------------ Search Field ------------------------------
                     SearchField(hintText: ''),
                     SizedBox(height: 16.h),
+
+                    /// ------------- Total / Paid / Pending Invoice -----------
                     if (stats != null)
                       Wrap(
                         spacing: 12.w,
@@ -69,7 +72,7 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
                       ),
                     SizedBox(height: 24.h),
 
-                    /// ------------------ Total Orders List -----------------------------------
+                    /// ------------------ Total Orders List -------------------
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -119,6 +122,8 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
                       ],
                     ),
                     SizedBox(height: 16.h),
+
+                    /// ------------------ Orders List from server -------------
                     Expanded(
                       child: ListView.separated(
                         itemCount: invoiceData.length,
@@ -203,9 +208,7 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
                                                 ),
                                               ),
                                               child: TextButton(
-                                                onPressed: ()  {
-
-                                                },
+                                                onPressed: () {},
                                                 style: TextButton.styleFrom(
                                                   padding: EdgeInsets.zero,
                                                   shape: RoundedRectangleBorder(

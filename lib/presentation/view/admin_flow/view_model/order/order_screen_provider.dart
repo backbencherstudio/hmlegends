@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
+
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:logger/web.dart';
@@ -17,6 +18,7 @@ class OrderScreenProvider extends ChangeNotifier {
 
   ///--------------------------- Loading State -------------------------------
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
 
   void _setLoading(bool value) {
@@ -24,15 +26,17 @@ class OrderScreenProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ---------------- Order Data ----------------
+  ///---------------------------- Order Data ---------------------------------
   OrderAdminModel? _orderAdminModel;
+
   OrderAdminModel? get orderAdminModel => _orderAdminModel;
 
   final logger = Logger();
 
+  /// --------------------- fetch Admin Order ---------------------------------
   Future<void> getAdminOrder() async {
-    _setLoading(true); // start loading
     try {
+      _setLoading(true);
       final token = await _tokenStorage.getToken();
 
       final url = Uri.parse(
@@ -62,12 +66,13 @@ class OrderScreenProvider extends ChangeNotifier {
     } catch (error) {
       logger.e("Error fetching admin orders: $error");
     } finally {
-      _setLoading(false); // stop loading
+      _setLoading(false);
     }
   }
 
   /// --------------------- fetch Single Order ---------------------------------
   AdminSingleOrderModel? _adminSingleOrderModel;
+
   AdminSingleOrderModel? get adminSingleOrderModel => _adminSingleOrderModel;
 
   Future<void> adminSingleOrder(String orderId) async {
@@ -123,7 +128,7 @@ class OrderScreenProvider extends ChangeNotifier {
       );
 
       logger.i("Status Code: ${response.statusCode}");
-
+      logger.i("Response Body: ${response.body}");
       final decodeData = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {

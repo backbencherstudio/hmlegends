@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../../../core/route/route_names.dart';
 import '../../../view_model/order/order_screen_provider.dart';
-import '../../invoice/model/all_invoice_model.dart';
 
 class OrderSummaryMakeInvoiceScreen extends StatelessWidget {
   const OrderSummaryMakeInvoiceScreen({super.key});

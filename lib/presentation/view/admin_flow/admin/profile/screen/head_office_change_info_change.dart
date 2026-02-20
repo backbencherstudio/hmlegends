@@ -44,8 +44,7 @@ class _HeadOfficeChangeInfoScreenState
     final data = provider.adminInfoModel?.data;
 
     if (data != null) {
-      firstNameController.text = data.firstName ?? "";
-      lastNameController.text = data.lastName ?? "";
+      firstNameController.text = data.name ?? "";
       occupationController.text = data.occupation ?? "";
       dateOfBirthController.text = data.dateOfBirth ?? "";
       phoneController.text = data.phoneNumber ?? "";
@@ -296,7 +295,7 @@ class _ProfileHeader extends StatelessWidget {
             ),
             SizedBox(height: 15.h),
             Text(
-              "${provider.adminInfoModel?.data?.firstName} ${provider.adminInfoModel?.data?.lastName}",
+              "${provider.adminInfoModel?.data?.name}",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20.sp,
