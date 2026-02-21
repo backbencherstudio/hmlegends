@@ -87,6 +87,41 @@ class ChangePasswordProvider with ChangeNotifier {
     }
   }
 
+  /// -------------- Profile for Admin change password -------------------------
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final url = Uri.parse(ApiEndpoints.changePassword);
+      final token = await _tokenStorage.getToken();
+      final response = await http.post(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+        body: {
+          "old_password": oldPassword,
+          "new_password": newPassword,
+        }
+      );
+      logger.i("Change Password URL: $url");
+      logger.i("Change Password Status Code: ${response.statusCode}");
+      logger.i("Change Password Response: ${response.body}");
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        logger.e("Change Password Error: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      logger.e("Change Password Error: $e");
+      return false;
+    }
+  }
+
+  /// ---------------------- Update Admin Profile -----------------------------
   Future<bool> updateAdminProfile({
     required String firstName,
     required String lastName,
