@@ -9,9 +9,10 @@ class RegisterProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
 
   /// ---------------- TextEditingController -----------------------------------
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {

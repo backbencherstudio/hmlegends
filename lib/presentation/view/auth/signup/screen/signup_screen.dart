@@ -63,29 +63,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildFormFields() {
     return Consumer<RegisterProvider>(
       builder: (context, provider, child) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _label('Full Name'),
-            SizedBox(height: 6.h),
-            _buildTextField(
-              'Your name',
-              Icons.person_outlined,
-              provider.nameController,
-            ),
-            SizedBox(height: 12.h),
-            _label('Email'),
-            SizedBox(height: 6.h),
-            _buildTextField(
-              'Your email',
-              Icons.email_outlined,
-              provider.emailController,
-            ),
-            SizedBox(height: 12.h),
-            _label('Password'),
-            SizedBox(height: 6.h),
-            _buildPasswordField(provider),
-          ],
+        return Form(
+          key: provider.formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _label('Full Name'),
+              SizedBox(height: 6.h),
+              _buildTextField(
+                'Your name',
+                Icons.person_outlined,
+                provider.nameController,
+              ),
+              SizedBox(height: 12.h),
+              _label('Email'),
+              SizedBox(height: 6.h),
+              _buildTextField(
+                'Your email',
+                Icons.email_outlined,
+                provider.emailController,
+              ),
+              SizedBox(height: 12.h),
+              _label('Password'),
+              SizedBox(height: 6.h),
+              _buildPasswordField(provider),
+            ],
+          ),
         );
       },
     );
@@ -95,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     String hint,
     IconData icon,
     TextEditingController controller,
-  ) => TextField(
+  ) => TextFormField(
     controller: controller,
     decoration: InputDecoration(
       hintText: hint,
@@ -111,7 +115,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     ),
   );
 
-  Widget _buildPasswordField(RegisterProvider provider) => TextField(
+  Widget _buildPasswordField(RegisterProvider provider) => TextFormField(
     controller: provider.passwordController,
     obscureText: !provider.passwordVisible,
     decoration: InputDecoration(
