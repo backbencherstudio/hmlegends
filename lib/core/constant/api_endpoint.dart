@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://springer-builders-cho-yours.trycloudflare.com';
+      'https://wrote-cancer-defence-shoulder.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
   // Admin
@@ -11,6 +11,7 @@ class ApiEndpoints {
   static const String forgetPassword = '$baseUrl/api/auth/forgot-password';
   static const String verifyOtpOnly = '$baseUrl/api/auth/verify-reset-token';
   static const String setNewPassword = '$baseUrl/api/auth/reset-password';
+  static const String changePassword = '$baseUrl/api/auth/change-password';
   static const String adminProfileUpdate = '$baseUrl/api/auth/update';
   static const String adminCheckMe = '$baseUrl/api/auth/me';
   static const String adminStatus = '$baseUrl/api/auth/admin/stats';
@@ -54,10 +55,10 @@ class ApiEndpoints {
   //Driver
 
   static const String getAllDeliveryAdmin = '$baseUrl/api/delivery';
-  static String getSingleDeliveryDriver(String Id) =>
-      '$baseUrl/api/delivery/$Id';
-  static String deliveryReceivedAdmin(String Id) => '$baseUrl/api/delivery/$Id';
-  static String deliveryConfirmAdmin(String Id) => '$baseUrl/api/delivery/$Id';
+  static String getSingleDeliveryDriver(String id) =>
+      '$baseUrl/api/delivery/$id';
+  static String deliveryReceivedAdmin(String id) => '$baseUrl/api/delivery/$id';
+  static String deliveryConfirmAdmin(String id) => '$baseUrl/api/delivery/$id';
   static String driverCheckMe = '$baseUrl/api/auth/me';
   static const String driverProfileUpdate = '$baseUrl/api/auth/update';
   static String initializedTracking(String deliveryId) =>
@@ -67,14 +68,10 @@ class ApiEndpoints {
   // static const String getProducts = '/api/products';
   // static const String getUsers = '/api/users';
 
+  /// ----------------------- Manage Branch -----------------------------------
+  static String allBranch = '$baseUrl/api/auth/all-managers';
+  static String singleBranch(String userId, {String period = 'today'}) =>
+      '$baseUrl/api/auth/manager/$userId?period=$period';
 
-                        // Manage Branch
-  static String allBranch =
-      '$baseUrl/api/auth/all-managers';
-  static String singleBranch(String userId) =>
-      '$baseUrl/api/auth/manager/$userId';
-
-
-
-
+  static String addNewBranch = '$baseUrl/api/auth/create-manager';
 }

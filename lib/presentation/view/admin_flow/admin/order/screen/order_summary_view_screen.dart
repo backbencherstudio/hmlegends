@@ -2,12 +2,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
 
 class OrderSummaryViewScreen extends StatelessWidget {
   const OrderSummaryViewScreen({super.key});
+
+  Future<void> _showDialog(
+    BuildContext context,
+    String? title,
+    Widget? child,
+    String? noText,
+  ) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            textAlign: TextAlign.center,
+            title ?? "Are you sure?",
+            style: TextStyle(
+              fontSize: 16.sp,
+              color: Color(0xFF1D1F2C),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          actions: [
+            FilledButton(
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(Color(0xFFE20613)),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: child,
+            ),
+            FilledButton(
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(Color(0xFF777980)),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                noText ?? "No",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<OrderScreenProvider>(context);
@@ -44,6 +94,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  /// ------------------ User Name ----------------------
                   Text(
                     provider.adminSingleOrderModel?.order?.user?.name ??
                         "Branch Name",
@@ -52,24 +103,66 @@ class OrderSummaryViewScreen extends StatelessWidget {
                       fontSize: 15.sp,
                     ),
                   ),
+
+                  /// ------------------ Approve Button ----------------------
                   InkWell(
-                    onTap: () async {
-                      await provider.approveOrder(orderId);
-                      if (provider.isSuccess) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Order Approved Successfully'),
+                    onTap: () {
+                      _showDialog(
+                        context,
+                        "Are you sure you want to approve today's order?",
+                        InkWell(
+                          onTap: () async {
+                            await provider.approveOrder(orderId);
+                            Navigator.of(context).pop();
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Center(
+                                    child: Text(
+                                      "Order Approved",
+                                      style: TextStyle(
+                                        fontSize: 18.sp,
+                                        color: Color(0xFF1D1F2C),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  content: Text(
+                                    "You have successfully approved the order.",
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.pushNamed(
+                                            context,
+                                            RouteNames
+                                                .orderSummaryMakeInvoiceScreen,
+                                            arguments: orderId,
+                                          ),
+                                      child: Text("OK"),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: const Text(
+                            "Yes",
+                            style: TextStyle(color: Colors.white),
                           ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Order Approved Failed')),
-                        );
-                      }
+                        ),
+                        "No",
+                      );
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.red,
+                        color: Color(0xFFE20613),
                         borderRadius: BorderRadius.circular(20.r),
                       ),
                       padding: EdgeInsets.symmetric(
@@ -90,6 +183,8 @@ class OrderSummaryViewScreen extends StatelessWidget {
             ),
 
             SizedBox(height: 16.h),
+
+            /// ------------------ Order Items List ----------------------
             Expanded(
               child: ListView.builder(
                 itemCount: singleOrder.length + 1,
@@ -137,7 +232,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: 10.h),
                     child: Row(
                       children: [
-                        // Index Number
+                        /// ------------------ Index Number ----------------------
                         Text(
                           "${index + 1}.",
                           style: TextStyle(
@@ -149,7 +244,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
 
                         SizedBox(width: 12.w),
 
-                        // Product Name
+                        //------------  Product Name ----------------------
                         Expanded(
                           child: Text(
                             data.product?.name ?? "Product",
@@ -161,7 +256,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
                           ),
                         ),
 
-                        // Quantity]
+                        ///-------------- Quantity ----------------------
                         RichText(
                           text: TextSpan(
                             children: [

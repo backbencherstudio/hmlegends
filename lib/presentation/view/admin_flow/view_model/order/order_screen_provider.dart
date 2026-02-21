@@ -2,7 +2,10 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
+
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
+import 'package:logger/web.dart';
 import '../../admin_model/order/admin_singl_order_model.dart';
 import '../../admin_model/order/order_admin_model.dart';
 
@@ -13,8 +16,9 @@ class OrderScreenProvider extends ChangeNotifier {
 
   final TokenStorage _tokenStorage = TokenStorage();
 
-  // ---------------- Loading State ----------------
+  ///--------------------------- Loading State -------------------------------
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
 
   void _setLoading(bool value) {
@@ -22,13 +26,17 @@ class OrderScreenProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ---------------- Order Data ----------------
+  ///---------------------------- Order Data ---------------------------------
   OrderAdminModel? _orderAdminModel;
+
   OrderAdminModel? get orderAdminModel => _orderAdminModel;
 
+  final logger = Logger();
+
+  /// --------------------- fetch Admin Order ---------------------------------
   Future<void> getAdminOrder() async {
-    _setLoading(true); // start loading
     try {
+      _setLoading(true);
       final token = await _tokenStorage.getToken();
 
       final url = Uri.parse(
@@ -39,39 +47,42 @@ class OrderScreenProvider extends ChangeNotifier {
         url,
         headers: {
           "Authorization": "Bearer $token",
-          "Accept": "application/json",
+          "Content-Type": "application/json",
         },
       );
 
-      debugPrint("Request URL: $url");
-      debugPrint("Status Code: ${response.statusCode}");
+      logger.i("Request URL: $url");
+      logger.i("Status Code: ${response.statusCode}");
 
       final decodeData = jsonDecode(response.body);
+      logger.i("Response Body: $decodeData");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _orderAdminModel = OrderAdminModel.fromJson(decodeData);
-        debugPrint("Success: ${decodeData['message']}");
+        logger.i("message:  ${decodeData['message']}");
       } else {
-        debugPrint("Failed: ${decodeData['message']}");
+        logger.i("Failed: ${decodeData['message']}");
       }
     } catch (error) {
-      debugPrint("Error fetching admin orders: $error");
+      logger.e("Error fetching admin orders: $error");
     } finally {
-      _setLoading(false); // stop loading
+      _setLoading(false);
     }
   }
 
-  // ---------------- Single Order ----------------
+  /// --------------------- fetch Single Order ---------------------------------
   AdminSingleOrderModel? _adminSingleOrderModel;
+
   AdminSingleOrderModel? get adminSingleOrderModel => _adminSingleOrderModel;
 
   Future<void> adminSingleOrder(String orderId) async {
     try {
+      _setLoading(true);
       final token = await _tokenStorage.getToken();
 
       final url = Uri.parse(ApiEndpoints.adminSingleOrder(orderId));
 
-      debugPrint("Request URL: $url");
+      logger.i("Request URL: $url");
 
       final response = await http.get(
         url,
@@ -81,31 +92,32 @@ class OrderScreenProvider extends ChangeNotifier {
         },
       );
 
+      logger.i("Request URL: $url");
+      logger.i("Status Code: ${response.statusCode}");
+      logger.i("Response Body: ${response.body}");
       final decodeData = jsonDecode(response.body);
-      debugPrint("Status Code: ${response.statusCode}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _adminSingleOrderModel = AdminSingleOrderModel.fromJson(decodeData);
-        debugPrint("Success: ${decodeData['message']}");
+        logger.i("success: ${decodeData['message']}");
       } else {
-        debugPrint("Failed: ${decodeData['message']}");
+        logger.i("Failed: ${decodeData['message']}");
       }
     } catch (error) {
-      debugPrint("Error fetching single order: $error");
+      logger.e("Error fetching single order: $error");
+    } finally {
+      _setLoading(false);
     }
   }
-  bool _isSuccess = false;
-  bool get isSuccess => _isSuccess;
 
+  ///----------------------- Approve Order --------------------------------
   Future<void> approveOrder(String orderId) async {
-    _isSuccess = false;
-    notifyListeners(); // notify UI that request started
-
     try {
+      _setLoading(true);
       final token = await _tokenStorage.getToken();
       final url = Uri.parse(ApiEndpoints.orderAccept(orderId));
 
-      debugPrint("PATCH Request URL: $url");
+      logger.i("PATCH Request URL: $url");
 
       final response = await http.patch(
         url,
@@ -115,21 +127,19 @@ class OrderScreenProvider extends ChangeNotifier {
         },
       );
 
-      debugPrint("Status Code: ${response.statusCode}");
-
+      logger.i("Status Code: ${response.statusCode}");
+      logger.i("Response Body: ${response.body}");
       final decodeData = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint("Order Approved Successfully: ${decodeData['message']}");
-
-        _isSuccess = true;
-        notifyListeners();
+        logger.i("Order Approved Successfully: ${decodeData['message']}");
       } else {
-        debugPrint("Order Approval Failed: ${decodeData['message']}");
+        logger.i("Order Approval Failed: ${decodeData['message']}");
       }
     } catch (error) {
-      debugPrint("Approve Order Error: $error");
+      logger.e("Approve Order Error: $error");
+    } finally {
+      _setLoading(false);
     }
   }
-
 }

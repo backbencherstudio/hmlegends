@@ -60,7 +60,7 @@ class OtpVerifyScreen extends StatelessWidget {
               provider.isFPLoading
                   ? const CircularProgressIndicator(color: Colors.green)
                   : AuthButton(
-                      text: 'Verify Code',
+                      text: Text('Verify Code'),
                       color: AppColors.primaryColor,
                       onPressed: () async {
                         final enteredOtp = _otpController.text.trim();

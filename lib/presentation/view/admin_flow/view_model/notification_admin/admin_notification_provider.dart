@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 import '../../../../../core/constant/api_endpoint.dart';
 import '../../../../../core/services/token_storage.dart';
@@ -14,7 +15,10 @@ class AdminNotificationProvider extends ChangeNotifier {
   final TokenStorage _tokenStorage = TokenStorage();
 
   AdminNotificationModel? _adminNotificationModel;
+
   AdminNotificationModel? get adminNotificationModel => _adminNotificationModel;
+
+  final logger = Logger();
 
   Future<void> refreshNotifications() async {
     await getAdminNotification();
@@ -34,19 +38,20 @@ class AdminNotificationProvider extends ChangeNotifier {
         },
       );
 
+      final decoded = jsonDecode(response.body);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final decoded = jsonDecode(response.body);
         _adminNotificationModel = AdminNotificationModel.fromJson(decoded);
-        debugPrint(
+        logger.i(
           'Admin notifications fetched: ${_adminNotificationModel?.data?.length ?? 0}',
         );
       } else {
-        debugPrint(
+        logger.e(
           'Failed to fetch notifications: ${response.statusCode} - ${response.body}',
         );
       }
     } catch (e) {
-      debugPrint('Error fetching admin notifications: $e');
+      logger.e('Error fetching admin notifications: $e');
     }
   }
 }

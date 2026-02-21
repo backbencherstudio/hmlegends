@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hmlegends/core/services/fm_token_storage.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../view_model/notification_admin/admin_notification_provider.dart';
@@ -15,21 +15,6 @@ class AdminNotificationScreen extends StatefulWidget {
 }
 
 class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
-  String _fcmToken = "";
-
-  @override
-  void initState() {
-    super.initState();
-    _loadFcmToken();
-  }
-
-  Future<void> _loadFcmToken() async {
-    final token = await FcmTokenStorage().getFcmToken();
-    setState(() {
-      _fcmToken = token ?? "";
-    });
-  }
-
   String formatTimestamp(String? timestamp) {
     if (timestamp == null) return '';
     try {
@@ -50,56 +35,66 @@ class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
       appBar: AppBar(
         surfaceTintColor: Color(0xffFFF6F7),
         elevation: 0,
-        title: Text("Admin Notification"),
+        title: Text(
+          "Admin Notification",
+          style: TextStyle(
+            fontSize: 20.sp,
+            color: Color(0xFF1D1F2C),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         backgroundColor: Color(0xffFFF6F7),
         centerTitle: true,
       ),
 
       body:
           notificationData.isEmpty
-              ? const Center(
+              ? Center(
                 child: Text(
                   'No notifications',
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                  style: TextStyle(fontSize: 18.sp, color: Colors.grey),
                 ),
               )
               : ListView.separated(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.r),
                 itemCount: notificationData.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, __) => SizedBox(height: 12.h),
                 itemBuilder: (context, index) {
                   final n = notificationData[index];
-                  return Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Color(0xffFFEDED),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade800),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          n.sender?.name ?? 'Unknown',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                  final isRead = n.readAt != null;
+
+                  return GestureDetector(
+                    onTap: () {
+                      if (!isRead && n.id == null) {
+                        Provider.of<AdminNotificationProvider>(
+                          context,
+                          listen: false,
+                        );
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(12.r),
+                      decoration: BoxDecoration(
+                        color: isRead ? Colors.white : Color(0xffFFEDED),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            n.notificationEvent?.text ?? 'No message',
+                            style: const TextStyle(fontSize: 14),
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          n.notificationEvent?.text ?? 'No message',
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          formatTimestamp(n.createdAt),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
+                          SizedBox(height: 8.h),
+                          Text(
+                            formatTimestamp(n.createdAt),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },

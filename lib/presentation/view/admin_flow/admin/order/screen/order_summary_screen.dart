@@ -19,17 +19,18 @@ class OrderSummaryScreen extends StatefulWidget {
 }
 
 class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
-  String selectedPeriod = 'Today';
+  String _selectedPeriod = 'Today';
 
   @override
   Widget build(BuildContext context) {
+    /// ------------- Dependency Injection OrderScreenProvider -----------------
     final provider = Provider.of<OrderScreenProvider>(context);
-    final total_order = provider.orderAdminModel?.data?.stats?.total ?? 0;
-    final pending_order = provider.orderAdminModel?.data?.stats?.pending ?? 0;
-    final invoiced_order = provider.orderAdminModel?.data?.stats?.invoiced ?? 0;
-    final delivered_order =
+    final totalOrder = provider.orderAdminModel?.data?.stats?.total ?? 0;
+    final pendingOrder = provider.orderAdminModel?.data?.stats?.pending ?? 0;
+    final invoicedOrder = provider.orderAdminModel?.data?.stats?.invoiced ?? 0;
+    final deliveredOrder =
         provider.orderAdminModel?.data?.stats?.delivered ?? 0;
-    final total_unit_ordered =
+    final totalUnitOrdered =
         provider.orderAdminModel?.data?.stats?.totalUnitOrdered ?? 0;
     final orders = provider.orderAdminModel?.data?.orders ?? [];
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
@@ -44,15 +45,17 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            ///------------------ Search Field ----------------------------------
             const SearchField(hintText: ''),
             SizedBox(height: 20.h),
 
+            ///------------------ Order Summary Cards --------------------------
             Row(
               children: [
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Total Orders",
-                    value: "$total_order",
+                    value: "$totalOrder",
                     isHighlighted: true,
                   ),
                 ),
@@ -60,14 +63,14 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Pending Orders",
-                    value: "$pending_order",
+                    value: "$pendingOrder",
                   ),
                 ),
                 SizedBox(width: 10.w),
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Invoiced Orders",
-                    value: "$invoiced_order",
+                    value: "$invoicedOrder",
                   ),
                 ),
               ],
@@ -80,7 +83,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Delivered Orders",
-                    value: "$delivered_order",
+                    value: "$deliveredOrder",
                     isWide: true,
                   ),
                 ),
@@ -88,7 +91,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 Expanded(
                   child: OrderSummaryCard(
                     title: "Units of items ordered",
-                    value: "$total_unit_ordered",
+                    value: "$totalUnitOrdered",
                     isWide: true,
                   ),
                 ),
@@ -97,6 +100,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
 
             SizedBox(height: 28.h),
 
+            /// ------------------ Total Orders List ---------------------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -111,7 +115,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                 PopupMenuButton<String>(
                   onSelected: (value) {
                     setState(() {
-                      selectedPeriod = value;
+                      _selectedPeriod = value;
                     });
                   },
                   itemBuilder:
@@ -129,7 +133,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                   color: const Color(0xFFFFF5F5),
                   child: Row(
                     children: [
-                      Text(selectedPeriod, style: TextStyle(fontSize: 14.sp)),
+                      Text(_selectedPeriod, style: TextStyle(fontSize: 14.sp)),
                       Icon(Icons.keyboard_arrow_down_rounded, size: 20.sp),
                     ],
                   ),
@@ -138,6 +142,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             ),
             SizedBox(height: 14.h),
 
+            /// ------------------ Orders List from server ---------------------
             Expanded(
               child:
                   provider.isLoading
@@ -216,13 +221,18 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                                       ),
                                       child: TextButton(
                                         onPressed: () async {
+                                          final navigator = Navigator.of(
+                                            context,
+                                          );
                                           await provider.adminSingleOrder(
                                             item.id ?? "",
                                           );
-                                          Navigator.pushNamed(
-                                            context,
-                                            RouteNames.orderSummaryViewScreen,
-                                          );
+                                          if (mounted) {
+                                            navigator.pushNamed(
+                                              RouteNames.orderSummaryViewScreen,
+                                              arguments: item.id ?? "",
+                                            );
+                                          }
                                         },
                                         style: TextButton.styleFrom(
                                           padding: EdgeInsets.zero,

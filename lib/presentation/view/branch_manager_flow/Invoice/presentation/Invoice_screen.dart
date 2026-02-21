@@ -3,16 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../../../../core/constant/asset_path.dart';
 import '../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../widget/custom_app_bar.dart';
-import '../../../widget/simple_appbar.dart';
 import '../data/get_all_invoice_model.dart';
 import '../view_model/get_all_invoice_viewmodel.dart';
 import '../view_model/get_invoices_details_viewmodel.dart';
 
 class InvoiceScreen extends StatefulWidget {
   final TextEditingController? controller;
+
   const InvoiceScreen({super.key, this.controller});
 
   @override
@@ -35,7 +34,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   bool _isToday(DateTime? date) {
     if (date == null) return false;
     final now = DateTime.now();
-    return date.year == now.year && date.month == now.month && date.day == now.day;
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
   }
 
   // Helper: Check if date is this week
@@ -79,20 +80,19 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   String _formatDate(String? dateStr) {
     if (dateStr == null) return 'Unknown Date';
     final date = DateTime.tryParse(dateStr);
-    return date != null ? DateFormat('dd/MM/yyyy').format(date) : 'Invalid Date';
+    return date != null
+        ? DateFormat('dd/MM/yyyy').format(date)
+        : 'Invalid Date';
   }
 
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
-    final data = profileProvider.adminInfoModel?.data ;
+    final data = profileProvider.adminInfoModel?.data;
 
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
-      appBar: CustomAppBar(
-        profileImage: data?.avatar,
-        notificationCount: 4,
-      ),
+      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -103,15 +103,19 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             // Stats Cards
             Consumer<GetAllInvoiceProvider>(
               builder: (context, provider, child) {
-                final stats = provider.invoiceResponse?.data?.stats;
-                final paid = stats?.paidInvoice?.toString() ?? '0';
-                final pending = stats?.pendingInvoice?.toString() ?? '0';
-                final total = stats?.totalInvoice?.toString() ?? '0';
+                final stats = provider.invoiceResponse?.data.stats;
+                final paid = stats?.paidInvoice.toString() ?? '0';
+                final pending = stats?.pendingInvoice.toString() ?? '0';
+                final total = stats?.totalInvoice.toString() ?? '0';
 
-                final allInvoices = provider.invoiceResponse?.data?.invoices ?? [];
-                final todayCount = allInvoices
-                    .where((i) => _isToday(DateTime.tryParse(i.createdAt ?? '')))
-                    .length;
+                final allInvoices =
+                    provider.invoiceResponse?.data.invoices ?? [];
+                final todayCount =
+                    allInvoices
+                        .where(
+                          (i) => _isToday(DateTime.tryParse(i.createdAt ?? '')),
+                        )
+                        .length;
 
                 return Column(
                   children: [
@@ -127,7 +131,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _summaryCard('Overdue Invoice', '0'), // Update if API provides
+                        _summaryCard('Overdue Invoice', '0'),
+                        // Update if API provides
                         _summaryCard('Total Invoice', total),
                       ].withSpace(15.w),
                     ),
@@ -167,9 +172,14 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       onSelected: (value) {
                         setState(() => selectedPeriod = value);
                       },
-                      itemBuilder: (_) => ['Today', 'This Week', 'This Month']
-                          .map((e) => PopupMenuItem(value: e, child: Text(e)))
-                          .toList(),
+                      itemBuilder:
+                          (_) =>
+                              ['Today', 'This Week', 'This Month']
+                                  .map(
+                                    (e) =>
+                                        PopupMenuItem(value: e, child: Text(e)),
+                                  )
+                                  .toList(),
                     ),
                   ],
                 ),
@@ -190,7 +200,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.error_outline, size: 50, color: Colors.red),
+                          const Icon(
+                            Icons.error_outline,
+                            size: 50,
+                            color: Colors.red,
+                          ),
                           const SizedBox(height: 16),
                           Text(provider.errorMessage),
                           const SizedBox(height: 16),
@@ -203,7 +217,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     );
                   }
 
-                  final allInvoices = provider.invoiceResponse?.data.invoices ?? [];
+                  final allInvoices =
+                      provider.invoiceResponse?.data.invoices ?? [];
                   final filteredInvoices = _getFilteredInvoices(allInvoices);
 
                   if (filteredInvoices.isEmpty) {
@@ -211,13 +226,20 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.receipt_long, size: 60, color: Colors.grey.shade400),
+                          Icon(
+                            Icons.receipt_long,
+                            size: 60,
+                            color: Colors.grey.shade400,
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             allInvoices.isEmpty
                                 ? "No invoices available"
                                 : "No invoices for $selectedPeriod",
-                            style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey.shade600,
+                            ),
                           ),
                         ],
                       ),
@@ -236,17 +258,23 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         index: displayIndex,
                         date: date,
                         invoicId: invoice.orderId ?? 'N/A',
-                        totalItems: invoice.sku?.split(',').where((e) => e.isNotEmpty).length ?? 0,
+                        totalItems:
+                            invoice.sku
+                                .split(',')
+                                .where((e) => e.isNotEmpty)
+                                .length ??
+                            0,
                         status: invoice.status ?? 'Unknown',
                         onViewPressed: () async {
-                          if (invoice.orderId != null) {
-                            await context
-                                .read<GetInvoiceDetailViewmodel>()
-                                .fetchInvoiceDetail(invoice.orderId!);
+                          await context
+                              .read<GetInvoiceDetailViewmodel>()
+                              .fetchInvoiceDetail(invoice.orderId);
 
-                            if (mounted) {
-                              Navigator.pushNamed(context, RouteNames.viewDetails);
-                            }
+                          if (mounted) {
+                            Navigator.pushNamed(
+                              context,
+                              RouteNames.viewDetails,
+                            );
                           }
                         },
                       );
@@ -277,7 +305,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           hintText: 'Search invoices...',
           hintStyle: TextStyle(fontSize: 16.sp, color: Colors.grey),
           border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 12.h,
+            horizontal: 16.w,
+          ),
           prefixIcon: Icon(Icons.search, color: Colors.grey.shade600),
           suffixIcon: Icon(Icons.tune, color: Colors.grey.shade600),
         ),
@@ -293,7 +324,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
-          BoxShadow(color: Colors.grey.shade200, blurRadius: 6, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -333,7 +368,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             width: 2.5,
           ),
           boxShadow: [
-            BoxShadow(color: Colors.grey.shade200, blurRadius: 6, offset: const Offset(0, 2)),
+            BoxShadow(
+              color: Colors.grey.shade200,
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
         child: Column(
@@ -367,11 +406,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     required String status,
     required VoidCallback onViewPressed,
   }) {
-    final statusColor = status.toLowerCase() == 'paid'
-        ? Colors.green.shade600
-        : status.toLowerCase() == 'pending'
-        ? Colors.orange.shade600
-        : Colors.red.shade600;
+    final statusColor =
+        status.toLowerCase() == 'paid'
+            ? Colors.green.shade600
+            : status.toLowerCase() == 'pending'
+            ? Colors.orange.shade600
+            : Colors.red.shade600;
 
     return Card(
       elevation: 2,
@@ -409,8 +449,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 //   style: const TextStyle(fontWeight: FontWeight.w600),
                 // ),
                 // const SizedBox(height: 4),
-                Text('Items: $totalItems • Status: $status',
-                    style: TextStyle(color: Colors.black)),
+                Text(
+                  'Items: $totalItems • Status: $status',
+                  style: TextStyle(color: Colors.black),
+                ),
               ],
             ),
           ),
@@ -451,6 +493,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 extension SpaceBetween on List<Widget> {
   List<Widget> withSpace(double space) {
     if (length <= 1) return this;
-    return expand((widget) => [widget, SizedBox(width: space)]).toList()..removeLast();
+    return expand((widget) => [widget, SizedBox(width: space)]).toList()
+      ..removeLast();
   }
 }

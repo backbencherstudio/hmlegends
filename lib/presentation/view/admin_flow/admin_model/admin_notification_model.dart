@@ -1,7 +1,7 @@
 class AdminNotificationModel {
   bool? success;
   List<Data>? data;
-  Null? nextCursor;
+  dynamic nextCursor;
 
   AdminNotificationModel({this.success, this.data, this.nextCursor});
 
@@ -10,19 +10,19 @@ class AdminNotificationModel {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(Data.fromJson(v));
       });
     }
     nextCursor = json['nextCursor'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
+    final Map<String, dynamic> data = {};
+    data['success'] = success;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
-    data['nextCursor'] = this.nextCursor;
+    data['nextCursor'] = nextCursor;
     return data;
   }
 }
@@ -31,48 +31,49 @@ class Data {
   String? id;
   String? entityId;
   String? createdAt;
-  Null? readAt;
+  dynamic readAt;
   Sender? sender;
   Sender? receiver;
   NotificationEvent? notificationEvent;
 
-  Data(
-      {this.id,
-        this.entityId,
-        this.createdAt,
-        this.readAt,
-        this.sender,
-        this.receiver,
-        this.notificationEvent});
+  Data({
+    this.id,
+    this.entityId,
+    this.createdAt,
+    this.readAt,
+    this.sender,
+    this.receiver,
+    this.notificationEvent,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     entityId = json['entity_id'];
     createdAt = json['created_at'];
     readAt = json['read_at'];
-    sender =
-    json['sender'] != null ? new Sender.fromJson(json['sender']) : null;
+    sender = json['sender'] != null ? Sender.fromJson(json['sender']) : null;
     receiver =
-    json['receiver'] != null ? new Sender.fromJson(json['receiver']) : null;
-    notificationEvent = json['notification_event'] != null
-        ? new NotificationEvent.fromJson(json['notification_event'])
-        : null;
+        json['receiver'] != null ? Sender.fromJson(json['receiver']) : null;
+    notificationEvent =
+        json['notification_event'] != null
+            ? NotificationEvent.fromJson(json['notification_event'])
+            : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['entity_id'] = this.entityId;
-    data['created_at'] = this.createdAt;
-    data['read_at'] = this.readAt;
-    if (this.sender != null) {
-      data['sender'] = this.sender!.toJson();
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['entity_id'] = entityId;
+    data['created_at'] = createdAt;
+    data['read_at'] = readAt;
+    if (sender != null) {
+      data['sender'] = sender!.toJson();
     }
-    if (this.receiver != null) {
-      data['receiver'] = this.receiver!.toJson();
+    if (receiver != null) {
+      data['receiver'] = receiver!.toJson();
     }
-    if (this.notificationEvent != null) {
-      data['notification_event'] = this.notificationEvent!.toJson();
+    if (notificationEvent != null) {
+      data['notification_event'] = notificationEvent!.toJson();
     }
     return data;
   }
@@ -87,14 +88,15 @@ class Sender {
   String? avatar;
   String? avatarUrl;
 
-  Sender(
-      {this.id,
-        this.name,
-        this.firstName,
-        this.lastName,
-        this.email,
-        this.avatar,
-        this.avatarUrl});
+  Sender({
+    this.id,
+    this.name,
+    this.firstName,
+    this.lastName,
+    this.email,
+    this.avatar,
+    this.avatarUrl,
+  });
 
   Sender.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -107,14 +109,14 @@ class Sender {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['first_name'] = this.firstName;
-    data['last_name'] = this.lastName;
-    data['email'] = this.email;
-    data['avatar'] = this.avatar;
-    data['avatar_url'] = this.avatarUrl;
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['name'] = name;
+    data['first_name'] = firstName;
+    data['last_name'] = lastName;
+    data['email'] = email;
+    data['avatar'] = avatar;
+    data['avatar_url'] = avatarUrl;
     return data;
   }
 }
@@ -133,10 +135,10 @@ class NotificationEvent {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['type'] = this.type;
-    data['text'] = this.text;
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['type'] = type;
+    data['text'] = text;
     return data;
   }
 }

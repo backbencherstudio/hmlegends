@@ -5,7 +5,6 @@ import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:provider/provider.dart';
 
 import '../../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
-import '../../branch_manager_flow/profile/profile_screen.dart';
 import '../profile_driver/driver_profile.dart';
 import '../driver_screen.dart';
 import '../tracking/tracking_screen.dart';

@@ -1,30 +1,31 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin_model/admin_checkme_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 class ChangePasswordProvider with ChangeNotifier {
-
-  ChangePasswordProvider(){
+  ChangePasswordProvider() {
     adminCheckMe();
   }
+
   final TokenStorage _tokenStorage = TokenStorage();
   bool _isNewPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
-  final TextEditingController currentPasswordController =
-      TextEditingController();
-  final TextEditingController newPasswordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  /// ------------------ TextEditingController ---------------------------------
+  final currentPasswordController = TextEditingController();
+  final newPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
   bool get isNewPasswordVisible => _isNewPasswordVisible;
+
   bool get isConfirmPasswordVisible => _isConfirmPasswordVisible;
 
+  /// ------------------ Toggle Password Visibility ----------------------------
   void toggleNewPasswordVisibility(bool value) {
     _isNewPasswordVisible = value;
     notifyListeners();
@@ -35,6 +36,17 @@ class ChangePasswordProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// ------------------------ Loading State -----------------------------------
+  // bool _isLoading = false;
+  //
+  // bool get isLoading => _isLoading;
+  //
+  // void _setLoading(bool value) {
+  //   _isLoading = value;
+  //   notifyListeners();
+  // }
+
+  /// ------------------------ Dispose Controllers -----------------------------
   @override
   void dispose() {
     currentPasswordController.dispose();
@@ -43,44 +55,73 @@ class ChangePasswordProvider with ChangeNotifier {
     super.dispose();
   }
 
+  /// ---------------------- AdminInfoModel ------------------------------------
   AdminInfoModel? _adminInfoModel;
+
   AdminInfoModel? get adminInfoModel => _adminInfoModel;
 
+  final logger = Logger();
+
+  /// ---------------------- Admin Check Me ------------------------------------
   Future<void> adminCheckMe() async {
     try {
       final url = Uri.parse(ApiEndpoints.adminCheckMe);
 
       final token = await _tokenStorage.getToken();
       final response = await http.get(
-        headers: {"Authorization": "Bearer $token"},
         url,
+        headers: {"Authorization": "Bearer $token"},
       );
 
+      logger.i("Admin Check Me URL: $url");
+      logger.i("Admin Check Me Status Code: ${response.statusCode}");
+      logger.i("Admin Check Me Response: ${response.body}");
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decodeData = jsonDecode(response.body);
         _adminInfoModel = AdminInfoModel.fromJson(decodeData);
-        debugPrint("The message ${_adminInfoModel!.data!.type}");
-        debugPrint("The message ${_adminInfoModel!.data!.id}");
-        debugPrint("The message ${_adminInfoModel!.data!.firstName}");
-        debugPrint("The message ${_adminInfoModel!.data!.lastName}");
-        debugPrint("The success message ${decodeData['message']}");
-        notifyListeners();
       } else {
-        final decodeData = jsonDecode(response.body);
-        _adminInfoModel = AdminInfoModel.fromJson(decodeData);
-        debugPrint("The message ${_adminInfoModel!.data!.type}");
-        debugPrint("The message ${_adminInfoModel!.data!.id}");
-        debugPrint("The message ${_adminInfoModel!.data!.firstName}");
-        debugPrint("The message ${_adminInfoModel!.data!.lastName}");
-        debugPrint("The failed message ${decodeData['message']}");
-        notifyListeners();
+        logger.e("Admin Check Me Error: ${response.statusCode}");
       }
-      notifyListeners();
     } catch (error) {
-      debugPrint("THe error message is $error");
+      logger.e("Admin Check Me Error: $error");
     }
   }
 
+  /// -------------- Profile for Admin change password -------------------------
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final url = Uri.parse(ApiEndpoints.changePassword);
+      final token = await _tokenStorage.getToken();
+      final response = await http.post(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+        body: {
+          "old_password": oldPassword,
+          "new_password": newPassword,
+        }
+      );
+      logger.i("Change Password URL: $url");
+      logger.i("Change Password Status Code: ${response.statusCode}");
+      logger.i("Change Password Response: ${response.body}");
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        logger.e("Change Password Error: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      logger.e("Change Password Error: $e");
+      return false;
+    }
+  }
+
+  /// ---------------------- Update Admin Profile -----------------------------
   Future<bool> updateAdminProfile({
     required String firstName,
     required String lastName,

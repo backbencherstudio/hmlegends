@@ -87,7 +87,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     ForgetPasswordProvider provider,
   ) {
     return AuthButton(
-      text: 'Reset Password',
+      text: Text('Reset Password'),
       color: AppColors.primaryColor,
       onPressed: () async {
         final email = _emailController.text.trim();

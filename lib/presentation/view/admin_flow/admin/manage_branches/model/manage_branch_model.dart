@@ -8,13 +8,13 @@ class ManageBranchModel {
   ManageBranchModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = {};
+    data['success'] = success;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -30,22 +30,22 @@ class Data {
 
   Data.fromJson(Map<String, dynamic> json) {
     summary =
-        json['summary'] != null ? new Summary.fromJson(json['summary']) : null;
+        json['summary'] != null ?  Summary.fromJson(json['summary']) : null;
     if (json['managers'] != null) {
       managers = <Managers>[];
       json['managers'].forEach((v) {
-        managers!.add(new Managers.fromJson(v));
+        managers!.add( Managers.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.summary != null) {
-      data['summary'] = this.summary!.toJson();
+    final Map<String, dynamic> data = {};
+    if (summary != null) {
+      data['summary'] = summary!.toJson();
     }
-    if (this.managers != null) {
-      data['managers'] = this.managers!.map((v) => v.toJson()).toList();
+    if (managers != null) {
+      data['managers'] = managers!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -65,10 +65,10 @@ class Summary {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['totalBranch'] = this.totalBranch;
-    data['totalActiveBranch'] = this.totalActiveBranch;
-    data['totalLockedBranch'] = this.totalLockedBranch;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['totalBranch'] = totalBranch;
+    data['totalActiveBranch'] = totalActiveBranch;
+    data['totalLockedBranch'] = totalLockedBranch;
     return data;
   }
 }

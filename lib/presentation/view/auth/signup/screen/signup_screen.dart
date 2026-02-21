@@ -6,6 +6,7 @@ import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/constant/app_text_styles.dart';
 import '../../../../../core/constant/asset_path.dart';
 import '../../../../../core/route/route_names.dart';
+import '../../../../../core/utlis/utils.dart';
 import '../../../admin_flow/view_model/auth_api/register_viewmodel.dart';
 import '../../widget/auth_button.dart';
 import '../../widget/social_auth_buttons.dart';
@@ -14,30 +15,10 @@ class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  // @override    // pass the type from onboarding
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   context.read<RegisterProvider>().setTypeFromRoute(context);
-  // }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<RegisterProvider>().setTypeFromRoute(context);
-    });
-  }
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,12 +32,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 SizedBox(height: 10.h),
                 Image.asset(AssetPaths.authLogo, width: 100.w, height: 100.h),
                 SizedBox(height: 20.h),
-                Text('Let\'s get you started!', style: AppTextStyles.authHeadline),
+                Text(
+                  'Let\'s get you started!',
+                  style: AppTextStyles.authHeadline,
+                ),
                 SizedBox(height: 8.h),
-                Text('Enter info to create a new account.', style: AppTextStyles.authBodyText, textAlign: TextAlign.center),
+                Text(
+                  'Enter info to create a new account.',
+                  style: AppTextStyles.authBodyText,
+                  textAlign: TextAlign.center,
+                ),
                 SizedBox(height: 20.h),
                 _buildFormFields(),
-                SizedBox(height: 10.h),
+                SizedBox(height: 24.h),
                 _buildSignUpButton(),
                 SizedBox(height: 20.h),
                 _buildOrJoinWithDivider(),
@@ -79,15 +67,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _label('Full Name'),
-            SizedBox(height: 5.h),
-            _buildTextField('Your name', Icons.person_outlined, _nameController),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
+            _buildTextField(
+              'Your name',
+              Icons.person_outlined,
+              provider.nameController,
+            ),
+            SizedBox(height: 12.h),
             _label('Email'),
-            SizedBox(height: 5.h),
-            _buildTextField('Your email', Icons.email_outlined, _emailController),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
+            _buildTextField(
+              'Your email',
+              Icons.email_outlined,
+              provider.emailController,
+            ),
+            SizedBox(height: 12.h),
             _label('Password'),
-            SizedBox(height: 5.h),
+            SizedBox(height: 6.h),
             _buildPasswordField(provider),
           ],
         );
@@ -95,7 +91,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildTextField(String hint, IconData icon, TextEditingController controller) => TextField(
+  Widget _buildTextField(
+    String hint,
+    IconData icon,
+    TextEditingController controller,
+  ) => TextField(
     controller: controller,
     decoration: InputDecoration(
       hintText: hint,
@@ -104,12 +104,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
       fillColor: AppColors.authTextFormFieldFillColor,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.r)),
       contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
-      prefixIcon: Padding(padding: EdgeInsets.only(left: 8.w), child: Icon(icon, color: AppColors.authBodyTextColor)),
+      prefixIcon: Padding(
+        padding: EdgeInsets.only(left: 8.w),
+        child: Icon(icon, color: AppColors.authBodyTextColor),
+      ),
     ),
   );
 
   Widget _buildPasswordField(RegisterProvider provider) => TextField(
-    controller: _passwordController,
+    controller: provider.passwordController,
     obscureText: !provider.passwordVisible,
     decoration: InputDecoration(
       hintText: 'Enter your password',
@@ -120,89 +123,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
       contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
       prefixIcon: const Icon(Icons.lock_outline_rounded),
       suffixIcon: IconButton(
-        icon: Icon(provider.passwordVisible ? Icons.visibility : Icons.visibility_off),
+        icon: Icon(
+          provider.passwordVisible ? Icons.visibility : Icons.visibility_off,
+        ),
         onPressed: provider.togglePasswordVisibility,
       ),
     ),
   );
 
-  Widget _label(String text) => Text(text, style: AppTextStyles.hintText);
+  Widget _label(String text) => Text(text, style: AppTextStyles.appHeaderText);
 
   Widget _buildSignUpButton() => Consumer<RegisterProvider>(
     builder: (context, provider, child) {
       return AuthButton(
-        text: 'Sign Up',
+        text: Text(
+          'Sign Up',
+          style: TextStyle(
+            fontSize: 16.sp,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         onPressed: () async {
-          final success = await provider.registerUser(
-            name: _nameController.text.trim(),
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
+          final res = await provider.registerUser(
+            name: provider.nameController.text.trim(),
+            email: provider.emailController.text.trim(),
+            password: provider.passwordController.text.trim(),
           );
-          // if (success) {
-          //   ScaffoldMessenger.of(context).showSnackBar(
-          //     SnackBar(
-          //       content: Text(provider.errorMessage),
-          //     ),
-          //   );
-          //   Navigator.pushReplacementNamed(context, RouteNames.loginScreen);
-          // } else {
-          //   ScaffoldMessenger.of(context).showSnackBar(
-          //     SnackBar(
-          //       content: Text(provider.errorMessage),
-          //     ),
-          //   );
-          //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.errorMessage)));
-          // }
-          if (success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: Colors.green,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                content: Row(
-                  children: [
-                    const Icon(Icons.check_circle, color: Colors.white),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        provider.errorMessage,
-                        style: const TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
-                duration: const Duration(seconds: 2),
-              ),
+
+          if (res.success) {
+            Utils.showToast(
+              msg: res.message,
+              backgroundColor: Colors.green,
+              textColor: Colors.white,
             );
-            Navigator.pushReplacementNamed(context, RouteNames.loginScreen);
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: Colors.redAccent,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                margin: const EdgeInsets.all(16),
-                content: Row(
-                  children: [
-                    const Icon(Icons.error_outline, color: Colors.white),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        provider.errorMessage,
-                        style: const TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
-                duration: const Duration(seconds: 2),
-              ),
+            Utils.showToast(
+              msg: res.message,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
             );
           }
-
         },
         color: AppColors.primaryColor,
       );
@@ -212,7 +173,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildOrJoinWithDivider() => Row(
     children: const [
       Expanded(child: Divider(color: AppColors.authTextFormFieldBorderColor)),
-      Padding(padding: EdgeInsets.symmetric(horizontal: 8.0), child: Text('Or')),
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
+        child: Text('Or'),
+      ),
       Expanded(child: Divider(color: AppColors.authTextFormFieldBorderColor)),
     ],
   );
@@ -225,7 +189,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           TextSpan(
             text: ' Sign In',
             style: const TextStyle(color: AppColors.primaryColor),
-            recognizer: TapGestureRecognizer()..onTap = () => Navigator.pushNamed(context, RouteNames.loginScreen),
+            recognizer:
+                TapGestureRecognizer()
+                  ..onTap =
+                      () =>
+                          Navigator.pushNamed(context, RouteNames.loginScreen),
           ),
         ],
       ),
