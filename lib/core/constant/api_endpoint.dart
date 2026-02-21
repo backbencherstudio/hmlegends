@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://sullivan-entry-determination-acquisitions.trycloudflare.com';
+      'https://wrote-cancer-defence-shoulder.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
   // Admin
@@ -11,6 +11,7 @@ class ApiEndpoints {
   static const String forgetPassword = '$baseUrl/api/auth/forgot-password';
   static const String verifyOtpOnly = '$baseUrl/api/auth/verify-reset-token';
   static const String setNewPassword = '$baseUrl/api/auth/reset-password';
+  static const String changePassword = '$baseUrl/api/auth/change-password';
   static const String adminProfileUpdate = '$baseUrl/api/auth/update';
   static const String adminCheckMe = '$baseUrl/api/auth/me';
   static const String adminStatus = '$baseUrl/api/auth/admin/stats';
