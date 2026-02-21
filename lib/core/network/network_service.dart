@@ -1,9 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:logger/logger.dart';
 import '../constant/api_endpoint.dart';
 import '../services/token_storage.dart';
+import 'logger.dart';
+
+final logger = Logger();
 
 class Network {
   static final Network _instance = Network._internal();
+
   factory Network() => _instance;
   late Dio dio;
 
@@ -15,28 +20,25 @@ class Network {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        // Remove Authorization from here
       },
     );
 
     dio = Dio(options);
 
-    dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final token = await TokenStorage().getToken();
-        print('Injected Token: $token');
-        if (token != null) {
-          options.headers['Authorization'] = 'Bearer $token';
-        }
-        return handler.next(options);
-      },
-    ));
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await TokenStorage().getToken();
+          logger.d('Injected Token: $token');
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          return handler.next(options);
+        },
+      ),
+    );
 
-    // For debug logging
-    dio.interceptors.add(LogInterceptor(
-      responseBody: true,
-      requestBody: true,
-    ));
+    /// --------------------- For debug logging --------------------------------
+    dio.interceptors.add(LoggerInterceptor());
   }
-
 }

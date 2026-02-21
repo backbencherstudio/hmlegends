@@ -27,7 +27,6 @@ import '../../presentation/view/driver_flow/driver_provider/branch_product_provi
 import '../../presentation/view/driver_flow/model_view/delivery_provideer_Admin.dart';
 import '../../presentation/view/driver_flow/model_view/driver_profile_screen_provider.dart';
 import '../../presentation/view/driver_flow/tracking/tracking_provider.dart';
-
 class AppProviders {
   static final List<SingleChildWidget> providers = [
     // ChangeNotifierProvider(create: (_) => getIt<ParentScreensProvider>()),
@@ -48,7 +47,6 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => SetPasswordViewModel()),
 
     ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
-
     ChangeNotifierProvider(create: (_) => StockScreenProvider()),
     ChangeNotifierProvider(create: (_) => OrderScreenProvider()),
     ChangeNotifierProvider(create: (_) => GetAllInvoiceProvider()),

@@ -1,17 +1,42 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-
+import 'package:hmlegends/data/model/response_model.dart';
 import '../../../../../core/constant/api_endpoint.dart';
+import '../../../../../core/network/network_service.dart';
 import '../../../../../core/services/api_service.dart';
 
 class RegisterProvider extends ChangeNotifier {
+  /// ------------------- API Service ------------------------------------------
+  final ApiService _apiService = ApiService();
+
+  /// ---------------- TextEditingController -----------------------------------
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+  }
+
+  /// --------------- Loading State --------------------------------------------
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
 
-  String _type = '';
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  final String _type = '';
+
   String get type => _type;
 
   String _email = '';
+
   String get email => _email;
 
   void setEmail(String email) {
@@ -20,103 +45,43 @@ class RegisterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _errorMessage = '';
-  String get errorMessage => _errorMessage;
-
-  bool _isConfirmPassObscured = true;
-  bool get isConfirmPassObscured => _isConfirmPassObscured;
+  /// ------------------ Function to toggle password visibility ----------------
 
   bool _passwordVisible = false;
-  bool get passwordVisible => _passwordVisible;
 
-  void toggleConfirmPassObscured() {
-    _isConfirmPassObscured = !_isConfirmPassObscured;
-    notifyListeners();
-  }
+  bool get passwordVisible => _passwordVisible;
 
   void togglePasswordVisibility() {
     _passwordVisible = !_passwordVisible;
     notifyListeners();
   }
 
-  final ApiService _apiService = ApiService();
-
-  void setTypeFromRoute(BuildContext context) {
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final String? userRole = args?['userRole'] as String?;
-
-    if (userRole != null && userRole != _type) {
-      _type = userRole;
-      debugPrint("RegisterProvider: User type set to: $_type");
-      notifyListeners();
-    }
-  }
-
-  void clearType() {
-    if (_type.isNotEmpty) {
-      _type = '';
-      notifyListeners();
-    }
-  }
-
-  Future<bool> registerUser({
+  /// ------------------ Function to register user -----------------------------
+  Future<ResponseModel> registerUser({
     required String name,
     required String email,
     required String password,
   }) async {
-    _isLoading = true;
-    notifyListeners();
-
-    if (_type.isEmpty) {
-      _errorMessage =
-          'User type not selected. Please go back and choose a role.';
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
-
-    final data = {
-      "name": name,
-      "email": email,
-      "password": password,
-      "type": _type,
-    };
-
-    debugPrint("The user type with body $data");
-
     try {
-      final response = await _apiService.post(
-        ApiEndpoints.register,
-        data: data,
-      );
-
-      debugPrint("register response: ${response.data}");
+      _setLoading(true);
+      var data = {
+        "name": name,
+        "email": email,
+        "password": password,
+        "type": "admin",
+      };
+      var response = await _apiService.post(ApiEndpoints.register, data: data);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        setEmail(email);
-        _isLoading = false;
-        _errorMessage = response.data['message'] ?? 'Registration successful';
-        debugPrint("register response: ${_errorMessage}");
-        notifyListeners();
-
-        if (_errorMessage.contains('Email already exist') ||
-            _errorMessage.contains('already')) {
-          return false;
-        } else {
-          return true;
-        }
+        return ResponseModel(success: true, message: "message");
       } else {
-        _errorMessage = response.data['message'] ?? 'Registration failed';
-        _isLoading = false;
-        notifyListeners();
-        return false;
+        return ResponseModel(success: false, message: "message");
       }
     } catch (e) {
-      _errorMessage = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return false;
+      logger.e("Register Error: $e");
+      rethrow;
+    } finally {
+      _setLoading(false);
     }
   }
 }
