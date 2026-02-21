@@ -14,10 +14,45 @@ class ManageBranchProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// --------------------- Text Field Controllers -----------------------------
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final addressController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
+  /// ------------------- dispose Controller -----------------------------------
+
+  @override
+  void dispose() {
+    super.dispose();
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    addressController.dispose();
+  }
+
+  ///-------------------- Dropdown values --------------------------------------
+  String? selectedProduct;
+  String? selectedStockStatus;
+
+  /// -------------------- Dropdown options ------------------------------------
+  final List<String> stockStatusOptions = ['ACTIVE', 'LOCKED'];
+
+  /// -------------------- Toggle Stock Status --------------------------------
+  void toggleStockStatus(String? newValue) {
+    selectedStockStatus = newValue;
+    notifyListeners();
+  }
+
   final _tokenStorage = TokenStorage();
+
+  /// ---------------- Manager Branch Model ------------------------------------
   ManageBranchModel? _manageBranchModel;
 
   ManageBranchModel? get manageBranchModel => _manageBranchModel;
+
+  /// ---------------- Single Branch Model -------------------------------------
   SingleBranchModel? _singleBranchModel;
 
   SingleBranchModel? get singleBranchModel => _singleBranchModel;
