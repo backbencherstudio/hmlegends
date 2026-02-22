@@ -1,20 +1,47 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:hmlegends/core/services/fm_token_storage.dart';
+import 'package:hmlegends/core/services/user_type_storage.dart';
+import 'package:hmlegends/data/model/response_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
 import '../../../../../core/constant/api_endpoint.dart';
+import '../../../../../core/network/network_service.dart';
+import '../../../../../core/services/api_service.dart';
 import '../../../../../core/services/token_storage.dart';
 
 class LoginViewModel with ChangeNotifier {
+  /// ------------------- API Service ------------------------------------------
+  final ApiService _apiService = ApiService();
+
+  /// ------------- PasswordVisible and RememberMe -----------------------------
   bool _passwordVisible = false;
   bool _rememberMe = false;
-  final TokenStorage _tokenStorage = TokenStorage();
-  FcmTokenStorage _fcmTokenStorage = FcmTokenStorage();
-  FcmTokenStorage get fcmTokenStorage => _fcmTokenStorage;
 
   bool get passwordVisible => _passwordVisible;
+
   bool get rememberMe => _rememberMe;
 
+  /// -------------- Token and FcmToken Storage --------------------------------
+  final TokenStorage _tokenStorage = TokenStorage();
+  final FcmTokenStorage _fcmTokenStorage = FcmTokenStorage();
+  final UserTypeStorage _userTypeStorage = UserTypeStorage();
+
+  TokenStorage get tokenStorage => _tokenStorage;
+  FcmTokenStorage get fcmTokenStorage => _fcmTokenStorage;
+
+  /// ----------------- TextEditingController ----------------------------------
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  /// ------------- Toggle Password Visibility and Remember Me -----------------
   void togglePasswordVisibility() {
     _passwordVisible = !_passwordVisible;
     notifyListeners();
@@ -25,12 +52,72 @@ class LoginViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  /// --------------- Loading State --------------------------------------------
   bool _isLoadingForGoogle = false;
+
   bool get isLoadingForGoogle => _isLoadingForGoogle;
 
   void setLoadingForGoogle(bool value) {
     _isLoadingForGoogle = value;
     notifyListeners();
+  }
+
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  Future<ResponseModel> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      _setLoading(true);
+      var data = {"email": email, "password": password};
+
+      logger.d("Login Access Token : ${await _tokenStorage.getToken()}");
+      var response = await _apiService.post(
+        ApiEndpoints.login,
+        data: data,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+
+          },
+        ),
+      );
+
+      final decodeData = response.data;
+      final message = decodeData['message'];
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final token = decodeData['authorization']?['refresh_token'];
+        final type = decodeData['type'];
+        if (token != null) {
+
+          debugPrint("The token is======== ${token}");
+
+          await _tokenStorage.saveToken(token);
+        }
+        if (type != null) {
+
+          debugPrint("The token is======== ${type}");
+
+          await _userTypeStorage.saveUserType(type);
+        }
+        return ResponseModel(success: true, message: message);
+      } else {
+        return ResponseModel(success: false, message: message);
+      }
+    } catch (e) {
+      return ResponseModel(success: false, message: '$e');
+    } finally {
+      _setLoading(false);
+    }
   }
 
   Future<Map<String, dynamic>> googleSignIn({String? firebaseToken}) async {

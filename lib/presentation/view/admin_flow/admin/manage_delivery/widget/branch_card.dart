@@ -8,7 +8,7 @@ class BranchCard extends StatelessWidget {
   final int totalProducts;
   final String address;
   final VoidCallback onAssignTap;
-  final bool isDisabled;
+
 
   const BranchCard({
     super.key,
@@ -16,7 +16,7 @@ class BranchCard extends StatelessWidget {
     required this.totalProducts,
     required this.address,
     required this.onAssignTap,
-    required this.isDisabled,
+
   });
 
   @override
@@ -73,7 +73,7 @@ class BranchCard extends StatelessWidget {
             width: double.infinity,
             height: 44.h,
             child: ElevatedButton(
-              onPressed: isDisabled ? null : onAssignTap,
+              onPressed:  onAssignTap,
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.resolveWith<Color>(
                       (Set<MaterialState> states) {
@@ -93,7 +93,7 @@ class BranchCard extends StatelessWidget {
                 elevation: MaterialStateProperty.all(0),
               ),
               child: Text(
-                isDisabled ? "Assigned" : "Assign to Driver",
+                "Assign to Driver",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 15.sp,

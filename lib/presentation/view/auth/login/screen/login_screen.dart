@@ -1,14 +1,15 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/validator/validator.dart';
+import 'package:hmlegends/presentation/widget/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
 import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/route/route_names.dart';
-import '../../../../../core/services/fm_token_storage.dart';
 import '../../../admin_flow/view_model/auth/login_viewmodel.dart';
-import '../../../admin_flow/view_model/auth_api/login_viewmodel.dart';
 import '../../widget/auth_button.dart';
 import '../../widget/level_text.dart';
 import '../../widget/social_auth_buttons.dart';
@@ -17,19 +18,11 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -61,28 +54,59 @@ class _LoginScreenState extends State<LoginScreen> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 20.h),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RequiredLabel(labelText: 'Email'),
-                    SizedBox(height: 5.h),
-                    _buildTextField('Your email', Icons.email_outlined),
-                    SizedBox(height: 8.h),
-                    RequiredLabel(labelText: 'Password'),
-                    SizedBox(height: 5.h),
-                    _buildPasswordField(),
-                    SizedBox(height: 5.h),
-                    _buildRememberMeRow(),
-                  ],
+
+                /// ----------- Wrap Form Widget with Consumer -----------------
+                Consumer<LoginViewModel>(
+                  builder: (context, viewModel, child) {
+                    return Form(
+                      key: _formKey,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          RequiredLabel(labelText: 'Email'),
+                          SizedBox(height: 5.h),
+                          customTextFormField(
+                            hintText: 'Enter your email',
+                            controller: viewModel.emailController,
+                            prefixIcon: const Icon(Icons.email_outlined),
+                            validator: emailValidator,
+                          ),
+                          SizedBox(height: 8.h),
+                          RequiredLabel(labelText: 'Password'),
+                          SizedBox(height: 5.h),
+                          customTextFormField(
+                            hintText: 'Enter your password',
+                            controller: viewModel.passwordController,
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            isPassword: true,
+                            showSuffixIcon: true,
+                            validator: passwordValidator,
+                            suffixIcon: IconButton(
+                              onPressed: viewModel.togglePasswordVisibility,
+                              icon: Icon(
+                                viewModel.passwordVisible
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                                color: AppColors.authTextFormFieldBorderColor,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 5.h),
+                          _buildRememberMeRow(),
+                          SizedBox(height: 10.h),
+                          _buildSignInButton(),
+                          SizedBox(height: 20.h),
+                          _buildOrJoinWithDivider(),
+                          SizedBox(height: 20.h),
+                          const SocialAuthButtons(),
+                          SizedBox(height: 30.h),
+                          _buildSignUpLink(),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-                SizedBox(height: 10.h),
-                _buildSignInButton(),
-                SizedBox(height: 20.h),
-                _buildOrJoinWithDivider(),
-                SizedBox(height: 20.h),
-                SocialAuthButtons(),
-                SizedBox(height: 30.h),
-                _buildSignUpLink(),
               ],
             ),
           ),
@@ -91,66 +115,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildPasswordField() {
-    return Consumer<LoginViewModel>(
-      builder: (context, viewModel, child) {
-        return TextField(
-          controller: _passwordController,
-          obscureText: !viewModel.passwordVisible,
-          decoration: InputDecoration(
-            hintText: 'Enter your password',
-            hintStyle: AppTextStyles.hintText,
-            filled: true,
-            fillColor: AppColors.authTextFormFieldFillColor,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.r),
-              borderSide: BorderSide(
-                color: AppColors.authTextFormFieldBorderColor,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.r),
-              borderSide: BorderSide(
-                color: AppColors.authTextFormFieldBorderColor,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.r),
-              borderSide: BorderSide(
-                color: AppColors.authTextFormFieldBorderColor,
-              ),
-            ),
-            contentPadding: EdgeInsets.symmetric(
-              vertical: 12.h,
-              horizontal: 16.w,
-            ),
-            prefixIcon: Padding(
-              padding: EdgeInsets.only(left: 8.w),
-              child: Icon(
-                Icons.lock_outline_rounded,
-                color: AppColors.authBodyTextColor,
-              ),
-            ),
-            suffixIcon: IconButton(
-              padding: EdgeInsets.only(right: 8.w),
-              icon: Icon(
-                viewModel.passwordVisible
-                    ? Icons.visibility
-                    : Icons.visibility_off,
-                color: AppColors.authBodyTextColor,
-              ),
-              onPressed: viewModel.togglePasswordVisibility,
-            ),
-          ),
-        );
-      },
-    );
-  }
-
+  /// ------------------ Build Remember Me Row Widget --------------------------
   Widget _buildRememberMeRow() {
     return Row(
       children: [
-        Spacer(),
+        const Spacer(),
         TextButton(
           onPressed: () {
             Navigator.pushNamed(context, RouteNames.forgetPasswordScreen);
@@ -168,81 +137,48 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// ---------------- Build Sign In Button ------------------------------------
   Widget _buildSignInButton() {
-    return Consumer<LoginScreenProvider>(
-      builder: (context, provider, child) {
+    return Consumer<LoginViewModel>(
+      builder: (context, viewModel, child) {
         return AuthButton(
-          text: Text(provider.isLoading ? 'Signing In...' : 'Sign In'),
+          text:
+              viewModel.isLoading
+                  ? CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                  )
+                  : Text(
+                    'Sign In',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
           onPressed: () async {
-            if (provider.isLoading) return;
-
-            FocusScope.of(context).unfocus();
-
-            final email = _emailController.text.trim();
-            final password = _passwordController.text.trim();
-
-            if (email.isEmpty || password.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Please enter both email and password."),
-                  backgroundColor: Colors.redAccent,
-                ),
+            if (_formKey.currentState!.validate()) {
+              final res = await viewModel.login(
+                email: viewModel.emailController.text.trim(),
+                password: viewModel.passwordController.text,
               );
-              return;
-            }
-            final fcmToken = await FcmTokenStorage().getFcmToken() ?? "";
-            final success = await provider.login(
-              email: email,
-              password: password,
-              fcmToken: fcmToken,
-            );
-
-            if (success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  backgroundColor: Colors.green.shade600,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  content: Text(
-                    provider.errorMessage ?? "Login successful!",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              );
-
-              final userRole = provider.userType ?? '';
-
-              if (userRole == 'admin') {
-                Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
-              } else if (userRole == 'manager') {
-                Navigator.pushReplacementNamed(
-                  context,
-                  RouteNames.branchParentScreen,
+              if (res.success) {
+                Fluttertoast.showToast(
+                  msg: res.message,
+                  backgroundColor: Colors.green,
                 );
-              } else if (userRole == 'driver') {
-                Navigator.pushReplacementNamed(
+
+                viewModel.emailController.clear();
+                viewModel.passwordController.clear();
+                Navigator.pushNamed(
                   context,
-                  RouteNames.driverBranchParentScreen,
+                  RouteNames.mainWrapper,
                 );
               } else {
-                Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
+                Fluttertoast.showToast(
+                  msg: res.message,
+                  backgroundColor: Colors.red,
+                );
               }
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  backgroundColor: Colors.redAccent,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  content: Text(
-                    provider.errorMessage ?? "Login failed. Try again.",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              );
             }
           },
           color: AppColors.primaryColor,
@@ -251,6 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// -------------- Build Or Join With Divider --------------------------------
   Widget _buildOrJoinWithDivider() {
     return Row(
       children: [
@@ -285,47 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTextField(String hint, IconData icon) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 8.h),
-      child: TextField(
-        controller: _emailController,
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: AppTextStyles.hintText,
-          filled: true,
-          fillColor: AppColors.authTextFormFieldFillColor,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(
-              color: AppColors.authTextFormFieldBorderColor,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(
-              color: AppColors.authTextFormFieldBorderColor,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(
-              color: AppColors.authTextFormFieldBorderColor,
-            ),
-          ),
-          contentPadding: EdgeInsets.symmetric(
-            vertical: 12.h,
-            horizontal: 16.w,
-          ),
-          prefixIcon: Padding(
-            padding: EdgeInsets.only(left: 8.w),
-            child: Icon(icon, color: AppColors.authBodyTextColor),
-          ),
-        ),
-      ),
-    );
-  }
-
+  /// -------------------- Build Sign Up Link ----------------------------------
   Widget _buildSignUpLink() {
     return Center(
       child: RichText(

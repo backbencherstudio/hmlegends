@@ -34,6 +34,7 @@ class RouteNames {
   static const String manageBranchesScreen = '/manageBranchesScreen';
   static const String addNewBranchesScreen = '/addNewBranchesScreen';
   static const String invoiceStatusScreen = '/invoiceStatusScreen';
+  static const String headOfficeHomeScreen = '/headOfficeHomeScreen';
   static const String headOfficeProfileScreen = '/headOfficeProfileScreen';
   static const String headOfficeChangePasswordScreen =
       '/headOfficeChangePasswordScreen';

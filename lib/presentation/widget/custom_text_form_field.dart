@@ -6,6 +6,7 @@ Widget customTextFormField({
   required String hintText,
   required TextEditingController controller,
   Widget? suffixIcon,
+  Widget? prefixIcon,
   required String? Function(String?)? validator,
   TextInputAction? textInputAction,
   bool isPassword = false,
@@ -29,24 +30,25 @@ Widget customTextFormField({
       fillColor: const Color(0xffF8F8F8),
       contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16.r),
-        borderSide: BorderSide(color: Color(0xFF4A4C56)),
+        borderRadius: BorderRadius.circular(30.r),
+        borderSide: BorderSide(color: Color(0xFFE9E9EA)),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16.r),
-        borderSide: BorderSide(color: Color(0xFF4A4C56)),
+        borderRadius: BorderRadius.circular(30.r),
+        borderSide: BorderSide(color: Color(0xFFE9E9EA)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16.r),
-        borderSide: BorderSide(color: Color(0xFF4A4C56)),
+        borderRadius: BorderRadius.circular(30.r),
+        borderSide: BorderSide(color: Color(0xFFE9E9EA)),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(30.r),
         borderSide: BorderSide(color: Colors.red),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(30.r),
       ),
+      prefixIcon: prefixIcon,
       suffixIcon:
           (isPassword && showSuffixIcon)
               ? IconButton(

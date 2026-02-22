@@ -3,6 +3,7 @@ import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/order/screen/order_summary_make_invoice_screen.dart';
 import 'package:hmlegends/presentation/view/driver_flow/profile_driver/changeInfo_driver.dart';
 import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart';
+import '../../presentation/view/admin_flow/admin/home/screen/head_office_home_screen.dart';
 import '../../presentation/view/admin_flow/admin/home/screen/pending_user_list.dart';
 import '../../presentation/view/admin_flow/admin/invoice/screen/admin_invoice_detail_screen.dart';
 import '../../presentation/view/admin_flow/admin/invoice/screen/head_office_invoice_screen.dart';
@@ -45,60 +46,64 @@ import '../../presentation/view/driver_flow/tracking/tracking_screen.dart';
 import '../../presentation/view/onboarding/onboarding/screen/onboarding_screen.dart';
 import '../../presentation/view/splash/splash/screen/splash_screen.dart';
 
-class AppRoutes{
+class AppRoutes {
+  static final Map<String, WidgetBuilder> routes = {
+    RouteNames.splashScreen: (context) => const SplashScreen(),
+    RouteNames.onboardingScreen: (context) => const OnboardingScreen(),
+    RouteNames.signUpScreen: (context) => SignUpScreen(),
+    RouteNames.loginScreen: (context) => LoginScreen(),
+    RouteNames.forgetPasswordScreen: (context) => ForgetPasswordScreen(),
+    RouteNames.otpVerifyScreen: (context) => OtpVerifyScreen(),
+    RouteNames.setNewPasswordScreen: (context) => SetNewPasswordScreen(),
+    RouteNames.mainWrapper: (context) => MainWrapper(),
+    RouteNames.branchHomeScreen: (context) => BranchHomeScreen(),
+    RouteNames.branchParentScreen: (context) => BranchParentScreen(),
+    RouteNames.bottomNavBar: (context) => BottomNavBar(),
+    RouteNames.ordersScreen: (context) => OrdersScreen(),
+    RouteNames.myOrders: (context) => MyOrders(),
+    RouteNames.invoiceScreen: (context) => InvoiceScreen(),
+    RouteNames.viewDetails: (context) => ViewDetails(),
+    RouteNames.profileScreen: (context) => ProfileScreen(),
+    RouteNames.changePassword: (context) => ChangePassword(),
+    RouteNames.changeInfo: (context) => ChangeInfo(),
+    RouteNames.notificationScreen: (context) => NotificationScreen(),
+    RouteNames.driverScreen: (context) => DriverScreen(),
+    RouteNames.driverBottomNavBar: (context) => DriverBottomNavBar(),
+    RouteNames.driverBranchParentScreen:
+        (context) => DriverBranchParentScreen(),
+    RouteNames.editStockScreen: (context) => EditStockScreen(),
+    RouteNames.driverBranseDetailScreen:
+        (context) => DriverBranchDetailScreen(),
+    RouteNames.orderSummaryScreen:
+        (context) => OrderSummaryScreen(fromBottomNav: false),
+    RouteNames.orderSummaryViewScreen: (context) => OrderSummaryViewScreen(),
+    RouteNames.confirmDeliveryScreen: (context) => ConfirmDeliveryScreen(),
+    RouteNames.deliverySummeryScreen: (context) => DeliverySummeryScreen(),
+    RouteNames.orderSummaryMakeInvoiceScreen:
+        (context) => OrderSummaryMakeInvoiceScreen(),
+    RouteNames.orderSummaryViewSuccessfulScreen:
+        (context) => OrderSummaryViewSuccessfulScreen(),
+    RouteNames.headOfficeInvoiceScreen:
+        (context) => HeadOfficeInvoiceScreen(fromBottomNav: false),
+    RouteNames.manageBranchesScreen: (context) => ManageBranchesScreen(),
+    RouteNames.addNewBranchesScreen: (context) => AddNewBranchesScreen(),
+    RouteNames.invoiceStatusScreen: (context) => InvoiceStatusScreen(),
+    RouteNames.headOfficeHomeScreen: ((context) => HeadOfficeHomeScreen()),
 
-  static final Map<String,WidgetBuilder> routes ={
-
-    RouteNames.splashScreen:(context)=>const SplashScreen(),
-    RouteNames.onboardingScreen:(context)=>const OnboardingScreen(),
-    RouteNames.signUpScreen:(context)=> SignUpScreen(),
-    RouteNames.loginScreen :(context)=> LoginScreen (),
-    RouteNames.forgetPasswordScreen  :(context)=>  ForgetPasswordScreen (),
-    RouteNames.otpVerifyScreen  :(context)=>  OtpVerifyScreen(),
-     RouteNames.setNewPasswordScreen   :(context)=>  SetNewPasswordScreen (),
-    RouteNames.mainWrapper   :(context)=>  MainWrapper(),
-    RouteNames.branchHomeScreen   :(context)=>  BranchHomeScreen(),
-    RouteNames.branchParentScreen   :(context)=>  BranchParentScreen(),
-    RouteNames.bottomNavBar   :(context)=>  BottomNavBar(),
-    RouteNames.ordersScreen   :(context)=>  OrdersScreen(),
-    RouteNames.myOrders   :(context)=>  MyOrders(),
-    RouteNames.invoiceScreen   :(context)=>  InvoiceScreen(),
-    RouteNames.viewDetails   :(context)=>  ViewDetails(),
-    RouteNames.profileScreen   :(context)=>  ProfileScreen(),
-    RouteNames.changePassword   :(context)=>  ChangePassword(),
-    RouteNames.changeInfo   :(context)=>  ChangeInfo(),
-    RouteNames.notificationScreen   :(context)=>  NotificationScreen(),
-    RouteNames.driverScreen   :(context)=>  DriverScreen(),
-    RouteNames.driverBottomNavBar   :(context)=>  DriverBottomNavBar(),
-    RouteNames.driverBranchParentScreen   :(context)=>  DriverBranchParentScreen(),
-    RouteNames.editStockScreen   :(context)=>  EditStockScreen (),
-    RouteNames.driverBranseDetailScreen   :(context)=>  DriverBranchDetailScreen(),
-    RouteNames.orderSummaryScreen   :(context)=>  OrderSummaryScreen(fromBottomNav: false,),
-    RouteNames.orderSummaryViewScreen  :(context)=>  OrderSummaryViewScreen(),
-    RouteNames.confirmDeliveryScreen   :(context)=>  ConfirmDeliveryScreen(),
-    RouteNames.deliverySummeryScreen   :(context)=>  DeliverySummeryScreen(),
-    RouteNames.orderSummaryMakeInvoiceScreen  :(context)=>  OrderSummaryMakeInvoiceScreen(),
-    RouteNames.orderSummaryViewSuccessfulScreen  :(context)=>  OrderSummaryViewSuccessfulScreen(),
-    RouteNames.headOfficeInvoiceScreen  :(context)=>  HeadOfficeInvoiceScreen(fromBottomNav: false,),
-    RouteNames.manageBranchesScreen  :(context)=>  ManageBranchesScreen(),
-    RouteNames.addNewBranchesScreen  :(context)=>  AddNewBranchesScreen(),
-    RouteNames.invoiceStatusScreen :(context)=>  InvoiceStatusScreen(),
-    RouteNames.headOfficeProfileScreen :(context)=>  HeadOfficeProfileScreen(),
-    RouteNames.headOfficeChangePasswordScreen :(context)=>  HeadOfficeChangePasswordScreen(),
-    RouteNames.headOfficeChangeInfoScreen :(context)=>  HeadOfficeChangeInfoScreen(),
-    RouteNames.manageDeliveryScreen:(context)=>  ManageDeliveryScreen(),
-    RouteNames.manageBranchesToOrderSummaryScreen :(context)=>  ManageBranchesToOrderSummaryScreen(),
-    RouteNames.editBranchScreen :(context)=>  EditBranchScreen(),
-    RouteNames.adminInvoiceDetailScreen :(context)=>  AdminInvoiceDetailScreen(),
-    RouteNames.changeInfoDriver :(context)=>  ChangeInfoDriver(),
-    RouteNames.adminNotificationScreen :(context)=>  AdminNotificationScreen(),
-    RouteNames.pendingUserList :(context)=>  PendingUserList(),
-    RouteNames.trackingScreen :(context)=>  TrackingScreen(),
-
-
+    RouteNames.headOfficeProfileScreen: (context) => HeadOfficeProfileScreen(),
+    RouteNames.headOfficeChangePasswordScreen:
+        (context) => HeadOfficeChangePasswordScreen(),
+    RouteNames.headOfficeChangeInfoScreen:
+        (context) => HeadOfficeChangeInfoScreen(),
+    RouteNames.manageDeliveryScreen: (context) => ManageDeliveryScreen(),
+    RouteNames.manageBranchesToOrderSummaryScreen:
+        (context) => ManageBranchesToOrderSummaryScreen(),
+    RouteNames.editBranchScreen: (context) => EditBranchScreen(),
+    RouteNames.adminInvoiceDetailScreen:
+        (context) => AdminInvoiceDetailScreen(),
+    RouteNames.changeInfoDriver: (context) => ChangeInfoDriver(),
+    RouteNames.adminNotificationScreen: (context) => AdminNotificationScreen(),
+    RouteNames.pendingUserList: (context) => PendingUserList(),
+    RouteNames.trackingScreen: (context) => TrackingScreen(),
   };
-
-
-
-
 }

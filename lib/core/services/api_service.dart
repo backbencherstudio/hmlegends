@@ -8,16 +8,17 @@ class ApiService {
   Future<dynamic> get(
     String path, {
     Map<String, dynamic>? queryParameters,
+        Options? options,
   }) async {
     try {
-      return await _dio.get(path, queryParameters: queryParameters);
+      return await _dio.get(path, queryParameters: queryParameters,options: options);
     } catch (e) {
       rethrow;
     }
   }
 
   /// -------------------- Function to post data (POST request) ----------------
-  Future<dynamic> post(
+  Future<Response<dynamic>> post(
     String path, {
     Map<String, dynamic>? data,
     FormData? formData,

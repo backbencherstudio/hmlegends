@@ -43,3 +43,10 @@ String? branchAddressValidator(String? value) {
   }
   return null;
 }
+
+String? nameValidator(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Please enter your name';
+  }
+  return null;
+}
