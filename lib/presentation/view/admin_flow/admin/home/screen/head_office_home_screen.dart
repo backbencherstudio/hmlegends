@@ -51,6 +51,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
     );
   }
 
+  /// ------------- Stock Card Widget ------------------------------------------
   Widget _stockCard(BuildContext context) => Container(
     padding: EdgeInsets.all(16.w),
     decoration: BoxDecoration(
@@ -73,6 +74,8 @@ class HeadOfficeHomeScreen extends StatelessWidget {
                 ),
               ],
             ),
+
+            /// ---------------- Stock Chip -------------------------------------
             _stockChip(),
           ],
         ),
@@ -142,6 +145,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
     ),
   );
 
+  /// --------------- Stock Chip Widget ----------------------------------------
   Widget _stockChip() => Container(
     padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
     decoration: BoxDecoration(
