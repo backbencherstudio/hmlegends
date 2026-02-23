@@ -4,6 +4,7 @@ import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../../../core/network/network_service.dart';
 import '../../admin_model/invoice_status_model.dart';
 import '../../admin_model/pending_userModel.dart';
 
@@ -16,9 +17,11 @@ class HomeScreenProvider extends ChangeNotifier {
   final TokenStorage _tokenStorage = TokenStorage();
 
   InvoiceStatusModel? _invoiceStatusModel;
+
   InvoiceStatusModel? get invoiceStatusModel => _invoiceStatusModel;
 
   PendingUserModel? _pendingUserModel;
+
   PendingUserModel? get pendingUserModel => _pendingUserModel;
 
   String? loadingUserId;
@@ -35,7 +38,9 @@ class HomeScreenProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        _invoiceStatusModel = InvoiceStatusModel.fromJson(jsonDecode(response.body));
+        _invoiceStatusModel = InvoiceStatusModel.fromJson(
+          jsonDecode(response.body),
+        );
       }
     } catch (error) {
       debugPrint("Status error: $error");
@@ -44,7 +49,7 @@ class HomeScreenProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //    Fetch Pending Users
+  /// -------------------    Fetch Pending Users ------------------------------
   Future<void> getPendingUser() async {
     try {
       final url = Uri.parse(ApiEndpoints.pendingUser);
@@ -58,8 +63,14 @@ class HomeScreenProvider extends ChangeNotifier {
         },
       );
 
+      logger.i("Pending user url: ${response.request?.url}");
+      logger.i("Pending user status code: ${response.statusCode}");
+      logger.i("Pending user body: ${response.body}");
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        _pendingUserModel = PendingUserModel.fromJson(jsonDecode(response.body));
+        _pendingUserModel = PendingUserModel.fromJson(
+          jsonDecode(response.body),
+        );
       }
     } catch (error) {
       debugPrint("Pending user error: $error");
@@ -79,7 +90,7 @@ class HomeScreenProvider extends ChangeNotifier {
       debugPrint("the url is $url");
       final token = await _tokenStorage.getToken();
 
-       final response = await http.post(
+      final response = await http.post(
         url,
         headers: {
           "Authorization": "Bearer $token",
@@ -87,15 +98,18 @@ class HomeScreenProvider extends ChangeNotifier {
         },
         body: jsonEncode({"status": status}),
       );
-       final decodeData = jsonDecode(response.body);
-      if(response.statusCode == 200 || response.statusCode == 201){
-        debugPrint("The approve or reject success ${decodeData['message']}");
-      }else{
-        debugPrint("The approve or reject failed ${decodeData['message']}");
+      logger.i("Accept/Reject url: ${response.request?.url}");
+      logger.i("Accept/Reject status code: ${response.statusCode}");
+      logger.i("Accept/Reject body: ${response.body}");
 
+      final decodeData = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        logger.d("The approve or reject success ${decodeData['message']}");
+      } else {
+        logger.d("The approve or reject failed ${decodeData['message']}");
       }
     } catch (error) {
-      debugPrint("Accept/Reject error: $error");
+      logger.d("Accept/Reject error: $error");
     }
 
     loadingUserId = null;
