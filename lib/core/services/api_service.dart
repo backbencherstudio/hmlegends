@@ -18,7 +18,7 @@ class ApiService {
   }
 
   /// -------------------- Function to post data (POST request) ----------------
-  Future<Response<dynamic>> post(
+  Future<dynamic> post(
     String path, {
     Map<String, dynamic>? data,
     FormData? formData,
