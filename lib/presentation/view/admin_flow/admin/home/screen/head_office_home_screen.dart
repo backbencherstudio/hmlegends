@@ -271,7 +271,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
                   value1: "${provider.pendingUserModel?.data?.total}",
                   label2: 'See All Pending',
                   value2: "",
-                  iconPath: "assets/icons/person.png" ,
+                  iconPath: "assets/icons/person.png",
                 );
               },
             );
