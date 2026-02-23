@@ -15,6 +15,7 @@ class AdminNotificationScreen extends StatefulWidget {
 }
 
 class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
+  /// ----------------- Format Time Stamp --------------------------------------
   String formatTimestamp(String? timestamp) {
     if (timestamp == null) return '';
     try {
@@ -83,13 +84,13 @@ class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
                         children: [
                           Text(
                             n.notificationEvent?.text ?? 'No message',
-                            style: const TextStyle(fontSize: 14),
+                            style: TextStyle(fontSize: 14.sp),
                           ),
                           SizedBox(height: 8.h),
                           Text(
                             formatTimestamp(n.createdAt),
-                            style: const TextStyle(
-                              fontSize: 12,
+                            style:  TextStyle(
+                              fontSize: 12.sp,
                               color: Colors.grey,
                             ),
                           ),
