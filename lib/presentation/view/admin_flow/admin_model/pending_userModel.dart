@@ -72,15 +72,15 @@ class Users {
   });
 
   Users.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    email = json['email'];
-    type = json['type'];
-    createdAt = json['created_at'];
+    id = json['id'].toString();
+    name = json['name'].toString();
+    email = json['email'].toString();
+    type = json['type'].toString();
+    createdAt = json['created_at'].toString();
     address = json['address'];
     phoneNumber = json['phone_number'];
     driverId = json['driver_id'];
-    approvedBy = json['approved_by'];
+    approvedBy = json['approved_by'].toString();
   }
 
   Map<String, dynamic> toJson() {
