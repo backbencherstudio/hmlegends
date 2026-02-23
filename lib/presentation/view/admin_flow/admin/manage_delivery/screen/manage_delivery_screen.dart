@@ -4,6 +4,7 @@ import 'package:hmlegends/presentation/view/admin_flow/admin/manage_delivery/vie
 import 'package:provider/provider.dart';
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../../../core/constant/asset_path.dart';
+import '../../../../../../core/network/network_service.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../widget/assign_driver_sheet.dart';
 import '../widget/branch_card.dart';
@@ -80,14 +81,9 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
                           ),
                         ),
                         builder:
-                            (_) => AssignDriverSheet(
-                              onSend: () {
-                                context
-                                    .read<DeliveryProvider>()
-                                    .getAllDrivers();
-                              },
-                            ),
+                            (_) => AssignDriverSheet(deliveryId: branch.id),
                       );
+                      logger.d(branch.id);
                     },
                   );
                 },
