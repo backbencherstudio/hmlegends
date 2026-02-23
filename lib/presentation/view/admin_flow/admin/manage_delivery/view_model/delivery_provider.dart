@@ -5,7 +5,6 @@ import 'package:hmlegends/presentation/view/admin_flow/admin/manage_delivery/mod
 import '../../../../../../core/services/api_service.dart';
 import '../model/all_drivers_model.dart';
 
-
 class DeliveryProvider extends ChangeNotifier {
   DeliveryProvider() {
     getAllDeliveries();
@@ -35,9 +34,9 @@ class DeliveryProvider extends ChangeNotifier {
   }
 
   /// --------------- Admin, Driver, Manager -----------------------------------
-  final List<String?> _selectedDriver = ['Admin', 'Driver', 'Manager'];
-
-  List<String?> get selectedDriver => _selectedDriver;
+  final selected = <String>{};
+  String? selectedDriverId;
+  String? selectedDriverName;
 
   /// ------------- Function to call all deliveries API -------------------------
   Future<ResponseModel> getAllDeliveries() async {
@@ -76,7 +75,27 @@ class DeliveryProvider extends ChangeNotifier {
         return ResponseModel(success: false, message: " message");
       }
     } catch (e) {
+      return ResponseModel(success: false, message: e.toString());
+    } finally {
+      _setLoading(false);
+    }
+  }
 
+  /// ---------------- Function to call assign to driver API -------------------
+  Future<ResponseModel> assignToDriver(String orderId, String driverId) async {
+    try {
+      _setLoading(true);
+      final response = await _apiService.post(
+        ApiEndpoints.adminAssignToDriver,
+        data: {"order_id": orderId, "driver_id": driverId},
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return ResponseModel(success: true, message: response['message']);
+      } else {
+        return ResponseModel(success: false, message: response['message']);
+      }
+    } catch (e) {
       return ResponseModel(success: false, message: e.toString());
     } finally {
       _setLoading(false);
