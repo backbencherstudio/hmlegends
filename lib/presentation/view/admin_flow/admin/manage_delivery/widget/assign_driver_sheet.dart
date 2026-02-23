@@ -6,9 +6,9 @@ import '../../../../../../core/constant/app_colors.dart';
 import '../../../../../../core/constant/asset_path.dart';
 
 class AssignDriverSheet extends StatefulWidget {
-  final VoidCallback onSend;
+  final String? deliveryId;
 
-  const AssignDriverSheet({super.key, required this.onSend});
+  const AssignDriverSheet({super.key, required this.deliveryId});
 
   @override
   State<AssignDriverSheet> createState() => _AssignDriverSheetState();
@@ -19,11 +19,11 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadDrivers();
+      _loadAllDrivers();
     });
   }
 
-  Future<void> _loadDrivers() async {
+  Future<void> _loadAllDrivers() async {
     await context.read<DeliveryProvider>().getAllDrivers();
   }
 
@@ -36,7 +36,30 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
           final deliveries = provider.allDeliveriesModel?.data ?? [];
           final drivers = provider.allDriversModel?.data ?? [];
 
-          /// Set initial selected driver if available and not already set
+          /// ----------------------  DELIVERY FIND ----------------------------
+          final selectedDeliveryList =
+              deliveries.where((d) => d.id == widget.deliveryId).toList();
+
+          final selectedDelivery =
+              selectedDeliveryList.isNotEmpty
+                  ? selectedDeliveryList.first
+                  : null;
+
+          /// ------------------------------ORDER ITEMS ------------------------
+          final orderItems = selectedDelivery?.orderItems ?? [];
+
+          int totalQuantity = 0;
+          for (var item in orderItems) {
+            totalQuantity += item.quantity ?? 0;
+          }
+          print("===========Delivery Id : ${widget.deliveryId} ======");
+          print("===========Total Quantity : $totalQuantity ========");
+          String productName =
+              orderItems.isNotEmpty
+                  ? orderItems.first.product?.name ?? "Unknown Product"
+                  : "Unknown Product";
+
+          /// --------------------- SET DEFAULT DRIVER ------------------------
           if (drivers.isNotEmpty && provider.selectedDriverId == null) {
             provider.selectedDriverId = drivers.first.id;
             provider.selectedDriverName = drivers.first.name;
@@ -52,7 +75,7 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                /// ------------------- Drag Bar -------------------------------
+                /// ------------------------ Drag Bar --------------------------
                 Container(
                   width: 50.w,
                   height: 4.h,
@@ -63,7 +86,7 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                 ),
                 SizedBox(height: 20.h),
 
-                /// ------------ Driver Selection Dropdown ---------------------
+                /// --------------------- Driver Dropdown ----------------------
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -72,7 +95,6 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                       style: TextStyle(
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xff333333),
                       ),
                     ),
                     SizedBox(height: 5.h),
@@ -87,33 +109,25 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                         child: DropdownButton<String>(
                           value: provider.selectedDriverName,
                           isExpanded: true,
-                          icon: const Icon(Icons.arrow_drop_down),
-                          hint: Text(
-                            "Select Driver",
-                            style: TextStyle(color: Colors.grey[500]),
-                          ),
-                          dropdownColor: AppColors.editTextFieldColor,
-                          borderRadius: BorderRadius.circular(8.r),
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 14.sp,
-                          ),
+                          hint: const Text("Select Driver"),
                           items:
                               drivers.map((driver) {
                                 return DropdownMenuItem<String>(
                                   value: driver.name,
-                                  child: Text(driver.name ?? 'Unknown Driver'),
+                                  child: Text(driver.name ?? "Unknown Driver"),
                                 );
                               }).toList(),
                           onChanged: (String? newValue) {
-                            setState(() {
-                              provider.selectedDriverId = newValue;
-                              // final selectedDriver = drivers.firstWhere(
-                              //       (d) => d.id == newValue,
-                              //   orElse: () => {},
-                              // );
-                              // selectedDriverName = selectedDriver.name;
-                            });
+                            if (newValue == null) return;
+
+                            final selectedDriver = drivers.firstWhere(
+                              (d) => d.name == newValue,
+                            );
+
+                            provider.selectedDriverId = selectedDriver.id;
+                            provider.selectedDriverName = selectedDriver.name;
+
+                            setState(() {});
                           },
                         ),
                       ),
@@ -122,152 +136,119 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                 ),
                 SizedBox(height: 12.h),
 
-                /// ------------ Driver ID Field ------------
+                /// ---------------- Driver ID Field ----------------
                 _buildReadOnlyField(
                   "Driver’s ID",
                   provider.selectedDriverId ?? '',
                 ),
                 SizedBox(height: 15.h),
 
-                /// ------------- Loading State ---------------
+                /// ---------------- Loading ----------------
                 if (provider.isLoading)
                   const Center(child: CircularProgressIndicator())
                 else ...[
-                  /// ------------- Total Products --------------
                   Text(
-                    "Total Products: ${deliveries.length}",
+                    "Total Products: ${totalQuantity.toString().padLeft(2, '0')}",
                     style: TextStyle(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xff111111),
+                      fontSize: 14.sp,
+                      color: Color(0xFF4A4C56),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  SizedBox(height: 8.h),
-                  Divider(thickness: 1, color: Colors.grey.shade300),
+                  Divider(color: Color(0xFFE9E9EA), thickness: 1),
                   SizedBox(height: 10.h),
 
-                  /// ------------- Empty State --------------
-                  if (deliveries.isEmpty)
+                  /// ----------------------- DELIVERY DATA --------------------
+                  if (selectedDelivery == null)
                     const Padding(
                       padding: EdgeInsets.all(20),
-                      child: Text("No Deliveries Found"),
+                      child: Text("Delivery Not Found"),
                     )
                   else
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: deliveries.length,
-                      itemBuilder: (context, index) {
-                        final item = deliveries[index];
-
-                        /// Safe orderItems access
-                        final orderItems = item.orderItems ?? [];
-
-                        String itemName = "Unknown";
-                        int qty = 0;
-
-                        if (orderItems.isNotEmpty) {
-                          final firstOrder = orderItems.first;
-                          itemName = firstOrder.product?.name ?? "Unknown";
-                          qty = firstOrder.quantity ?? 0;
-                        }
-
-                        final isSelected = provider.selected.contains(itemName);
-
+                    Builder(
+                      builder: (context) {
                         return ListTile(
-                          dense: true,
                           contentPadding: EdgeInsets.zero,
-                          leading: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                if (isSelected) {
-                                  provider.selected.remove(itemName);
-                                } else {
-                                  provider.selected.add(itemName);
-                                }
-                              });
-                            },
-                            child: Image.asset(
-                              AssetPaths.thikIcon,
-                              width: 20.w,
-                              height: 20.h,
-                              color:
-                                  isSelected
-                                      ? const Color(0xffE20613)
-                                      : Colors.grey.shade400,
-                            ),
+                          leading: Image.asset(
+                            AssetPaths.thikIcon,
+                            width: 24.w,
+                            height: 24.h,
                           ),
                           title: Text(
-                            itemName,
+                            productName,
                             style: TextStyle(
                               fontSize: 15.sp,
-                              color: const Color(0xff333333),
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           trailing: Text(
-                            "($qty)",
+                            "$totalQuantity".toString().padLeft(2, '0'),
                             style: TextStyle(
-                              color: Colors.grey.shade600,
                               fontSize: 15.sp,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         );
                       },
                     ),
 
-                  Divider(thickness: 1, color: Colors.grey.shade300),
-                  SizedBox(height: 10.h),
+                  SizedBox(height: 16.h),
                 ],
 
-                /// ------------- Action Buttons --------------
+                /// ------------------------ Buttons ---------------------------
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xffE20613)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.r),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 36.w,
+                            vertical: 14.h,
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
-                        ),
-                        child: Text(
-                          "Cancel",
-                          style: TextStyle(
-                            color: const Color(0xffE20613),
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
+                          side: BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 1.5,
                           ),
                         ),
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Cancel"),
                       ),
                     ),
                     SizedBox(width: 15.w),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed:
-                            provider.selectedDriverId == null
-                                ? null // Disable if no driver selected
-                                : () {
-                                  widget.onSend();
-                                  Navigator.pop(context);
-                                },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xffE20613),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.r),
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
-                        ),
-                        child: Text(
-                          "Send",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
+                          backgroundColor: AppColors.primaryColor,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 36.w,
+                            vertical: 14.h,
                           ),
                         ),
+                        onPressed: () async {
+                          if (selectedDelivery == null ||
+                              provider.selectedDriverId == null) {
+                            return;
+                          }
+
+                          await provider.assignToDriver(
+                            selectedDelivery.id!,
+                            provider.selectedDriverId!,
+                          );
+                          Navigator.pop(context);
+                        },
+                        child:
+                            provider.isLoading
+                                ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                                : Text(
+                                  "Send",
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                       ),
                     ),
                   ],
@@ -280,18 +261,14 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
     );
   }
 
-  /// 🔹 Reusable read-only field
+  /// ---------------- Read Only Field ----------------
   Widget _buildReadOnlyField(String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 15.sp,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xff333333),
-          ),
+          style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
         ),
         SizedBox(height: 5.h),
         TextField(
@@ -299,10 +276,6 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
           controller: TextEditingController(text: value),
           decoration: InputDecoration(
             hintText: value.isEmpty ? 'No driver selected' : value,
-            hintStyle: TextStyle(
-              color: value.isEmpty ? Colors.grey : Colors.black,
-              fontSize: 15.sp,
-            ),
             filled: true,
             fillColor: const Color(0xffF8F8F8),
             border: OutlineInputBorder(
