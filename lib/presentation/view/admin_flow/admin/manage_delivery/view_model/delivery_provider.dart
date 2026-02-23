@@ -36,7 +36,7 @@ class DeliveryProvider extends ChangeNotifier {
   /// --------------- Admin, Driver, Manager -----------------------------------
   final selected = <String>{};
   String? selectedDriverId;
-  String? selectedDriverName;
+  String? selectedDriverName = "Driver";
 
   /// ------------- Function to call all deliveries API -------------------------
   Future<ResponseModel> getAllDeliveries() async {
@@ -91,6 +91,12 @@ class DeliveryProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        /// 🔹 Update local status instantly (UI update without reload)
+        final deliveries = allDeliveriesModel?.data ?? [];
+        final index = deliveries.indexWhere((d) => d.id == orderId);
+        if (index != -1) {
+          deliveries[index].status = "PROCESSING";
+        }
         return ResponseModel(success: true, message: response['message']);
       } else {
         return ResponseModel(success: false, message: response['message']);
