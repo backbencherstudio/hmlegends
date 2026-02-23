@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
+import 'package:hmlegends/core/services/api_service.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin_model/admin_checkme_model.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +13,9 @@ class ChangePasswordProvider with ChangeNotifier {
   ChangePasswordProvider() {
     adminCheckMe();
   }
+
+  /// ------------------- ApiService -------------------------------------------
+  final _apiService = ApiService();
 
   final TokenStorage _tokenStorage = TokenStorage();
   bool _isNewPasswordVisible = false;
@@ -65,20 +70,19 @@ class ChangePasswordProvider with ChangeNotifier {
   /// ---------------------- Admin Check Me ------------------------------------
   Future<void> adminCheckMe() async {
     try {
-      final url = Uri.parse(ApiEndpoints.adminCheckMe);
-
       final token = await _tokenStorage.getToken();
-      final response = await http.get(
-        url,
-        headers: {"Authorization": "Bearer $token"},
+      final response = await _apiService.get(
+        ApiEndpoints.adminCheckMe,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          },
+        ),
       );
 
-      logger.i("Admin Check Me URL: $url");
-      logger.i("Admin Check Me Status Code: ${response.statusCode}");
-      logger.i("Admin Check Me Response: ${response.body}");
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final decodeData = jsonDecode(response.body);
-        _adminInfoModel = AdminInfoModel.fromJson(decodeData);
+        _adminInfoModel = AdminInfoModel.fromJson(response.data);
       } else {
         logger.e("Admin Check Me Error: ${response.statusCode}");
       }
@@ -101,10 +105,7 @@ class ChangePasswordProvider with ChangeNotifier {
           "Authorization": "Bearer $token",
           "Accept": "application/json",
         },
-        body: {
-          "old_password": oldPassword,
-          "new_password": newPassword,
-        }
+        body: {"old_password": oldPassword, "new_password": newPassword},
       );
       logger.i("Change Password URL: $url");
       logger.i("Change Password Status Code: ${response.statusCode}");
