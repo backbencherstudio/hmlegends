@@ -15,10 +15,6 @@ class AssignDriverSheet extends StatefulWidget {
 }
 
 class _AssignDriverSheetState extends State<AssignDriverSheet> {
-  final selected = <String>{};
-  String? selectedDriverId;
-  String? selectedDriverName;
-
   @override
   void initState() {
     super.initState();
@@ -40,10 +36,10 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
           final deliveries = provider.allDeliveriesModel?.data ?? [];
           final drivers = provider.allDriversModel?.data ?? [];
 
-          // Set initial selected driver if available and not already set
-          if (drivers.isNotEmpty && selectedDriverId == null) {
-            selectedDriverId = drivers.first.id;
-            selectedDriverName = drivers.first.name;
+          /// Set initial selected driver if available and not already set
+          if (drivers.isNotEmpty && provider.selectedDriverId == null) {
+            provider.selectedDriverId = drivers.first.id;
+            provider.selectedDriverName = drivers.first.name;
           }
 
           return SingleChildScrollView(
@@ -67,7 +63,7 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                 ),
                 SizedBox(height: 20.h),
 
-                /// ------------ Driver Selection Dropdown ------------
+                /// ------------ Driver Selection Dropdown ---------------------
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -89,7 +85,7 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                       padding: EdgeInsets.symmetric(horizontal: 14.w),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
-                          value: selectedDriverName,
+                          value: provider.selectedDriverName,
                           isExpanded: true,
                           icon: const Icon(Icons.arrow_drop_down),
                           hint: Text(
@@ -111,7 +107,7 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                               }).toList(),
                           onChanged: (String? newValue) {
                             setState(() {
-                              selectedDriverId = newValue;
+                              provider.selectedDriverId = newValue;
                               // final selectedDriver = drivers.firstWhere(
                               //       (d) => d.id == newValue,
                               //   orElse: () => {},
@@ -127,7 +123,10 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                 SizedBox(height: 12.h),
 
                 /// ------------ Driver ID Field ------------
-                _buildReadOnlyField("Driver’s ID", selectedDriverId ?? ''),
+                _buildReadOnlyField(
+                  "Driver’s ID",
+                  provider.selectedDriverId ?? '',
+                ),
                 SizedBox(height: 15.h),
 
                 /// ------------- Loading State ---------------
@@ -173,7 +172,7 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                           qty = firstOrder.quantity ?? 0;
                         }
 
-                        final isSelected = selected.contains(itemName);
+                        final isSelected = provider.selected.contains(itemName);
 
                         return ListTile(
                           dense: true,
@@ -182,9 +181,9 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                             onTap: () {
                               setState(() {
                                 if (isSelected) {
-                                  selected.remove(itemName);
+                                  provider.selected.remove(itemName);
                                 } else {
-                                  selected.add(itemName);
+                                  provider.selected.add(itemName);
                                 }
                               });
                             },
@@ -248,7 +247,7 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed:
-                            selectedDriverId == null
+                            provider.selectedDriverId == null
                                 ? null // Disable if no driver selected
                                 : () {
                                   widget.onSend();
