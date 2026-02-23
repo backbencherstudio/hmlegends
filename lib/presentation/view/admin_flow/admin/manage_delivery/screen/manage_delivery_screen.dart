@@ -65,13 +65,36 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
                 itemBuilder: (context, index) {
                   var branch = provider.allDeliveriesModel!.data![index];
 
+                  print("======== status : ${branch.status}");
                   return BranchCard(
                     name: branch.user?.name ?? "N/A",
                     totalProducts: branch.totalQuantity ?? 0,
                     address: branch.user?.address ?? "N/A",
-                    onAssignTap: () {
-                      // Open bottom sheet
-                      showModalBottomSheet(
+                    backgroundColor: WidgetStateProperty.all<Color>(
+                      branch.status == "PROCESSING" ||
+                              branch.status == "APPROVED" ||
+                              branch.status == "PENDING" ||
+                              branch.status == "SHIPPED" ||
+                              branch.status == "DELIVERED" ||
+                              branch.status == "CANCELLED" ||
+                              branch.status == "COMPLETED"
+                          ? Colors.green
+                          : AppColors.primaryColor,
+                    ),
+                    text:
+                        branch.status == "PROCESSING" ||
+                                branch.status == "APPROVED" ||
+                                branch.status == "PENDING" ||
+                                branch.status == "SHIPPED" ||
+                                branch.status == "DELIVERED" ||
+                                branch.status == "CANCELLED" ||
+                                branch.status == "COMPLETED"
+                            ? "Processing"
+                            : "Assign to Driver",
+
+                    onAssignTap: () async {
+                      /// ------------ Open bottom sheet ---------------
+                      await showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
                         backgroundColor: Colors.white,
