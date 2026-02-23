@@ -25,7 +25,7 @@ class PendingUserList extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.bgColor,
         elevation: 0,
       ),
       body:
