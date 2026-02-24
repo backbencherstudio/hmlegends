@@ -1,26 +1,37 @@
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hmlegends/presentation/view/branch_manager_flow/orders/data/get_all_products_model.dart';
 import '../../../../../core/constant/api_endpoint.dart';
 import '../../../../../core/services/api_service.dart';
-import '../../Invoice/data/get_invoices_details_model.dart';
 
 class GetProductsViewmodel extends ChangeNotifier {
+  GetProductsViewmodel() {
+    fetchProducts();
+  }
+
+  /// ------------------------- Loading State ----------------------------------
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
 
   String _errorMessage = '';
+
   String get errorMessage => _errorMessage;
 
+  /// ------------------------- Api Service  -----------------------------------
   final ApiService _apiService = ApiService();
 
+  /// ------------------ List of Products Model --------------------------------
   List<Products> _products = [];
+
   List<Products> get products => _products;
 
+  /// -------------------- Next Cursor -----------------------------------------
   String? _nextCursor;
+
   String? get nextCursor => _nextCursor;
 
+  /// ----------------------------- Fetch Products -----------------------------
   Future<bool> fetchProducts({bool loadMore = false}) async {
     if (!loadMore) {
       _isLoading = true;
@@ -38,17 +49,10 @@ class GetProductsViewmodel extends ChangeNotifier {
         debugPrint("Load More → Next Cursor: $_nextCursor");
       }
 
-      final response = await _apiService.get(
-        ApiEndpoints.getAllProducts,
-      );
-
-      debugPrint("Status Code: ${response.statusCode}");
-      debugPrint("Response Body: ${response.data}");
-      debugPrint("======================================");
+      final response = await _apiService.get(ApiEndpoints.getAllProducts);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final jsonResponse = response.data as Map<String, dynamic>;
-        final productResponse = ProductResponse.fromJson(jsonResponse);
+        final productResponse = ProductResponse.fromJson(response.data);
 
         if (!loadMore) {
           _products = productResponse.data;
@@ -72,7 +76,9 @@ class GetProductsViewmodel extends ChangeNotifier {
     } on DioException catch (e) {
       String msg = 'Network error';
       if (e.response != null) {
-        msg = e.response?.data['message'] ?? 'Server error ${e.response?.statusCode}';
+        msg =
+            e.response?.data['message'] ??
+            'Server error ${e.response?.statusCode}';
       } else if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
         msg = 'Connection timeout. Please try again.';
