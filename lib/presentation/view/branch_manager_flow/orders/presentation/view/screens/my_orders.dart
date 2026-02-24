@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/presentation/view/widget/simple_appbar.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../../../../core/constant/asset_path.dart';
 import '../../../../../../../core/route/route_names.dart';
 import '../../../viewmodel/get_my_orders_viewmodel.dart';
@@ -25,32 +26,31 @@ class _MyOrdersState extends State<MyOrders> {
   void initState() {
     super.initState();
     expandedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    // Fetch orders via Provider
-    Future.microtask(() =>
-        Provider.of<GetOrdersViewModel>(context, listen: false).fetchOrders());
+
+    Future.microtask(() {
+      Provider.of<GetOrdersViewModel>(context, listen: false).fetchOrders();
+    });
   }
 
-  List<String> getDateList(Map<String, List<OrderData>> groupedOrders) {
+  List<String> getDateList(Map<String, List<Data>> groupedOrders) {
     final now = DateTime.now();
+
     if (selectedPeriod == 'Today') {
       return groupedOrders.keys
           .where((date) => date == DateFormat('dd/MM/yyyy').format(now))
           .toList();
     } else if (selectedPeriod == 'This Week') {
-      return groupedOrders.keys
-          .where((date) {
+      return groupedOrders.keys.where((date) {
         final d = DateFormat('dd/MM/yyyy').parse(date);
         return d.isAfter(now.subtract(const Duration(days: 6)));
-      })
-          .toList();
+      }).toList();
     } else if (selectedPeriod == 'This Month') {
-      return groupedOrders.keys
-          .where((date) {
+      return groupedOrders.keys.where((date) {
         final d = DateFormat('dd/MM/yyyy').parse(date);
         return d.month == now.month && d.year == now.year;
-      })
-          .toList();
+      }).toList();
     }
+
     return groupedOrders.keys.toList();
   }
 
@@ -69,6 +69,7 @@ class _MyOrdersState extends State<MyOrders> {
         padding: EdgeInsets.all(16.w),
         child: Column(
           children: [
+            /// 🔍 Search Bar
             Container(
               height: 45.h,
               decoration: BoxDecoration(
@@ -102,8 +103,10 @@ class _MyOrdersState extends State<MyOrders> {
                 ),
               ),
             ),
+
             SizedBox(height: 20.h),
 
+            /// 🔽 Filter Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -112,7 +115,6 @@ class _MyOrdersState extends State<MyOrders> {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 16.sp,
-                    color: const Color(0xff1D1F2C),
                   ),
                 ),
                 Row(
@@ -122,7 +124,6 @@ class _MyOrdersState extends State<MyOrders> {
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 14.sp,
-                        color: const Color(0xff4A4C56),
                       ),
                     ),
                     PopupMenuButton<String>(
@@ -130,41 +131,42 @@ class _MyOrdersState extends State<MyOrders> {
                       onSelected: (value) {
                         setState(() {
                           selectedPeriod = value;
-                          if (value == 'Today') {
-                            expandedDate =
-                                DateFormat('dd/MM/yyyy').format(DateTime.now());
-                          } else {
-                            expandedDate = null;
-                          }
+                          expandedDate =
+                              value == 'Today'
+                                  ? DateFormat(
+                                    'dd/MM/yyyy',
+                                  ).format(DateTime.now())
+                                  : null;
                         });
                       },
-                      itemBuilder: (context) => const [
-                        PopupMenuItem(
-                          value: 'Today',
-                          child: Text('Today'),
-                        ),
-                        PopupMenuItem(
-                          value: 'This Week',
-                          child: Text('This Week'),
-                        ),
-                        PopupMenuItem(
-                          value: 'This Month',
-                          child: Text('This Month'),
-                        ),
-                      ],
+                      itemBuilder:
+                          (context) => const [
+                            PopupMenuItem(value: 'Today', child: Text('Today')),
+                            PopupMenuItem(
+                              value: 'This Week',
+                              child: Text('This Week'),
+                            ),
+                            PopupMenuItem(
+                              value: 'This Month',
+                              child: Text('This Month'),
+                            ),
+                          ],
                     ),
                   ],
                 ),
               ],
             ),
+
             Divider(height: 20.h),
 
+            /// 📦 Orders List
             Expanded(
               child: Consumer<GetOrdersViewModel>(
                 builder: (context, vm, child) {
                   if (vm.isLoading) {
                     return const Center(child: CircularProgressIndicator());
                   }
+
                   if (vm.error != null) {
                     return Center(child: Text(vm.error!));
                   }
@@ -178,12 +180,7 @@ class _MyOrdersState extends State<MyOrders> {
 
                   return ListView.separated(
                     itemCount: dates.length,
-                    separatorBuilder: (context, index) => Divider(
-                      thickness: 0.8.h,
-                      color: const Color(0xffE0E0E0),
-                      indent: 10.w,
-                      endIndent: 10.w,
-                    ),
+                    separatorBuilder: (_, __) => Divider(thickness: 0.8.h),
                     itemBuilder: (context, index) {
                       final date = dates[index];
                       final isExpanded = expandedDate == date;
@@ -191,14 +188,12 @@ class _MyOrdersState extends State<MyOrders> {
 
                       return Column(
                         children: [
+                          /// --------------------- Date Header ----------------
                           ListTile(
-                            contentPadding:
-                            EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
                             leading: Text(
                               '${index + 1}.',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xff4A4C56),
                                 fontSize: 16.sp,
                               ),
                             ),
@@ -207,7 +202,6 @@ class _MyOrdersState extends State<MyOrders> {
                               style: TextStyle(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w500,
-                                color: const Color(0xff4A4C56),
                               ),
                             ),
                             trailing: IconButton(
@@ -215,8 +209,6 @@ class _MyOrdersState extends State<MyOrders> {
                                 isExpanded
                                     ? Icons.keyboard_arrow_up_sharp
                                     : Icons.keyboard_arrow_down_sharp,
-                                color: Colors.grey.shade600,
-                                size: 22.w,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -226,56 +218,74 @@ class _MyOrdersState extends State<MyOrders> {
                             ),
                           ),
 
+                          /// ----------------- Expanded Items -----------------
                           if (isExpanded)
-                            Padding(
-                              padding: EdgeInsets.only(left: 2.w, bottom: 8.h),
-                              child: Column(
-                                children: ordersOfDate.map((order) {
-                                  return ListTile(
-                                    title: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        ...order.items.map((item) {
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 6),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                            Column(
+                              children:
+                                  ordersOfDate.map((order) {
+                                    return Column(
+                                      children:
+                                          order.orderItems!.map((item) {
+                                            return Column(
                                               children: [
-                                                Container(
-                                                  width: 50.w,
-                                                  height: 50.h,
-
+                                                ListTile(
+                                                  leading: Container(
+                                                    width: 50.w,
+                                                    height: 50.h,
+                                                    clipBehavior:
+                                                        Clip.antiAlias,
                                                     decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(30.r),
-                                          ),
-                                                    child: Image.asset('assets/images/food_burger.png')
-
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12.r,
+                                                          ),
+                                                    ),
+                                                    child: Image.network(
+                                                      item.productImage ?? '',
+                                                      fit: BoxFit.cover,
+                                                      errorBuilder:
+                                                          (
+                                                            _,
+                                                            __,
+                                                            ___,
+                                                          ) => const Icon(
+                                                            Icons
+                                                                .image_not_supported,
+                                                          ),
+                                                      loadingBuilder: (
+                                                        context,
+                                                        child,
+                                                        progress,
+                                                      ) {
+                                                        if (progress == null) {
+                                                          return child;
+                                                        }
+                                                        return const Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                                strokeWidth: 2,
+                                                              ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                  title: Text(
+                                                    item.product ?? '',
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  trailing: Text(
+                                                    "${item.quantity ?? 0} Pcs",
+                                                  ),
                                                 ),
-                                                Text(
-                                                  item.product.name,
-                                                  style: const TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w600),
-                                                ),
-                                                Text(
-                                                  "${item.quantity} × ${item.product.price}",
-                                                  style:
-                                                  const TextStyle(fontSize: 16),
-                                                ),
+                                                Divider(thickness: 0.6.h),
                                               ],
-                                            ),
-                                          );
-                                        }).toList(),
-                                        const Divider(),
-                                        Text("Total Quantity: ${order.totalQuantity}"),
-                                        Text("Total Amount: ${order.totalAmount}"),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
+                                            );
+                                          }).toList(),
+                                    );
+                                  }).toList(),
                             ),
                         ],
                       );
