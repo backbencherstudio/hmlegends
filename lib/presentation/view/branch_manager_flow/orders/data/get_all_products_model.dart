@@ -51,7 +51,7 @@ class ProductResponse {
 class Products {
   final String id;
   final String name;
-  final String image;
+  final dynamic image;
   final int stock;
   final double price;
   final String stockStatus;
@@ -71,7 +71,7 @@ class Products {
     return Products(
       id: json['id'] as String,
       name: json['name'] as String,
-      image: json['image'] as String,
+      image: json['image'],
       stock: json['stock'] as int,
       price: (json['price'] as num).toDouble(),
       stockStatus: json['stock_status'] as String,
@@ -94,7 +94,7 @@ class Products {
   Products copyWith({
     String? id,
     String? name,
-    String? image,
+    dynamic image,
     int? stock,
     double? price,
     String? stockStatus,
