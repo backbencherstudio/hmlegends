@@ -5,25 +5,35 @@ import '../../../../../core/services/api_service.dart';
 import '../data/create_order_model.dart';
 
 class OrderViewmodel extends ChangeNotifier {
+  /// ------------------ Loading State -----------------------------------------
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
 
+  /// ----------------------- Error Message ------------------------------------
   String _errorMessage = '';
+
   String get errorMessage => _errorMessage;
 
+  /// ------------------ Api Service -------------------------------------------
   final ApiService _apiService = ApiService();
 
-  OrderData? _orderData;
-  OrderData? get orderData => _orderData;
+  /// ------------------ Order Data --------------------------------------------
+  OrderResponseModel _orderData = OrderResponseModel();
 
-  bool _hasPlacedToday = false;   // ✅ new flag
+  OrderResponseModel? get orderData => _orderData;
+
+  bool _hasPlacedToday = false; // ✅ new flag
   bool get hasPlacedToday => _hasPlacedToday;
 
-  List<ProductSelectModel> _productList = [];
+  final List<ProductSelectModel> _productList = [];
+
   List<ProductSelectModel> get productList => _productList;
 
   void addProduct(ProductSelectModel product) {
-    final index = _productList.indexWhere((e) => e.productId == product.productId);
+    final index = _productList.indexWhere(
+      (e) => e.productId == product.productId,
+    );
 
     if (index != -1) {
       _productList[index] = product;
@@ -31,7 +41,9 @@ class OrderViewmodel extends ChangeNotifier {
       _productList.add(product);
     }
 
-    debugPrint('Products: ${_productList.map((e) => '${e.productId} = ${e.productQty}')}');
+    debugPrint(
+      'Products: ${_productList.map((e) => '${e.productId} = ${e.productQty}')}',
+    );
     notifyListeners();
   }
 
@@ -44,17 +56,13 @@ class OrderViewmodel extends ChangeNotifier {
   Future<bool> placeOrder() async {
     _isLoading = true;
     _errorMessage = '';
-    _orderData = null;
     notifyListeners();
 
     try {
       final body = {
         "products": [
-          {
-            "product_id": "cmia5qjk80005ctonnrxrq0p8",
-            "quantity": 3
-          }
-        ]
+          {"product_id": "c(cmm09s1kv000dkgs8d9l9xwu0", "quantity": 1},
+        ],
       };
 
       debugPrint("=== PLACE ORDER API CALLED ===");
@@ -64,25 +72,27 @@ class OrderViewmodel extends ChangeNotifier {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final jsonResponse = response.data as Map<String, dynamic>;
-        final orderResponse = OrderResponseModel.fromJson(jsonResponse);
+        final orderResponse = OrderResponseModel.fromJson(response.data);
 
-        _orderData = orderResponse.order;
+        _orderData = orderResponse;
 
-        _hasPlacedToday = true;   // ✅ set flag here
+        _hasPlacedToday = true;
 
         _isLoading = false;
         notifyListeners();
         return true;
       } else {
-        final msg = response.data['message'] ?? 'Failed to place order. Try again.';
+        final msg =
+            response.data['message'] ?? 'Failed to place order. Try again.';
         _errorMessage = msg;
       }
     } on DioException catch (e) {
       String msg = 'Network error';
 
       if (e.response != null) {
-        msg = e.response?.data['message'] ?? 'Server error ${e.response?.statusCode}';
+        msg =
+            e.response?.data['message'] ??
+            'Server error ${e.response?.statusCode}';
       } else if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout ||
           e.type == DioExceptionType.sendTimeout) {
@@ -102,7 +112,6 @@ class OrderViewmodel extends ChangeNotifier {
   }
 
   void clear() {
-    _orderData = null;
     _errorMessage = '';
     _isLoading = false;
     _hasPlacedToday = false;

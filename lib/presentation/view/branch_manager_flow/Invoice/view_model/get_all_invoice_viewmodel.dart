@@ -53,7 +53,7 @@ class GetAllInvoiceProvider extends ChangeNotifier {
         if (_invoiceResponse!.data.invoices.isNotEmpty) {
           final first = _invoiceResponse!.data.invoices.first;
           debugPrint("First Invoice: OrderID=${first.orderId}, "
-              "Status=${first.status}, Date=${first.createdAt}");
+              "Status=${first.totalQuantity}, Date=${first.createdAt}");
         }
 
         _isLoading = false;

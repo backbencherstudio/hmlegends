@@ -257,14 +257,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       return _buildInvoiceRow(
                         index: displayIndex,
                         date: date,
-                        invoicId: invoice.orderId ?? 'N/A',
-                        totalItems:
-                            invoice.sku
-                                .split(',')
-                                .where((e) => e.isNotEmpty)
-                                .length ??
-                            0,
-                        status: invoice.status ?? 'Unknown',
+                        invoiceId: invoice.orderId ?? 'N/A',
+                        totalItems: invoice.totalQuantity.toString(),
                         onViewPressed: () async {
                           await context
                               .read<GetInvoiceDetailViewmodel>()
@@ -401,18 +395,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   Widget _buildInvoiceRow({
     required int index,
     required String date,
-    required String invoicId,
-    required int totalItems,
-    required String status,
+    required String invoiceId,
+    required String totalItems,
     required VoidCallback onViewPressed,
   }) {
-    final statusColor =
-        status.toLowerCase() == 'paid'
-            ? Colors.green.shade600
-            : status.toLowerCase() == 'pending'
-            ? Colors.orange.shade600
-            : Colors.red.shade600;
-
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -450,7 +436,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 // ),
                 // const SizedBox(height: 4),
                 Text(
-                  'Items: $totalItems • Status: $status',
+                  'Total Items: $totalItems'.padLeft(2, '0'),
                   style: TextStyle(color: Colors.black),
                 ),
               ],

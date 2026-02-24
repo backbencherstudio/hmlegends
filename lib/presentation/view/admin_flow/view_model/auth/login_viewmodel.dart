@@ -28,6 +28,7 @@ class LoginViewModel with ChangeNotifier {
   final UserTypeStorage _userTypeStorage = UserTypeStorage();
 
   TokenStorage get tokenStorage => _tokenStorage;
+
   FcmTokenStorage get fcmTokenStorage => _fcmTokenStorage;
 
   /// ----------------- TextEditingController ----------------------------------
@@ -63,8 +64,11 @@ class LoginViewModel with ChangeNotifier {
   }
 
   bool _isLoading = false;
+  String? _userType;
 
   bool get isLoading => _isLoading;
+
+  String? get userType => _userType;
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -83,12 +87,7 @@ class LoginViewModel with ChangeNotifier {
       var response = await _apiService.post(
         ApiEndpoints.login,
         data: data,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-
-          },
-        ),
+        options: Options(headers: {'Content-Type': 'application/json'}),
       );
 
       final decodeData = response.data;
@@ -97,15 +96,14 @@ class LoginViewModel with ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final token = decodeData['authorization']?['refresh_token'];
         final type = decodeData['type'];
+        _userType = type;
         if (token != null) {
-
-          debugPrint("The token is======== ${token}");
+          debugPrint("The token is======== $token");
 
           await _tokenStorage.saveToken(token);
         }
         if (type != null) {
-
-          debugPrint("The token is======== ${type}");
+          debugPrint("The token is======== $type");
 
           await _userTypeStorage.saveUserType(type);
         }
