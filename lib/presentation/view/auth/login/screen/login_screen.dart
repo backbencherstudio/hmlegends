@@ -169,10 +169,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 viewModel.emailController.clear();
                 viewModel.passwordController.clear();
-                Navigator.pushNamed(
-                  context,
-                  RouteNames.mainWrapper,
-                );
+                final userRole = viewModel.userType ?? '';
+                if (userRole == 'admin') {
+                  Navigator.pushNamed(context, RouteNames.mainWrapper);
+                }else if(userRole == 'manager'){
+                  Navigator.pushNamed(context, RouteNames.branchParentScreen);
+                }else if(userRole == 'driver'){
+                  Navigator.pushNamed(context, RouteNames.driverBranchParentScreen);
+                }else{
+                  Navigator.pushNamed(context, RouteNames.mainWrapper);
+                }
               } else {
                 Fluttertoast.showToast(
                   msg: res.message,
