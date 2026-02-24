@@ -11,7 +11,7 @@ class DriverScreen extends StatefulWidget {
   const DriverScreen({super.key});
 
   @override
-  _DriverScreenState createState() => _DriverScreenState();
+  State<DriverScreen> createState() => _DriverScreenState();
 }
 
 class _DriverScreenState extends State<DriverScreen> {
