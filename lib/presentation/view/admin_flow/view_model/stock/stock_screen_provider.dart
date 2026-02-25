@@ -18,6 +18,7 @@ class StockScreenProvider extends ChangeNotifier {
 
   // ---------------- Loading State ----------------
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
 
   void _setLoading(bool value) {
@@ -27,6 +28,7 @@ class StockScreenProvider extends ChangeNotifier {
 
   // ---------------- UI Selection ----------------
   int _selectIndex = 0;
+
   int get selectIndex => _selectIndex;
 
   void toggleSelect(int index) {
@@ -34,19 +36,22 @@ class StockScreenProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  final List<String>? _data = [
+  final List<String> _data = [
     "All Products",
     "In stock",
     "Stock Low",
     "Out of Stock",
   ];
+
   List<String>? get data => _data;
 
-  String _selectedFilter = "All Products";
+  final String _selectedFilter = "All Products";
+
   String get selectedFilter => _selectedFilter;
 
   // ---------------- Product List ----------------
   AdminProductModel? _adminProductModel;
+
   AdminProductModel? get adminProductModel => _adminProductModel;
 
   Future<void> getProduct() async {
@@ -78,6 +83,7 @@ class StockScreenProvider extends ChangeNotifier {
 
   // ---------------- Single Product ----------------
   SingleProductModel? _singleProductModel;
+
   SingleProductModel? get singleProductModel => _singleProductModel;
 
   Future<void> getSingleProductProduct(String pId) async {
@@ -177,7 +183,7 @@ class StockScreenProvider extends ChangeNotifier {
     }
   }
 
-  // ---------------- Edit Product ----------------
+  /// ---------------- Edit Product ----------------
   Future<void> editProduct({
     required String pId,
     required String name,
@@ -189,26 +195,33 @@ class StockScreenProvider extends ChangeNotifier {
     try {
       final url = Uri.parse(ApiEndpoints.updateProduct(pId));
       final token = await _tokenStorage.getToken();
+
       final request = http.MultipartRequest("PATCH", url);
 
       request.headers['Authorization'] = "Bearer $token";
       request.headers['Accept'] = "application/json";
+
+      // Add fields
       request.fields['name'] = name;
       request.fields['stock'] = stock;
       request.fields['price'] = price;
 
+      // Add image if exists
       if (image != null) {
         request.files.add(
           await http.MultipartFile.fromPath("image", image.path),
         );
       }
 
-      final streamData = await request.send();
-      final response = await http.Response.fromStream(streamData);
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
       final decodeData = jsonDecode(response.body);
+      debugPrint("Update Response: $decodeData");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint("Product updated successfully: ${decodeData['message']}");
+        debugPrint("Product updated successfully");
+        await getProduct(); // refresh list
       } else {
         debugPrint("Failed to update product: ${decodeData['message']}");
       }

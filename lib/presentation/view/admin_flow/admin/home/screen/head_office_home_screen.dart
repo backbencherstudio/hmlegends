@@ -29,7 +29,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 6.h),
-            _stockCard(context),
+            //_stockCard(context),
 
             SizedBox(height: 16.h),
             _gridCards(context, homeScreenProvider),

@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://insulin-suited-appropriations-configure.trycloudflare.com';
+      'https://bible-doors-experiencing-anna.trycloudflare.com';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
 
@@ -46,6 +46,8 @@ class ApiEndpoints {
   static const String adminAllDrivers = '$baseUrl/api/auth/drivers';
   static const String adminAssignToDriver = '$baseUrl/api/delivery';
 
+  /// ---------------------- Admin Order ---------------------------------------
+  static const String getLastSevenDaysOrders = '$baseUrl/api/order/last-seven-days/admin';
   //Branch
   //static String getInvoices = '$baseUrl/api/invoice';
   static String getInvoiceDetail(String orderId) =>

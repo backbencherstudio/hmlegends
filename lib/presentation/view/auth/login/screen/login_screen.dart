@@ -79,19 +79,19 @@ class _LoginScreenState extends State<LoginScreen> {
                             hintText: 'Enter your password',
                             controller: viewModel.passwordController,
                             prefixIcon: const Icon(Icons.lock_outline),
-                            isPassword: true,
-                            showSuffixIcon: true,
+                            isPassword: viewModel.passwordVisible,
                             validator: passwordValidator,
-                            suffixIcon: IconButton(
-                              onPressed: viewModel.togglePasswordVisibility,
-                              icon: Icon(
+                            suffixIcon: GestureDetector(
+                              onTap: viewModel.togglePasswordVisibility,
+                              child: Icon(
                                 viewModel.passwordVisible
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                                color: AppColors.authTextFormFieldBorderColor,
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: AppColors.authBodyTextColor,
                               ),
                             ),
                           ),
+
                           SizedBox(height: 5.h),
                           _buildRememberMeRow(),
                           SizedBox(height: 10.h),
@@ -172,11 +172,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 final userRole = viewModel.userType ?? '';
                 if (userRole == 'admin') {
                   Navigator.pushNamed(context, RouteNames.mainWrapper);
-                }else if(userRole == 'manager'){
+                } else if (userRole == 'manager') {
                   Navigator.pushNamed(context, RouteNames.branchParentScreen);
-                }else if(userRole == 'driver'){
-                  Navigator.pushNamed(context, RouteNames.driverBranchParentScreen);
-                }else{
+                } else if (userRole == 'driver') {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.driverBranchParentScreen,
+                  );
+                } else {
                   Navigator.pushNamed(context, RouteNames.mainWrapper);
                 }
               } else {

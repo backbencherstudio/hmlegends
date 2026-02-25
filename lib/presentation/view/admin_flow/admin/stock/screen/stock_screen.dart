@@ -12,9 +12,10 @@ import '../../../../widget/dialog_button.dart';
 import '../../../admin_model/admin_product_model.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
 import '../../../view_model/stock/stock_screen_provider.dart';
-import '../widget/edit_dialog.dart';
+
 class StockScreen extends StatefulWidget {
   final bool fromBottomNav;
+
   const StockScreen({super.key, required this.fromBottomNav});
 
   @override
@@ -70,7 +71,7 @@ class _StockScreenState extends State<StockScreen> {
                   productId,
                 );
 
-                SuccessDeleteStock(
+                _successDeleteStock(
                   context,
                   'You have successfully Deleted the stock!',
                 );
@@ -91,7 +92,7 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  void SuccessDeleteStock(BuildContext context, String text) {
+  void _successDeleteStock(BuildContext context, String text) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -211,8 +212,8 @@ class _StockScreenState extends State<StockScreen> {
                               borderRadius: BorderRadius.circular(25.r),
                               color:
                                   isSelected
-                                      ?  Color(0xFFFCEBE9)
-                                      :  Color(0xFFF1F0EE),
+                                      ? Color(0xFFFCEBE9)
+                                      : Color(0xFFF1F0EE),
                             ),
                             child: Center(
                               child: Text(
@@ -220,8 +221,8 @@ class _StockScreenState extends State<StockScreen> {
                                 style: TextStyle(
                                   color:
                                       isSelected
-                                          ?  Color(0xFFE20613)
-                                          :  Color(0xFF4A4C56),
+                                          ? Color(0xFFE20613)
+                                          : Color(0xFF4A4C56),
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -248,29 +249,50 @@ class _StockScreenState extends State<StockScreen> {
                     ),
                     const Spacer(),
 
-                    GestureDetector(
-                      onTap: () {
-                        _showAddProductDialog();
+                    Consumer<StockScreenProvider>(
+                      builder: (context, provider, child) {
+                        return GestureDetector(
+                          onTap: () {
+                            _showAddProductDialog(
+                              onPressed: () async {
+                                await provider.createProduct(
+                                  name: _nameController.text,
+                                  stock: _stockController.text,
+                                  price: _priceController.text,
+                                  image: image,
+                                );
+
+                                clearInput();
+                                Navigator.pop(context);
+
+                                provider.getProduct();
+                              },
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xffE20613),
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                                child: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(width: 5.w),
+                              Text(
+                                "Add New",
+                                style: TextStyle(
+                                  color: const Color(0xffE20613),
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
                       },
-                      child: Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xffE20613),
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            child: const Icon(Icons.add, color: Colors.white),
-                          ),
-                          SizedBox(width: 5.w),
-                          Text(
-                            "Add New",
-                            style: TextStyle(
-                              color: const Color(0xffE20613),
-                              fontSize: 14.sp,
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                   ],
                 ),
@@ -330,7 +352,6 @@ class _StockScreenState extends State<StockScreen> {
                                     SizedBox(width: 12.w),
                                     Expanded(
                                       child: Column(
-
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
@@ -366,16 +387,24 @@ class _StockScreenState extends State<StockScreen> {
                                                       product.stockStatus ==
                                                               "IN_STOCK"
                                                           ? Colors.green
-                                                              .withOpacity(0.15)
+                                                              .withValues(
+                                                                alpha: 0.15,
+                                                              )
                                                           : product
                                                                   .stockStatus ==
                                                               "LOW_STOCK"
                                                           ? Colors.orange
-                                                              .withOpacity(0.15)
-                                                          : Colors.red
-                                                              .withOpacity(
-                                                                0.15,
-                                                              ),
+                                                              .withValues(
+                                                                alpha: 0.15,
+                                                              )
+                                                          : product
+                                                                  .stockStatus ==
+                                                              "OUT_OF_STOCK"
+                                                          ? Colors.red
+                                                              .withValues(
+                                                                alpha: 0.15,
+                                                              )
+                                                          : null,
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                         30.r,
@@ -395,7 +424,11 @@ class _StockScreenState extends State<StockScreen> {
                                                                       .stockStatus ==
                                                                   "LOW_STOCK"
                                                               ? Colors.orange
-                                                              : Colors.red,
+                                                              : product
+                                                                      .stockStatus ==
+                                                                  'OUT_OF_STOCK'
+                                                              ? Colors.red
+                                                              : null,
                                                     ),
 
                                                     Text(
@@ -412,7 +445,11 @@ class _StockScreenState extends State<StockScreen> {
                                                                         .stockStatus ==
                                                                     "LOW_STOCK"
                                                                 ? Colors.orange
-                                                                : Colors.red,
+                                                                : product
+                                                                        .stockStatus ==
+                                                                    'OUT_OF_STOCK'
+                                                                ? Colors.red
+                                                                : null,
                                                       ),
                                                     ),
                                                   ],
@@ -433,43 +470,45 @@ class _StockScreenState extends State<StockScreen> {
                                                 ),
                                               ),
                                               const Spacer(),
-                                              IconButton(
-                                                onPressed: () async {
-                                                  final provider =
-                                                  Provider.of<StockScreenProvider>(context, listen: false);
-
-                                                  await provider.getSingleProductProduct(product.id ?? "");
-
-                                                  if (!context.mounted) return;
-
-                                                  if (provider.singleProductModel?.data == null) {
-                                                    debugPrint("Single product not loaded");
-                                                    return;
-                                                  }
-
-                                                  EditDialog.showEditDialog(
-                                                    context,
-                                                    productId: product.id ?? "",
+                                              Consumer<StockScreenProvider>(
+                                                builder: (
+                                                  context,
+                                                  provider,
+                                                  child,
+                                                ) {
+                                                  return IconButton(
+                                                    onPressed: () async {
+                                                      _showAddProductDialog(
+                                                        onPressed: () async {
+                                                          provider.editProduct(
+                                                            pId:
+                                                                product.id ??
+                                                                '',
+                                                            name:
+                                                                _nameController
+                                                                    .text,
+                                                            stock:
+                                                                _stockController
+                                                                    .text,
+                                                            price:
+                                                                _priceController
+                                                                    .text,
+                                                            image: image,
+                                                          );
+                                                          clearInput();
+                                                          Navigator.pop(
+                                                            context,
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    icon: Image.asset(
+                                                      'assets/icons/edit_icon.png',
+                                                      scale: 3.5,
+                                                    ),
                                                   );
                                                 },
-                                                icon: Image.asset(
-                                                  'assets/icons/edit_icon.png',
-                                                  scale: 3.5,
-                                                ),
                                               ),
-
-                                              // IconButton(
-                                              //   onPressed: () async {
-                                              //     await vm.deleteProduct(
-                                              //       product.id ?? "",
-                                              //     );
-                                              //   },
-                                              //   icon: Image.asset(
-                                              //         'assets/icons/deleteIcon.png',
-                                              //         scale: 3,
-                                              //       ),
-                                              // ),
-
                                               InkWell(
                                                 onTap: () async {
                                                   showDeleteStockDialog(
@@ -502,7 +541,7 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  void _showAddProductDialog() {
+  void _showAddProductDialog({required VoidCallback onPressed}) {
     showDialog(
       context: context,
       builder: (_) {
@@ -595,20 +634,11 @@ class _StockScreenState extends State<StockScreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xffE20613),
                             ),
-                            onPressed: () async {
-                              await provider.createProduct(
-                                name: _nameController.text,
-                                stock: _stockController.text,
-                                price: _priceController.text,
-                                image: image,
-                              );
-
-                              clearInput();
-                              Navigator.pop(context);
-
-                              provider.getProduct();
-                            },
-                            child: const Text("Save"),
+                            onPressed: onPressed,
+                            child: const Text(
+                              "Save",
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                         ],
                       );

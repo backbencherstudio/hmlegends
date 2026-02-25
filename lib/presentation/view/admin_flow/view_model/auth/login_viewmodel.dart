@@ -45,6 +45,7 @@ class LoginViewModel with ChangeNotifier {
   /// ------------- Toggle Password Visibility and Remember Me -----------------
   void togglePasswordVisibility() {
     _passwordVisible = !_passwordVisible;
+    logger.d("Password Visible: $_passwordVisible");
     notifyListeners();
   }
 

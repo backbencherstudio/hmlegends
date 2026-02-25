@@ -8,11 +8,10 @@ class EditDialog extends StatelessWidget {
   const EditDialog({super.key});
 
   static Future<void> showEditDialog(
-      BuildContext context, {
-        required String productId,
-      }) async {
-    final provider =
-    Provider.of<StockScreenProvider>(context, listen: false);
+    BuildContext context, {
+    required String productId,
+  }) async {
+    final provider = Provider.of<StockScreenProvider>(context, listen: false);
 
     final product = provider.singleProductModel?.data;
 
@@ -21,14 +20,15 @@ class EditDialog extends StatelessWidget {
       return;
     }
 
-    final nameController =
-    TextEditingController(text: product.name ?? "");
+    final nameController = TextEditingController(text: product.name ?? "");
 
-    final priceController =
-    TextEditingController(text: product.price?.toString() ?? "");
+    final priceController = TextEditingController(
+      text: product.price?.toString() ?? "",
+    );
 
-    final stockController =
-    TextEditingController(text: product.stock?.toString() ?? "");
+    final stockController = TextEditingController(
+      text: product.stock?.toString() ?? "",
+    );
 
     File? image;
 
@@ -39,8 +39,9 @@ class EditDialog extends StatelessWidget {
           builder: (dialogContext, setState) {
             Future<void> pickImage() async {
               final picker = ImagePicker();
-              final pickedFile =
-              await picker.pickImage(source: ImageSource.gallery);
+              final pickedFile = await picker.pickImage(
+                source: ImageSource.gallery,
+              );
 
               if (pickedFile != null) {
                 setState(() {
@@ -58,20 +59,17 @@ class EditDialog extends StatelessWidget {
                   children: [
                     TextField(
                       controller: nameController,
-                      decoration:
-                      const InputDecoration(labelText: "Name"),
+                      decoration: const InputDecoration(labelText: "Name"),
                     ),
                     TextField(
                       controller: priceController,
                       keyboardType: TextInputType.number,
-                      decoration:
-                      const InputDecoration(labelText: "Price"),
+                      decoration: const InputDecoration(labelText: "Price"),
                     ),
                     TextField(
                       controller: stockController,
                       keyboardType: TextInputType.number,
-                      decoration:
-                      const InputDecoration(labelText: "Stock"),
+                      decoration: const InputDecoration(labelText: "Stock"),
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
@@ -81,33 +79,22 @@ class EditDialog extends StatelessWidget {
                     const SizedBox(height: 10),
 
                     // Show new picked image
-                    if (image != null)
-                      Image.file(image!, height: 100),
+                    if (image != null) Image.file(image!, height: 100),
 
                     // Show existing network image
                     if (image == null && product.image != null)
-                      Image.network(
-                        product.image!,
-                        height: 100,
-                      ),
+                      Image.network(product.image!, height: 100),
                   ],
                 ),
               ),
               actions: [
                 TextButton(
-                  onPressed: () =>
-                      Navigator.of(dialogContext).pop(),
+                  onPressed: () => Navigator.of(dialogContext).pop(),
                   child: const Text('Cancel'),
                 ),
                 TextButton(
                   onPressed: () async {
-                    await provider.editProduct(
-                      pId: productId,
-                      name: nameController.text,
-                      price: priceController.text,
-                      stock: stockController.text,
-                      image: image,
-                    );
+                    await provider.editProduct(pId: productId, image: image, name: '', stock: '', price: '');
 
                     if (!dialogContext.mounted) return;
 

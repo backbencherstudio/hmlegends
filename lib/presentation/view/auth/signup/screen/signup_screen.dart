@@ -97,7 +97,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 prefixIcon: Icon(Icons.lock_outline),
                 controller: provider.passwordController,
                 isPassword: true,
-                showSuffixIcon: true,
                 validator: passwordValidator,
               ),
             ],

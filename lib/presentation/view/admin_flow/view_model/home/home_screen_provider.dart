@@ -6,13 +6,19 @@ import 'package:http/http.dart' as http;
 
 import '../../../../../core/network/network_service.dart';
 import '../../admin_model/invoice_status_model.dart';
+import '../../admin_model/order/get_last_seven_days_orders_model.dart';
 import '../../admin_model/pending_userModel.dart';
 
 class HomeScreenProvider extends ChangeNotifier {
   HomeScreenProvider() {
     statusGet();
     getPendingUser();
+    getLastSevenDaysOrders();
   }
+
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
 
   final TokenStorage _tokenStorage = TokenStorage();
 
@@ -24,7 +30,13 @@ class HomeScreenProvider extends ChangeNotifier {
 
   PendingUserModel? get pendingUserModel => _pendingUserModel;
 
+  GetLastSevenDaysOrdersModel? _getLastSevenDaysOrdersModel;
+
+  GetLastSevenDaysOrdersModel? get getLastSevenDaysOrdersModel =>
+      _getLastSevenDaysOrdersModel;
+
   String? loadingUserId;
+
 
   //    Get Admin Status
   Future<void> statusGet() async {
@@ -79,7 +91,7 @@ class HomeScreenProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //    Accept / Reject
+  /// --------------------    Accept / Reject Function -------------------------
   Future<void> acceptRequest(String userId, String status) async {
     loadingUserId = userId;
     notifyListeners();
@@ -117,5 +129,45 @@ class HomeScreenProvider extends ChangeNotifier {
 
     // Refresh list after approval
     await getPendingUser();
+  }
+
+  /// ---------------- Function to call Get last 7 days Orders -----------------
+  Future<void> getLastSevenDaysOrders() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      final url = Uri.parse(ApiEndpoints.getLastSevenDaysOrders);
+      final token = await _tokenStorage.getToken();
+      final response = await http.get(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-type": "application/json",
+        },
+      );
+      final decodeData = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _getLastSevenDaysOrdersModel = GetLastSevenDaysOrdersModel.fromJson(
+          decodeData,
+        );
+        // Log the data to verify
+        if (_getLastSevenDaysOrdersModel?.data != null) {
+          for (var item in _getLastSevenDaysOrdersModel!.data!) {
+            logger.d(
+              "Date: ${item.plainDate}, Quantity: ${item.totalQuantity}",
+            );
+          }
+        }
+        logger.d("The last 7 days orders success ${decodeData['message']}");
+      } else {
+        logger.d("The last 7 days orders failed ${decodeData['message']}");
+      }
+    } catch (e) {
+      logger.d("The last 7 days orders error: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

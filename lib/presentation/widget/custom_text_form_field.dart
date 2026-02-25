@@ -10,14 +10,11 @@ Widget customTextFormField({
   required String? Function(String?)? validator,
   TextInputAction? textInputAction,
   bool isPassword = false,
-  bool showSuffixIcon = false,
-  bool? isVisible,
-  ValueChanged<bool>? toggleVisibility,
 }) {
   return TextFormField(
     controller: controller,
     textInputAction: textInputAction,
-    obscureText: isPassword ? !(isVisible ?? false) : false,
+    obscureText: isPassword,
     decoration: InputDecoration(
       hintText: hintText,
       labelText: labelText,
@@ -49,23 +46,7 @@ Widget customTextFormField({
         borderRadius: BorderRadius.circular(30.r),
       ),
       prefixIcon: prefixIcon,
-      suffixIcon:
-          (isPassword && showSuffixIcon)
-              ? IconButton(
-                icon: Icon(
-                  (isVisible ?? false)
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                  color: Colors.grey.shade600,
-                  size: 20.sp,
-                ),
-                onPressed: () {
-                  if (toggleVisibility != null) {
-                    toggleVisibility(!isVisible!);
-                  }
-                },
-              )
-              : null,
+      suffixIcon: suffixIcon,
     ),
     validator: validator,
   );
