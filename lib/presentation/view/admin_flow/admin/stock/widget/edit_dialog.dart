@@ -20,6 +20,7 @@ class EditDialog extends StatelessWidget {
       return;
     }
 
+
     final nameController = TextEditingController(text: product.name ?? "");
 
     final priceController = TextEditingController(

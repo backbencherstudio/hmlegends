@@ -45,7 +45,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 20.h),
                 Text(
                   'Let’s get you started!',
-                  style: AppTextStyles.authHeadline,
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    color: Color(0xFF4A4C56),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 SizedBox(height: 8.h),
                 Text(
@@ -79,14 +83,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             hintText: 'Enter your password',
                             controller: viewModel.passwordController,
                             prefixIcon: const Icon(Icons.lock_outline),
-                            isPassword: viewModel.passwordVisible,
+                            isPassword: !viewModel.passwordVisible,
                             validator: passwordValidator,
                             suffixIcon: GestureDetector(
                               onTap: viewModel.togglePasswordVisibility,
                               child: Icon(
                                 viewModel.passwordVisible
-                                    ? Icons.visibility_off_outlined
-                                    : Icons.visibility_outlined,
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
                                 color: AppColors.authBodyTextColor,
                               ),
                             ),

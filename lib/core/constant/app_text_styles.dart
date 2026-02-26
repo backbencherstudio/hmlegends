@@ -29,8 +29,8 @@ class AppTextStyles {
   );
 
   static TextStyle appHeaderText = TextStyle(
-    fontSize: 20.sp,
-    fontWeight: FontWeight.w600,
+    fontSize: 16.sp,
+    fontWeight: FontWeight.w500,
     color: Color(0xFF1D1F2C),
   );
 

@@ -44,11 +44,11 @@ class _StockScreenState extends State<StockScreen> {
     image = null;
   }
 
-  void showDeleteStockDialog(
+  Future<void> showDeleteStockDialog(
     BuildContext context,
     String text,
     String productId,
-  ) {
+  ) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -92,7 +92,7 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  void _successDeleteStock(BuildContext context, String text) {
+  Future<void> _successDeleteStock(BuildContext context, String text) async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -306,6 +306,7 @@ class _StockScreenState extends State<StockScreen> {
                             itemBuilder: (context, index) {
                               final product = filteredProducts[index];
 
+                              /// -------- Stock Product Card ------------------
                               return Container(
                                 margin: EdgeInsets.symmetric(vertical: 6.h),
                                 padding: EdgeInsets.all(12.w),
@@ -319,6 +320,7 @@ class _StockScreenState extends State<StockScreen> {
                                 ),
                                 child: Row(
                                   children: [
+                                    /// ----------- Product Image --------------
                                     Container(
                                       width: 90.w,
                                       height: 90.w,
@@ -350,6 +352,8 @@ class _StockScreenState extends State<StockScreen> {
                                     ),
 
                                     SizedBox(width: 12.w),
+
+                                    /// ----------- Product Details ------------
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
@@ -478,7 +482,7 @@ class _StockScreenState extends State<StockScreen> {
                                                 ) {
                                                   return IconButton(
                                                     onPressed: () async {
-                                                      _showAddProductDialog(
+                                                      _showEditProductDialog(
                                                         onPressed: () async {
                                                           provider.editProduct(
                                                             pId:
@@ -509,18 +513,26 @@ class _StockScreenState extends State<StockScreen> {
                                                   );
                                                 },
                                               ),
-                                              InkWell(
-                                                onTap: () async {
-                                                  showDeleteStockDialog(
-                                                    context,
-                                                    'Are you sure you want to delete this item?',
-                                                    product.id ?? "",
+                                              Consumer<StockScreenProvider>(
+                                                builder: (
+                                                  BuildContext context,
+                                                  StockScreenProvider value,
+                                                  Widget? child,
+                                                ) {
+                                                  return InkWell(
+                                                    onTap: () async {
+                                                      showDeleteStockDialog(
+                                                        context,
+                                                        'Are you sure you want to delete this item?',
+                                                        product.id ?? "",
+                                                      );
+                                                    },
+                                                    child: Image.asset(
+                                                      'assets/icons/deleteIcon.png',
+                                                      scale: 3,
+                                                    ),
                                                   );
                                                 },
-                                                child: Image.asset(
-                                                  'assets/icons/deleteIcon.png',
-                                                  scale: 3,
-                                                ),
                                               ),
                                             ],
                                           ),
@@ -541,7 +553,8 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  void _showAddProductDialog({required VoidCallback onPressed}) {
+  /// ---------------------- Show Add Product Dialog ---------------------------
+  Future<void> _showAddProductDialog({required VoidCallback onPressed}) async {
     showDialog(
       context: context,
       builder: (_) {
@@ -561,7 +574,120 @@ class _StockScreenState extends State<StockScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Add New Product",
+                    'Add New Product',
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+
+                  SizedBox(height: 16.h),
+
+                  GestureDetector(
+                    onTap: _pickImage,
+                    child: Container(
+                      height: 150.h,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.grey[200],
+                        image:
+                            image != null
+                                ? DecorationImage(
+                                  image: FileImage(image!),
+                                  fit: BoxFit.cover,
+                                )
+                                : null,
+                      ),
+                      child:
+                          image == null
+                              ? const Center(
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  size: 40,
+                                  color: Colors.grey,
+                                ),
+                              )
+                              : null,
+                    ),
+                  ),
+
+                  SizedBox(height: 16.h),
+
+                  CustomTextField(
+                    hint: "Product Name",
+                    controller: _nameController,
+                  ),
+                  SizedBox(height: 12.h),
+
+                  CustomTextField(hint: "Price", controller: _priceController),
+                  SizedBox(height: 12.h),
+
+                  CustomTextField(hint: "Stock", controller: _stockController),
+
+                  SizedBox(height: 20.h),
+
+                  Consumer<StockScreenProvider>(
+                    builder: (context, provider, child) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              clearInput();
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(color: Colors.black54),
+                            ),
+                          ),
+                          SizedBox(width: 10.w),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xffE20613),
+                            ),
+                            onPressed: onPressed,
+                            child: const Text(
+                              "Save",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// ------------------------ Show Edit Product Dialog ------------------------
+  Future<void> _showEditProductDialog({required VoidCallback onPressed}) async {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          insetPadding: const EdgeInsets.all(20),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: Colors.white,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Edit Product',
                     style: TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w600,

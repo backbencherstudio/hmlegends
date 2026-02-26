@@ -17,9 +17,7 @@ class InvoiceDetailModel {
       InvoiceDetailModel(
         success: json["success"] ?? false,
         message: json["message"] ?? "",
-        data: json["data"] != null
-            ? InvoiceData.fromJson(json["data"])
-            : null,
+        data: json["data"] != null ? InvoiceData.fromJson(json["data"]) : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -87,28 +85,25 @@ class InvoiceData {
 // =============================
 
 class Person {
-  final String firstName;
-  final String lastName;
+  final String name;
   final String address;
   final String phoneNumber;
 
   Person({
-    required this.firstName,
-    required this.lastName,
+    required this.name,
     required this.address,
     required this.phoneNumber,
   });
 
   factory Person.fromJson(Map<String, dynamic> json) => Person(
-    firstName: json["first_name"] ?? "",
-    lastName: json["last_name"] ?? "",
+    name: json["name"] ?? "",
     address: json["address"] ?? "",
     phoneNumber: json["phone_number"] ?? "",
   );
 
   Map<String, dynamic> toJson() => {
-    "first_name": firstName,
-    "last_name": lastName,
+    "name": name,
+
     "address": address,
     "phone_number": phoneNumber,
   };
@@ -138,9 +133,10 @@ class Order {
     status: json["status"] ?? "",
     totalAmount: json["total_amount"] ?? 0,
     totalQuantity: json["total_quantity"] ?? 0,
-    orderItems: (json["order_items"] as List? ?? [])
-        .map((x) => OrderItem.fromJson(x))
-        .toList(),
+    orderItems:
+        (json["order_items"] as List? ?? [])
+            .map((x) => OrderItem.fromJson(x))
+            .toList(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -159,7 +155,7 @@ class Order {
 class OrderItem {
   final int quantity;
   final int price;
-  final Product product;
+  final String? product;
 
   OrderItem({
     required this.quantity,
@@ -170,13 +166,13 @@ class OrderItem {
   factory OrderItem.fromJson(Map<String, dynamic> json) => OrderItem(
     quantity: json["quantity"] ?? 0,
     price: json["price"] ?? 0,
-    product: Product.fromJson(json["product"] ?? {}),
+    product: json['product']
   );
 
   Map<String, dynamic> toJson() => {
     "quantity": quantity,
     "price": price,
-    "product": product.toJson(),
+    "product": product,
   };
 }
 
@@ -184,19 +180,14 @@ class OrderItem {
 //            PRODUCT
 // =============================
 
-class Product {
-  final String name;
-  final int price;
-
-  Product({required this.name, required this.price});
-
-  factory Product.fromJson(Map<String, dynamic> json) => Product(
-    name: json["name"] ?? "",
-    price: json["price"] ?? 0,
-  );
-
-  Map<String, dynamic> toJson() => {
-    "name": name,
-    "price": price,
-  };
-}
+// class Product {
+//   final String name;
+//   final int price;
+//
+//   Product({required this.name, required this.price});
+//
+//   factory Product.fromJson(Map<String, dynamic> json) =>
+//       Product(name: json["name"] ?? "", price: json["price"] ?? 0);
+//
+//   Map<String, dynamic> toJson() => {"name": name, "price": price};
+// }

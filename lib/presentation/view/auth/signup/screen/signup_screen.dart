@@ -22,6 +22,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,7 +107,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _label(String text) => Text(text, style: AppTextStyles.appHeaderText);
+  Widget _label(String text) => Text(
+    text,
+    style: TextStyle(
+      fontSize: 12.sp,
+      color: Colors.black,
+      fontWeight: FontWeight.w400,
+    ),
+  );
 
   Widget _buildSignUpButton() => Consumer<RegisterProvider>(
     builder: (context, provider, child) {

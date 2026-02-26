@@ -21,20 +21,19 @@ class SignUpFormButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         decoration: BoxDecoration(
-          color: AppColors.authTextFormFieldFillColor,
-          borderRadius: BorderRadius.circular(30.sp),
-          border: Border.all(color: AppColors.authTextFormFieldBorderColor),
+          color: Color(0xFFF6F6F7),
+          borderRadius: BorderRadius.circular(32.sp),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
               image,
-              width: 20.w,
-              height: 20.h,
+              width: 24.w,
+              height: 24.h,
             ),
             SizedBox(width: 10.w),
             Text(

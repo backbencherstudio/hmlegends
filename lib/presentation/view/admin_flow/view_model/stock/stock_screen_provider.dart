@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
 import 'package:http/http.dart' as http;
-
+import '../../../../../core/network/network_service.dart';
 import '../../admin_model/admin_product_model.dart';
 import '../../admin_model/single_product_model.dart';
 
@@ -16,7 +15,7 @@ class StockScreenProvider extends ChangeNotifier {
 
   final TokenStorage _tokenStorage = TokenStorage();
 
-  // ---------------- Loading State ----------------
+  /// ----------------------------- Loading State ------------------------------
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
@@ -26,7 +25,7 @@ class StockScreenProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ---------------- UI Selection ----------------
+  /// ------------------------------ UI Selection -------------------------------
   int _selectIndex = 0;
 
   int get selectIndex => _selectIndex;
@@ -49,11 +48,12 @@ class StockScreenProvider extends ChangeNotifier {
 
   String get selectedFilter => _selectedFilter;
 
-  // ---------------- Product List ----------------
+  /// ------------------------ Product List ------------------------------------
   AdminProductModel? _adminProductModel;
 
   AdminProductModel? get adminProductModel => _adminProductModel;
 
+  /// ----------------------- Get Products --------------------------------------
   Future<void> getProduct() async {
     _setLoading(true);
     try {
@@ -81,7 +81,7 @@ class StockScreenProvider extends ChangeNotifier {
     }
   }
 
-  // ---------------- Single Product ----------------
+  /// ------------------------- Single Product ---------------------------------
   SingleProductModel? _singleProductModel;
 
   SingleProductModel? get singleProductModel => _singleProductModel;
@@ -102,18 +102,18 @@ class StockScreenProvider extends ChangeNotifier {
       final decodeData = jsonDecode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         _singleProductModel = SingleProductModel.fromJson(decodeData);
-        debugPrint("Success single Product: ${decodeData['message']}");
+        logger.d("Success single Product: ${decodeData['message']}");
       } else {
-        debugPrint("Failed single Product: ${decodeData['message']}");
+        logger.d("Failed single Product: ${decodeData['message']}");
       }
     } catch (error) {
-      debugPrint("Error fetching single product: $error");
+      logger.d("Error fetching single product: $error");
     } finally {
       _setLoading(false);
     }
   }
 
-  // ---------------- Delete Product ----------------
+  /// ------------------------- Delete Product ---------------------------------
   Future<void> deleteProduct(String pid) async {
     _setLoading(true);
     try {
@@ -127,21 +127,22 @@ class StockScreenProvider extends ChangeNotifier {
         },
       );
 
+      logger.i("Response url : $url");
       final decodeData = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint("Product deleted successfully: ${decodeData['message']}");
+        logger.d("Product deleted successfully: ${decodeData['message']}");
       } else {
-        debugPrint("Failed to delete product: ${decodeData['message']}");
+        logger.d("Failed to delete product: ${decodeData['message']}");
       }
     } catch (error) {
-      debugPrint("Error deleting product: $error");
+      logger.d("Error deleting product: $error");
     } finally {
       _setLoading(false);
     }
   }
 
-  // ---------------- Create Product ----------------
+  /// ------------------------------ Create Product ----------------------------
   Future<void> createProduct({
     required String name,
     required String stock,
@@ -172,18 +173,18 @@ class StockScreenProvider extends ChangeNotifier {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _adminProductModel = AdminProductModel.fromJson(decodeData);
-        debugPrint("Product created successfully: ${decodeData['message']}");
+        logger.d("Product created successfully: ${decodeData['message']}");
       } else {
-        debugPrint("Failed to create product: ${decodeData['message']}");
+        logger.d("Failed to create product: ${decodeData['message']}");
       }
     } catch (error) {
-      debugPrint("Error creating product: $error");
+      logger.d("Error creating product: $error");
     } finally {
       _setLoading(false);
     }
   }
 
-  /// ---------------- Edit Product ----------------
+  /// ------------------------ Edit Product ------------------------------------
   Future<void> editProduct({
     required String pId,
     required String name,
@@ -206,27 +207,27 @@ class StockScreenProvider extends ChangeNotifier {
       request.fields['stock'] = stock;
       request.fields['price'] = price;
 
-      // Add image if exists
       if (image != null) {
         request.files.add(
           await http.MultipartFile.fromPath("image", image.path),
         );
+        notifyListeners();
       }
 
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
       final decodeData = jsonDecode(response.body);
-      debugPrint("Update Response: $decodeData");
+      logger.d("Update Response: $decodeData");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint("Product updated successfully");
+        logger.d("Product updated successfully");
         await getProduct(); // refresh list
       } else {
-        debugPrint("Failed to update product: ${decodeData['message']}");
+        logger.d("Failed to update product: ${decodeData['message']}");
       }
     } catch (error) {
-      debugPrint("Error updating product: $error");
+      logger.d("Error updating product: $error");
     } finally {
       _setLoading(false);
     }

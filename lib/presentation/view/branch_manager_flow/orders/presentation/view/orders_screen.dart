@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import 'package:provider/provider.dart';
+import '../../../../../../core/constant/asset_path.dart';
 import '../../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../../widget/custom_app_bar.dart';
 import '../../data/get_all_products_model.dart';
@@ -37,7 +39,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
-      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
+      appBar: CustomAppBarTwo(
+        title: "Invoice",
+        profileImage: AssetPaths.personIcon,
+        notificationCount: 4,
+        colorMain: const Color(0xFFFFF5F5),
+        colorSpace: const Color(0xFFFFF5F5),
+        onBackTap: () => Navigator.pop(context),
+      ),
       body: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -158,7 +167,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           SizedBox(height: 10.h),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor:  Colors.blue,
+                              backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25.r),
