@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/view_model/manage_branch_provider.dart';
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar_2.dart';
@@ -19,7 +21,33 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   String? selectedStockStatus;
 
   // Dropdown options
-  final List<String> stockStatusOptions = ['Active', 'Inactive',];
+  final List<String> stockStatusOptions = ['Active', 'Inactive'];
+
+  Future<void> _imagePicker(Image? image) async {
+    if (image == null) return;
+    // Handle image selection logic here
+      
+    // For example, you can set the selected image to a state variable
+    setState(() {
+      // selectedImage = image; // Uncomment and define selectedImage in your state
+
+    });
+     
+    }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ManageBranchProvider>(context, listen: false).getSingleBranch(
+        Provider.of<ManageBranchProvider>(
+              context,
+              listen: false,
+            ).singleBranchModel?.data?.id ??
+            "", // Replace with actual user ID
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +67,29 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildLabel("Branch name"),
-            _buildTextField("Branch name with ID"),
+            _buildTextField(
+              hint: "Branch name with ID",
+              controller: TextEditingController(
+                text:
+                    Provider.of<ManageBranchProvider>(
+                      context,
+                      listen: false,
+                    ).singleBranchModel?.data?.name,
+              ),
+            ),
 
             SizedBox(height: 16.h),
             _buildLabel("Branch location"),
-            _buildTextField("Add location"),
+            _buildTextField(
+              hint: "Add location",
+              controller: TextEditingController(
+                text:
+                    Provider.of<ManageBranchProvider>(
+                      context,
+                      listen: false,
+                    ).singleBranchModel?.data?.address,
+              ),
+            ),
 
             SizedBox(height: 16.h),
             _buildLabel("Status"),
@@ -55,8 +101,41 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
             SizedBox(height: 24.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: AuthButton(text: Text('Save & Update'), onPressed: (){}, color: AppColors.primaryColor),
-            )
+              child: Consumer<ManageBranchProvider>(
+                builder: (
+                  BuildContext context,
+                  ManageBranchProvider provider,
+                  Widget? child,
+                ) {
+                  final data = provider.singleBranchModel?.data;
+
+                  return AuthButton(
+                    text: Text(
+                      'Save & Update',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    onPressed: () {
+                      // Handle save and update logic here
+                      provider.updateBranch(
+                        userId:
+                            data?.id ?? "", // Use the actual user ID from data
+                        name: data?.name ?? "", // Use the actual name from data
+                        address:
+                            data?.address ??
+                            "", // Use the actual address from data
+                        status: selectedStockStatus ?? "Active",
+                        // image: selectedImage, // Handle image selection logic
+                      );
+                    },
+                    color: AppColors.primaryColor,
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -77,28 +156,33 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   );
 
   // TextField
-  Widget _buildTextField(String hint) => TextField(
-    decoration: InputDecoration(
-      hintText: hint,
-      hintStyle: TextStyle(color: Colors.grey[500]),
-      filled: true,
-      fillColor: AppColors.editTextFieldColor,
-      contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.r),
-        borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.r),
-        borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.r),
-        borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
-      ),
-    ),
-  );
 
+  Widget _buildTextField({String? hint, TextEditingController? controller}) =>
+      TextField(
+        controller: controller ?? TextEditingController(),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: Colors.grey[500]),
+          filled: true,
+          fillColor: AppColors.editTextFieldColor,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 14.w,
+            vertical: 14.h,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.r),
+            borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.r),
+            borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.r),
+            borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
+          ),
+        ),
+      );
 
   // Stock Status Dropdown
   Widget _buildStockStatusDropdown() => Container(
@@ -113,19 +197,15 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
         value: selectedStockStatus,
         isExpanded: true,
         icon: const Icon(Icons.arrow_drop_down),
-        hint: Text(
-          "Select",
-          style: TextStyle(color: Colors.grey[500]),
-        ),
-        dropdownColor: AppColors.editTextFieldColor, // Dropdown menu background color
+        hint: Text("Select", style: TextStyle(color: Colors.grey[500])),
+        dropdownColor:
+            AppColors.editTextFieldColor, // Dropdown menu background color
         borderRadius: BorderRadius.circular(8.r), // Dropdown menu border radius
         style: TextStyle(color: Colors.grey[600]), // Dropdown item text color
-        items: stockStatusOptions.map((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
+        items:
+            stockStatusOptions.map((String value) {
+              return DropdownMenuItem<String>(value: value, child: Text(value));
+            }).toList(),
         onChanged: (String? newValue) {
           setState(() {
             selectedStockStatus = newValue;
@@ -157,11 +237,14 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Image.asset(AssetPaths.addIcon1,height: 20.h,width: 20.w,),
+                Image.asset(AssetPaths.addIcon1, height: 20.h, width: 20.w),
                 SizedBox(width: 6.w),
                 const Text(
                   'Upload photos',
-                  style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: Colors.redAccent,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
