@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/view_model/manage_branch_provider.dart';
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../core/constant/app_colors.dart';
@@ -23,17 +26,40 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   // Dropdown options
   final List<String> stockStatusOptions = ['Active', 'Inactive'];
 
-  Future<void> _imagePicker(Image? image) async {
-    if (image == null) return;
-    // Handle image selection logic here
-      
-    // For example, you can set the selected image to a state variable
-    setState(() {
-      // selectedImage = image; // Uncomment and define selectedImage in your state
+  final ImagePicker _imagePicker = ImagePicker();
 
+  // Image selection variables
+  File? selectedImageFile;
+  String? imageFormat;
+  String? imageSize;
+
+  Future<void> _selectImage() async {
+    // Handle image selection logic here
+
+    _imagePicker.pickImage(source: ImageSource.gallery).then((pickedFile) {
+      if (pickedFile != null) {
+        // Handle the picked image file
+        File imageFile = File(pickedFile.path);
+
+        // Get file size in MB
+        int fileSizeInBytes = imageFile.lengthSync();
+        double fileSizeInMB = fileSizeInBytes / (1024 * 1024);
+
+        // Get image format from file extension
+        String extension = imageFile.path.split('.').last.toUpperCase();
+        String format = (extension == 'JPG') ? 'JPEG' : extension;
+
+        setState(() {
+          selectedImageFile = imageFile;
+          imageFormat = format;
+          imageSize = '${fileSizeInMB.toStringAsFixed(2)} MB';
+        });
+      } else {
+        // User canceled the picker
+        print('No image selected.');
+      }
     });
-     
-    }
+  }
 
   @override
   void initState() {
@@ -218,7 +244,7 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   // Upload Image Box
   Widget _buildImageUploader() => Container(
     width: double.infinity,
-    height: 160.h,
+    height: selectedImageFile != null ? 200.h : 160.h,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12.r),
       border: Border.all(color: const Color(0xFFD2D2D5)),
@@ -227,33 +253,125 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
     child: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(color: Colors.redAccent, width: 1.2),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(AssetPaths.addIcon1, height: 20.h, width: 20.w),
-                SizedBox(width: 6.w),
-                const Text(
-                  'Upload photos',
-                  style: TextStyle(
-                    color: Colors.redAccent,
-                    fontWeight: FontWeight.w600,
+          GestureDetector(
+            onTap: () => _selectImage(),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(color: Colors.redAccent, width: 1.2),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(AssetPaths.addIcon1, height: 20.h, width: 20.w),
+                  SizedBox(width: 6.w),
+                  const Text(
+                    'Upload photos',
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           SizedBox(height: 16.h),
-          Text(
-            "JPEG, PNG up to 50 MB",
-            style: TextStyle(color: Colors.grey[600], fontSize: 13.sp),
-          ),
+          if (selectedImageFile != null)
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Read-only Format Field
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8.r),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.lock, size: 16.sp, color: Colors.grey[600]),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Format',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Text(
+                              imageFormat ?? 'Unknown',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10.h),
+                // Read-only Size Field
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8.r),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.lock, size: 16.sp, color: Colors.grey[600]),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'File Size',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Text(
+                              imageSize ?? 'Unknown',
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          else
+            Text(
+              "JPEG, PNG up to 50 MB",
+              style: TextStyle(color: Colors.grey[600], fontSize: 13.sp),
+            ),
         ],
       ),
     ),
