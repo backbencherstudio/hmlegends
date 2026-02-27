@@ -65,48 +65,43 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
                 itemBuilder: (context, index) {
                   var branch = provider.allDeliveriesModel!.data![index];
 
+                  final isProcessing =
+                      branch.status == "PROCESSING" ||
+                      branch.status == "APPROVED" ||
+                      branch.status == "PENDING" ||
+                      branch.status == "SHIPPED" ||
+                      branch.status == "DELIVERED" ||
+                      branch.status == "CANCELLED" ||
+                      branch.status == "COMPLETED";
+
                   print("======== status : ${branch.status}");
                   return BranchCard(
                     name: branch.user?.name ?? "N/A",
                     totalProducts: branch.totalQuantity ?? 0,
                     address: branch.user?.address ?? "N/A",
                     backgroundColor: WidgetStateProperty.all<Color>(
-                      branch.status == "PROCESSING" ||
-                              branch.status == "APPROVED" ||
-                              branch.status == "PENDING" ||
-                              branch.status == "SHIPPED" ||
-                              branch.status == "DELIVERED" ||
-                              branch.status == "CANCELLED" ||
-                              branch.status == "COMPLETED"
-                          ? Colors.green
-                          : AppColors.primaryColor,
+                      isProcessing ? Colors.green : AppColors.primaryColor,
                     ),
-                    text:
-                        branch.status == "PROCESSING" ||
-                                branch.status == "APPROVED" ||
-                                branch.status == "PENDING" ||
-                                branch.status == "SHIPPED" ||
-                                branch.status == "DELIVERED" ||
-                                branch.status == "CANCELLED" ||
-                                branch.status == "COMPLETED"
-                            ? "Processing"
-                            : "Assign to Driver",
+                    text: isProcessing ? "Processing" : "Assign to Driver",
 
                     onAssignTap: () async {
-                      /// ------------ Open bottom sheet ---------------
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20.r),
+                      // Only show assign driver sheet if not already processing
+                      if (!isProcessing) {
+                        /// ------------ Open bottom sheet ---------------
+                        await showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20.r),
+                            ),
                           ),
-                        ),
-                        builder:
-                            (_) => AssignDriverSheet(deliveryId: branch.id),
-                      );
-                      logger.d(branch.id);
+                          builder:
+                              (_) => AssignDriverSheet(deliveryId: branch.id),
+                        );
+                        logger.d(branch.id);
+                      }
                     },
                   );
                 },
