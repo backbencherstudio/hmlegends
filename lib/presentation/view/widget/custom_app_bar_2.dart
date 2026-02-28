@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,6 +18,7 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onNotificationTap;
   final VoidCallback? onBackTap;
   final bool useBottomNavBack; // Add this parameter
+  final bool? isIconPresent;
 
   const CustomAppBarTwo({
     super.key,
@@ -31,6 +31,7 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
     required this.colorMain,
     required this.colorSpace,
     this.useBottomNavBack = false, // Default to false
+    this.isIconPresent = true, // Default to true
   });
 
   @override
@@ -54,14 +55,18 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
                   Row(
                     children: [
                       // Back arrow icon
-                      GestureDetector(
-                        onTap: onBackTap ?? () => _handleBackNavigation(context),
-                        child: Icon(
-                          Icons.arrow_back_ios,
-                          size: 20.sp,
-                          color: AppColors.authHeaderTextColor,
-                        ),
-                      ),
+                      isIconPresent == true
+                          ? GestureDetector(
+                            onTap:
+                                onBackTap ??
+                                () => _handleBackNavigation(context),
+                            child: Icon(
+                              Icons.arrow_back_ios,
+                              size: 24.sp,
+                              color: AppColors.authHeaderTextColor,
+                            ),
+                          )
+                          : SizedBox.shrink(),
                       SizedBox(width: 12.w),
                       Text(title, style: AppTextStyles.appHeaderText),
                     ],
@@ -73,8 +78,8 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
                       SizedBox(width: 20.w),
                       GestureDetector(
                         onTap:
-                        onProfileTap ??
-                                () => Navigator.pushNamed(
+                            onProfileTap ??
+                            () => Navigator.pushNamed(
                               context,
                               RouteNames.headOfficeProfileScreen,
                             ),
@@ -116,8 +121,8 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
   Widget _buildNotificationIcon(BuildContext context) {
     return GestureDetector(
       onTap:
-      onNotificationTap ??
-              () {
+          onNotificationTap ??
+          () {
             Navigator.pushNamed(context, RouteNames.notificationScreen);
           },
       child: Stack(

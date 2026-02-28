@@ -5,14 +5,44 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/constant/app_text_styles.dart';
 
-class SearchField extends  StatelessWidget {
+class SearchField extends StatefulWidget {
   const SearchField({
-    super.key, required this.hintText,
+    super.key,
+    required this.hintText,
+    required this.text,
+    required this.onChanged,
   });
+
   final String hintText;
+  final String text;
+  final ValueChanged<String> onChanged;
+
+  @override
+  State<SearchField> createState() => _SearchFieldState();
+}
+
+class _SearchFieldState extends State<SearchField> {
+  final controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.text = widget.text;
+  }
+
+  @override
+  void didUpdateWidget(covariant SearchField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text != widget.text) {
+      controller.text = widget.text;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final styleActive = TextStyle(color: Colors.black);
+    final styleHint = TextStyle(color: Colors.black54);
+    final style = widget.text.isEmpty ? styleHint : styleActive;
     return Container(
       height: 48.h,
       decoration: BoxDecoration(
@@ -20,6 +50,8 @@ class SearchField extends  StatelessWidget {
         color: AppColors.searchFieldBgColor,
       ),
       child: TextField(
+        controller: controller,
+        onChanged: (value) => widget.onChanged(value),
         decoration: InputDecoration(
           contentPadding: EdgeInsets.only(
             left: 50.w,
@@ -35,11 +67,22 @@ class SearchField extends  StatelessWidget {
               size: 24.sp,
             ),
           ),
+          suffixIcon: widget.text.isNotEmpty
+              ? GestureDetector(
+                  child: Icon(Icons.close, color: style.color),
+                  onTap: () {
+                    controller.clear();
+                    widget.onChanged('');
+                    FocusScope.of(context).requestFocus(FocusNode());
+                  },
+                )
+              : null,
           prefixIconConstraints: BoxConstraints(
             minWidth: 44.w,
             minHeight: 48.h,
           ),
-          hintText:hintText.isNotEmpty?hintText:'Search by branch name',
+          hintText:
+              widget.hintText,
           hintStyle: AppTextStyles.hintText,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,

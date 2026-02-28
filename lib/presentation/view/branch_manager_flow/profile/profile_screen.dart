@@ -19,7 +19,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               SizedBox(height: 20.h),
               Text(
-                'Are you sure you want\n            to log out?',
+                'Are you sure you want\nto log out?',
                 style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
               ),
               Row(

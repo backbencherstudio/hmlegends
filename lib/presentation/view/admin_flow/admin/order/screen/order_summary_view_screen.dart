@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
-import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
@@ -255,7 +254,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
                         //------------  Product Name ----------------------
                         Expanded(
                           child: Text(
-                            data.product?.name ?? "Product",
+                            data.product?.image ?? "N/A",
                             style: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,

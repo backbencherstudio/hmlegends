@@ -156,7 +156,7 @@ class ChangePasswordProvider with ChangeNotifier {
           await http.MultipartFile.fromPath('image', image.path),
         );
       } else {
-        debugPrint("No image provided for upload.");
+        logger.d("No image provided for upload.");
       }
 
       // Send request
@@ -166,18 +166,18 @@ class ChangePasswordProvider with ChangeNotifier {
       // Decode response
       final decodeData = jsonDecode(response.body);
 
-      debugPrint("STATUS: ${response.statusCode}");
-      debugPrint("RESPONSE: $decodeData");
+      logger.i("STATUS: ${response.statusCode}");
+      logger.i("RESPONSE: $decodeData");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint("Profile updated successfully.");
+        logger.i("Profile updated successfully.");
         return true;
       } else {
-        debugPrint("Profile update failed.");
+        logger.e("Profile update failed.");
         return false;
       }
     } catch (error) {
-      debugPrint("Admin Profile Update Error: $error");
+      logger.e("Admin Profile Update Error: $error");
       return false;
     }
   }

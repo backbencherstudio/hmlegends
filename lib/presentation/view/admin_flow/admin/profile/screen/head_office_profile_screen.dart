@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../widget/logout_dialog.dart';
@@ -30,29 +33,9 @@ class HeadOfficeProfileScreen extends StatelessWidget {
           backgroundColor: const Color(0xffFFF6F7),
 
           /// --------------------- App Bar ------------------------------------
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: Text(
-              'Profile',
-              style: TextStyle(
-                color: Color(0xFF1D1F2C),
-                fontWeight: FontWeight.w600,
-                fontSize: 20.sp,
-              ),
-            ),
-            leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(Icons.arrow_back_ios),
-            ),
-            actions: [
-              Padding(
-                padding: EdgeInsets.only(right: 8.w),
-                child: IconButton(
-                  icon: Icon(Icons.settings_outlined, size: 24.w),
-                  onPressed: () {},
-                ),
-              ),
-            ],
+          appBar: CustomAppBar(
+            profileImage: data?.avatar,
+            notificationCount: 4,
           ),
 
           body: SingleChildScrollView(
@@ -124,7 +107,10 @@ class HeadOfficeProfileScreen extends StatelessWidget {
                   title: 'Change Password',
                   isDestructive: true,
                   onTap: () {
-                    Navigator.pushNamed(context, RouteNames.headOfficeChangePasswordScreen);
+                    Navigator.pushNamed(
+                      context,
+                      RouteNames.headOfficeChangePasswordScreen,
+                    );
                   },
                 ),
                 Divider(
@@ -157,11 +143,21 @@ class _ProfileHeader extends StatelessWidget {
   final String occupation;
   final String? avatar;
 
-  const _ProfileHeader({
+  _ProfileHeader({
     required this.name,
     required this.occupation,
     required this.avatar,
   });
+
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(BuildContext context) async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      // Handle the selected image (e.g., upload to server or update UI)
+      context.read<ChangePasswordProvider>().adminCheckMe();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -183,20 +179,23 @@ class _ProfileHeader extends StatelessWidget {
         child: Column(
           children: [
             ClipOval(
-              child:
-                  avatar != null && avatar!.isNotEmpty
-                      ? Image.network(
-                        "${ApiEndpoints.baseUrl}/storage/avatar/$avatar",
-                        width: 90.w,
-                        height: 90.w,
-                        fit: BoxFit.cover,
-                      )
-                      : Image.asset(
-                        AssetPaths.personIcon,
-                        width: 90.w,
-                        height: 90.w,
-                        fit: BoxFit.cover,
-                      ),
+              child: GestureDetector(
+                onTap: () => _pickImage(context),
+                child:
+                    avatar != null && avatar!.isNotEmpty
+                        ? Image.network(
+                          "${ApiEndpoints.baseUrl}/storage/avatar/$avatar",
+                          width: 90.w,
+                          height: 90.w,
+                          fit: BoxFit.cover,
+                        )
+                        : Image.asset(
+                          AssetPaths.personIcon,
+                          width: 90.w,
+                          height: 90.w,
+                          fit: BoxFit.cover,
+                        ),
+              ),
             ),
 
             SizedBox(height: 15.h),

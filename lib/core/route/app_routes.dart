@@ -88,6 +88,7 @@ class AppRoutes {
     RouteNames.manageBranchesScreen: (context) => ManageBranchesScreen(),
     RouteNames.addNewBranchesScreen: (context) => AddNewBranchesScreen(),
     RouteNames.invoiceStatusScreen: (context) => InvoiceStatusScreen(),
+    RouteNames.adminInvoiceDetailScreen: (context) => AdminInvoiceDetailScreen(),
     RouteNames.headOfficeHomeScreen: ((context) => HeadOfficeHomeScreen()),
 
     RouteNames.headOfficeProfileScreen: (context) => HeadOfficeProfileScreen(),

@@ -59,7 +59,7 @@ class _InvoiceStatusScreenState extends State<InvoiceStatusScreen> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SearchField(hintText: 'Search by branch name'),
+                 SearchField(hintText: 'Search by branch name', text: '', onChanged: (String value) {  },),
                 SizedBox(height: 20.h),
 
                 /// ---------------- Summary Boxes ----------------

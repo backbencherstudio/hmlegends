@@ -39,14 +39,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
-      appBar: CustomAppBarTwo(
-        title: "Invoice",
-        profileImage: AssetPaths.personIcon,
-        notificationCount: 4,
-        colorMain: const Color(0xFFFFF5F5),
-        colorSpace: const Color(0xFFFFF5F5),
-        onBackTap: () => Navigator.pop(context),
-      ),
+      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
       body: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(

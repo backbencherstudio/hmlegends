@@ -26,12 +26,30 @@ class OrderScreenProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  ///---------------------------- Order Data ---------------------------------
+  ///---------------------------- Order Data -----------------------------------
   OrderAdminModel? _orderAdminModel;
 
   OrderAdminModel? get orderAdminModel => _orderAdminModel;
 
   final logger = Logger();
+
+  int _selectedFilterOrder = 0;
+
+  int get selectedFilterOrder => _selectedFilterOrder;
+
+  void setSelectedFilterOrder(int index) {
+    _selectedFilterOrder = index;
+    notifyListeners();
+  }
+
+  String _selectedPeriod = 'week';
+
+  String get selectedPeriod => _selectedPeriod;
+
+  void setSelectedPeriod(String period) {
+    _selectedPeriod = period;
+    notifyListeners();
+  }
 
   /// --------------------- fetch Admin Order ---------------------------------
   Future<void> getAdminOrder() async {
@@ -41,7 +59,7 @@ class OrderScreenProvider extends ChangeNotifier {
 
       final url = Uri.parse(
         ApiEndpoints.adminOrder,
-      ).replace(queryParameters: {"period": "month"});
+      ).replace(queryParameters: {"period": selectedPeriod});
 
       final response = await http.get(
         url,
@@ -55,8 +73,7 @@ class OrderScreenProvider extends ChangeNotifier {
       logger.i("Status Code: ${response.statusCode}");
 
       final decodeData = jsonDecode(response.body);
-      logger.i("Response Body: $decodeData");
-
+      logger.i("Response body: $decodeData");
       if (response.statusCode == 200 || response.statusCode == 201) {
         _orderAdminModel = OrderAdminModel.fromJson(decodeData);
         logger.i("message:  ${decodeData['message']}");

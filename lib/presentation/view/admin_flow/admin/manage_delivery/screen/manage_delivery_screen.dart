@@ -65,14 +65,44 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
                 itemBuilder: (context, index) {
                   var branch = provider.allDeliveriesModel!.data![index];
 
-                  final isProcessing =
-                      branch.status == "PROCESSING" ||
-                      branch.status == "APPROVED" ||
-                      branch.status == "PENDING" ||
-                      branch.status == "SHIPPED" ||
-                      branch.status == "DELIVERED" ||
-                      branch.status == "CANCELLED" ||
-                      branch.status == "COMPLETED";
+                  final status = (branch.status ?? '').toString().toUpperCase();
+                  final isProcessing = status == "PROCESSING";
+                  final isApproved = status == 'APPROVED';
+                  final isPending = status == 'PENDING';
+                  final isShipped = status == 'SHIPPED';
+                  final isDelivered = status == 'DELIVERED';
+                  final isCancelled = status == 'CANCELLED';
+                  final isCompleted = status == 'COMPLETED';
+
+                  // Determine button color and label based on status
+                  Color buttonColor;
+                  String buttonText;
+
+                  if (isApproved) {
+                    buttonColor = Colors.blue;
+                    buttonText = 'Approved';
+                  } else if (isPending) {
+                    buttonColor = Colors.orange;
+                    buttonText = 'Pending';
+                  } else if (isShipped) {
+                    buttonColor = Colors.purple;
+                    buttonText = 'Shipped';
+                  } else if (isDelivered) {
+                    buttonColor = Colors.green;
+                    buttonText = 'Delivered';
+                  } else if (isCancelled) {
+                    buttonColor = Colors.red;
+                    buttonText = 'Cancelled';
+                  } else if (isCompleted) {
+                    buttonColor = Colors.teal;
+                    buttonText = 'Completed';
+                  } else if (isProcessing) {
+                    buttonColor = Colors.green;
+                    buttonText = 'Processing';
+                  } else {
+                    buttonColor = AppColors.primaryColor;
+                    buttonText = 'Assign to Driver';
+                  }
 
                   print("======== status : ${branch.status}");
                   return BranchCard(
@@ -80,9 +110,9 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
                     totalProducts: branch.totalQuantity ?? 0,
                     address: branch.user?.address ?? "N/A",
                     backgroundColor: WidgetStateProperty.all<Color>(
-                      isProcessing ? Colors.green : AppColors.primaryColor,
+                      buttonColor,
                     ),
-                    text: isProcessing ? "Processing" : "Assign to Driver",
+                    text: buttonText,
 
                     onAssignTap: () async {
                       // Only show assign driver sheet if not already processing

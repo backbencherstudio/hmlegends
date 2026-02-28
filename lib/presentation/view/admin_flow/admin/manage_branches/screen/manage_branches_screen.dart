@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/model/manage_branch_model.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import 'package:provider/provider.dart';
 import 'package:hmlegends/core/route/route_names.dart';
@@ -18,12 +19,33 @@ class ManageBranchesScreen extends StatefulWidget {
 }
 
 class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
+  
+
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       Provider.of<ManageBranchProvider>(context, listen: false).allBranch();
     });
+  }
+
+  List<Managers> _getFilteredManagers(ManageBranchProvider provider) {
+    final allManagers = provider.manageBranchModel?.data?.managers ?? [];
+
+    switch (provider.selectedBranchFilter) {
+      case 0: // All branches
+        return allManagers;
+      case 1: // Active branches
+        return allManagers
+            .where((manager) => manager.status == "ACTIVE")
+            .toList();
+      case 2: // Locked branches
+        return allManagers
+            .where((manager) => manager.status != "ACTIVE")
+            .toList();
+      default:
+        return allManagers;
+    }
   }
 
   @override
@@ -160,13 +182,15 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                               ?.summary
                               ?.totalLockedBranch ??
                           0,
+                      selectedIndex: provider.selectedBranchFilter,
+                      onCardTap: (index) {
+                        provider.setSelectedBranchFilter(index);
+                      },
                     ),
 
                   const SizedBox(height: 20),
 
-                  BranchList(
-                    managers: provider.manageBranchModel?.data?.managers ?? [],
-                  ),
+                  BranchList(managers: _getFilteredManagers(provider)),
                 ],
               ),
             ),

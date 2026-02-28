@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://itunes-compile-bite-navigate.trycloudflare.com';
+      'http://192.168.7.12:4050';
   static const String googleLogin =
       'http://192.168.5.232:4050/api/auth/google/signin';
 
