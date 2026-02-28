@@ -8,9 +8,10 @@ class ApiService {
   Future<dynamic> get(
     String path, {
     Map<String, dynamic>? queryParameters,
+        Options? options,
   }) async {
     try {
-      return await _dio.get(path, queryParameters: queryParameters);
+      return await _dio.get(path, queryParameters: queryParameters,options: options);
     } catch (e) {
       rethrow;
     }

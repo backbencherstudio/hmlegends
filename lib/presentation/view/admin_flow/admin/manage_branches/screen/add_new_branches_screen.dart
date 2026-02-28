@@ -110,9 +110,6 @@ class AddNewBranchesScreen extends StatelessWidget {
                 controller: provider.passwordController,
                 validator: passwordValidator,
                 isPassword: true,
-                showSuffixIcon: true,
-                isVisible: true,
-                toggleVisibility: (bool isVisible) {},
               ),
 
               SizedBox(height: 40.h),

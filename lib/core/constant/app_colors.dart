@@ -8,8 +8,8 @@ class AppColors{
   static const Color authBodyTextColor = Color(0xFF777980);
   static const Color authTextFormFieldBorderColor = Color(0xFFE9E9EA);
   static const Color authTextFormFieldFillColor = Color(0xFFF6F6F7);
-  static const Color authButtonBgColor = Color(0xFFE20614);
-  static const Color primaryColor = Color(0xFFE20614);
+  static const Color authButtonBgColor = Color(0xFFE20613);
+  static const Color primaryColor = Color(0xFFE20613);
   static const Color otpVerifyColor = Color(0xFFE9E9EA);
   static const Color bgColor = Color(0xFFFFF6F7);
   static const Color headOfficeRadiusColor = Color(0xFFE20614);

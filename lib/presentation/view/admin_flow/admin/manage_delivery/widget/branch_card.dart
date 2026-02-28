@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../../core/constant/asset_path.dart';
 
-
 class BranchCard extends StatelessWidget {
   final String name;
   final int totalProducts;
   final String address;
-  final VoidCallback onAssignTap;
-  final bool isDisabled;
+  final WidgetStateProperty<Color> backgroundColor;
+  final Function()? onAssignTap;
+  final String? text;
 
   const BranchCard({
     super.key,
@@ -16,7 +16,8 @@ class BranchCard extends StatelessWidget {
     required this.totalProducts,
     required this.address,
     required this.onAssignTap,
-    required this.isDisabled,
+    required this.backgroundColor,
+    this.text,
   });
 
   @override
@@ -36,17 +37,21 @@ class BranchCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(name,
-                  style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16.sp,
-                      color: const Color(0xff111111))),
+              Text(
+                name,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16.sp,
+                  color: const Color(0xff111111),
+                ),
+              ),
               Text(
                 "Total Products: $totalProducts",
                 style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15.sp,
-                    color: const Color(0xff333333)),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15.sp,
+                  color: const Color(0xff333333),
+                ),
               ),
             ],
           ),
@@ -73,19 +78,10 @@ class BranchCard extends StatelessWidget {
             width: double.infinity,
             height: 44.h,
             child: ElevatedButton(
-              onPressed: isDisabled ? null : onAssignTap,
+              onPressed: onAssignTap,
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                    if (states.contains(MaterialState.disabled)) {
-                      // When button is disabled
-                      return const Color(0xFFEF6471);
-                    }
-                    // Default active color
-                    return const Color(0xffE20613);
-                  },
-                ),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                backgroundColor: backgroundColor,
+                shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.r),
                   ),
@@ -93,7 +89,7 @@ class BranchCard extends StatelessWidget {
                 elevation: MaterialStateProperty.all(0),
               ),
               child: Text(
-                isDisabled ? "Assigned" : "Assign to Driver",
+                text ?? "Assign to Driver",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 15.sp,

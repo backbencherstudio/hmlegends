@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
+import 'package:hmlegends/core/validator/validator.dart';
 import 'package:hmlegends/presentation/view/driver_flow/model_view/driver_profile_screen_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -18,24 +19,24 @@ class ChangeInfoDriver extends StatefulWidget {
 class _HeadOfficeChangeInfoScreenState
     extends State<ChangeInfoDriver> {
 
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController occupationController = TextEditingController();
-  final TextEditingController dateOfBirthController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController cityController = TextEditingController();
-  final TextEditingController addressController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _occupationController = TextEditingController();
+  final TextEditingController _dateOfBirthController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
 
-  File? selectedImage;
-  String? existingImageUrl;
+  File? _selectedImage;
+  String? _existingImageUrl;
 
   @override
   void initState() {
     super.initState();
-    loadProfileData();
+    _loadProfileData();
   }
 
-  Future<void> loadProfileData() async {
+  Future<void> _loadProfileData() async {
     final provider = Provider.of<DriverProfileScreenProvider>(
       context,
       listen: false,
@@ -44,14 +45,14 @@ class _HeadOfficeChangeInfoScreenState
     final data = provider.checkMeModelDriver?.data;
 
     if (data != null) {
-      firstNameController.text = data.firstName ?? "";
-      lastNameController.text = data.lastName ?? "";
-      occupationController.text = data.occupation ?? "";
-      dateOfBirthController.text = data.dateOfBirth ?? "";
-      phoneController.text = data.phoneNumber ?? "";
-      cityController.text = data.city ?? "";
-      addressController.text = data.address ?? "";
-      existingImageUrl = data.avatar;
+      _firstNameController.text = data.firstName ?? "";
+      _lastNameController.text = data.lastName ?? "";
+      _occupationController.text = data.occupation ?? "";
+      _dateOfBirthController.text = data.dateOfBirth ?? "";
+      _phoneController.text = data.phoneNumber ?? "";
+      _cityController.text = data.city ?? "";
+      _addressController.text = data.address ?? "";
+      _existingImageUrl = data.avatar;
     }
 
     setState(() {});
@@ -66,7 +67,7 @@ class _HeadOfficeChangeInfoScreenState
 
     if (pickedFile != null) {
       setState(() {
-        selectedImage = File(pickedFile.path);
+        _selectedImage = File(pickedFile.path);
       });
     }
   }
@@ -93,52 +94,82 @@ class _HeadOfficeChangeInfoScreenState
         child: Column(
           children: [
             _ProfileHeader(
-              pickedImage: selectedImage,
-              imageUrl: existingImageUrl,
-              fname: firstNameController.text,
-              lname: lastNameController.text,
+              pickedImage: _selectedImage,
+              imageUrl: _existingImageUrl,
+              fname: _firstNameController.text,
+              lname: _lastNameController.text,
               onImagePick: chooseImage,
-              occupation: occupationController.text,
-              phoneController: phoneController.text,
-              addressController: addressController.text,
+              occupation: _occupationController.text,
+              phoneController: _phoneController.text,
+              addressController: _addressController.text,
             ),
 
             LabeledInputField(
               label: "First Name",
               placeholder: "",
-              controller: firstNameController,
+              controller: _firstNameController, validator: nameValidator,
             ),
             LabeledInputField(
               label: "Last Name",
               placeholder: "",
-              controller: lastNameController,
+              controller: _lastNameController, validator: nameValidator,
             ),
             LabeledInputField(
               label: "Occupation",
               placeholder: "",
-              controller: occupationController,
+              controller: _occupationController, validator: (String? value) { 
+                if (value == null || value.trim().isEmpty) {
+                  return 'Occupation cannot be empty';
+                }
+                return null;
+               },
             ),
             LabeledInputField(
               label: "Date of Birth",
               placeholder: "YYYY-MM-DD",
-              controller: dateOfBirthController,
+              controller: _dateOfBirthController, validator: (String? value) { 
+                if (value == null || value.trim().isEmpty) {
+                  return 'Date of Birth cannot be empty';
+                }
+                // Simple regex for YYYY-MM-DD format
+                final regex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+                if (!regex.hasMatch(value)) {
+                  return 'Date of Birth must be in YYYY-MM-DD format';
+                }
+                return null;
+               },
             ),
             LabeledInputField(
               label: "Phone Number",
               placeholder: "",
-              controller: phoneController,
-              isNumeric: true,
+              controller: _phoneController,
+              isNumeric: true, validator: (String? value) { 
+                if (value == null || value.trim().isEmpty) {
+                  return 'Phone Number cannot be empty';
+                }
+                return null;
+               },
             ),
             LabeledInputField(
               label: "City",
               placeholder: "",
-              controller: cityController,
+              controller: _cityController, validator: (String? value) { 
+                if (value == null || value.trim().isEmpty) {
+                  return 'City cannot be empty';
+                }
+                return null;
+               },
             ),
             LabeledInputField(
               label: "Address",
               placeholder: "",
-              controller: addressController,
-              isMultiline: true,
+              controller: _addressController,
+              isMultiline: true, validator: (String? value) { 
+                if (value == null || value.trim().isEmpty) {
+                  return 'Address cannot be empty';
+                }
+                return null;
+               },
             ),
 
             SizedBox(height: 20.h),
@@ -148,14 +179,14 @@ class _HeadOfficeChangeInfoScreenState
               child: ElevatedButton(
                 onPressed: () async {
                   final success = await provider.updateDriverProfile(
-                    firstName: firstNameController.text,
-                    lastName: lastNameController.text,
-                    occupation: occupationController.text,
-                    dateOfBirth: dateOfBirthController.text,
-                    phoneNumber: phoneController.text,
-                    city: cityController.text,
-                    address: addressController.text,
-                    image: selectedImage,
+                    firstName: _firstNameController.text,
+                    lastName: _lastNameController.text,
+                    occupation: _occupationController.text,
+                    dateOfBirth: _dateOfBirthController.text,
+                    phoneNumber: _phoneController.text,
+                    city: _cityController.text,
+                    address: _addressController.text,
+                    image: _selectedImage,
                   );
 
                   if(success){
@@ -331,7 +362,7 @@ class LabeledInputField extends StatelessWidget {
     required this.placeholder,
     required this.controller,
     this.isNumeric = false,
-    this.isMultiline = false,
+    this.isMultiline = false, required String? Function(String? value) validator,
   });
 
   @override

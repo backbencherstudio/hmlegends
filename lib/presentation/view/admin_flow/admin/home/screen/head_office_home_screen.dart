@@ -29,7 +29,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 6.h),
-            _stockCard(context),
+            //_stockCard(context),
 
             SizedBox(height: 16.h),
             _gridCards(context, homeScreenProvider),
@@ -51,6 +51,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
     );
   }
 
+  /// ------------- Stock Card Widget ------------------------------------------
   Widget _stockCard(BuildContext context) => Container(
     padding: EdgeInsets.all(16.w),
     decoration: BoxDecoration(
@@ -73,6 +74,8 @@ class HeadOfficeHomeScreen extends StatelessWidget {
                 ),
               ],
             ),
+
+            /// ---------------- Stock Chip -------------------------------------
             _stockChip(),
           ],
         ),
@@ -142,6 +145,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
     ),
   );
 
+  /// --------------- Stock Chip Widget ----------------------------------------
   Widget _stockChip() => Container(
     padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
     decoration: BoxDecoration(
@@ -271,7 +275,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
                   value1: "${provider.pendingUserModel?.data?.total}",
                   label2: 'See All Pending',
                   value2: "",
-                  iconPath: "assets/icons/person.png" ,
+                  iconPath: "assets/icons/person.png",
                 );
               },
             );

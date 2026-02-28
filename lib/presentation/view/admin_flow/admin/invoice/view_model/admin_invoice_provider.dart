@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
+import 'package:hmlegends/data/model/response_model.dart';
+
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:logger/web.dart';
@@ -9,24 +11,38 @@ import '../model/all_invoice_model.dart';
 import '../model/invoice_detail_model.dart';
 
 class AdminInvoiceProvider extends ChangeNotifier {
+  AdminInvoiceProvider() {
+    getAllInvoice();
+  }
+
   final TokenStorage _tokenStorage = TokenStorage();
 
   AllInvoiceModel? _allInvoiceModel;
+
   AllInvoiceModel? get allInvoiceModel => _allInvoiceModel;
 
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
 
+  // String? selectedAction;
+  //
+  // void updateInvoiceAction( String? value) {
+  //   _allInvoiceModel?.data?.invoices = value;
+  //   notifyListeners();
+  // }
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
   }
 
   String? _errorMessage;
+
   String? get errorMessage => _errorMessage;
 
   final logger = Logger();
 
+  /// ------------------------ Get All Invoices --------------------------------
   Future<void> getAllInvoice() async {
     _setLoading(true);
     _errorMessage = null;
@@ -52,7 +68,6 @@ class AdminInvoiceProvider extends ChangeNotifier {
 
         final invoices = _allInvoiceModel?.data?.invoices ?? [];
         logger.i("Total invoices fetched: ${invoices.length}");
-
       } else {
         _errorMessage =
             "Failed to fetch invoices • Status: ${response.statusCode}";
@@ -67,7 +82,9 @@ class AdminInvoiceProvider extends ChangeNotifier {
     }
   }
 
+  /// ------------------------ Get Invoice Detail ------------------------------
   InvoiceDetailModel? _invoiceDetailModel;
+
   InvoiceDetailModel? get invoiceDetailModel => _invoiceDetailModel;
 
   Future<void> fetchInvoiceDetail(String orderID) async {
@@ -103,6 +120,40 @@ class AdminInvoiceProvider extends ChangeNotifier {
     } catch (e) {
       logger.e("Error fetching invoice detail: $e");
       _errorMessage = "Network error. Please check your connection.";
+      _setLoading(false);
+    }
+  }
+
+  Future<ResponseModel> adminSendInvoice(String orderId, {required String email}) async {
+    try {
+      _setLoading(true);
+      final url = Uri.parse(ApiEndpoints.adminSendInvoice(orderId));
+      final token = await _tokenStorage.getToken();
+
+      var body = jsonEncode({
+        "email": email,
+      });
+
+      logger.d("=========== $body ===========");
+
+      final response = await http.post(
+        url,
+        body: body,
+        headers: {"Authorization": "Bearer $token", "Content-Type": "application/json"},
+      );
+      logger.i("=== SEND INVOICE API RESPONSE ===");
+      logger.i("Response url: ${response.request?.url}");
+      logger.i("Status Code: ${response.statusCode}");
+      logger.i("Response Body: ${response.body}");
+      final decodeData = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return ResponseModel(success: true, message: decodeData['message']);
+      } else {
+        return ResponseModel(success: false, message: decodeData['message']);
+      }
+    } catch (e) {
+      return ResponseModel(success: false, message: e.toString());
+    } finally {
       _setLoading(false);
     }
   }

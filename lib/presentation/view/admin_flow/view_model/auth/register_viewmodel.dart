@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hmlegends/data/model/response_model.dart';
 import '../../../../../core/constant/api_endpoint.dart';
@@ -9,9 +10,10 @@ class RegisterProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
 
   /// ---------------- TextEditingController -----------------------------------
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
 
   @override
   void dispose() {
@@ -72,10 +74,13 @@ class RegisterProvider extends ChangeNotifier {
       };
       var response = await _apiService.post(ApiEndpoints.register, data: data);
 
+      final decodedData = response.data;
+      final message = decodedData['message'];
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return ResponseModel(success: true, message: "message");
+        return ResponseModel(success: true, message: message);
       } else {
-        return ResponseModel(success: false, message: "message");
+        return ResponseModel(success: false, message: message);
       }
     } catch (e) {
       logger.e("Register Error: $e");

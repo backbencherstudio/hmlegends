@@ -82,7 +82,7 @@ class ProductInfo {
 
 class ProductSelectModel {
   final String productId;
-  final int productQty;
+  final String productQty;
 
   ProductSelectModel({required this.productId, required this.productQty});
 

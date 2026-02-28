@@ -35,7 +35,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
-import 'package:hmlegends/presentation/view/admin_flow/admin/order/widget/success_order_summary_card.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/stock/screen/successfully_deleted.dart';
 import '../../../../widget/dialog_button.dart';
 

@@ -251,32 +251,141 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     itemCount: filteredInvoices.length,
                     itemBuilder: (context, index) {
                       final invoice = filteredInvoices[index];
-                      final displayIndex = index + 1;
+                      //final displayIndex = index + 1;
                       final date = _formatDate(invoice.createdAt);
 
-                      return _buildInvoiceRow(
-                        index: displayIndex,
-                        date: date,
-                        invoicId: invoice.orderId ?? 'N/A',
-                        totalItems:
-                            invoice.sku
-                                .split(',')
-                                .where((e) => e.isNotEmpty)
-                                .length ??
-                            0,
-                        status: invoice.status ?? 'Unknown',
-                        onViewPressed: () async {
-                          await context
-                              .read<GetInvoiceDetailViewmodel>()
-                              .fetchInvoiceDetail(invoice.orderId);
+                      // return _buildInvoiceRow(
+                      //   index: displayIndex,
+                      //   date: date,
+                      //   invoiceId: invoice.orderId ?? 'N/A',
+                      //   totalItems: invoice.totalQuantity.toString(),
+                      //   onViewPressed: () async {
+                      //     await context
+                      //         .read<GetInvoiceDetailViewmodel>()
+                      //         .fetchInvoiceDetail(invoice.orderId);
 
-                          if (mounted) {
-                            Navigator.pushNamed(
-                              context,
-                              RouteNames.viewDetails,
-                            );
-                          }
-                        },
+                      //     if (mounted) {
+                      //       Navigator.pushNamed(
+                      //         context,
+                      //         RouteNames.viewDetails,
+                      //       );
+                      //     }
+                      //   },
+                      // );
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  height: 40.h,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFD1E4C9),
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(8.r),
+                                              bottomLeft: Radius.circular(8.r),
+                                            ),
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 12.w,
+                                          ),
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            "${index + 1}. $date",
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              color: Color(0xFF4A4C56),
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          color: const Color(0xFFE6ECDE),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 12.w,
+                                          ),
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            "Total Units: ${invoice.totalQuantity}",
+                                            style: TextStyle(
+                                              fontSize: 13.sp,
+                                              color: Color(0xFF4A4C56),
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFE20614),
+                                            borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(8.r),
+                                              bottomRight: Radius.circular(8.r),
+                                            ),
+                                          ),
+                                          child: TextButton(
+                                            onPressed: () async {
+                                              await context
+                                                  .read<
+                                                    GetInvoiceDetailViewmodel
+                                                  >()
+                                                  .fetchInvoiceDetail(
+                                                    invoice.orderId,
+                                                  );
+                                              Navigator.pushNamed(
+                                                context,
+                                                RouteNames
+                                                    .adminInvoiceDetailScreen,
+                                                arguments: invoice.orderId,
+                                              );
+                                            },
+                                            style: TextButton.styleFrom(
+                                              padding: EdgeInsets.zero,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.only(
+                                                  topRight: Radius.circular(
+                                                    8.r,
+                                                  ),
+                                                  bottomRight: Radius.circular(
+                                                    8.r,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              "View",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 13.sp,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 6.h),
+                        ],
                       );
                     },
                   );
@@ -398,95 +507,87 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
-  Widget _buildInvoiceRow({
-    required int index,
-    required String date,
-    required String invoicId,
-    required int totalItems,
-    required String status,
-    required VoidCallback onViewPressed,
-  }) {
-    final statusColor =
-        status.toLowerCase() == 'paid'
-            ? Colors.green.shade600
-            : status.toLowerCase() == 'pending'
-            ? Colors.orange.shade600
-            : Colors.red.shade600;
-
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Row(
-        children: [
-          Container(
-            width: 100.w,
-            height: 36.h,
-            decoration: const BoxDecoration(
-              color: Color(0xffE8F5E9),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12),
-                bottomLeft: Radius.circular(12),
-              ),
-            ),
-            child: Center(
-              child: Text(
-                '$index. $date',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1B5E20),
-                  fontSize: 13,
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Text(
-                //   'Order ID: $invoicId',
-                //   style: const TextStyle(fontWeight: FontWeight.w600),
-                // ),
-                // const SizedBox(height: 4),
-                Text(
-                  'Items: $totalItems • Status: $status',
-                  style: TextStyle(color: Colors.black),
-                ),
-              ],
-            ),
-          ),
-          Material(
-            color: const Color(0xffE20613),
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(12),
-              bottomRight: Radius.circular(12),
-            ),
-            child: InkWell(
-              borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(12),
-                bottomRight: Radius.circular(12),
-              ),
-              onTap: onViewPressed,
-              child: Container(
-                width: 60.w,
-                height: 36.h,
-                alignment: Alignment.center,
-                child: const Text(
-                  'View',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildInvoiceRow({
+  //   required int index,
+  //   required String date,
+  //   required String invoiceId,
+  //   required String totalItems,
+  //   required VoidCallback onViewPressed,
+  // }) {
+  //   return Card(
+  //     elevation: 2,
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  //     child: Row(
+  //       children: [
+  //         Container(
+  //           width: 100.w,
+  //           height: 36.h,
+  //           decoration: const BoxDecoration(
+  //             color: Color(0xffE8F5E9),
+  //             borderRadius: BorderRadius.only(
+  //               topLeft: Radius.circular(12),
+  //               bottomLeft: Radius.circular(12),
+  //             ),
+  //           ),
+  //           child: Center(
+  //             child: Text(
+  //               '$index. $date',
+  //               textAlign: TextAlign.center,
+  //               style: const TextStyle(
+  //                 fontWeight: FontWeight.w600,
+  //                 color: Color(0xFF1B5E20),
+  //                 fontSize: 13,
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //         Expanded(
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.center,
+  //             children: [
+  //               // Text(
+  //               //   'Order ID: $invoicId',
+  //               //   style: const TextStyle(fontWeight: FontWeight.w600),
+  //               // ),
+  //               // const SizedBox(height: 4),
+  //               Text(
+  //                 'Total Items: $totalItems'.padLeft(2, '0'),
+  //                 style: TextStyle(color: Colors.black),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //         Material(
+  //           color: const Color(0xffE20613),
+  //           borderRadius: const BorderRadius.only(
+  //             topRight: Radius.circular(12),
+  //             bottomRight: Radius.circular(12),
+  //           ),
+  //           child: InkWell(
+  //             borderRadius: const BorderRadius.only(
+  //               topRight: Radius.circular(12),
+  //               bottomRight: Radius.circular(12),
+  //             ),
+  //             onTap: onViewPressed,
+  //             child: Container(
+  //               width: 60.w,
+  //               height: 36.h,
+  //               alignment: Alignment.center,
+  //               child: const Text(
+  //                 'View',
+  //                 style: TextStyle(
+  //                   color: Colors.white,
+  //                   fontWeight: FontWeight.bold,
+  //                   fontSize: 14,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
 
 // Extension for spacing

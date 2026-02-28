@@ -1,89 +1,97 @@
-class OrderData {
-  final String id;
-  final double totalAmount;
-  final int totalQuantity;
-  final DateTime createdAt;
-  final List<OrderItem> items;
+class OrderResponse {
+  bool? success;
+  String? message;
+  List<Data>? data;
 
-  OrderData({
-    required this.id,
-    required this.totalAmount,
-    required this.totalQuantity,
-    required this.createdAt,
-    required this.items,
-  });
+  OrderResponse({this.success, this.message, this.data});
 
-  factory OrderData.fromJson(Map<String, dynamic> json) {
-    return OrderData(
-      id: json['id'] ?? '',
-      totalAmount: (json['total_amount'] ?? 0).toDouble(),
-      totalQuantity: json['total_quantity'] ?? 0,
-      createdAt: DateTime.parse(json['created_at'] ?? DateTime.now().toIso8601String()),
-      items: (json['order_items'] as List<dynamic>? ?? [])
-          .map((item) => OrderItem.fromJson(item))
-          .toList(),
-    );
+  OrderResponse.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    message = json['message'];
+    if (json['data'] != null) {
+      data = <Data>[];
+      json['data'].forEach((v) {
+        data!.add(new Data.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
+    data['message'] = this.message;
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    }
+    return data;
   }
 }
 
-class OrderItem {
-  final String id;
-  final int quantity;
-  final double price;
-  final Product product;
+class Data {
+  String? id;
+  int? totalAmount;
+  int? totalQuantity;
+  String? createdAt;
+  List<OrderItems>? orderItems;
 
-  OrderItem({
-    required this.id,
-    required this.quantity,
-    required this.price,
-    required this.product,
-  });
+  Data(
+      {this.id,
+        this.totalAmount,
+        this.totalQuantity,
+        this.createdAt,
+        this.orderItems});
 
-  factory OrderItem.fromJson(Map<String, dynamic> json) {
-    return OrderItem(
-      id: json['id'] ?? '',
-      quantity: json['quantity'] ?? 0,
-      price: (json['price'] ?? 0).toDouble(),
-      product: Product.fromJson(json['product'] ?? {}),
-    );
+  Data.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    totalAmount = json['total_amount'];
+    totalQuantity = json['total_quantity'];
+    createdAt = json['created_at'];
+    if (json['order_items'] != null) {
+      orderItems = <OrderItems>[];
+      json['order_items'].forEach((v) {
+        orderItems!.add(new OrderItems.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['total_amount'] = this.totalAmount;
+    data['total_quantity'] = this.totalQuantity;
+    data['created_at'] = this.createdAt;
+    if (this.orderItems != null) {
+      data['order_items'] = this.orderItems!.map((v) => v.toJson()).toList();
+    }
+    return data;
   }
 }
 
-class Product {
-  final String name;
-  final double price;
+class OrderItems {
+  String? id;
+  int? quantity;
+  int? price;
+  String? product;
+  String? productImage;
 
-  Product({
-    required this.name,
-    required this.price,
-  });
+  OrderItems(
+      {this.id, this.quantity, this.price, this.product, this.productImage});
 
-  factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-      name: json['name'] ?? '',
-      price: (json['price'] ?? 0).toDouble(),
-    );
+  OrderItems.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    quantity = json['quantity'];
+    price = json['price'];
+    product = json['product'];
+    productImage = json['product_image'];
   }
-}
 
-class OrdersResponse {
-  final bool success;
-  final String message;
-  final List<OrderData> data;
-
-  OrdersResponse({
-    required this.success,
-    required this.message,
-    required this.data,
-  });
-
-  factory OrdersResponse.fromJson(Map<String, dynamic> json) {
-    return OrdersResponse(
-      success: json['success'] ?? false,
-      message: json['message'] ?? '',
-      data: (json['data'] as List<dynamic>? ?? [])
-          .map((e) => OrderData.fromJson(e))
-          .toList(),
-    );
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['quantity'] = this.quantity;
+    data['price'] = this.price;
+    data['product'] = this.product;
+    data['product_image'] = this.productImage;
+    return data;
   }
 }

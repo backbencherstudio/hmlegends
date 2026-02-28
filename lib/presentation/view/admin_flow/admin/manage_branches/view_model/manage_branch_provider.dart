@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
@@ -60,6 +61,14 @@ class ManageBranchProvider extends ChangeNotifier {
   bool isLoading = false;
 
   final logger = Logger();
+
+  int _selectedBranchFilter = 0; // 0: All, 1: Active, 2: Locked
+  int get selectedBranchFilter => _selectedBranchFilter;
+
+  void setSelectedBranchFilter(int index) {
+    _selectedBranchFilter = index;
+    notifyListeners();
+  }
 
   /// ---------------------------- Get All Branch ------------------------------
 
@@ -185,6 +194,61 @@ class ManageBranchProvider extends ChangeNotifier {
       logger.i("The error message $error");
       _singleBranchModel = null;
       notifyListeners();
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// ---------------------------- Update Branch ------------------------------ 
+  Future<dynamic> updateBranch({
+    required String userId,
+    required String name,
+    required String address,
+    required String status,
+    File? image,
+  }) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      final token = await _tokenStorage.getToken();
+
+      var url = Uri.parse(ApiEndpoints.updateBranch(userId));
+      final body = jsonEncode({
+        "name": name,
+        "address": address,
+        "status": status,
+        "image": image?.path,
+      });
+      var response = await http.patch(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: body,
+      );
+
+      isLoading = false;
+      notifyListeners();
+      logger.d("The body data is $body");
+      logger.i("Response url : ${response.request?.url}");
+      logger.i("Response status code: ${response.statusCode}");
+      logger.i("Response body: ${response.body}");
+      final decodeData = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final message = decodeData['message'];
+        logger.d("The success message ${decodeData['message']}");
+        return {"success": true, "message": message};
+      } else {
+        final message = decodeData['message'];
+        logger.i("Failed to update branch: ${response.statusCode}");
+        return {"success": false, "message": message};
+      }
+    } catch (error) {
+      logger.i("The error message $error");
+      return error;
     } finally {
       isLoading = false;
       notifyListeners();

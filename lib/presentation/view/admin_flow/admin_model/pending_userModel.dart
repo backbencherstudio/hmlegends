@@ -8,13 +8,13 @@ class PendingUserModel {
   PendingUserModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = {};
+    data['success'] = success;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -33,16 +33,16 @@ class Data {
     if (json['users'] != null) {
       users = <Users>[];
       json['users'].forEach((v) {
-        users!.add(new Users.fromJson(v));
+        users!.add(Users.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total'] = this.total;
-    if (this.users != null) {
-      data['users'] = this.users!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = {};
+    data['total'] = total;
+    if (users != null) {
+      data['users'] = users!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -54,45 +54,46 @@ class Users {
   String? email;
   String? type;
   String? createdAt;
-  Null? address;
-  Null? phoneNumber;
-  Null? driverId;
+  dynamic address;
+  dynamic phoneNumber;
+  dynamic driverId;
   String? approvedBy;
 
-  Users(
-      {this.id,
-        this.name,
-        this.email,
-        this.type,
-        this.createdAt,
-        this.address,
-        this.phoneNumber,
-        this.driverId,
-        this.approvedBy});
+  Users({
+    this.id,
+    this.name,
+    this.email,
+    this.type,
+    this.createdAt,
+    this.address,
+    this.phoneNumber,
+    this.driverId,
+    this.approvedBy,
+  });
 
   Users.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    email = json['email'];
-    type = json['type'];
-    createdAt = json['created_at'];
+    id = json['id'].toString();
+    name = json['name'].toString();
+    email = json['email'].toString();
+    type = json['type'].toString();
+    createdAt = json['created_at'].toString();
     address = json['address'];
     phoneNumber = json['phone_number'];
     driverId = json['driver_id'];
-    approvedBy = json['approved_by'];
+    approvedBy = json['approved_by'].toString();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['email'] = this.email;
-    data['type'] = this.type;
-    data['created_at'] = this.createdAt;
-    data['address'] = this.address;
-    data['phone_number'] = this.phoneNumber;
-    data['driver_id'] = this.driverId;
-    data['approved_by'] = this.approvedBy;
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['name'] = name;
+    data['email'] = email;
+    data['type'] = type;
+    data['created_at'] = createdAt;
+    data['address'] = address;
+    data['phone_number'] = phoneNumber;
+    data['driver_id'] = driverId;
+    data['approved_by'] = approvedBy;
     return data;
   }
 }

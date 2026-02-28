@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
-
 import 'exception_handler/data_source.dart';
 
 final class LoggerInterceptor extends Interceptor {

@@ -1,52 +1,56 @@
-import 'package:hmlegends/presentation/view/driver_flow/model/single_delivery_admin.dart';
-
-class AdminSingleOrderModel {
+class AllDeliveriesModel {
   bool? success;
   String? message;
-  Order? order;
+  List<Data>? data;
+  dynamic cursor;
 
-  AdminSingleOrderModel({this.success, this.message, this.order});
+  AllDeliveriesModel({this.success, this.message, this.data, this.cursor});
 
-  AdminSingleOrderModel.fromJson(Map<String, dynamic> json) {
+  AllDeliveriesModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    order = json['order'] != null ? Order.fromJson(json['order']) : null;
+    if (json['data'] != null) {
+      data = <Data>[];
+      json['data'].forEach((v) {
+        data!.add(Data.fromJson(v));
+      });
+    }
+    cursor = json['cursor'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
     data['success'] = success;
     data['message'] = message;
-    if (order != null) {
-      data['order'] = order!.toJson();
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
+    data['cursor'] = cursor;
     return data;
   }
 }
 
-class Order {
+class Data {
   String? id;
   int? totalQuantity;
-  String? createdAt;
+  User? user;
   String? status;
   List<OrderItems>? orderItems;
-  Product? product;
-  User? user;
+  dynamic delivery;
 
-  Order({
+  Data({
     this.id,
     this.totalQuantity,
-    this.createdAt,
+    this.user,
     this.status,
     this.orderItems,
-    this.product,
-    this.user,
+    this.delivery,
   });
 
-  Order.fromJson(Map<String, dynamic> json) {
+  Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     totalQuantity = json['total_quantity'];
-    createdAt = json['created_at'];
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
     status = json['status'];
     if (json['order_items'] != null) {
       orderItems = <OrderItems>[];
@@ -54,26 +58,46 @@ class Order {
         orderItems!.add(OrderItems.fromJson(v));
       });
     }
-    product =
-        json['product'] != null ? Product.fromJson(json['product']) : null;
-    user = json['user'] != null ? User.fromJson(json['user']) : null;
+    delivery = json['delivery'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
     data['id'] = id;
     data['total_quantity'] = totalQuantity;
-    data['created_at'] = createdAt;
+    if (user != null) {
+      data['user'] = user!.toJson();
+    }
     data['status'] = status;
     if (orderItems != null) {
       data['order_items'] = orderItems!.map((v) => v.toJson()).toList();
     }
-    if (product != null) {
-      data['product'] = product!.toJson();
-    }
-    if (user != null) {
-      data['user'] = user!.toJson();
-    }
+    data['delivery'] = delivery;
+    return data;
+  }
+}
+
+class User {
+  String? id;
+  String? name;
+  dynamic city;
+  dynamic address;
+
+  User({this.id, this.name, this.city, this.address});
+
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    city = json['city'];
+    address = json['address'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['name'] = name;
+    data['city'] = city;
+    data['address'] = address;
     return data;
   }
 }
@@ -88,15 +112,15 @@ class OrderItems {
   OrderItems.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     quantity = json['quantity'];
-    product =
-        json['product'] != null ? Product.fromJson(json['product']) : null;
+    product = json['product'] != null ? Product.fromJson(json['product']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
     data['id'] = id;
     data['quantity'] = quantity;
-    if (product != null) {
+    data['product'] = product;
+    if(product != null){
       data['product'] = product!.toJson();
     }
     return data;
@@ -104,28 +128,14 @@ class OrderItems {
 }
 
 class Product {
-  String? image;
+  String? id;
+  String? name;
 
-  Product({this.image});
+  Product({this.id, this.name});
 
   Product.fromJson(Map<String, dynamic> json) {
-    image = json['image'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['image'] = image;
-    return data;
-  }
-}
-
-class User {
-  final String id;
-  final String name;
-
-  User({required this.id, required this.name});
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(id: json['id'] ?? '', name: json['name'] ?? '');
+    id = json['id'];
+    name = json['name'];
   }
 
   Map<String, dynamic> toJson() {

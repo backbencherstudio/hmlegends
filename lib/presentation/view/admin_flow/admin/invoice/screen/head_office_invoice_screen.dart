@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
 import 'package:provider/provider.dart';
 import '../../../../widget/custom_app_bar.dart';
@@ -47,7 +48,11 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
                 child: Column(
                   children: [
                     /// ------------ Search Field ------------------------------
-                    SearchField(hintText: ''),
+                    SearchField(
+                      hintText: '',
+                      text: '',
+                      onChanged: (String value) {},
+                    ),
                     SizedBox(height: 16.h),
 
                     /// ------------- Total / Paid / Pending Invoice -----------
@@ -208,7 +213,18 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
                                                 ),
                                               ),
                                               child: TextButton(
-                                                onPressed: () {},
+                                                onPressed: () async {
+                                                  await provider
+                                                      .fetchInvoiceDetail(
+                                                        invoiceId,
+                                                      );
+                                                  Navigator.pushNamed(
+                                                    context,
+                                                    RouteNames
+                                                        .adminInvoiceDetailScreen,
+                                                    arguments: invoiceId,
+                                                  );
+                                                },
                                                 style: TextButton.styleFrom(
                                                   padding: EdgeInsets.zero,
                                                   shape: RoundedRectangleBorder(

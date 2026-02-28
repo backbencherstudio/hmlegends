@@ -1,10 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:hmlegends/core/constant/app_colors.dart';
-import 'package:hmlegends/presentation/view/admin_flow/admin/order/widget/success_order_summary_card.dart';
 import '../../../../../../core/constant/asset_path.dart';
 import '../../../../../../core/route/route_names.dart';
-import '../../../../widget/dialog_button.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void SuccessDeleteStock(BuildContext context, String text) {

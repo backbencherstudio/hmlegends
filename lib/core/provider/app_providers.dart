@@ -1,3 +1,4 @@
+import 'package:hmlegends/presentation/view/admin_flow/admin/manage_delivery/view_model/delivery_provider.dart';
 import 'package:hmlegends/presentation/view/branch_manager_flow/orders/viewmodel/create_order_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -5,10 +6,8 @@ import '../../presentation/view/admin_flow/admin/invoice/view_model/admin_invoic
 import '../../presentation/view/admin_flow/admin/manage_branches/view_model/manage_branch_provider.dart';
 import '../../presentation/view/admin_flow/view_model/auth/login_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth/set_new_password_viewModel.dart';
-import '../../presentation/view/admin_flow/view_model/auth/signup_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth_api/forget_password_viewmodel.dart';
-import '../../presentation/view/admin_flow/view_model/auth_api/login_viewmodel.dart';
-import '../../presentation/view/admin_flow/view_model/auth_api/register_viewmodel.dart';
+import '../../presentation/view/admin_flow/view_model/auth/register_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth_api/set_new_pass_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth_api/verify_otp_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/home/home_screen_provider.dart';
@@ -30,7 +29,6 @@ import '../../presentation/view/driver_flow/tracking/tracking_provider.dart';
 class AppProviders {
   static final List<SingleChildWidget> providers = [
     // ChangeNotifierProvider(create: (_) => getIt<ParentScreensProvider>()),
-    ChangeNotifierProvider(create: (_) => SignUpViewModel()),
     ChangeNotifierProvider(create: (_) => LoginViewModel()),
     ChangeNotifierProvider(create: (_) => SetNewPasswordViewModel()),
     ChangeNotifierProvider(create: (_) => BottomNavViewModel()),
@@ -40,7 +38,6 @@ class AppProviders {
 
     //auth_api
     ChangeNotifierProvider(create: (_) => RegisterProvider()),
-    ChangeNotifierProvider(create: (_) => LoginScreenProvider()),
     ChangeNotifierProvider(create: (_) => ForgetPasswordProvider()),
     ChangeNotifierProvider(create: (_) => VerifyOtpViewmodel()),
     ChangeNotifierProvider(create: (_) => SetNewPasswordViewModel()),
@@ -57,6 +54,7 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => PayInvoiceViewModel()),
     ChangeNotifierProvider(create: (_) => AdminInvoiceProvider()),
     ChangeNotifierProvider(create: (_) => DeliveryProviderAdmin()),
+    ChangeNotifierProvider(create: (_) => DeliveryProvider()),
     ChangeNotifierProvider(create: (_) => DriverProfileScreenProvider()),
     ChangeNotifierProvider(create: (_) => AdminNotificationProvider()),
     ChangeNotifierProvider(create: (_) => TrackingProvider()),

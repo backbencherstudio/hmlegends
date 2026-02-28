@@ -9,12 +9,12 @@ enum DataSource {
   NO_CONTENT,
   BAD_REQUEST,
   // FORBIDDEN,
-  UNAUTORISED,
+  UNAUTHORISED,
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
   CONNECT_TIMEOUT,
   CANCEL,
-  RECIEVE_TIMEOUT,
+  RECEIVE_TIMEOUT,
   SEND_TIMEOUT,
   CACHE_ERROR,
   NO_INTERNET_CONNECTION,
@@ -34,7 +34,7 @@ extension DataSourceExtension on DataSource {
             ResponseCode.BAD_REQUEST, ResponseMessage.BAD_REQUEST.tr);
     // case DataSource.FORBIDDEN:
     //   return Failure(ResponseCode.FORBIDDEN, ResponseMessage.FORBIDDEN.tr);
-      case DataSource.UNAUTORISED:
+      case DataSource.UNAUTHORISED:
         return Failure(
             ResponseCode.UNAUTORISED, ResponseMessage.UNAUTORISED.tr);
       case DataSource.NOT_FOUND:
@@ -47,7 +47,7 @@ extension DataSourceExtension on DataSource {
             ResponseCode.CONNECT_TIMEOUT, ResponseMessage.CONNECT_TIMEOUT.tr);
       case DataSource.CANCEL:
         return Failure(ResponseCode.CANCEL, ResponseMessage.CANCEL.tr);
-      case DataSource.RECIEVE_TIMEOUT:
+      case DataSource.RECEIVE_TIMEOUT:
         return Failure(
             ResponseCode.RECIEVE_TIMEOUT, ResponseMessage.RECIEVE_TIMEOUT.tr);
       case DataSource.SEND_TIMEOUT:
@@ -68,10 +68,10 @@ extension DataSourceExtension on DataSource {
 }
 
 final class Failure {
-  final int resonseCode;
+  final int responseCode;
   final String responseMessage;
 
-  Failure(this.resonseCode, this.responseMessage);
+  Failure(this.responseCode, this.responseMessage);
 // {
 //   log("Getting called:$responseMessage");
 //   // ScaffoldMessenger.of(NavigationService.context).showSnackBar(SnackBar(
@@ -101,7 +101,7 @@ final class ErrorHandler implements Exception {
       case DioExceptionType.sendTimeout:
         return DataSource.SEND_TIMEOUT.getFailure();
       case DioExceptionType.receiveTimeout:
-        return DataSource.RECIEVE_TIMEOUT.getFailure();
+        return DataSource.RECEIVE_TIMEOUT.getFailure();
       case DioExceptionType.badResponse:
         if (error.response != null &&
             error.response?.statusCode != null &&

@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin_model/order/order_admin_model.dart';
 import 'package:provider/provider.dart';
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar.dart';
@@ -19,7 +21,46 @@ class OrderSummaryScreen extends StatefulWidget {
 }
 
 class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
-  String _selectedPeriod = 'Today';
+  List<Orders> _getFilteredStats(OrderScreenProvider provider) {
+    final allOrders = provider.orderAdminModel?.data?.orders ?? [];
+    switch (provider.selectedFilterOrder) {
+      case 0: // All orders
+        return allOrders;
+      case 1: // Pending orders
+        return allOrders.where((order) => order.status == "PENDING").toList();
+      case 2: // Invoiced orders
+        return allOrders
+            .where((order) => order.status == "PROCESSING")
+            .toList();
+      case 3: // Delivered orders
+        return allOrders.where((order) => order.status == "APPROVED").toList();
+      default:
+        return allOrders;
+    }
+  }
+
+  List<Orders> _applyQueryFilter(List<Orders> orders) {
+    if (query.trim().isEmpty) return orders;
+    final q = query.trim().toLowerCase();
+    return orders.where((order) {
+      final name = order.user?.name ?? '';
+      return name.toLowerCase().contains(q);
+    }).toList();
+  }
+
+  List<Data> user = [];
+  String query = '';
+  Timer? debouncer;
+
+  void debounce(
+    VoidCallback callback, {
+    Duration duration = const Duration(milliseconds: 1000),
+  }) {
+    if (debouncer != null) {
+      debouncer!.cancel();
+    }
+    debouncer = Timer(duration, callback);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +73,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
         provider.orderAdminModel?.data?.stats?.delivered ?? 0;
     final totalUnitOrdered =
         provider.orderAdminModel?.data?.stats?.totalUnitOrdered ?? 0;
-    final orders = provider.orderAdminModel?.data?.orders ?? [];
+    // final orders = provider.orderAdminModel?.data?.orders ?? [];
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
     return Scaffold(
@@ -40,13 +81,24 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
       appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
 
       body: Padding(
-        padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 10.h),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ///------------------ Search Field ----------------------------------
-            const SearchField(hintText: ''),
+            SearchField(
+              hintText: 'Search by branch name',
+              text: query,
+              onChanged: (String value) {
+                debounce(() {
+                  if (!mounted) return;
+                  setState(() {
+                    query = value;
+                  });
+                });
+              },
+            ),
             SizedBox(height: 20.h),
 
             ///------------------ Order Summary Cards --------------------------
@@ -56,7 +108,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                   child: OrderSummaryCard(
                     title: "Total Orders",
                     value: "$totalOrder",
-                    isHighlighted: true,
+                    isHighlighted: provider.selectedFilterOrder == 0,
+                
                   ),
                 ),
                 SizedBox(width: 10.w),
@@ -64,6 +117,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                   child: OrderSummaryCard(
                     title: "Pending Orders",
                     value: "$pendingOrder",
+                    isHighlighted: provider.selectedFilterOrder == 1,
+                
                   ),
                 ),
                 SizedBox(width: 10.w),
@@ -71,6 +126,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                   child: OrderSummaryCard(
                     title: "Invoiced Orders",
                     value: "$invoicedOrder",
+                    isHighlighted: provider.selectedFilterOrder == 2,
+                  
                   ),
                 ),
               ],
@@ -84,7 +141,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                   child: OrderSummaryCard(
                     title: "Delivered Orders",
                     value: "$deliveredOrder",
-                    isWide: true,
+                    isWidth: true,
+                    isHighlighted: provider.selectedFilterOrder == 3,
+                 
                   ),
                 ),
                 SizedBox(width: 10.w),
@@ -92,7 +151,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                   child: OrderSummaryCard(
                     title: "Units of items ordered",
                     value: "$totalUnitOrdered",
-                    isWide: true,
+                    isWidth: true,
+                
                   ),
                 ),
               ],
@@ -114,26 +174,45 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
 
                 PopupMenuButton<String>(
                   onSelected: (value) {
-                    setState(() {
-                      _selectedPeriod = value;
-                    });
+                    provider.setSelectedPeriod(value);
                   },
                   itemBuilder:
-                      (context) => const [
-                        PopupMenuItem(value: 'Today', child: Text('Today')),
+                      (context) => [
+                        PopupMenuItem(
+                          value: 'Today',
+                          child: Text(
+                            'Today',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: AppColors.authBodyTextColor,
+                            ),
+                          ),
+                        ),
                         PopupMenuItem(
                           value: 'This week',
-                          child: Text('This week'),
+                          child: Text(
+                            'This week',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: AppColors.authBodyTextColor,
+                            ),
+                          ),
                         ),
                         PopupMenuItem(
                           value: 'This month',
-                          child: Text('This month'),
+                          child: Text(
+                            'This month',
+                            style: TextStyle(fontSize: 14.sp, color: AppColors.authBodyTextColor),
+                          ),
                         ),
                       ],
                   color: const Color(0xFFFFF5F5),
                   child: Row(
                     children: [
-                      Text(_selectedPeriod, style: TextStyle(fontSize: 14.sp)),
+                      Text(
+                        provider.selectedPeriod,
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
                       Icon(Icons.keyboard_arrow_down_rounded, size: 20.sp),
                     ],
                   ),
@@ -146,12 +225,24 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             Expanded(
               child:
                   provider.isLoading
-                      ? Center(child: CircularProgressIndicator())
+                      ? Center(
+                        child: SizedBox(
+                          width: 20.w,
+                          height: 20.h,
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
                       : ListView.builder(
-                        itemCount: orders.length,
-                        padding: EdgeInsets.only(bottom: 8.h),
+                        itemCount:
+                            _applyQueryFilter(
+                              _getFilteredStats(provider),
+                            ).length,
+                        padding: EdgeInsets.only(bottom: 12.h),
                         itemBuilder: (context, index) {
-                          final item = orders[index];
+                          final filteredOrders = _applyQueryFilter(
+                            _getFilteredStats(provider),
+                          );
+                          final item = filteredOrders[index];
 
                           return Padding(
                             padding: EdgeInsets.only(bottom: 8.h),
@@ -178,7 +269,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                                       child: Align(
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          "${index + 1}.  ${item.user?.name ?? ""}",
+                                          "${index + 1}.  ${item.user?.name ?? "Unknown User"}",
                                           style: TextStyle(
                                             fontSize: 14.sp,
                                             fontWeight: FontWeight.w500,
@@ -266,4 +357,5 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
       ),
     );
   }
+
 }

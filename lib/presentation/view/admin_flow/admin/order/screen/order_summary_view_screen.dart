@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
-import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
@@ -18,7 +17,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
   ) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
@@ -113,41 +112,49 @@ class OrderSummaryViewScreen extends StatelessWidget {
                         InkWell(
                           onTap: () async {
                             await provider.approveOrder(orderId);
-                            Navigator.of(context).pop();
                             showDialog(
                               context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: Center(
-                                    child: Text(
-                                      "Order Approved",
-                                      style: TextStyle(
-                                        fontSize: 18.sp,
-                                        color: Color(0xFF1D1F2C),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                              barrierDismissible: false,
+                              builder: (BuildContext dialogContext) {
+                                Navigator.pop(context);
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14.r),
                                   ),
-                                  content: Text(
-                                    "You have successfully approved the order.",
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500,
+                                  child: Container(
+                                    width: 335.w,
+                                    height: 451.h,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(14.r),
                                     ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.pushNamed(
-                                            context,
-                                            RouteNames
-                                                .orderSummaryMakeInvoiceScreen,
-                                            arguments: orderId,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          AssetPaths.successfulIcon,
+                                          height: 100.h,
+                                          width: 100.w,
+                                        ),
+                                        SizedBox(height: 30.h),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 20.w,
                                           ),
-                                      child: Text("OK"),
+                                          child: Text(
+                                            "You have successfully approved the order.",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 16.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 );
                               },
                             );
@@ -247,7 +254,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
                         //------------  Product Name ----------------------
                         Expanded(
                           child: Text(
-                            data.product?.name ?? "Product",
+                            data.product?.image ?? "N/A",
                             style: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,

@@ -1,13 +1,15 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/validator/validator.dart';
+import 'package:hmlegends/presentation/widget/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
 import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/constant/app_text_styles.dart';
 import '../../../../../core/constant/asset_path.dart';
 import '../../../../../core/route/route_names.dart';
 import '../../../../../core/utlis/utils.dart';
-import '../../../admin_flow/view_model/auth_api/register_viewmodel.dart';
+import '../../../admin_flow/view_model/auth/register_viewmodel.dart';
 import '../../widget/auth_button.dart';
 import '../../widget/social_auth_buttons.dart';
 
@@ -19,6 +21,8 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,106 +67,92 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildFormFields() {
     return Consumer<RegisterProvider>(
       builder: (context, provider, child) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _label('Full Name'),
-            SizedBox(height: 6.h),
-            _buildTextField(
-              'Your name',
-              Icons.person_outlined,
-              provider.nameController,
-            ),
-            SizedBox(height: 12.h),
-            _label('Email'),
-            SizedBox(height: 6.h),
-            _buildTextField(
-              'Your email',
-              Icons.email_outlined,
-              provider.emailController,
-            ),
-            SizedBox(height: 12.h),
-            _label('Password'),
-            SizedBox(height: 6.h),
-            _buildPasswordField(provider),
-          ],
+        return Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _label('Full Name'),
+              SizedBox(height: 6.h),
+              customTextFormField(
+                hintText: 'Enter your name',
+                prefixIcon: Icon(Icons.person_outline),
+                controller: provider.nameController,
+                validator: nameValidator,
+              ),
+              SizedBox(height: 12.h),
+              _label('Email'),
+              SizedBox(height: 6.h),
+              customTextFormField(
+                hintText: 'Enter your email',
+                prefixIcon: Icon(Icons.email_outlined),
+                controller: provider.emailController,
+                validator: emailValidator,
+              ),
+              SizedBox(height: 12.h),
+              _label('Password'),
+              SizedBox(height: 6.h),
+              customTextFormField(
+                hintText: 'Enter your password',
+                prefixIcon: Icon(Icons.lock_outline),
+                controller: provider.passwordController,
+                isPassword: true,
+                validator: passwordValidator,
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
-  Widget _buildTextField(
-    String hint,
-    IconData icon,
-    TextEditingController controller,
-  ) => TextField(
-    controller: controller,
-    decoration: InputDecoration(
-      hintText: hint,
-      hintStyle: AppTextStyles.hintText,
-      filled: true,
-      fillColor: AppColors.authTextFormFieldFillColor,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.r)),
-      contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
-      prefixIcon: Padding(
-        padding: EdgeInsets.only(left: 8.w),
-        child: Icon(icon, color: AppColors.authBodyTextColor),
-      ),
+  Widget _label(String text) => Text(
+    text,
+    style: TextStyle(
+      fontSize: 12.sp,
+      color: Colors.black,
+      fontWeight: FontWeight.w400,
     ),
   );
-
-  Widget _buildPasswordField(RegisterProvider provider) => TextField(
-    controller: provider.passwordController,
-    obscureText: !provider.passwordVisible,
-    decoration: InputDecoration(
-      hintText: 'Enter your password',
-      hintStyle: AppTextStyles.hintText,
-      filled: true,
-      fillColor: AppColors.authTextFormFieldFillColor,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.r)),
-      contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
-      prefixIcon: const Icon(Icons.lock_outline_rounded),
-      suffixIcon: IconButton(
-        icon: Icon(
-          provider.passwordVisible ? Icons.visibility : Icons.visibility_off,
-        ),
-        onPressed: provider.togglePasswordVisibility,
-      ),
-    ),
-  );
-
-  Widget _label(String text) => Text(text, style: AppTextStyles.appHeaderText);
 
   Widget _buildSignUpButton() => Consumer<RegisterProvider>(
     builder: (context, provider, child) {
       return AuthButton(
-        text: Text(
-          'Sign Up',
-          style: TextStyle(
-            fontSize: 16.sp,
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        text:
+            provider.isLoading
+                ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                )
+                : Text(
+                  'Sign Up',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
         onPressed: () async {
-          final res = await provider.registerUser(
-            name: provider.nameController.text.trim(),
-            email: provider.emailController.text.trim(),
-            password: provider.passwordController.text.trim(),
-          );
+          if (_formKey.currentState!.validate()) {
+            var res = await provider.registerUser(
+              name: provider.nameController.text.trim(),
+              email: provider.emailController.text.trim(),
+              password: provider.passwordController.text.trim(),
+            );
 
-          if (res.success) {
-            Utils.showToast(
-              msg: res.message,
-              backgroundColor: Colors.green,
-              textColor: Colors.white,
-            );
-          } else {
-            Utils.showToast(
-              msg: res.message,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-            );
+            if (res.success) {
+              Utils.showToast(
+                msg: res.message,
+                backgroundColor: Colors.green,
+                textColor: Colors.white,
+              );
+            } else {
+              Utils.showToast(
+                msg: res.message,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+              );
+            }
           }
         },
         color: AppColors.primaryColor,

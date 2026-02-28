@@ -147,7 +147,7 @@ class ViewDetails extends StatelessWidget {
                                     'no': '${invoice.order!.orderItems!.indexOf(item) + 1}'
                                         .padLeft(2, '0'),
                                     'product_name': product?.name ?? 'Unknown Product',
-                                    'price': price,
+                                    'price': "$price",
                                     'quantity': qty,
                                     'total': qty * price,
                                   };
@@ -159,7 +159,7 @@ class ViewDetails extends StatelessWidget {
 
                               _SubtotalRow(
                                 subtotal:
-                                '৳${invoice.order?.totalAmount?.toStringAsFixed(2) ?? '0.00'}',
+                                '\$${invoice.order?.totalAmount?.toStringAsFixed(2) ?? '0.00'}',
                               ),
                             ],
                           ),

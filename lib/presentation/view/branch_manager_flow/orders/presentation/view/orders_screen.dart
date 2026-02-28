@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import 'package:provider/provider.dart';
+import '../../../../../../core/constant/asset_path.dart';
 import '../../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../../widget/custom_app_bar.dart';
 import '../../data/get_all_products_model.dart';
 import '../../data/create_order_model.dart';
 import '../../viewmodel/create_order_viewmodel.dart';
 import '../../viewmodel/get_all_product_viewmodel.dart';
+
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
 
@@ -41,7 +44,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         padding: EdgeInsets.all(16.w),
         child: Column(
           children: [
-            // Total Item Summary
+            /// ------------------ Total Item Summary --------------------------
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               decoration: BoxDecoration(
@@ -74,7 +77,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       backgroundColor:
                           totalSelectedItems > 0
                               ? const Color(0xffE20613)
-                              : Colors.grey,
+                              : Colors.grey.shade100,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25.r),
@@ -94,8 +97,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
             SizedBox(height: 20.h),
 
-            // Search bar (unused)
+            /// ----------------------- Search bar -----------------------------
             Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               height: 45.h,
               decoration: BoxDecoration(
                 color: const Color(0xffEFEFEF),
@@ -103,21 +107,35 @@ class _OrdersScreenState extends State<OrdersScreen> {
               ),
               child: TextField(
                 decoration: InputDecoration(
-                  hintText: 'Search products...',
+                  hintText: 'Search',
+                  hintStyle: TextStyle(
+                    color: Color(0xFFA5A5AB),
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                  ),
                   border: InputBorder.none,
-                  prefixIcon: Icon(Icons.search, color: Colors.grey.shade600),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    size: 24.sp,
+                    color: Color(0xFF777980),
+                  ),
                 ),
               ),
             ),
 
             SizedBox(height: 20.h),
 
-            // Product List
+            /// ------------------- Product List -------------------------------
             Expanded(
               child: Consumer<GetProductsViewmodel>(
                 builder: (context, vm, child) {
                   if (vm.isLoading && vm.products.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.blueAccent),
+                        strokeWidth: 3,
+                      ),
+                    );
                   }
 
                   if (vm.errorMessage.isNotEmpty) {
@@ -131,10 +149,25 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             color: Colors.red,
                           ),
                           SizedBox(height: 16.h),
-                          Text(vm.errorMessage),
+                          Text(
+                            vm.errorMessage,
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
                           ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25.r),
+                              ),
+                            ),
                             onPressed: () => vm.fetchProducts(),
-                            child: const Text("Retry"),
+                            child: Text("Retry"),
                           ),
                         ],
                       ),
@@ -158,7 +191,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             orderVM.addProduct(
                               ProductSelectModel(
                                 productId: product.id,
-                                productQty: newQty,
+                                productQty: newQty.toString(),
                               ),
                             );
                           } else {
@@ -178,7 +211,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  // --- PRODUCT CARD ---
+  /// ---------------------- PRODUCT CARD --------------------------------------
   Widget _buildProductCard(
     Products product,
     int quantity,
@@ -188,13 +221,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8.h),
-      elevation: 3,
+      elevation: 0,
+      shadowColor: Colors.grey.shade400,
+      color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
       child: Padding(
         padding: EdgeInsets.all(8.w),
         child: Row(
           children: [
-            // Image
+            /// ----------------------- Image ----------------------------------
             ClipRRect(
               borderRadius: BorderRadius.circular(10.r),
               child: Stack(
@@ -218,10 +253,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         (_, __, ___) => Container(
                           width: 92.w,
                           height: 100.h,
-                          color: Colors.grey[300],
-                          child: const Icon(
+                          color: Colors.grey[100],
+                          child: Icon(
                             Icons.broken_image,
                             color: Colors.red,
+                            size: 36.sp,
                           ),
                         ),
                   ),
@@ -231,7 +267,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
             SizedBox(width: 12.w),
 
-            // Info
+            /// ------------------------ Info ----------------------------------
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,12 +282,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   SizedBox(height: 6.h),
 
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '৳${product.price.toStringAsFixed(0)} • Stock: ${product.stock}',
+                        ' Stock: ${product.stock} pcs',
                         style: TextStyle(
-                          fontSize: 13.sp,
-                          color: Colors.grey.shade700,
+                          fontSize: 14.sp,
+                          color: Color(0xFF5C5C5C),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       SizedBox(width: 20.w),
@@ -287,7 +325,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
                   SizedBox(height: 8.h),
 
-                  // Quantity + Button
+                  /// ----------------------- Quantity + Button ----------------
                   Row(
                     children: [
                       Container(
@@ -329,7 +367,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
                       SizedBox(width: 10.w),
 
-                      // Add / Selected Button
+                      /// ----------------- Add / Selected Button --------------
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
@@ -350,8 +388,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             ),
                           ),
                           child: Text(
-                            isSelected ? 'Selected' : 'Add to Order',
+                            isSelected ? 'Selected' : 'Confirm',
                             textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
@@ -366,10 +409,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  // --- CONFIRM SUBMISSION DIALOG ---
+  /// -------------------- CONFIRM SUBMISSION DIALOG ---------------------------
   void _showSubmitDialog(BuildContext context) {
-    final orderVM = context.read<OrderViewmodel>();
-
     showDialog(
       context: context,
       builder:
@@ -377,22 +418,22 @@ class _OrdersScreenState extends State<OrdersScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15.r),
             ),
-            title: const Text(
+            title: Text(
               'Can’t edit after submission',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.red,
                 fontWeight: FontWeight.w600,
-                fontSize: 16,
+                fontSize: 16.sp,
               ),
             ),
-            content: const Text(
+            content: Text(
               'Are you sure you want to submit today’s order?',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w800,
-                fontSize: 20,
+                fontSize: 20.sp,
               ),
             ),
             actions: [
@@ -432,7 +473,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  // --- FINAL ORDER SUBMIT LOGIC ---
+  /// --------------------- FINAL ORDER SUBMIT LOGIC ---------------------------
   Future<void> _submitOrder() async {
     final orderVM = context.read<OrderViewmodel>();
 

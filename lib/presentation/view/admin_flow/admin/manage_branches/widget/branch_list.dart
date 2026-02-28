@@ -155,9 +155,19 @@ class BranchList extends StatelessWidget {
                       },
                       child: _actionButton(Icons.file_present_rounded),
                     ),
-                    _actionButton(Icons.edit),
+                    GestureDetector(
+                      onTap: () {
+                        debugPrint("THe userIUD : ${items.id}");
+                        Navigator.pushNamed(
+                          context,
+                          RouteNames.editBranchScreen,
+                          arguments: items.id,
+                        );
+                      },
+                      child: _actionButton(Icons.edit),
+                    ),
                     _actionButton(
-                      isActive ? Icons.lock_person_outlined : Icons.lock_open,
+                      isActive ? Icons.lock_open: Icons.lock_outline,
                     ),
                   ],
                 ),

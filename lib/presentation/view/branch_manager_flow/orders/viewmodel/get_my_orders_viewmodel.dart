@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/api_service.dart';
+import 'package:intl/intl.dart';
 
 import '../data/get_my_orders_model.dart';
 
 class GetOrdersViewModel extends ChangeNotifier {
   bool isLoading = false;
-  List<OrderData> orders = [];
+  OrderResponse? _orderResponse;
+
+  List<Data> get orders => _orderResponse?.data ?? [];
+
   String? error;
 
   final ApiService _apiService = ApiService();
@@ -19,10 +23,7 @@ class GetOrdersViewModel extends ChangeNotifier {
       final response = await _apiService.get(ApiEndpoints.getMyOrders);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final jsonData = response.data as Map<String, dynamic>;
-        final parsed = OrdersResponse.fromJson(jsonData);
-
-        orders = parsed.data;
+        _orderResponse = OrderResponse.fromJson(response.data);
         error = null;
       } else {
         error = "Failed to fetch orders";
@@ -35,13 +36,16 @@ class GetOrdersViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Group orders by date
-  Map<String, List<OrderData>> groupedByDate() {
-    Map<String, List<OrderData>> map = {};
+  /// ✅ Group orders by formatted date
+  Map<String, List<Data>> groupedByDate() {
+    Map<String, List<Data>> map = {};
 
     for (var order in orders) {
-      String dateKey =
-          "${order.createdAt.day}/${order.createdAt.month}/${order.createdAt.year}";
+      if (order.createdAt == null) continue;
+
+      DateTime date = DateTime.parse(order.createdAt!);
+      String dateKey = DateFormat('dd/MM/yyyy').format(date);
+
       map.putIfAbsent(dateKey, () => []);
       map[dateKey]!.add(order);
     }

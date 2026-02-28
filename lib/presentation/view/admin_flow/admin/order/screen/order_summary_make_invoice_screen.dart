@@ -6,7 +6,6 @@ import 'package:hmlegends/presentation/view/admin_flow/admin/invoice/view_model/
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../../../core/route/route_names.dart';
 import '../../../view_model/order/order_screen_provider.dart';
 
@@ -207,7 +206,7 @@ class OrderSummaryMakeInvoiceScreen extends StatelessWidget {
                     SizedBox(width: 10.w),
                     Expanded(
                       child: Text(
-                        item.product!.name!,
+                        item.product!.image!,
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w500,

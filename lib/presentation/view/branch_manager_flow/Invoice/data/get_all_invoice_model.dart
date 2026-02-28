@@ -21,11 +21,7 @@ class InvoiceResponse {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'message': message,
-      'data': data.toJson(),
-    };
+    return {'success': success, 'message': message, 'data': data.toJson()};
   }
 }
 
@@ -36,16 +32,12 @@ class InvoiceData {
   final List<Invoice> invoices;
   final InvoiceStats stats;
 
-  InvoiceData({
-    required this.invoices,
-    required this.stats,
-  });
+  InvoiceData({required this.invoices, required this.stats});
 
   factory InvoiceData.fromJson(Map<String, dynamic> json) {
     return InvoiceData(
-      invoices: (json['invoices'] as List)
-          .map((e) => Invoice.fromJson(e))
-          .toList(),
+      invoices:
+          (json['invoices'] as List).map((e) => Invoice.fromJson(e)).toList(),
       stats: InvoiceStats.fromJson(json['stats']),
     );
   }
@@ -64,31 +56,30 @@ class InvoiceData {
 class Invoice {
   final String id;
   final String orderId;
-  final String sku;
-  final String status;
+  final dynamic url;
   final String createdAt;
-  final Person creator;
-  final Person receiver;
+  final String branchName;
+  final int totalQuantity;
 
   Invoice({
     required this.id,
     required this.orderId,
-    required this.sku,
-    required this.status,
+    required this.url,
+
     required this.createdAt,
-    required this.creator,
-    required this.receiver,
+    required this.branchName,
+    required this.totalQuantity,
   });
 
   factory Invoice.fromJson(Map<String, dynamic> json) {
     return Invoice(
       id: json['id'],
       orderId: json['order_id'],
-      sku: json['sku'],
-      status: json['status'],
       createdAt: json['created_at'],
-      creator: Person.fromJson(json['creator']),
-      receiver: Person.fromJson(json['receiver']),
+      url: json['url'],
+      branchName: json['branch_name'],
+      totalQuantity: json['total_quantity'],
+
     );
   }
 
@@ -96,11 +87,10 @@ class Invoice {
     return {
       'id': id,
       'order_id': orderId,
-      'sku': sku,
-      'status': status,
       'created_at': createdAt,
-      'creator': creator.toJson(),
-      'receiver': receiver.toJson(),
+      'url': url,
+      'branch_name': branchName,
+      'total_quantity': totalQuantity,
     };
   }
 }
@@ -145,9 +135,9 @@ class Person {
 // Stats Model
 // -----------------------------
 class InvoiceStats {
-  final int pendingInvoice;
-  final int paidInvoice;
-  final int totalInvoice;
+  final dynamic pendingInvoice;
+  final dynamic paidInvoice;
+  final dynamic totalInvoice;
 
   InvoiceStats({
     required this.pendingInvoice,

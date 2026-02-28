@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/presentation/view/driver_flow/model_view/driver_profile_screen_provider.dart';
 import 'package:hmlegends/presentation/view/driver_flow/tracking/tracking_provider.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,7 @@ class DriverScreen extends StatefulWidget {
   const DriverScreen({super.key});
 
   @override
-  _DriverScreenState createState() => _DriverScreenState();
+  State<DriverScreen> createState() => _DriverScreenState();
 }
 
 class _DriverScreenState extends State<DriverScreen> {
@@ -104,9 +105,11 @@ class _DriverScreenState extends State<DriverScreen> {
               await provider.getSingleDeliveryAdmin(deliveryId);
               Navigator.pushNamed(context, RouteNames.driverBranseDetailScreen);
             } else {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text("Delivery Id not found")));
+              Utils.showToast(
+                msg: 'No delivery found',
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+              );
             }
           },
           child: Container(

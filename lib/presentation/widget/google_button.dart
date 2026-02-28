@@ -15,123 +15,117 @@ class GoogleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final authServices = AuthServices();
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w),
-      child: Consumer<LoginViewModel>(
-        builder: (context, loginProvider, _) {
-          final isLoading = loginProvider.isLoadingForGoogle;
+    return Consumer<LoginViewModel>(
+      builder: (context, loginProvider, _) {
+        final isLoading = loginProvider.isLoadingForGoogle;
 
-          return Opacity(
-            opacity: isLoading ? 0.7 : 1.0,
-            child: InkWell(
-              onTap:
-                  isLoading
-                      ? null
-                      : () async {
-                        loginProvider.setLoadingForGoogle(true);
+        return Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          decoration: BoxDecoration(
+            color: Color(0xFFF6F6F7),
+            borderRadius: BorderRadius.circular(32.r),
+          ),
+          child: InkWell(
+            onTap:
+                isLoading
+                    ? null
+                    : () async {
+                      loginProvider.setLoadingForGoogle(true);
 
-                        try {
-                          final userCredential = await authServices
-                              .loginWithGoogle(
-                                forceAccountPicker: alwaysShowChooser,
-                              );
-
-                          final user = FirebaseAuth.instance.currentUser;
-
-                          if (userCredential != null && user != null) {
-                            final firebaseToken = await user.getIdToken();
-
-                            final result = await loginProvider.googleSignIn(
-                              firebaseToken: firebaseToken,
+                      try {
+                        final userCredential = await authServices
+                            .loginWithGoogle(
+                              forceAccountPicker: alwaysShowChooser,
                             );
 
-                            if (result['success'] == true && context.mounted) {
-                              Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                RouteNames.driverBottomNavBar,
-                                (route) => false,
-                              );
-                            } else if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    result['message'] ??
-                                        "Google sign-in failed. Please try again.",
-                                  ),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          } else {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Google sign-in failed. Please try again.",
-                                  ),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          }
-                        } catch (error) {
-                          if (context.mounted) {
+                        final user = FirebaseAuth.instance.currentUser;
+
+                        if (userCredential != null && user != null) {
+                          final firebaseToken = await user.getIdToken();
+
+                          final result = await loginProvider.googleSignIn(
+                            firebaseToken: firebaseToken,
+                          );
+
+                          if (result['success'] == true && context.mounted) {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              RouteNames.driverBottomNavBar,
+                              (route) => false,
+                            );
+                          } else if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text("Login failed: $error"),
+                                content: Text(
+                                  result['message'] ??
+                                      "Google sign-in failed. Please try again.",
+                                ),
                                 backgroundColor: Colors.red,
                               ),
                             );
                           }
-                        } finally {
-                          loginProvider.setLoadingForGoogle(false);
-                        }
-                      },
-              borderRadius: BorderRadius.circular(32.r),
-              child: Ink(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  border: Border.all(color: const Color(0xffdcd7d7)),
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 180),
-                      child:
-                          isLoading
-                              ? SizedBox(
-                                key: const ValueKey('spinner'),
-                                height: 22.h,
-                                width: 22.h,
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 2,
+                        } else {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Google sign-in failed. Please try again.",
                                 ),
-                              )
-                              : Image.asset(
-                                'assets/icons/google_icon.png',
-                                key: const ValueKey('icon'),
-                                height: 25.h,
-                                width: 25.h,
+                                backgroundColor: Colors.red,
                               ),
-                    ),
-                    SizedBox(width: 10.w),
-                    Text(
-                      isLoading ? "Signing in..." : "Sign in with Google",
-                      style: TextStyle(
-                        color: const Color(0xff404148),
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+                            );
+                          }
+                        }
+                      } catch (error) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Login failed: $error"),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      } finally {
+                        loginProvider.setLoadingForGoogle(false);
+                      }
+                    },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  child:
+                      isLoading
+                          ? SizedBox(
+                            key: const ValueKey('spinner'),
+                            height: 22.h,
+                            width: 22.h,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          )
+                          : Image.asset(
+                            'assets/icons/google_icon.png',
+                            key: const ValueKey('icon'),
+                            height: 25.h,
+                            width: 25.h,
+                          ),
                 ),
-              ),
+                SizedBox(width: 10.w),
+                Text(
+                  isLoading ? "Signing in..." : "Sign in with Google",
+                  style: TextStyle(
+                    color: const Color(0xff404148),
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
