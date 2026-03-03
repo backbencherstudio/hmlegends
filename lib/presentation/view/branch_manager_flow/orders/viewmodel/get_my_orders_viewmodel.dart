@@ -22,11 +22,11 @@ class GetOrdersViewModel extends ChangeNotifier {
 
       final response = await _apiService.get(ApiEndpoints.getMyOrders);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        _orderResponse = OrderResponse.fromJson(response.data);
+      if (response is Map<String, dynamic> && response['success'] == true) {
+        _orderResponse = OrderResponse.fromJson(response);
         error = null;
       } else {
-        error = "Failed to fetch orders";
+        error = response['message'] ?? "Failed to fetch orders";
       }
     } catch (e) {
       error = e.toString();

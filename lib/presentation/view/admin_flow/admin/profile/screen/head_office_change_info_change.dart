@@ -46,7 +46,7 @@ class _HeadOfficeChangeInfoScreenState
       listen: false,
     );
     await provider.adminCheckMe();
-    final data = provider.adminInfoModel?.data;
+    final data = provider.adminInfoModel?.data ;
 
     if (data != null) {
       _firstNameController.text = data.name ?? "";

@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
+import 'package:hmlegends/data/model/response_model.dart';
 import 'package:http/http.dart' as http;
 import '../../../../../core/network/network_service.dart';
 import '../../admin_model/admin_product_model.dart';
@@ -185,7 +187,7 @@ class StockScreenProvider extends ChangeNotifier {
   }
 
   /// ------------------------ Edit Product ------------------------------------
-  Future<void> editProduct({
+  Future<ResponseModel> editProduct({
     required String pId,
     required String name,
     required String stock,
@@ -223,11 +225,14 @@ class StockScreenProvider extends ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         logger.d("Product updated successfully");
         await getProduct(); // refresh list
+        return ResponseModel(success: true, message: decodeData['message']);
       } else {
         logger.d("Failed to update product: ${decodeData['message']}");
+        return ResponseModel(success: false, message: decodeData['message']);
       }
     } catch (error) {
       logger.d("Error updating product: $error");
+      return ResponseModel(success: false, message: '$e');
     } finally {
       _setLoading(false);
     }

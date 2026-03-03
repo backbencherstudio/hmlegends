@@ -15,7 +15,7 @@ class WeeklyBarChart extends StatelessWidget {
         final apiData = provider.getLastSevenDaysOrdersModel?.data;
 
         /// --------------- Loading Indicator ----------------------------------
-        if (apiData == null) {
+        if (provider.isLoading) {
           return Container(
             height: 200.h,
             alignment: Alignment.center,
@@ -23,14 +23,23 @@ class WeeklyBarChart extends StatelessWidget {
           );
         }
 
+        if (apiData == null) {
+          return Center(
+            child: Text(
+              "No Weekly Orders Found",
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: Colors.black54,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          );
+        }
+
         /// ---------------- Create Last 7 Days List ----------------
         final now = DateTime.now();
         final last7Days = List.generate(7, (index) {
-          return DateTime(
-            now.year,
-            now.month,
-            now.day - (6 - index),
-          );
+          return DateTime(now.year, now.month, now.day - (6 - index));
         });
 
         /// ----------------- Convert API Data To Map -------------------------
@@ -48,25 +57,24 @@ class WeeklyBarChart extends StatelessWidget {
         }
 
         /// -------------------- Merge With Default 7 Days --------------------
-        final mergedData = last7Days.map((date) {
-          final key = "${date.year}-${date.month}-${date.day}";
-          return apiDataMap[key] ?? 0.0;
-        }).toList();
+        final mergedData =
+            last7Days.map((date) {
+              final key = "${date.year}-${date.month}-${date.day}";
+              return apiDataMap[key] ?? 0.0;
+            }).toList();
 
         /// ---------------- Calculate maxY --------------------------
         double maxY =
-        mergedData.isNotEmpty
-            ? mergedData.reduce((a, b) => a > b ? a : b)
-            : 0;
+            mergedData.isNotEmpty
+                ? mergedData.reduce((a, b) => a > b ? a : b)
+                : 0;
 
         maxY = maxY == 0 ? 100 : maxY * 1.2;
 
         return Container(
           height: 200.h,
           padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.r),
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.r)),
           child: BarChart(
             BarChartData(
               maxY: maxY,
@@ -75,10 +83,8 @@ class WeeklyBarChart extends StatelessWidget {
                 show: true,
                 drawHorizontalLine: true,
                 getDrawingHorizontalLine:
-                    (value) => FlLine(
-                  color: Colors.grey.shade300,
-                  strokeWidth: 1,
-                ),
+                    (value) =>
+                        FlLine(color: Colors.grey.shade300, strokeWidth: 1),
                 drawVerticalLine: false,
               ),
               borderData: FlBorderData(show: false),
@@ -121,16 +127,19 @@ class WeeklyBarChart extends StatelessWidget {
                     },
                   ),
                 ),
-                topTitles:
-                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles:
-                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
               ),
               barGroups: List.generate(7, (index) {
                 final y = mergedData[index];
-                final color = index % 2 == 0
-                    ? AppColors.primaryColor
-                    : const Color(0xFFfac8cb);
+                final color =
+                    index % 2 == 0
+                        ? AppColors.primaryColor
+                        : const Color(0xFFfac8cb);
 
                 return _bar(index, y, color);
               }),

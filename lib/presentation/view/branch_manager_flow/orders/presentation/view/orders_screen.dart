@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import 'package:provider/provider.dart';
-import '../../../../../../core/constant/asset_path.dart';
 import '../../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../../widget/custom_app_bar.dart';
 import '../../data/get_all_products_model.dart';
@@ -20,194 +18,220 @@ class OrdersScreen extends StatefulWidget {
 class _OrdersScreenState extends State<OrdersScreen> {
   final Map<String, int> _selectedQuantities = {};
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<GetProductsViewmodel>().fetchProducts();
-    });
-  }
+  final Map<String, ValueNotifier<int>> _quantityNotifiers = {};
 
   int get totalSelectedItems =>
       _selectedQuantities.values.fold(0, (sum, qty) => sum + qty);
 
   @override
+  void dispose() {
+    for (var notifier in _quantityNotifiers.values) {
+      notifier.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final orderVM = context.watch<OrderViewmodel>();
-    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final profileProvider = Provider.of<ChangePasswordProvider>(
+      context,
+      listen: false,
+    );
     final data = profileProvider.adminInfoModel?.data;
 
-    return Scaffold(
-      backgroundColor: const Color(0xffFFF6F7),
-      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
-      body: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          children: [
-            /// ------------------ Total Item Summary --------------------------
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15.r),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
+    final getProducts = Provider.of<GetProductsViewmodel>(
+      context,
+      listen: false,
+    );
+    return FutureBuilder(
+      future: getProducts.fetchProducts(),
+      builder: (context, snapshot) {
+        return Scaffold(
+          backgroundColor: const Color(0xffFFF6F7),
+          appBar: CustomAppBar(
+            profileImage: data?.avatar,
+            notificationCount: 4,
+          ),
+          body: Padding(
+            padding: EdgeInsets.all(16.w),
+            child: Column(
+              children: [
+                /// ------------------ Total Item Summary --------------------------
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 12.h,
                   ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Total items Selected: $totalSelectedItems',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed:
-                        totalSelectedItems > 0
-                            ? () => _showSubmitDialog(context)
-                            : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          totalSelectedItems > 0
-                              ? const Color(0xffE20613)
-                              : Colors.grey.shade100,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25.r),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15.r),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
                       ),
-                    ),
-                    child: Text(
-                      'Submit Order',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total items Selected: $totalSelectedItems',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 20.h),
-
-            /// ----------------------- Search bar -----------------------------
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              height: 45.h,
-              decoration: BoxDecoration(
-                color: const Color(0xffEFEFEF),
-                borderRadius: BorderRadius.circular(25.r),
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  hintStyle: TextStyle(
-                    color: Color(0xFFA5A5AB),
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: InputBorder.none,
-                  prefixIcon: Icon(
-                    Icons.search,
-                    size: 24.sp,
-                    color: Color(0xFF777980),
+                      ElevatedButton(
+                        onPressed:
+                            totalSelectedItems > 0
+                                ? () => _showSubmitDialog(context)
+                                : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              totalSelectedItems > 0
+                                  ? const Color(0xffE20613)
+                                  : Colors.grey.shade100,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25.r),
+                          ),
+                        ),
+                        child: Text(
+                          'Submit Order',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ),
 
-            SizedBox(height: 20.h),
+                SizedBox(height: 20.h),
 
-            /// ------------------- Product List -------------------------------
-            Expanded(
-              child: Consumer<GetProductsViewmodel>(
-                builder: (context, vm, child) {
-                  if (vm.isLoading && vm.products.isEmpty) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(Colors.blueAccent),
-                        strokeWidth: 3,
+                /// ----------------------- Search bar -----------------------------
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 12.h,
+                  ),
+                  height: 45.h,
+                  decoration: BoxDecoration(
+                    color: const Color(0xffEFEFEF),
+                    borderRadius: BorderRadius.circular(25.r),
+                  ),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search',
+                      hintStyle: TextStyle(
+                        color: Color(0xFFA5A5AB),
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w400,
                       ),
-                    );
-                  }
-
-                  if (vm.errorMessage.isNotEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.error_outline,
-                            size: 60,
-                            color: Colors.red,
-                          ),
-                          SizedBox(height: 16.h),
-                          Text(
-                            vm.errorMessage,
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(height: 10.h),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25.r),
-                              ),
-                            ),
-                            onPressed: () => vm.fetchProducts(),
-                            child: Text("Retry"),
-                          ),
-                        ],
+                      border: InputBorder.none,
+                      prefixIcon: Icon(
+                        Icons.search,
+                        size: 24.sp,
+                        color: Color(0xFF777980),
                       ),
-                    );
-                  }
+                    ),
+                  ),
+                ),
 
-                  if (vm.products.isEmpty) {
-                    return const Center(child: Text("No products available"));
-                  }
+                SizedBox(height: 20.h),
 
-                  return ListView.builder(
-                    itemCount: vm.products.length,
-                    itemBuilder: (context, index) {
-                      final product = vm.products[index];
-                      final qty = _selectedQuantities[product.id] ?? 0;
+                /// ------------------- Product List -------------------------------
+                Expanded(
+                  child: Consumer<GetProductsViewmodel>(
+                    builder: (context, vm, child) {
+                      if (vm.isLoading && vm.products.isEmpty) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation(
+                              Colors.blueAccent,
+                            ),
+                            strokeWidth: 3,
+                          ),
+                        );
+                      }
 
-                      return _buildProductCard(product, qty, (newQty) {
-                        setState(() {
-                          if (newQty > 0) {
-                            _selectedQuantities[product.id] = newQty;
-                            orderVM.addProduct(
-                              ProductSelectModel(
-                                productId: product.id,
-                                productQty: newQty.toString(),
+                      if (vm.errorMessage.isNotEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.error_outline,
+                                size: 60,
+                                color: Colors.red,
                               ),
-                            );
-                          } else {
-                            _selectedQuantities.remove(product.id);
-                            orderVM.removeProduct(product.id);
-                          }
-                        });
-                      });
+                              SizedBox(height: 16.h),
+                              Text(
+                                vm.errorMessage,
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(height: 10.h),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25.r),
+                                  ),
+                                ),
+                                onPressed: () => vm.fetchProducts(),
+                                child: Text("Retry"),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      if (vm.products.isEmpty) {
+                        return const Center(
+                          child: Text("No products available"),
+                        );
+                      }
+
+                      return ListView.builder(
+                        itemCount: vm.products.length,
+                        itemBuilder: (context, index) {
+                          final product = vm.products[index];
+                          final qty = _selectedQuantities[product.id] ?? 0;
+
+                          return _buildProductCard(product, qty, (newQty) {
+                            if (newQty > 0) {
+                              _selectedQuantities[product.id] = newQty;
+                              context.read<OrderViewmodel>().addProduct(
+                                ProductSelectModel(
+                                  productId: product.id,
+                                  productQty: newQty.toString(),
+                                ),
+                              );
+                            } else {
+                              _selectedQuantities.remove(product.id);
+                              context.read<OrderViewmodel>().removeProduct(
+                                product.id,
+                              );
+                            }
+                          });
+                        },
+                      );
                     },
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -219,6 +243,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
   ) {
     final isSelected = quantity > 0;
 
+    /// -------------- Get or create ValueNotifier for this product ------------
+    final quantityNotifier = _quantityNotifiers.putIfAbsent(
+      product.id,
+      () => ValueNotifier<int>(quantity),
+    );
+
+    /// Update notifier if quantity changed externally
+    if (quantityNotifier.value != quantity) {
+      quantityNotifier.value = quantity;
+    }
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8.h),
       elevation: 0,
@@ -245,7 +279,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   ),
                   FadeInImage.assetNetwork(
                     placeholder: 'assets/images/main_logo.png',
-                    image: product.image ?? "",
+                    image: product.image ?? "N/A",
                     width: 92.w,
                     height: 100.h,
                     fit: BoxFit.cover,
@@ -272,28 +306,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    product.name,
-                    style: TextStyle(
-                      fontSize: 17.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 6.h),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        ' Stock: ${product.stock} pcs',
+                        product.name,
                         style: TextStyle(
-                          fontSize: 14.sp,
-                          color: Color(0xFF5C5C5C),
-                          fontWeight: FontWeight.w500,
+                          fontSize: 17.sp,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(width: 20.w),
-
                       Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: 8.w,
@@ -322,6 +344,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       ),
                     ],
                   ),
+                  SizedBox(height: 6.h),
+
+                  Text(
+                    ' Stock: ${product.stock} pcs',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Color(0xFF5C5C5C),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
 
                   SizedBox(height: 8.h),
 
@@ -329,37 +361,56 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   Row(
                     children: [
                       Container(
-                        width: 105.w,
+                        width: 110.w,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
                           borderRadius: BorderRadius.circular(10.r),
                         ),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            IconButton(
-                              onPressed:
-                                  quantity > 0
-                                      ? () => onQuantityChanged(quantity - 1)
-                                      : null,
-                              icon: Icon(Icons.remove, size: 17.w),
-                            ),
-                            SizedBox(
-                              width: 8.w,
-                              child: Text(
-                                '$quantity',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            Expanded(
+                              child: IconButton(
+                                onPressed: () {
+                                  if (quantityNotifier.value > 0) {
+                                    final newQty = quantityNotifier.value - 1;
+                                    quantityNotifier.value = newQty;
+                                    onQuantityChanged(newQty);
+                                  }
+                                },
+                                icon: Icon(Icons.remove, size: 17.w),
                               ),
                             ),
-                            IconButton(
-                              onPressed:
-                                  quantity < product.stock
-                                      ? () => onQuantityChanged(quantity + 1)
-                                      : null,
-                              icon: Icon(Icons.add, size: 17.w),
+                            Expanded(
+                              child: ValueListenableBuilder(
+                                valueListenable: quantityNotifier,
+                                builder: (context, value, child) {
+                                  return SizedBox(
+                                    width: 15.w,
+                                    child: Text(
+                                      '$value',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: IconButton(
+                                onPressed: () {
+                                  if (quantityNotifier.value < product.stock) {
+                                    final newQty = quantityNotifier.value + 1;
+                                    quantityNotifier.value = newQty;
+                                    onQuantityChanged(newQty);
+                                  }
+                                },
+
+                                icon: Icon(Icons.add, size: 17.w),
+                              ),
                             ),
                           ],
                         ),
@@ -371,15 +422,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            if (quantity > 0) {
-                              onQuantityChanged(quantity);
+                            if (quantityNotifier.value > 0) {
+                              onQuantityChanged(quantityNotifier.value);
                             } else {
-                              onQuantityChanged(1);
+                              final newQty = 0;
+                              quantityNotifier.value = newQty;
+                              onQuantityChanged(newQty);
                             }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
-                                isSelected
+                                quantityNotifier.value > 0
                                     ? Colors.green
                                     : const Color(0xffE20613),
                             foregroundColor: Colors.white,
@@ -388,7 +441,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             ),
                           ),
                           child: Text(
-                            isSelected ? 'Selected' : 'Confirm',
+                            quantityNotifier.value > 0 ? 'Selected' : 'Confirm',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 14.sp,

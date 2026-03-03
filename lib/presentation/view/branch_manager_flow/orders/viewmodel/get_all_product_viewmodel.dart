@@ -40,8 +40,6 @@ class GetProductsViewmodel extends ChangeNotifier {
       _nextCursor = null;
     }
 
-    notifyListeners();
-
     try {
       debugPrint("=== FETCH PRODUCTS API CALLED ===");
       debugPrint("URL: ${ApiEndpoints.getAllProducts}");
@@ -51,8 +49,8 @@ class GetProductsViewmodel extends ChangeNotifier {
 
       final response = await _apiService.get(ApiEndpoints.getAllProducts);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final productResponse = ProductResponse.fromJson(response.data);
+      if (response['success'] == true) {
+        final productResponse = ProductResponse.fromJson(response);
 
         if (!loadMore) {
           _products = productResponse.data;
@@ -65,11 +63,9 @@ class GetProductsViewmodel extends ChangeNotifier {
         debugPrint("PRODUCTS FETCHED: ${_products.length}");
         debugPrint("Next Cursor: $_nextCursor");
 
-        _isLoading = false;
-        notifyListeners();
         return true;
       } else {
-        final msg = response.data['message'] ?? 'Failed to fetch products';
+        final msg = response['message'] ?? 'Failed to fetch products';
         _errorMessage = msg;
         debugPrint("API Error: $msg");
       }
@@ -92,8 +88,6 @@ class GetProductsViewmodel extends ChangeNotifier {
       debugPrint("Unexpected Error: $e");
     }
 
-    _isLoading = false;
-    notifyListeners();
     return false;
   }
 

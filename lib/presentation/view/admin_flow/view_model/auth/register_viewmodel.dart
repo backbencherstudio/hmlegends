@@ -72,7 +72,7 @@ class RegisterProvider extends ChangeNotifier {
         "password": password,
         "type": "admin",
       };
-      var response = await _apiService.post(ApiEndpoints.register, data: data);
+      var response = await _apiService.postHttp(ApiEndpoints.register, data: data);
 
       final decodedData = response.data;
       final message = decodedData['message'];

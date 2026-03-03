@@ -27,7 +27,7 @@ class VerifyOtpViewmodel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.post(
+      final response = await _apiService.postHttp(
         ApiEndpoints.forgetPassword,
         data: {"email": email},
       );

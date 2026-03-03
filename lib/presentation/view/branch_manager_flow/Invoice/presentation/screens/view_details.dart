@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../../widget/simple_appbar.dart';
 import '../../view_model/get_invoices_details_viewmodel.dart';
 import '../../view_model/paid_payment_viewmodel.dart';
@@ -17,200 +18,223 @@ class ViewDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      builder: (context, child) => Scaffold(
-        backgroundColor: const Color(0xffFFF6F7),
-        appBar: const SimpleAppbar(
-          profileImage: AssetPaths.personIcon,
-          notificationCount: 4,
-          title: 'Invoice',
-          navigationType: NavigationType.pop,
-        ),
-        body: SafeArea(
-          child: Consumer2<GetInvoiceDetailViewmodel, PayInvoiceViewModel>(
-            builder: (context, invoiceVm, payVm, child) {
-              if (invoiceVm.isLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data;
+    return Scaffold(
+      backgroundColor: const Color(0xffFFF6F7),
+      appBar: SimpleAppbar(
+        profileImage: data?.avatar ?? AssetPaths.personIcon,
+        notificationCount: 4,
+        title: 'Invoice',
+        navigationType: NavigationType.pop,
+      ),
+      body: SafeArea(
+        child: Consumer2<GetInvoiceDetailViewmodel, PayInvoiceViewModel>(
+          builder: (context, invoiceVm, payVm, child) {
+            if (invoiceVm.isLoading) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(Colors.blue),
+                ),
+              );
+            }
 
-              final invoice = invoiceVm.invoiceDetail!.data!;
-              final invoiceId = invoice.id ?? ''; // Make sure your model has 'id'
-              final isCurrentlyPaid = invoice.status?.toUpperCase() == 'PAID';
+            final invoice = invoiceVm.invoiceDetail!.data!;
+            final invoiceId = invoice.id ?? '';
+            final isCurrentlyPaid = invoice.status?.toUpperCase() == 'PAID';
 
-              // Combine both paid states: from API response or payment success
-              final bool isPaid = isCurrentlyPaid || payVm.isPaid;
+            // Combine both paid states: from API response or payment success
+            final bool isPaid = isCurrentlyPaid || payVm.isPaid;
 
-              return Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.all(15.w),
-                      child: Card(
-                        color: Colors.white,
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.r),
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(15.r),
+                    child: Card(
+                      color: Colors.white,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24.w,
+                          vertical: 30.h,
                         ),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 24.w,
-                            vertical: 30.h,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: _AddressSection(
-                                      title: 'Invoice From',
-                                      name:
-                                      '${invoice.creator?.firstName ?? ''} ${invoice.creator?.lastName ?? ''}'
-                                          .trim(),
-                                      address: invoice.creator?.address ?? '',
-                                      phone: invoice.creator?.phoneNumber ?? '',
-                                    ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: _AddressSection(
+                                    title: 'Invoice From',
+                                    name:
+                                        (invoice.creator?.name ?? '')
+                                            .trim(),
+                                    address: invoice.creator?.address ?? '',
+                                    phone: invoice.creator?.phoneNumber ?? '',
                                   ),
-                                  AnimatedSwitcher(
-                                    duration: const Duration(milliseconds: 400),
-                                    child: isPaid
-                                        ? Container(
-                                      key: const ValueKey('paid'),
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 10.w,
-                                        vertical: 5.h,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF5BB450),
-                                        borderRadius: BorderRadius.circular(20.r),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            width: 25.w,
-                                            height: 25.h,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
-                                              shape: BoxShape.circle,
+                                ),
+                                AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 400),
+                                  child:
+                                      isPaid
+                                          ? Container(
+                                            key: const ValueKey('paid'),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 10.w,
+                                              vertical: 5.h,
                                             ),
-                                            child: Icon(
-                                              Icons.check,
-                                              color: Colors.red,
-                                              size: 22.w,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFF5BB450),
+                                              borderRadius:
+                                                  BorderRadius.circular(20.r),
                                             ),
-                                          ),
-                                          SizedBox(width: 6.w),
-                                          Text(
-                                            'Paid',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w600,
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: 25.w,
+                                                  height: 25.h,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                        color: Colors.white,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                  child: Icon(
+                                                    Icons.check,
+                                                    color: Colors.red,
+                                                    size: 22.w,
+                                                  ),
+                                                ),
+                                                SizedBox(width: 6.w),
+                                                Text(
+                                                  'Paid',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                        : const SizedBox.shrink(),
-                                  ),
-                                ],
-                              ),
+                                          )
+                                          : const SizedBox.shrink(),
+                                ),
+                              ],
+                            ),
 
-                              Divider(height: 35.h, thickness: 1, color: const Color(0xFFE0E0E0)),
-                              _AddressSection(
-                                title: 'Ship to',
-                                name:
-                                '${invoice.receiver?.firstName ?? ''} ${invoice.receiver?.lastName ?? ''}'
-                                    .trim(),
-                                address: invoice.receiver?.address ?? '',
-                                phone: invoice.receiver?.phoneNumber ?? '',
-                              ),
+                            Divider(
+                              height: 35.h,
+                              thickness: 1,
+                              color: const Color(0xFFE0E0E0),
+                            ),
+                            _AddressSection(
+                              title: 'Ship to',
+                              name:
+                                  (invoice.receiver?.name ?? '')
+                                      .trim(),
+                              address: invoice.receiver?.address ?? '',
+                              phone: invoice.receiver?.phoneNumber ?? '',
+                            ),
 
-                              Divider(height: 35.h, thickness: 1, color: const Color(0xFFE0E0E0)),
+                            Divider(
+                              height: 35.h,
+                              thickness: 1,
+                              color: const Color(0xFFE0E0E0),
+                            ),
 
-                              _DateInvoiceRow(
-                                date: _formatDate(invoice.createdAt!),
-                                invoiceNo: invoice.sku ?? 'N/A',
-                              ),
+                            _DateInvoiceRow(
+                              date: _formatDate(invoice.createdAt!),
+                              invoiceNo: invoice.sku ?? 'N/A',
+                            ),
 
-                              SizedBox(height: 10.h),
+                            SizedBox(height: 10.h),
 
-                              _InvoiceTable(
-                                items: invoice.order?.orderItems?.map((item) {
-                                  final product = item.product;
-                                  final qty = item.quantity ?? 0;
-                                  final price = item.price ?? 0.0;
-                                  return {
-                                    'no': '${invoice.order!.orderItems!.indexOf(item) + 1}'
-                                        .padLeft(2, '0'),
-                                    'product_name': product?.name ?? 'Unknown Product',
-                                    'price': "$price",
-                                    'quantity': qty,
-                                    'total': qty * price,
-                                  };
-                                }).toList() ??
-                                    [],
-                              ),
+                            _InvoiceTable(
+                              items:
+                                  invoice.order?.orderItems?.map((item) {
+                                    final product = item.product;
+                                    final qty = item.quantity ?? 0;
+                                    final price = item.price ?? 0.0;
+                                    return {
+                                      'no':
+                                          '${invoice.order!.orderItems!.indexOf(item) + 1}'
+                                              .padLeft(2, '0'),
+                                      'product_name':
+                                          product?.name ?? 'Unknown Product',
+                                      'price': "$price",
+                                      'quantity': qty,
+                                      'total': qty * price,
+                                    };
+                                  }).toList() ??
+                                  [],
+                            ),
 
-                              SizedBox(height: 20.h),
+                            SizedBox(height: 20.h),
 
-                              _SubtotalRow(
-                                subtotal:
-                                '\$${invoice.order?.totalAmount?.toStringAsFixed(2) ?? '0.00'}',
-                              ),
-                            ],
-                          ),
+                            _SubtotalRow(
+                              subtotal:
+                                  '\$${invoice.order?.totalAmount?.toStringAsFixed(2) ?? '0.00'}',
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
+                ),
 
-                  // Bottom Action Bar
-                  _BottomActionBar(
-                    isPaid: isPaid,
-                    isLoading: payVm.isLoading,
-                    // Inside your Consumer2 builder, update the onPaid callback like this:
-                    onPaid: isPaid
-                        ? null
-                        : () async {
-                      await payVm.payInvoice(invoiceId);
+                // Bottom Action Bar
+                _BottomActionBar(
+                  isPaid: isPaid,
+                  isLoading: payVm.isLoading,
+                  // Inside your Consumer2 builder, update the onPaid callback like this:
+                  onPaid:
+                      isPaid
+                          ? null
+                          : () async {
+                            await payVm.payInvoice(invoiceId);
 
-                      if (payVm.error != null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: Colors.red,
-                            content: Text(payVm.error!),
-                          ),
-                        );
-                      } else if (payVm.isPaid) {
-                        // Show success message from API response
-                        final successMsg = payVm.lastPaymentResponse?.message ?? "Invoice paid successfully!";
+                            if (payVm.error != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: Colors.red,
+                                  content: Text(payVm.error!),
+                                ),
+                              );
+                            } else if (payVm.isPaid) {
+                              // Show success message from API response
+                              final successMsg =
+                                  payVm.lastPaymentResponse?.message ??
+                                  "Invoice paid successfully!";
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: Colors.green,
-                            content: Row(
-                              children: [
-                                const Icon(Icons.check_circle, color: Colors.white),
-                                const SizedBox(width: 10),
-                                Expanded(child: Text(successMsg)),
-                              ],
-                            ),
-                          ),
-                        );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: Colors.green,
+                                  content: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.check_circle,
+                                        color: Colors.white,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(child: Text(successMsg)),
+                                    ],
+                                  ),
+                                ),
+                              );
 
-                        // Optional: Refresh invoice details to reflect new status
-                        // await invoiceVm.fetchInvoiceDetails(invoiceId);
-                      }
-                    },
-                  ),
-                ],
-              );
-            },
-          ),
+                              // Optional: Refresh invoice details to reflect new status
+                              // await invoiceVm.fetchInvoiceDetails(invoiceId);
+                            }
+                          },
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -221,6 +245,7 @@ class ViewDetails extends StatelessWidget {
 
 class _AddressSection extends StatelessWidget {
   final String title, name, address, phone;
+
   const _AddressSection({
     required this.title,
     required this.name,
@@ -235,17 +260,31 @@ class _AddressSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyle(fontSize: 15.sp, color: const Color(0xFF9E9E9E), fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontSize: 15.sp,
+            color: Colors.black54,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         SizedBox(height: 8.h),
         Text(
           name,
-          style: TextStyle(fontSize: 15.sp, color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 15.sp,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         SizedBox(height: 5.h),
-        Text(address, style: TextStyle(fontSize: 14.sp, color: const Color(0xFF616161))),
+        Text(
+          address,
+          style: TextStyle(fontSize: 14.sp, color: const Color(0xFF616161)),
+        ),
         SizedBox(height: 5.h),
-        Text(phone, style: TextStyle(fontSize: 14.sp, color: const Color(0xFF616161))),
+        Text(
+          phone,
+          style: TextStyle(fontSize: 14.sp, color: const Color(0xFF616161)),
+        ),
       ],
     );
   }
@@ -253,6 +292,7 @@ class _AddressSection extends StatelessWidget {
 
 class _DateInvoiceRow extends StatelessWidget {
   final String date, invoiceNo;
+
   const _DateInvoiceRow({required this.date, required this.invoiceNo});
 
   @override
@@ -260,8 +300,14 @@ class _DateInvoiceRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Date: $date', style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500)),
-        Text('Invoice No: $invoiceNo', style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500)),
+        Text(
+          'Date: $date',
+          style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500),
+        ),
+        Text(
+          'Invoice No: $invoiceNo',
+          style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500),
+        ),
       ],
     );
   }
@@ -269,6 +315,7 @@ class _DateInvoiceRow extends StatelessWidget {
 
 class _InvoiceTable extends StatelessWidget {
   final List<Map<String, dynamic>> items;
+
   const _InvoiceTable({required this.items});
 
   @override
@@ -285,23 +332,45 @@ class _InvoiceTable extends StatelessWidget {
       children: [
         TableRow(
           decoration: const BoxDecoration(color: Color(0xFFF5F5F5)),
-          children: ['No', 'Product Name', 'Price', 'Quantity', 'Total']
-              .map((header) => Padding(
-            padding: EdgeInsets.all(8.w),
-            child: Text(header,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11.sp)),
-          ))
-              .toList(),
+          children:
+              ['No', 'Product Name', 'Price', 'Quantity', 'Total']
+                  .map(
+                    (header) => Padding(
+                      padding: EdgeInsets.all(8.w),
+                      child: Text(
+                        header,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11.sp,
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
         ),
-        ...items.map((item) => TableRow(
-          children: [
-            Padding(padding: EdgeInsets.all(8.w), child: Text(item['no'])),
-            Padding(padding: EdgeInsets.all(8.w), child: Text(item['product_name'])),
-            Padding(padding: EdgeInsets.all(8.w), child: Text('৳${item['price']}')),
-            Padding(padding: EdgeInsets.all(8.w), child: Text('${item['quantity']}')),
-            Padding(padding: EdgeInsets.all(8.w), child: Text('৳${item['total']}')),
-          ],
-        )),
+        ...items.map(
+          (item) => TableRow(
+            children: [
+              Padding(padding: EdgeInsets.all(8.w), child: Text(item['no'])),
+              Padding(
+                padding: EdgeInsets.all(8.w),
+                child: Text(item['product_name']),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.w),
+                child: Text('৳${item['price']}'),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.w),
+                child: Text('${item['quantity']}'),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.w),
+                child: Text('৳${item['total']}'),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -309,6 +378,7 @@ class _InvoiceTable extends StatelessWidget {
 
 class _SubtotalRow extends StatelessWidget {
   final String subtotal;
+
   const _SubtotalRow({required this.subtotal});
 
   @override
@@ -355,23 +425,24 @@ class _BottomActionBar extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30.r),
                     ),
                   ),
-                  child: isLoading
-                      ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                      : Text(
-                    'Pay Bill',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child:
+                      isLoading
+                          ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                          : Text(
+                            'Pay Bill',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                 ),
               ),
             ),
@@ -393,7 +464,6 @@ class _BottomActionBar extends StatelessWidget {
                 decorationThickness: 1,
               ),
             ),
-
           ),
         ],
       ),

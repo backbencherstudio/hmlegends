@@ -109,7 +109,6 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     title: "Total Orders",
                     value: "$totalOrder",
                     isHighlighted: provider.selectedFilterOrder == 0,
-                
                   ),
                 ),
                 SizedBox(width: 10.w),
@@ -118,7 +117,6 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     title: "Pending Orders",
                     value: "$pendingOrder",
                     isHighlighted: provider.selectedFilterOrder == 1,
-                
                   ),
                 ),
                 SizedBox(width: 10.w),
@@ -127,7 +125,6 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     title: "Invoiced Orders",
                     value: "$invoicedOrder",
                     isHighlighted: provider.selectedFilterOrder == 2,
-                  
                   ),
                 ),
               ],
@@ -143,7 +140,6 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     value: "$deliveredOrder",
                     isWidth: true,
                     isHighlighted: provider.selectedFilterOrder == 3,
-                 
                   ),
                 ),
                 SizedBox(width: 10.w),
@@ -152,7 +148,6 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     title: "Units of items ordered",
                     value: "$totalUnitOrdered",
                     isWidth: true,
-                
                   ),
                 ),
               ],
@@ -202,7 +197,10 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                           value: 'This month',
                           child: Text(
                             'This month',
-                            style: TextStyle(fontSize: 14.sp, color: AppColors.authBodyTextColor),
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: AppColors.authBodyTextColor,
+                            ),
                           ),
                         ),
                       ],
@@ -357,5 +355,4 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
       ),
     );
   }
-
 }

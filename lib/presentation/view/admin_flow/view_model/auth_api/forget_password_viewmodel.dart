@@ -34,7 +34,7 @@ class ForgetPasswordProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.post(
+      final response = await _apiService.postHttp(
         ApiEndpoints.forgetPassword,
         data: {"email": email},
       );
@@ -64,7 +64,7 @@ class ForgetPasswordProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.post(
+      final response = await _apiService.postHttp(
         ApiEndpoints.verifyOtpOnly,
         data: {"email": _email, "token": otp},
       );
@@ -94,7 +94,7 @@ class ForgetPasswordProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.post(
+      final response = await _apiService.postHttp(
         ApiEndpoints.setNewPassword,
         data: {"email": _email, "token": _otpToken, "password": password},
       );

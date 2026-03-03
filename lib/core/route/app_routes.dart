@@ -100,8 +100,6 @@ class AppRoutes {
     RouteNames.manageBranchesToOrderSummaryScreen:
         (context) => ManageBranchesToOrderSummaryScreen(),
     RouteNames.editBranchScreen: (context) => EditBranchScreen(),
-    RouteNames.adminInvoiceDetailScreen:
-        (context) => AdminInvoiceDetailScreen(),
     RouteNames.changeInfoDriver: (context) => ChangeInfoDriver(),
     RouteNames.adminNotificationScreen: (context) => AdminNotificationScreen(),
     RouteNames.pendingUserList: (context) => PendingUserList(),

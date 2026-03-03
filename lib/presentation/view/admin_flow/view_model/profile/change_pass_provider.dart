@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/api_service.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
+import 'package:hmlegends/data/model/response_model.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin_model/admin_checkme_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
@@ -67,27 +67,42 @@ class ChangePasswordProvider with ChangeNotifier {
 
   final logger = Logger();
 
+  final bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
+
   /// ---------------------- Admin Check Me ------------------------------------
-  Future<void> adminCheckMe() async {
+  Future<ResponseModel> adminCheckMe() async {
     try {
       final token = await _tokenStorage.getToken();
-      final response = await _apiService.get(
-        ApiEndpoints.adminCheckMe,
-        options: Options(
-          headers: {
-            "Authorization": "Bearer $token",
-            "Accept": "application/json",
-          },
-        ),
-      );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        _adminInfoModel = AdminInfoModel.fromJson(response.data);
+      // Check if token exists before making the request
+      if (token == null || token.isEmpty) {
+        logger.w("Admin Check Me: No token found");
+        return ResponseModel(
+          success: false,
+          message: 'No authentication token found',
+        );
+      }
+
+      final response = await _apiService.get(ApiEndpoints.adminCheckMe);
+
+      if (response['success'] == true) {
+        _adminInfoModel = AdminInfoModel.fromJson(response);
+        return ResponseModel(
+          success: true,
+          message: response['message'] ?? 'Admin info fetched successfully',
+        );
       } else {
-        logger.e("Admin Check Me Error: ${response.statusCode}");
+        logger.e("Admin Check Me Error: $response");
+        return ResponseModel(
+          success: false,
+          message: response['message'] ?? 'Failed to fetch admin info',
+        );
       }
     } catch (error) {
       logger.e("Admin Check Me Error: $error");
+      return ResponseModel(success: false, message: '$error');
     }
   }
 

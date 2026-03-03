@@ -26,133 +26,146 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
       _currentBar = "second";
     }
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
-    final data = profileProvider.adminInfoModel?.data;
 
-    return Scaffold(
-      backgroundColor: const Color(0xffFFF6F7),
-      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
-      body: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          // BACKGROUND
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/background.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
+    return FutureBuilder(
+      future: profileProvider.adminCheckMe(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        final data = profileProvider.adminInfoModel?.data;
+        // debugPrint("========== Profile Image : ${data?.avatar} ==============");
+        return Scaffold(
+          backgroundColor: const Color(0xffFFF6F7),
+          appBar: CustomAppBar(
+            profileImage: data?.avatar,
+            notificationCount: 4,
           ),
-
-          // FOOD IMAGE
-          Positioned(
-            bottom: -60,
-            child: SizedBox(
-              height: 300.h,
-              child: Image.asset('assets/images/foodss.png'),
-            ),
-          ),
-
-          // STARS
-          ...[
-            Positioned(bottom: 220, right: 150, child: _star(30)),
-            Positioned(bottom: 200, right: 200, child: _star(20)),
-            Positioned(bottom: 260, right: 280, child: _star(20)),
-            Positioned(bottom: 230, right: 320, child: _star(12)),
-            Positioned(bottom: 250, right: 360, child: _star(12)),
-            Positioned(bottom: 240, right: 390, child: _star(12)),
-            Positioned(bottom: 240, left: 390, child: _star(15)),
-            Positioned(bottom: 260, left: 370, child: _star(20)),
-            Positioned(bottom: 260, left: 320, child: _star(17)),
-          ],
-
-          Align(
-            alignment: Alignment.topCenter,
-            child: Column(
-              children: [
-                SizedBox(height: 10.h),
-                Text(
-                  'Branch Name – (BR001)',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+          body: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              // BACKGROUND
+              Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/background.png'),
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                SizedBox(height: 10.h),
+              ),
 
-                /// TOP BARS SWITCH
-                _getTopBarWidget(orderVm),
+              // FOOD IMAGE
+              Positioned(
+                bottom: -60,
+                child: SizedBox(
+                  height: 300.h,
+                  child: Image.asset('assets/images/foodss.png'),
+                ),
+              ),
 
-                SizedBox(height: 40.h),
+              // STARS
+              ...[
+                Positioned(bottom: 220, right: 150, child: _star(30)),
+                Positioned(bottom: 200, right: 200, child: _star(20)),
+                Positioned(bottom: 260, right: 280, child: _star(20)),
+                Positioned(bottom: 230, right: 320, child: _star(12)),
+                Positioned(bottom: 250, right: 360, child: _star(12)),
+                Positioned(bottom: 240, right: 390, child: _star(12)),
+                Positioned(bottom: 240, left: 390, child: _star(15)),
+                Positioned(bottom: 260, left: 370, child: _star(20)),
+                Positioned(bottom: 260, left: 320, child: _star(17)),
+              ],
 
-                /// BUTTON GRID
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 12,
+              Align(
+                alignment: Alignment.topCenter,
+                child: Column(
                   children: [
-                    Column(
-                      spacing: 10,
-                      children: [
-                        GestureDetector(
-                          onTap:
-                              orderVm.isLoading
-                                  ? null
-                                  : () async {
-                                    final success = await orderVm.placeOrder();
-                                    if (success) {
-                                      setState(() {
-                                        _currentBar = "second";
-                                      });
-                                    }
-                                  },
-                          child: CustomFeatureBox(
-                            imagePath: 'assets/icons/first_box.png',
-                            text: 'Place Order',
-                            isDisabled: orderVm.hasPlacedToday,
-                          ),
-                        ),
-
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              RouteNames.invoiceScreen,
-                            );
-                          },
-                          child: CustomFeatureBox(
-                            imagePath: 'assets/icons/third_box.png',
-                            text: 'Invoices',
-                          ),
-                        ),
-                      ],
+                    SizedBox(height: 10.h),
+                    Text(
+                      'Branch Name – (BR001)',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
                     ),
+                    SizedBox(height: 10.h),
 
-                    Column(
-                      spacing: 10,
+                    /// TOP BARS SWITCH
+                    _getTopBarWidget(orderVm),
+
+                    SizedBox(height: 40.h),
+
+                    /// BUTTON GRID
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 12,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              RouteNames.ordersScreen,
-                            );
-                          },
-                          child: CustomFeatureBox(
-                            imagePath: 'assets/icons/second_box.png',
-                            text: 'My orders',
-                          ),
+                        Column(
+                          spacing: 10,
+                          children: [
+                            GestureDetector(
+                              onTap:
+                                  orderVm.isLoading
+                                      ? null
+                                      : () async {
+                                        final success =
+                                            await orderVm.placeOrder();
+                                        if (success) {
+                                          setState(() {
+                                            _currentBar = "second";
+                                          });
+                                        }
+                                      },
+                              child: CustomFeatureBox(
+                                imagePath: 'assets/icons/first_box.png',
+                                text: 'Place Order',
+                                isDisabled: orderVm.hasPlacedToday,
+                              ),
+                            ),
+
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  RouteNames.invoiceScreen,
+                                );
+                              },
+                              child: CustomFeatureBox(
+                                imagePath: 'assets/icons/third_box.png',
+                                text: 'Invoices',
+                              ),
+                            ),
+                          ],
                         ),
-                        CustomFeatureBox(
-                          imagePath: 'assets/icons/fourth_box.png',
-                          text: 'My Delivery',
+
+                        Column(
+                          spacing: 10,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  RouteNames.ordersScreen,
+                                );
+                              },
+                              child: CustomFeatureBox(
+                                imagePath: 'assets/icons/second_box.png',
+                                text: 'My orders',
+                              ),
+                            ),
+                            CustomFeatureBox(
+                              imagePath: 'assets/icons/fourth_box.png',
+                              text: 'My Delivery',
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

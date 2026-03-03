@@ -66,7 +66,7 @@ class OrderViewmodel extends ChangeNotifier {
       };
 
       debugPrint("=== PLACE ORDER API CALLED ===");
-      final response = await _apiService.post(
+      final response = await _apiService.postHttp(
         ApiEndpoints.placeOrder,
         data: body,
       );
