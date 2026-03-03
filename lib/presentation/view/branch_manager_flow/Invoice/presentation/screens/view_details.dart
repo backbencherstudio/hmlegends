@@ -354,11 +354,11 @@ class _InvoiceTable extends StatelessWidget {
               Padding(padding: EdgeInsets.all(8.w), child: Text(item['no'])),
               Padding(
                 padding: EdgeInsets.all(8.w),
-                child: Text(item['product_name']),
+                child: Text(item['product'] ?? 'N/A'),
               ),
               Padding(
                 padding: EdgeInsets.all(8.w),
-                child: Text('৳${item['price']}'),
+                child: Text('\$${item['price']}'),
               ),
               Padding(
                 padding: EdgeInsets.all(8.w),
@@ -366,7 +366,7 @@ class _InvoiceTable extends StatelessWidget {
               ),
               Padding(
                 padding: EdgeInsets.all(8.w),
-                child: Text('৳${item['total']}'),
+                child: Text('\$${item['total']}'),
               ),
             ],
           ),
