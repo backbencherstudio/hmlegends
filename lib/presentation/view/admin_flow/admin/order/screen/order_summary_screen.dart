@@ -22,6 +22,16 @@ class OrderSummaryScreen extends StatefulWidget {
 }
 
 class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
+
+
+
+  @override
+  void initState() {
+   WidgetsBinding.instance.addPostFrameCallback((_){
+     context.read<OrderScreenProvider>().getAdminOrder();
+   });
+    super.initState();
+  }
   List<Orders> _getFilteredStats(OrderScreenProvider provider) {
     final allOrders = provider.orderAdminModel?.data?.orders ?? [];
     switch (provider.selectedFilterOrder) {
