@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/network/network_service.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
@@ -46,7 +45,7 @@ class _HeadOfficeChangeInfoScreenState
       listen: false,
     );
     await provider.adminCheckMe();
-    final data = provider.adminInfoModel?.data;
+    final data = provider.adminInfoModel?.data ;
 
     if (data != null) {
       _firstNameController.text = data.name ?? "";

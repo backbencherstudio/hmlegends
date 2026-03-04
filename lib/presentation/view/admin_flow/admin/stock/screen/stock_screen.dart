@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,10 +28,12 @@ class StockScreen extends StatefulWidget {
 class _StockScreenState extends State<StockScreen> {
   File? image;
 
+  /// ---------------------- TextField Controllers ----------------------------
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
 
+  /// ------------------------ Initialize State --------------------------------
   @override
   void initState() {
     super.initState();
@@ -44,6 +49,7 @@ class _StockScreenState extends State<StockScreen> {
     image = null;
   }
 
+  /// ------------------------ Show Delete Stock Dialog ------------------------
   Future<void> showDeleteStockDialog(
     BuildContext context,
     String text,
@@ -92,6 +98,7 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
+  /// ------------------------ Success Delete Stock Dialog ---------------------
   Future<void> _successDeleteStock(BuildContext context, String text) async {
     showDialog(
       context: context,
@@ -144,6 +151,7 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
+  /// ------------------------ Pick Image From Gallery -------------------------
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(
@@ -158,6 +166,7 @@ class _StockScreenState extends State<StockScreen> {
     }
   }
 
+  /// ------------------------ Filter Products --------------------------------
   List<Data> filterProducts(List<Data> products, int index) {
     switch (index) {
       case 1:
@@ -171,6 +180,32 @@ class _StockScreenState extends State<StockScreen> {
     }
   }
 
+  /// ------------------------ Apply Query Filter variables --------------------
+  List<Data> allProducts = [];
+  String query = '';
+  Timer? debouncer;
+
+  /// ------------------------ Debounce ---------------------------------------
+  void debounce(
+    VoidCallback callback, {
+    Duration duration = const Duration(milliseconds: 1000),
+  }) {
+    if (debouncer != null) {
+      debouncer!.cancel();
+    }
+    debouncer = Timer(duration, callback);
+  }
+
+  /// ------------------------ Apply Query Filter -----------------------------
+  List<Data> _applyQueryFilter(List<Data> products) {
+    if (query.trim().isEmpty) return products;
+    final q = query.trim().toLowerCase();
+    return products.where((product) {
+      final name = product.name ?? '';
+      return name.toLowerCase().contains(q);
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
@@ -181,7 +216,7 @@ class _StockScreenState extends State<StockScreen> {
         final filteredProducts = filterProducts(products, vm.selectIndex);
 
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.bgColor,
 
           appBar: CustomAppBar(
             profileImage: data?.avatar,
@@ -234,7 +269,19 @@ class _StockScreenState extends State<StockScreen> {
                     },
                   ),
                 ),
-
+                SizedBox(height: 16.h),
+                SearchField(
+                  hintText: 'Search by product name',
+                  text: query,
+                  onChanged: (String value) {
+                    debounce(() {
+                      if (!mounted) return;
+                      setState(() {
+                        query = value;
+                      });
+                    });
+                  },
+                ),
                 SizedBox(height: 10.h),
 
                 Row(
@@ -301,247 +348,333 @@ class _StockScreenState extends State<StockScreen> {
                   child:
                       vm.isLoading
                           ? const Center(child: CircularProgressIndicator())
-                          : ListView.builder(
-                            itemCount: filteredProducts.length,
-                            itemBuilder: (context, index) {
-                              final product = filteredProducts[index];
-
-                              /// -------- Stock Product Card ------------------
-                              return Container(
-                                margin: EdgeInsets.symmetric(vertical: 6.h),
-                                padding: EdgeInsets.all(12.w),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: Colors.grey.shade300,
-                                    width: 1.4,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                                child: Row(
-                                  children: [
-                                    /// ----------- Product Image --------------
-                                    Container(
-                                      width: 90.w,
-                                      height: 90.w,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          8.r,
-                                        ),
-                                        image:
-                                            product.image != null
-                                                ? DecorationImage(
-                                                  image: NetworkImage(
-                                                    product.image!,
-                                                  ),
-                                                  fit: BoxFit.cover,
-                                                )
-                                                : null,
-                                        color:
-                                            product.image == null
-                                                ? Colors.grey[300]
-                                                : null,
+                          : products.isEmpty
+                          ? Center(
+                            child: Text(
+                              "No Stocks Found",
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          )
+                          : Builder(
+                            builder: (context) {
+                              final queryFilteredProducts = _applyQueryFilter(
+                                filteredProducts,
+                              );
+                              return queryFilteredProducts.isEmpty
+                                  ? Center(
+                                    child: Text(
+                                      "No products found",
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        color: Colors.black54,
+                                        fontWeight: FontWeight.w500,
                                       ),
-                                      child:
-                                          product.image == null
-                                              ? const Icon(
-                                                Icons.image,
-                                                size: 30,
-                                              )
-                                              : null,
                                     ),
+                                  )
+                                  : ListView.builder(
+                                    itemCount: queryFilteredProducts.length,
+                                    itemBuilder: (context, index) {
+                                      final product =
+                                          queryFilteredProducts[index];
 
-                                    SizedBox(width: 12.w),
-
-                                    /// ----------- Product Details ------------
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            product.name ?? "N/A",
-                                            style: TextStyle(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.bold,
+                                      /// -------- Stock Product Card ------------------
+                                      return Container(
+                                        margin: EdgeInsets.symmetric(
+                                          vertical: 6.h,
+                                        ),
+                                        padding: EdgeInsets.all(12.w),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border.all(
+                                            color: Colors.grey.shade300,
+                                            width: 1.4,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            12.r,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            /// ----------- Product Image --------------
+                                            Container(
+                                              width: 90.w,
+                                              height: 90.w,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.r),
+                                                image:
+                                                    product.image != null
+                                                        ? DecorationImage(
+                                                          image: NetworkImage(
+                                                            product.image!,
+                                                          ),
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                        : null,
+                                                color:
+                                                    product.image == null
+                                                        ? Colors.grey[300]
+                                                        : null,
+                                              ),
+                                              child:
+                                                  product.image == null
+                                                      ? const Icon(
+                                                        Icons.image,
+                                                        size: 30,
+                                                      )
+                                                      : null,
                                             ),
-                                          ),
 
-                                          SizedBox(height: 4.h),
+                                            SizedBox(width: 12.w),
 
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                "Stock: ${product.stock} pcs",
-                                                style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.grey.shade800,
-                                                ),
-                                              ),
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: 8.w,
-                                                  vertical: 4.h,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      product.stockStatus ==
-                                                              "IN_STOCK"
-                                                          ? Colors.green
-                                                              .withValues(
-                                                                alpha: 0.15,
-                                                              )
-                                                          : product
-                                                                  .stockStatus ==
-                                                              "LOW_STOCK"
-                                                          ? Colors.orange
-                                                              .withValues(
-                                                                alpha: 0.15,
-                                                              )
-                                                          : product
-                                                                  .stockStatus ==
-                                                              "OUT_OF_STOCK"
-                                                          ? Colors.red
-                                                              .withValues(
-                                                                alpha: 0.15,
-                                                              )
-                                                          : null,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        30.r,
-                                                      ),
-                                                ),
-                                                child: Row(
-                                                  spacing: 5,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.circle,
-                                                      size: 12.sp,
-                                                      color:
-                                                          product.stockStatus ==
-                                                                  "IN_STOCK"
-                                                              ? Colors.green
-                                                              : product
-                                                                      .stockStatus ==
-                                                                  "LOW_STOCK"
-                                                              ? Colors.orange
-                                                              : product
-                                                                      .stockStatus ==
-                                                                  'OUT_OF_STOCK'
-                                                              ? Colors.red
-                                                              : null,
+                                            /// ----------- Product Details ------------
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    product.name ?? "N/A",
+                                                    style: TextStyle(
+                                                      fontSize: 16.sp,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
+                                                  ),
 
-                                                    Text(
-                                                      product.stockStatus ?? "",
-                                                      style: TextStyle(
-                                                        fontSize: 12.sp,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            product.stockStatus ==
-                                                                    "IN_STOCK"
-                                                                ? Colors.green
-                                                                : product
-                                                                        .stockStatus ==
-                                                                    "LOW_STOCK"
-                                                                ? Colors.orange
-                                                                : product
-                                                                        .stockStatus ==
-                                                                    'OUT_OF_STOCK'
-                                                                ? Colors.red
-                                                                : null,
+                                                  SizedBox(height: 4.h),
+
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        "Stock: ${product.stock} pcs",
+                                                        style: TextStyle(
+                                                          fontSize: 14.sp,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color:
+                                                              Colors
+                                                                  .grey
+                                                                  .shade800,
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.symmetric(
+                                                              horizontal: 8.w,
+                                                              vertical: 4.h,
+                                                            ),
+                                                        decoration: BoxDecoration(
+                                                          color:
+                                                              product.stockStatus ==
+                                                                      "IN_STOCK"
+                                                                  ? Colors.green
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.15,
+                                                                      )
+                                                                  : product
+                                                                          .stockStatus ==
+                                                                      "LOW_STOCK"
+                                                                  ? Colors
+                                                                      .orange
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.15,
+                                                                      )
+                                                                  : product
+                                                                          .stockStatus ==
+                                                                      "OUT_OF_STOCK"
+                                                                  ? Colors.red
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.15,
+                                                                      )
+                                                                  : null,
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                30.r,
+                                                              ),
+                                                        ),
+                                                        child: Row(
+                                                          spacing: 5,
+                                                          children: [
+                                                            Icon(
+                                                              Icons.circle,
+                                                              size: 12.sp,
+                                                              color:
+                                                                  product.stockStatus ==
+                                                                          "IN_STOCK"
+                                                                      ? Colors
+                                                                          .green
+                                                                      : product
+                                                                              .stockStatus ==
+                                                                          "LOW_STOCK"
+                                                                      ? Colors
+                                                                          .orange
+                                                                      : product
+                                                                              .stockStatus ==
+                                                                          'OUT_OF_STOCK'
+                                                                      ? Colors
+                                                                          .red
+                                                                      : null,
+                                                            ),
 
-                                          SizedBox(height: 4.h),
+                                                            Text(
+                                                              product.stockStatus ??
+                                                                  "",
+                                                              style: TextStyle(
+                                                                fontSize: 12.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                color:
+                                                                    product.stockStatus ==
+                                                                            "IN_STOCK"
+                                                                        ? Colors
+                                                                            .green
+                                                                        : product.stockStatus ==
+                                                                            "LOW_STOCK"
+                                                                        ? Colors
+                                                                            .orange
+                                                                        : product.stockStatus ==
+                                                                            'OUT_OF_STOCK'
+                                                                        ? Colors
+                                                                            .red
+                                                                        : null,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
 
-                                          Row(
-                                            children: [
-                                              Text(
-                                                "\$${product.price}",
-                                                style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  color: Colors.grey[600],
-                                                ),
-                                              ),
-                                              const Spacer(),
-                                              Consumer<StockScreenProvider>(
-                                                builder: (
-                                                  context,
-                                                  provider,
-                                                  child,
-                                                ) {
-                                                  return IconButton(
-                                                    onPressed: () async {
-                                                      _showEditProductDialog(
-                                                        onPressed: () async {
-                                                          provider.editProduct(
-                                                            pId:
-                                                                product.id ??
-                                                                '',
-                                                            name:
-                                                                _nameController
-                                                                    .text,
-                                                            stock:
-                                                                _stockController
-                                                                    .text,
-                                                            price:
-                                                                _priceController
-                                                                    .text,
-                                                            image: image,
-                                                          );
-                                                          clearInput();
-                                                          Navigator.pop(
-                                                            context,
+                                                  SizedBox(height: 4.h),
+
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                        "\$${product.price}",
+                                                        style: TextStyle(
+                                                          fontSize: 14.sp,
+                                                          color:
+                                                              Colors.grey[600],
+                                                        ),
+                                                      ),
+                                                      const Spacer(),
+                                                      Consumer<
+                                                        StockScreenProvider
+                                                      >(
+                                                        builder: (
+                                                          context,
+                                                          provider,
+                                                          child,
+                                                        ) {
+                                                          return IconButton(
+                                                            onPressed: () async {
+                                                              _showEditProductDialog(
+                                                                onPressed: () async {
+                                                                  var res = await provider.editProduct(
+                                                                    pId:
+                                                                        product
+                                                                            .id ??
+                                                                        '',
+                                                                    name:
+                                                                        _nameController
+                                                                            .text,
+                                                                    stock:
+                                                                        _stockController
+                                                                            .text,
+                                                                    price:
+                                                                        _priceController
+                                                                            .text,
+                                                                    image:
+                                                                        image,
+                                                                  );
+                                                                  clearInput();
+                                                                  if (res
+                                                                      .success) {
+                                                                    Utils.showToast(
+                                                                      msg:
+                                                                          res.message,
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .green,
+                                                                      textColor:
+                                                                          Colors
+                                                                              .white,
+                                                                    );
+                                                                    if (context
+                                                                        .mounted) {
+                                                                      Navigator.pop(
+                                                                        context,
+                                                                      );
+                                                                    }
+                                                                  } else {
+                                                                    Utils.showToast(
+                                                                      msg:
+                                                                          res.message,
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .red,
+                                                                      textColor:
+                                                                          Colors
+                                                                              .white,
+                                                                    );
+                                                                  }
+                                                                },
+                                                              );
+                                                            },
+                                                            icon: Image.asset(
+                                                              'assets/icons/edit_icon.png',
+                                                              scale: 3.5,
+                                                            ),
                                                           );
                                                         },
-                                                      );
-                                                    },
-                                                    icon: Image.asset(
-                                                      'assets/icons/edit_icon.png',
-                                                      scale: 3.5,
-                                                    ),
-                                                  );
-                                                },
+                                                      ),
+                                                      Consumer<
+                                                        StockScreenProvider
+                                                      >(
+                                                        builder: (
+                                                          BuildContext context,
+                                                          StockScreenProvider
+                                                          value,
+                                                          Widget? child,
+                                                        ) {
+                                                          return InkWell(
+                                                            onTap: () async {
+                                                              showDeleteStockDialog(
+                                                                context,
+                                                                'Are you sure you want to delete this item?',
+                                                                product.id ??
+                                                                    "",
+                                                              );
+                                                            },
+                                                            child: Image.asset(
+                                                              'assets/icons/deleteIcon.png',
+                                                              scale: 3,
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
-                                              Consumer<StockScreenProvider>(
-                                                builder: (
-                                                  BuildContext context,
-                                                  StockScreenProvider value,
-                                                  Widget? child,
-                                                ) {
-                                                  return InkWell(
-                                                    onTap: () async {
-                                                      showDeleteStockDialog(
-                                                        context,
-                                                        'Are you sure you want to delete this item?',
-                                                        product.id ?? "",
-                                                      );
-                                                    },
-                                                    child: Image.asset(
-                                                      'assets/icons/deleteIcon.png',
-                                                      scale: 3,
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
                             },
                           ),
                 ),

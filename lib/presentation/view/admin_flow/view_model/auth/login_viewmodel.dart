@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/services/fm_token_storage.dart';
 import 'package:hmlegends/core/services/user_type_storage.dart';
@@ -82,21 +81,17 @@ class LoginViewModel with ChangeNotifier {
   }) async {
     try {
       _setLoading(true);
-      var data = {"email": email, "password": password};
+      var body = {"email": email, "password": password};
 
       logger.d("Login Access Token : ${await _tokenStorage.getToken()}");
-      var response = await _apiService.post(
-        ApiEndpoints.login,
-        data: data,
-        options: Options(headers: {'Content-Type': 'application/json'}),
-      );
 
-      final decodeData = response.data;
-      final message = decodeData['message'];
+      var res = await _apiService.postHttp(ApiEndpoints.login, data: body);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final token = decodeData['authorization']?['refresh_token'];
-        final type = decodeData['type'];
+      final message = res['message'];
+      if (res['success'] == true) {
+        final token = res['authorization']?['access_token'];
+        logger.d("============== $token ============");
+        final type = res['type'];
         _userType = type;
         if (token != null) {
           debugPrint("The token is======== $token");

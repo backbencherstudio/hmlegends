@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/invoice/model/all_invoice_model.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
 import 'package:provider/provider.dart';
 import '../../../../widget/custom_app_bar.dart';
@@ -27,10 +31,31 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
   }
 
   String _selectedPeriod = 'Today';
+  String query = '';
+  Timer? debouncer;
+
+  void debounce(
+    VoidCallback callback, {
+    Duration duration = const Duration(milliseconds: 1000),
+  }) {
+    if (debouncer != null) {
+      debouncer!.cancel();
+    }
+    debouncer = Timer(duration, callback);
+  }
+
+  List<Invoices> _applyQueryFilter(List<Invoices> allInvoices) {
+    if (query.trim().isEmpty) return allInvoices;
+    final q = query.trim().toLowerCase();
+    return allInvoices.where((invoice) {
+      final branchName = (invoice.branchName ?? '').toLowerCase();
+      return branchName.contains(q);
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AdminInvoiceProvider>();
+    final provider = Provider.of<AdminInvoiceProvider>(context);
     final invoiceData = provider.allInvoiceModel?.data?.invoices ?? [];
     final stats = provider.allInvoiceModel?.data?.stats;
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
@@ -38,171 +63,201 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
       appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
-      body:
-          provider.allInvoiceModel == null
-              ? const Center(child: CircularProgressIndicator())
-              : invoiceData.isEmpty
-              ? const Center(child: Text("No invoices available"))
-              : Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                child: Column(
-                  children: [
-                    /// ------------ Search Field ------------------------------
-                    SearchField(
-                      hintText: '',
-                      text: '',
-                      onChanged: (String value) {},
-                    ),
-                    SizedBox(height: 16.h),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        child: Column(
+          children: [
+            /// ------------ Search Field ------------------------------
+            SearchField(
+              hintText: 'Search by branch name',
+              text: query,
+              onChanged: (String value) {
+                debounce(() {
+                  if (!mounted) return;
+                  setState(() {
+                    query = value;
+                  });
+                });
+              },
+            ),
+            SizedBox(height: 16.h),
 
-                    /// ------------- Total / Paid / Pending Invoice -----------
-                    if (stats != null)
-                      Wrap(
-                        spacing: 12.w,
-                        runSpacing: 12.h,
-                        children: [
-                          _buildStatCard(
-                            "Total Invoice",
-                            stats.totalInvoice ?? 0,
-                          ),
-                          _buildStatCard(
-                            "Paid Invoice",
-                            stats.paidInvoice ?? 0,
-                          ),
-                          _buildStatCard(
-                            "Pending Invoice",
-                            stats.pendingInvoice ?? 0,
-                          ),
-                        ],
-                      ),
-                    SizedBox(height: 24.h),
+            /// ---------------Total / Paid / Pending Invoice ------------------
+            if (stats != null)
+              Wrap(
+                spacing: 12.w,
+                runSpacing: 12.h,
+                children: [
+                  _buildStatCard("Total Invoice", stats.totalInvoice ?? 0),
+                  _buildStatCard("Paid Invoice", stats.paidInvoice ?? 0),
+                  _buildStatCard("Pending Invoice", stats.pendingInvoice ?? 0),
+                ],
+              ),
+            SizedBox(height: 24.h),
 
-                    /// ------------------ Total Orders List -------------------
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Total Orders",
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
+            /// ------------------ Total Orders List -------------------
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Total Orders",
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    setState(() {
+                      _selectedPeriod = value;
+                    });
+                  },
+                  itemBuilder:
+                      (context) => const [
+                        PopupMenuItem(value: 'Today', child: Text('Today')),
+                        PopupMenuItem(
+                          value: 'This week',
+                          child: Text('This week'),
                         ),
-
-                        PopupMenuButton<String>(
-                          onSelected: (value) {
-                            setState(() {
-                              _selectedPeriod = value;
-                            });
-                          },
-                          itemBuilder:
-                              (context) => const [
-                                PopupMenuItem(
-                                  value: 'Today',
-                                  child: Text('Today'),
-                                ),
-                                PopupMenuItem(
-                                  value: 'This week',
-                                  child: Text('This week'),
-                                ),
-                                PopupMenuItem(
-                                  value: 'This month',
-                                  child: Text('This month'),
-                                ),
-                              ],
-                          color: const Color(0xFFFFF5F5),
-                          child: Row(
-                            children: [
-                              Text(
-                                _selectedPeriod,
-                                style: TextStyle(fontSize: 14.sp),
-                              ),
-                              Icon(
-                                Icons.keyboard_arrow_down_rounded,
-                                size: 20.sp,
-                              ),
-                            ],
-                          ),
+                        PopupMenuItem(
+                          value: 'This month',
+                          child: Text('This month'),
                         ),
                       ],
+                  color: const Color(0xFFFFF5F5),
+                  child: Row(
+                    children: [
+                      Text(_selectedPeriod, style: TextStyle(fontSize: 14.sp)),
+                      Icon(Icons.keyboard_arrow_down_rounded, size: 20.sp),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16.h),
+
+            /// --------------------- Orders List from server -----------------
+            provider.isLoading
+                ? Center(
+                  child: SizedBox(
+                    width: 20.w,
+                    height: 20.h,
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+                : invoiceData.isEmpty
+                ? Center(
+                  child: Text(
+                    "No Orders Found",
+                    style: TextStyle(
+                      fontSize: 24.sp,
+                      color: Colors.grey.shade200,
+                      fontWeight: FontWeight.w500,
                     ),
-                    SizedBox(height: 16.h),
+                  ),
+                )
+                : Builder(
+                  builder: (context) {
+                    final queryFilterOrders = _applyQueryFilter(invoiceData);
+                    return queryFilterOrders.isEmpty
+                        ? Center(
+                          child: Text(
+                            "No invoices found",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        )
+                        : Expanded(
+                          child: ListView.builder(
+                            itemCount: queryFilterOrders.length,
+                            itemBuilder: (context, index) {
+                              final invoice = queryFilterOrders[index];
+                              final invoiceId = invoice.orderId ?? "-";
 
-                    /// ------------------ Orders List from server -------------
-                    Expanded(
-                      child: ListView.separated(
-                        itemCount: invoiceData.length,
-                        separatorBuilder: (_, __) => SizedBox(height: 12.h),
-                        itemBuilder: (context, index) {
-                          final invoice = invoiceData[index];
-                          final invoiceId = invoice.orderId ?? "-";
-
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      height: 40.h,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          8.r,
+                              return Padding(
+                                padding: EdgeInsets.only(bottom: 8.h),
+                                child: Container(
+                                  height: 40.h,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFD1E4C9),
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(8.r),
+                                              bottomLeft: Radius.circular(8.r),
+                                            ),
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 12.w,
+                                          ),
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            "${index + 1}. ${invoice.branchName}",
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              color: Color(0xFF4A4C56),
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 2,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xFFD1E4C9),
-                                                borderRadius: BorderRadius.only(
-                                                  topLeft: Radius.circular(8.r),
-                                                  bottomLeft: Radius.circular(
-                                                    8.r,
-                                                  ),
-                                                ),
-                                              ),
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 12.w,
-                                              ),
-                                              alignment: Alignment.centerLeft,
-                                              child: Text(
-                                                "${index + 1}. ${invoice.branchName}",
-                                                style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  color: Color(0xFF4A4C56),
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          color: const Color(0xFFE6ECDE),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 12.w,
+                                          ),
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            "Total Units: ${invoice.totalQuantity}",
+                                            style: TextStyle(
+                                              fontSize: 13.sp,
+                                              color: Color(0xFF4A4C56),
+                                              fontWeight: FontWeight.w400,
                                             ),
                                           ),
-                                          Expanded(
-                                            flex: 2,
-                                            child: Container(
-                                              color: const Color(0xFFE6ECDE),
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 12.w,
-                                              ),
-                                              alignment: Alignment.centerLeft,
-                                              child: Text(
-                                                "Total Units: ${invoice.totalQuantity}",
-                                                style: TextStyle(
-                                                  fontSize: 13.sp,
-                                                  color: Color(0xFF4A4C56),
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                              ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFE20614),
+                                            borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(8.r),
+                                              bottomRight: Radius.circular(8.r),
                                             ),
                                           ),
-                                          Expanded(
-                                            flex: 1,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xFFE20614),
+                                          child: TextButton(
+                                            onPressed: () async {
+                                              final response = await provider
+                                                  .fetchInvoiceDetail(
+                                                    invoiceId,
+                                                  );
+                                              if (context.mounted &&
+                                                  response.success == true) {
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  RouteNames
+                                                      .adminInvoiceDetailScreen,
+                                                  arguments: invoiceId,
+                                                );
+                                              }
+                                            },
+                                            style: TextButton.styleFrom(
+                                              padding: EdgeInsets.zero,
+                                              shape: RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.only(
                                                   topRight: Radius.circular(
                                                     8.r,
@@ -212,70 +267,47 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
                                                   ),
                                                 ),
                                               ),
-                                              child: TextButton(
-                                                onPressed: () async {
-                                                  await provider
-                                                      .fetchInvoiceDetail(
-                                                        invoiceId,
-                                                      );
-                                                  Navigator.pushNamed(
-                                                    context,
-                                                    RouteNames
-                                                        .adminInvoiceDetailScreen,
-                                                    arguments: invoiceId,
-                                                  );
-                                                },
-                                                style: TextButton.styleFrom(
-                                                  padding: EdgeInsets.zero,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                          topRight:
-                                                              Radius.circular(
-                                                                8.r,
-                                                              ),
-                                                          bottomRight:
-                                                              Radius.circular(
-                                                                8.r,
-                                                              ),
-                                                        ),
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  "View",
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 13.sp,
-                                                  ),
-                                                ),
+                                            ),
+                                            child: Text(
+                                              "View",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 13.sp,
                                               ),
                                             ),
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              SizedBox(height: 6.h),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                  },
                 ),
-              ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildStatCard(String title, int value) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 10.h),
+      height: 100.h,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 3,
+            offset: const Offset(1, 1),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -283,13 +315,26 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
           Text(
             value.toString(),
             style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w600,
               color: Colors.black,
             ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: 4.h),
-          Text(title, style: TextStyle(fontSize: 14.sp)),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: AppColors.authBodyTextColor,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );

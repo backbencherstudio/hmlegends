@@ -16,7 +16,7 @@ class HeadOfficeProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<ChangePasswordProvider>();
+    final provider = Provider.of<ChangePasswordProvider>(context);
 
     return FutureBuilder(
       future: provider.adminCheckMe(),

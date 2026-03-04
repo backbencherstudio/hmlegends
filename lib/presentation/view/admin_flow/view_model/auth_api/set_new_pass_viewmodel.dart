@@ -44,7 +44,7 @@ class SetPasswordViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.post(
+      final response = await _apiService.postHttp(
         ApiEndpoints.setNewPassword,
         data: {
           "email": email,

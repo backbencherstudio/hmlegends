@@ -27,7 +27,7 @@ class Data {
   String? name;
   String? address;
   String? status;
-  Null avatar;
+  String? avatar;
   String? createdAt;
   String? updatedAt;
   int? totalOrders;

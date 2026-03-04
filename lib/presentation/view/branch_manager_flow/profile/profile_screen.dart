@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -76,7 +77,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffFFF6F7),
+      backgroundColor: AppColors.bgColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(

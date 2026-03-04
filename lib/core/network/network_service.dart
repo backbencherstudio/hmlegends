@@ -39,6 +39,6 @@ class Network {
     );
 
     /// --------------------- For debug logging --------------------------------
-    dio.interceptors.add(LoggerInterceptor());
+    // dio.interceptors.add(LoggerInterceptor());
   }
 }

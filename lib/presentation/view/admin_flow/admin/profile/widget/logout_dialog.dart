@@ -9,90 +9,104 @@ void logoutShowSubmitDialog(BuildContext context) {
   final UserTypeStorage userType = UserTypeStorage();
   showDialog(
     context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-      //contentPadding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w, 20.h),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Are you sure you want\nto log out?',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+    builder:
+        (context) => AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.r),
           ),
-          SizedBox(height: 20.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //contentPadding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w, 20.h),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await token.clearToken();
-                      await userType.clearUserType();
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        RouteNames.loginScreen,
-                        (route) => false,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: const Color(0xffE20613),
-                      side: const BorderSide(color: Color(0xffE20613)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.r),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 6.w,
-                        vertical: 12.h,
-                      ),
-                    ),
-                    child: Text(
-                      'Log me out',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
+              Text(
+                'Are you sure you want\nto log out?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
               ),
-              SizedBox(width: 4.w),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 4.w),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xffE20613),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.r),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 6.w,
-                        vertical: 12.h,
-                      ),
-                    ),
-                    child: Text(
-                      'Stay logged in',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w500,
+              SizedBox(height: 20.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 6.w),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await token.clearToken();
+                          await userType.clearUserType();
+                          debugPrint(
+                            "====== Token clear : ${await token.getToken()} ===============",
+                          );
+                          debugPrint(
+                            "====== Token clear : ${token.clearToken()} ===============",
+                          );
+                          debugPrint(
+                            "======  clear : ${userType.clearUserType()} ===============",
+                          );
+                          if (context.mounted) {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              RouteNames.loginScreen,
+                              (route) => false,
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: const Color(0xffE20613),
+                          side: const BorderSide(color: Color(0xffE20613)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.r),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 6.w,
+                            vertical: 12.h,
+                          ),
+                        ),
+                        child: Text(
+                          'Log me out',
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  SizedBox(width: 4.w),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 4.w),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xffE20613),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.r),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 6.w,
+                            vertical: 12.h,
+                          ),
+                        ),
+                        child: Text(
+                          'Stay logged in',
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
-    ),
+        ),
   );
 }

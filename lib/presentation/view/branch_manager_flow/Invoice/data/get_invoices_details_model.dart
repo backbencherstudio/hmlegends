@@ -8,11 +8,12 @@ class InvoiceDetailResponse {
   InvoiceDetailResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    data = json['data'] != null ? InvoiceDetailData.fromJson(json['data']) : null;
+    data =
+        json['data'] != null ? InvoiceDetailData.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final Map<String, dynamic> data = {};
     data['success'] = success;
     data['message'] = message;
     if (this.data != null) {
@@ -28,8 +29,9 @@ class InvoiceDetailData {
   String? sku;
   String? status;
   String? createdAt;
+  String? url;
   Creator? creator;
-  Creator? receiver;
+  Receiver? receiver;
   Order? order;
 
   InvoiceDetailData({
@@ -38,6 +40,7 @@ class InvoiceDetailData {
     this.sku,
     this.status,
     this.createdAt,
+    this.url,
     this.creator,
     this.receiver,
     this.order,
@@ -49,8 +52,11 @@ class InvoiceDetailData {
     sku = json['sku'];
     status = json['status'];
     createdAt = json['created_at'];
-    creator = json['creator'] != null ? Creator.fromJson(json['creator']) : null;
-    receiver = json['receiver'] != null ? Creator.fromJson(json['receiver']) : null;
+    url = json['url'];
+    creator =
+        json['creator'] != null ? Creator.fromJson(json['creator']) : null;
+    receiver =
+        json['receiver'] != null ? Receiver.fromJson(json['receiver']) : null;
     order = json['order'] != null ? Order.fromJson(json['order']) : null;
   }
 
@@ -61,6 +67,7 @@ class InvoiceDetailData {
     data['sku'] = sku;
     data['status'] = status;
     data['created_at'] = createdAt;
+    data['url'] = url;
     if (creator != null) data['creator'] = creator!.toJson();
     if (receiver != null) data['receiver'] = receiver!.toJson();
     if (order != null) data['order'] = order!.toJson();
@@ -69,24 +76,43 @@ class InvoiceDetailData {
 }
 
 class Creator {
-  String? firstName;
-  String? lastName;
+  String? name;
   String? address;
   String? phoneNumber;
 
-  Creator({this.firstName, this.lastName, this.address, this.phoneNumber});
+  Creator({this.name, this.address, this.phoneNumber});
 
   Creator.fromJson(Map<String, dynamic> json) {
-    firstName = json['first_name'];
-    lastName = json['last_name'];
+    name = json['name'];
     address = json['address'];
     phoneNumber = json['phone_number'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['first_name'] = firstName;
-    data['last_name'] = lastName;
+    data['name'] = name;
+    data['address'] = address;
+    data['phone_number'] = phoneNumber;
+    return data;
+  }
+}
+
+class Receiver {
+  String? name;
+  String? address;
+  String? phoneNumber;
+
+  Receiver({this.name, this.address, this.phoneNumber});
+
+  Receiver.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+    address = json['address'];
+    phoneNumber = json['phone_number'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
     data['address'] = address;
     data['phone_number'] = phoneNumber;
     return data;
@@ -150,7 +176,8 @@ class OrderItem {
   OrderItem.fromJson(Map<String, dynamic> json) {
     quantity = json['quantity'];
     price = _toDouble(json['price']);
-    product = json['product'] != null ? Product.fromJson(json['product']) : null;
+    product =
+        json['product'] != null ? Product.fromJson(json['product']) : null;
   }
 
   Map<String, dynamic> toJson() {

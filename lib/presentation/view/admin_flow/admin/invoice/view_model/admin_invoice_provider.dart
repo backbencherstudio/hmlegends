@@ -44,7 +44,7 @@ class AdminInvoiceProvider extends ChangeNotifier {
 
   /// ------------------------ Get All Invoices --------------------------------
   Future<void> getAllInvoice() async {
-    _setLoading(true);
+
     _errorMessage = null;
 
     try {
@@ -77,8 +77,6 @@ class AdminInvoiceProvider extends ChangeNotifier {
     } catch (e) {
       _errorMessage = "Exception occurred: $e";
       logger.e(_errorMessage);
-    } finally {
-      _setLoading(false);
     }
   }
 
@@ -87,7 +85,7 @@ class AdminInvoiceProvider extends ChangeNotifier {
 
   InvoiceDetailModel? get invoiceDetailModel => _invoiceDetailModel;
 
-  Future<void> fetchInvoiceDetail(String orderID) async {
+  Future<ResponseModel> fetchInvoiceDetail(String orderID) async {
     _setLoading(true);
     _errorMessage = '';
 
@@ -111,35 +109,40 @@ class AdminInvoiceProvider extends ChangeNotifier {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _invoiceDetailModel = InvoiceDetailModel.fromJson(decodeData);
+        return ResponseModel(success: true, message: decodeData['message']);
       } else {
-        _errorMessage = decodeData["message"] ?? "Something went wrong";
-
         logger.e("API returned error: $_errorMessage");
+        return ResponseModel(success: false, message: decodeData['message']);
       }
-      _setLoading(false);
     } catch (e) {
       logger.e("Error fetching invoice detail: $e");
       _errorMessage = "Network error. Please check your connection.";
+      return ResponseModel(success: false, message: '$e');
+    } finally {
       _setLoading(false);
     }
   }
 
-  Future<ResponseModel> adminSendInvoice(String orderId, {required String email}) async {
+  Future<ResponseModel> adminSendInvoice(
+    String orderId, {
+    required String email,
+  }) async {
     try {
       _setLoading(true);
       final url = Uri.parse(ApiEndpoints.adminSendInvoice(orderId));
       final token = await _tokenStorage.getToken();
 
-      var body = jsonEncode({
-        "email": email,
-      });
+      var body = jsonEncode({"email": email});
 
       logger.d("=========== $body ===========");
 
       final response = await http.post(
         url,
         body: body,
-        headers: {"Authorization": "Bearer $token", "Content-Type": "application/json"},
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
       );
       logger.i("=== SEND INVOICE API RESPONSE ===");
       logger.i("Response url: ${response.request?.url}");

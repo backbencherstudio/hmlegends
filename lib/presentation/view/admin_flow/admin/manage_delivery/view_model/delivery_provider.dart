@@ -41,14 +41,33 @@ class DeliveryProvider extends ChangeNotifier {
   /// ------------- Function to call all deliveries API -------------------------
   Future<ResponseModel> getAllDeliveries() async {
     try {
-      _setLoading(true);
 
       var response = await _apiService.get(ApiEndpoints.adminAllDelivery);
 
-      final message = response.data['message'];
+      final message = response['message'] ?? 'Failed to fetch deliveries';
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        _allDeliveriesModel = AllDeliveriesModel.fromJson(response.data);
+      if (response is Map<String, dynamic> && response['success'] == true) {
+        _allDeliveriesModel = AllDeliveriesModel.fromJson(response);
+
+        return ResponseModel(success: true, message: message);
+      } else {
+        return ResponseModel(success: false, message: message);
+      }
+    } catch (e) {
+      return ResponseModel(success: false, message: e.toString());
+    }
+  }
+
+  /// ------------------- Function to call all drivers API ---------------------
+  Future<ResponseModel> getAllDrivers() async {
+    try {
+      _setLoading(true);
+      final response = await _apiService.get(ApiEndpoints.adminAllDrivers);
+
+      final message = response['message'] ?? 'Successfully fetched drivers';
+
+      if (response is Map<String, dynamic> && response['success'] == true) {
+        _allDriversModel = AllDriversModel.fromJson(response);
 
         return ResponseModel(success: true, message: message);
       } else {
@@ -61,31 +80,11 @@ class DeliveryProvider extends ChangeNotifier {
     }
   }
 
-  /// ------------------- Function to call all drivers API ---------------------
-  Future<ResponseModel> getAllDrivers() async {
-    try {
-      _setLoading(true);
-      final response = await _apiService.get(ApiEndpoints.adminAllDrivers);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        _allDriversModel = AllDriversModel.fromJson(response.data);
-
-        return ResponseModel(success: true, message: "message");
-      } else {
-        return ResponseModel(success: false, message: " message");
-      }
-    } catch (e) {
-      return ResponseModel(success: false, message: e.toString());
-    } finally {
-      _setLoading(false);
-    }
-  }
-
   /// ---------------- Function to call assign to driver API -------------------
   Future<ResponseModel> assignToDriver(String orderId, String driverId) async {
     try {
       _setLoading(true);
-      final response = await _apiService.post(
+      final response = await _apiService.postHttp(
         ApiEndpoints.adminAssignToDriver,
         data: {"order_id": orderId, "driver_id": driverId},
       );

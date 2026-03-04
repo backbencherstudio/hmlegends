@@ -34,6 +34,7 @@ class AdminData {
   final String? city;
   final String? dateOfBirth;
   final String? createdAt;
+  final String? avatarUrl;
 
   AdminData({
     this.id,
@@ -47,6 +48,7 @@ class AdminData {
     this.city,
     this.dateOfBirth,
     this.createdAt,
+    this.avatarUrl
   });
 
   factory AdminData.fromJson(Map<String, dynamic> json) {
@@ -62,6 +64,7 @@ class AdminData {
       city: json['city'],
       dateOfBirth: json['date_of_birth'],
       createdAt: json['created_at'],
+      avatarUrl: json['avatar_url']
     );
   }
 
@@ -78,6 +81,7 @@ class AdminData {
       "city": city,
       "date_of_birth": dateOfBirth,
       "created_at": createdAt,
+      "avatar_url" : avatarUrl
     };
   }
 }

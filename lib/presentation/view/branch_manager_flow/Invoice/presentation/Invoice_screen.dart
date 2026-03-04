@@ -19,17 +19,6 @@ class InvoiceScreen extends StatefulWidget {
 }
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
-  String selectedPeriod = 'Today';
-
-  @override
-  void initState() {
-    super.initState();
-    // Fetch invoices after first frame
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<GetAllInvoiceProvider>().fetchAllInvoices();
-    });
-  }
-
   // Helper: Check if date is today
   bool _isToday(DateTime? date) {
     if (date == null) return false;
@@ -61,10 +50,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     if (allInvoices.isEmpty) return [];
 
     return allInvoices.where((invoice) {
-      final date = DateTime.tryParse(invoice.createdAt ?? '');
+      final date = DateTime.tryParse(invoice.createdAt);
       if (date == null) return false;
 
-      switch (selectedPeriod) {
+      switch (context.read<GetAllInvoiceProvider>().selectedPeriod) {
         case 'Today':
           return _isToday(date);
         case 'This Week':
@@ -87,37 +76,40 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final getAllInvoices = Provider.of<GetAllInvoiceProvider>(context);
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
 
-    return Scaffold(
-      backgroundColor: const Color(0xffFFF6F7),
-      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildSearchBar(),
-            SizedBox(height: 20.h),
+    final stats = getAllInvoices.invoiceResponse?.data.stats;
+    final paid = stats?.paidInvoice.toString() ?? '0';
+    final pending = stats?.pendingInvoice.toString() ?? '0';
+    final total = stats?.totalInvoice.toString() ?? '0';
 
-            // Stats Cards
-            Consumer<GetAllInvoiceProvider>(
-              builder: (context, provider, child) {
-                final stats = provider.invoiceResponse?.data.stats;
-                final paid = stats?.paidInvoice.toString() ?? '0';
-                final pending = stats?.pendingInvoice.toString() ?? '0';
-                final total = stats?.totalInvoice.toString() ?? '0';
+    print("=========== Pending Invoice : $pending ================");
+    print("=========== Pending Invoice : $paid ================");
+    final allInvoices = getAllInvoices.invoiceResponse?.data.invoices ?? [];
+    final todayCount =
+        allInvoices
+            .where((i) => _isToday(DateTime.tryParse(i.createdAt)))
+            .length;
+    return FutureBuilder(
+      future: getAllInvoices.fetchAllInvoices(),
+      builder: (context, snapshot) {
+        return Scaffold(
+          backgroundColor: const Color(0xffFFF6F7),
+          appBar: CustomAppBar(
+            profileImage: data?.avatar,
+            notificationCount: 4,
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildSearchBar(),
+                SizedBox(height: 20.h),
 
-                final allInvoices =
-                    provider.invoiceResponse?.data.invoices ?? [];
-                final todayCount =
-                    allInvoices
-                        .where(
-                          (i) => _isToday(DateTime.tryParse(i.createdAt ?? '')),
-                        )
-                        .length;
-
-                return Column(
+                /// ----------------- Stats Cards ------------------------------
+                Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -137,226 +129,190 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       ].withSpace(15.w),
                     ),
                   ],
-                );
-              },
-            ),
-
-            SizedBox(height: 20.h),
-
-            // Title + Period Selector
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Total Invoices',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xff1D1F2C),
-                  ),
                 ),
+
+                SizedBox(height: 20.h),
+
+                ///------------------ Title + Period Selector ------------------
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      selectedPeriod,
-                      style: const TextStyle(
-                        color: Color(0xff4A4C56),
-                        fontSize: 14,
+                    const Text(
+                      'Total Invoices',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff1D1F2C),
                       ),
                     ),
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.keyboard_arrow_down_sharp),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      onSelected: (value) {
-                        setState(() => selectedPeriod = value);
-                      },
-                      itemBuilder:
-                          (_) =>
-                              ['Today', 'This Week', 'This Month']
-                                  .map(
-                                    (e) =>
-                                        PopupMenuItem(value: e, child: Text(e)),
-                                  )
-                                  .toList(),
+                    Row(
+                      children: [
+                        Text(
+                          context.read<GetAllInvoiceProvider>().selectedPeriod,
+                          style: const TextStyle(
+                            color: Color(0xff4A4C56),
+                            fontSize: 14,
+                          ),
+                        ),
+                        PopupMenuButton<String>(
+                          icon: const Icon(Icons.keyboard_arrow_down_sharp),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          onSelected: (value) {
+                            context.read<GetAllInvoiceProvider>().updatedPeriod(
+                              value,
+                            );
+                          },
+                          itemBuilder:
+                              (_) =>
+                                  ['Today', 'This Week', 'This Month']
+                                      .map(
+                                        (e) => PopupMenuItem(
+                                          value: e,
+                                          child: Text(e),
+                                        ),
+                                      )
+                                      .toList(),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
+                SizedBox(height: 16.h),
 
-            // Invoices List
-            Expanded(
-              child: Consumer<GetAllInvoiceProvider>(
-                builder: (context, provider, child) {
-                  if (provider.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (provider.errorMessage.isNotEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.error_outline,
-                            size: 50,
-                            color: Colors.red,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(provider.errorMessage),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () => provider.fetchAllInvoices(),
-                            child: const Text("Retry"),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  final allInvoices =
-                      provider.invoiceResponse?.data.invoices ?? [];
-                  final filteredInvoices = _getFilteredInvoices(allInvoices);
-
-                  if (filteredInvoices.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.receipt_long,
-                            size: 60,
-                            color: Colors.grey.shade400,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            allInvoices.isEmpty
-                                ? "No invoices available"
-                                : "No invoices for $selectedPeriod",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  return ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: filteredInvoices.length,
-                    itemBuilder: (context, index) {
-                      final invoice = filteredInvoices[index];
-                      //final displayIndex = index + 1;
-                      final date = _formatDate(invoice.createdAt);
-
-                      // return _buildInvoiceRow(
-                      //   index: displayIndex,
-                      //   date: date,
-                      //   invoiceId: invoice.orderId ?? 'N/A',
-                      //   totalItems: invoice.totalQuantity.toString(),
-                      //   onViewPressed: () async {
-                      //     await context
-                      //         .read<GetInvoiceDetailViewmodel>()
-                      //         .fetchInvoiceDetail(invoice.orderId);
-
-                      //     if (mounted) {
-                      //       Navigator.pushNamed(
-                      //         context,
-                      //         RouteNames.viewDetails,
-                      //       );
-                      //     }
-                      //   },
-                      // );
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // Invoices List
+                Expanded(
+                  child: Consumer<GetAllInvoiceProvider>(
+                    builder: (context, provider, child) {
+                      if (provider.errorMessage.isNotEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Expanded(
-                                child: Container(
-                                  height: 40.h,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.r),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFD1E4C9),
-                                            borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(8.r),
-                                              bottomLeft: Radius.circular(8.r),
-                                            ),
-                                          ),
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 12.w,
-                                          ),
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            "${index + 1}. $date",
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              color: Color(0xFF4A4C56),
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
+                              Icon(
+                                Icons.error_outline,
+                                size: 50.sp,
+                                color: Colors.red,
+                              ),
+                              SizedBox(height: 16.h),
+                              Text(provider.errorMessage),
+                              SizedBox(height: 16.h),
+                              ElevatedButton(
+                                onPressed: () => provider.fetchAllInvoices(),
+                                child: const Text("Retry"),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      final allInvoices =
+                          provider.invoiceResponse?.data.invoices ?? [];
+                      // final filteredInvoices = _getFilteredInvoices(
+                      //   allInvoices,
+                      // );
+
+                      if (allInvoices.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.receipt_long,
+                                size: 60,
+                                color: Colors.grey.shade400,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                allInvoices.isEmpty
+                                    ? "No invoices available"
+                                    : "No invoices for ${context.read<GetAllInvoiceProvider>().selectedPeriod}",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      print(
+                        "============= ${allInvoices.length} ==============",
+                      );
+                      return ListView.builder(
+                        padding: EdgeInsets.zero,
+                        itemCount: allInvoices.length,
+                        itemBuilder: (context, index) {
+                          final invoice = allInvoices[index];
+                          final date = _formatDate(invoice.createdAt);
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      height: 40.h,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(
+                                          8.r,
                                         ),
                                       ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          color: const Color(0xFFE6ECDE),
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 12.w,
-                                          ),
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            "Total Units: ${invoice.totalQuantity}",
-                                            style: TextStyle(
-                                              fontSize: 13.sp,
-                                              color: Color(0xFF4A4C56),
-                                              fontWeight: FontWeight.w400,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 2,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFFD1E4C9),
+                                                borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(8.r),
+                                                  bottomLeft: Radius.circular(
+                                                    8.r,
+                                                  ),
+                                                ),
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 12.w,
+                                              ),
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                "${index + 1}. $date",
+                                                style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  color: Color(0xFF4A4C56),
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFE20614),
-                                            borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(8.r),
-                                              bottomRight: Radius.circular(8.r),
+                                          Expanded(
+                                            flex: 2,
+                                            child: Container(
+                                              color: const Color(0xFFE6ECDE),
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 12.w,
+                                              ),
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                "Total Units: ${invoice.totalQuantity}",
+                                                style: TextStyle(
+                                                  fontSize: 13.sp,
+                                                  color: Color(0xFF4A4C56),
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
                                             ),
                                           ),
-                                          child: TextButton(
-                                            onPressed: () async {
-                                              await context
-                                                  .read<
-                                                    GetInvoiceDetailViewmodel
-                                                  >()
-                                                  .fetchInvoiceDetail(
-                                                    invoice.orderId,
-                                                  );
-                                              Navigator.pushNamed(
-                                                context,
-                                                RouteNames
-                                                    .adminInvoiceDetailScreen,
-                                                arguments: invoice.orderId,
-                                              );
-                                            },
-                                            style: TextButton.styleFrom(
-                                              padding: EdgeInsets.zero,
-                                              shape: RoundedRectangleBorder(
+                                          Expanded(
+                                            flex: 1,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFFE20614),
                                                 borderRadius: BorderRadius.only(
                                                   topRight: Radius.circular(
                                                     8.r,
@@ -366,35 +322,70 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            child: Text(
-                                              "View",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 13.sp,
+                                              child: TextButton(
+                                                onPressed: () async {
+                                                  await context
+                                                      .read<
+                                                        GetInvoiceDetailViewmodel
+                                                      >()
+                                                      .fetchInvoiceDetail(
+                                                        invoice.orderId,
+                                                      );
+                                                  if (context.mounted) {
+                                                    Navigator.pushNamed(
+                                                      context,
+                                                      RouteNames.viewDetails,
+                                                      arguments:
+                                                          invoice.orderId,
+                                                    );
+                                                  }
+                                                },
+                                                style: TextButton.styleFrom(
+                                                  padding: EdgeInsets.zero,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                          topRight:
+                                                              Radius.circular(
+                                                                8.r,
+                                                              ),
+                                                          bottomRight:
+                                                              Radius.circular(
+                                                                8.r,
+                                                              ),
+                                                        ),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  "View",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 13.sp,
+                                                  ),
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
+                              SizedBox(height: 6.h),
                             ],
-                          ),
-                          SizedBox(height: 6.h),
-                        ],
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -463,9 +454,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   }
 
   Widget _periodCard(String count) {
-    final isSelected = selectedPeriod == 'Today';
+    final isSelected =
+        context.read<GetAllInvoiceProvider>().selectedPeriod == 'Today';
     return GestureDetector(
-      onTap: () => setState(() => selectedPeriod = 'Today'),
+      onTap: () {
+        context.read<GetAllInvoiceProvider>().updatedPeriod('today');
+      },
       child: Container(
         height: 90.h,
         width: 100.w,
