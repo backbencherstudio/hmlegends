@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
@@ -62,6 +64,14 @@ class OrderSummaryViewScreen extends StatelessWidget {
     final provider = Provider.of<OrderScreenProvider>(context);
     final singleOrder = provider.adminSingleOrderModel?.order?.orderItems ?? [];
     final orderId = provider.adminSingleOrderModel?.order?.id ?? "";
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data;
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
+    final notificationData = notificationProvider.adminNotificationModel?.data;
+
+
 
     // Calculate total items
     final totalItems = singleOrder.fold<int>(
@@ -73,8 +83,8 @@ class OrderSummaryViewScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFFFF5F5),
       appBar: CustomAppBarTwo(
         title: "Order Summary",
-        profileImage: AssetPaths.personIcon,
-        notificationCount: 4,
+        profileImage: data?.avatar ?? AssetPaths.personIcon,
+        notificationCount: notificationData?.length ?? 0,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
         onBackTap: () => Navigator.pop(context),
@@ -194,43 +204,43 @@ class OrderSummaryViewScreen extends StatelessWidget {
             /// ------------------ Order Items List ----------------------
             Expanded(
               child: ListView.builder(
-                itemCount: singleOrder.length + 1,
+                itemCount: singleOrder.length,
                 itemBuilder: (context, index) {
-                  if (index == singleOrder.length) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 5.w,
-                        vertical: 18.h,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Total Items:",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 15.sp,
-                            ),
-                          ),
-
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: "$totalItems",
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                                TextSpan(
-                                  text: "  PCS",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+                  // if (index == singleOrder.length) {
+                  //   return Padding(
+                  //     padding: EdgeInsets.symmetric(
+                  //       horizontal: 5.w,
+                  //       vertical: 18.h,
+                  //     ),
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //       children: [
+                  //         Text(
+                  //           "Total Items:",
+                  //           style: TextStyle(
+                  //             fontWeight: FontWeight.w700,
+                  //             fontSize: 15.sp,
+                  //           ),
+                  //         ),
+                  //
+                  //         RichText(
+                  //           text: TextSpan(
+                  //             children: [
+                  //               TextSpan(
+                  //                 text: "$totalItems",
+                  //                 style: TextStyle(color: Colors.black),
+                  //               ),
+                  //               TextSpan(
+                  //                 text: "  PCS",
+                  //                 style: TextStyle(color: Colors.grey),
+                  //               ),
+                  //             ],
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   );
+                  // }
 
                   // ---------------- Item Row ----------------
                   final data = singleOrder[index];
@@ -251,10 +261,10 @@ class OrderSummaryViewScreen extends StatelessWidget {
 
                         SizedBox(width: 12.w),
 
-                        //------------  Product Name ----------------------
+                        ///----------------  Product Name ----------------------
                         Expanded(
                           child: Text(
-                            data.product?.image ?? "N/A",
+                             "N/A",
                             style: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
@@ -269,7 +279,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
                             children: [
                               TextSpan(
                                 style: TextStyle(color: Colors.black),
-                                text: "${data.quantity}",
+                                text: "",
                               ),
                               TextSpan(
                                 text: "  PCS",

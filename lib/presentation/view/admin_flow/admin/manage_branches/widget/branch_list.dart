@@ -149,7 +149,7 @@ class BranchList extends StatelessWidget {
 
                         Navigator.pushNamed(
                           context,
-                          RouteNames.orderSummaryViewSuccessfulScreen,
+                          RouteNames.manageBranchesToOrderSummaryScreen,
                           arguments: items.id,
                         );
                       },
@@ -167,7 +167,7 @@ class BranchList extends StatelessWidget {
                       child: _actionButton(Icons.edit),
                     ),
                     _actionButton(
-                      isActive ? Icons.lock_open: Icons.lock_outline,
+                      isActive ? Icons.lock_open : Icons.lock_outline,
                     ),
                   ],
                 ),

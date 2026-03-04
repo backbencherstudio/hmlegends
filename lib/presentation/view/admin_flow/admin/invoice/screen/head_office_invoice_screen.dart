@@ -83,17 +83,6 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
             SizedBox(height: 16.h),
 
             /// ---------------Total / Paid / Pending Invoice ------------------
-            if (stats == null)
-              Center(
-                child: Text(
-                  'No stats Found',
-                  style: TextStyle(
-                    fontSize: 24.sp,
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
             if (stats != null)
               Wrap(
                 spacing: 12.w,

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../../../../../core/utlis/utils.dart';
 import '../../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../../widget/simple_appbar.dart';
 import '../../view_model/get_invoices_details_viewmodel.dart';
@@ -72,9 +73,7 @@ class ViewDetails extends StatelessWidget {
                                 Expanded(
                                   child: _AddressSection(
                                     title: 'Invoice From',
-                                    name:
-                                        (invoice.creator?.name ?? '')
-                                            .trim(),
+                                    name: (invoice.creator?.name ?? '').trim(),
                                     address: invoice.creator?.address ?? '',
                                     phone: invoice.creator?.phoneNumber ?? '',
                                   ),
@@ -134,9 +133,7 @@ class ViewDetails extends StatelessWidget {
                             ),
                             _AddressSection(
                               title: 'Ship to',
-                              name:
-                                  (invoice.receiver?.name ?? '')
-                                      .trim(),
+                              name: (invoice.receiver?.name ?? '').trim(),
                               address: invoice.receiver?.address ?? '',
                               phone: invoice.receiver?.phoneNumber ?? '',
                             ),
@@ -187,7 +184,7 @@ class ViewDetails extends StatelessWidget {
                   ),
                 ),
 
-                // Bottom Action Bar
+                /// --------------- Bottom Action Bar --------------------------
                 _BottomActionBar(
                   isPaid: isPaid,
                   isLoading: payVm.isLoading,
@@ -199,11 +196,10 @@ class ViewDetails extends StatelessWidget {
                             await payVm.payInvoice(invoiceId);
 
                             if (payVm.error != null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: Colors.red,
-                                  content: Text(payVm.error!),
-                                ),
+                              Utils.showToast(
+                                msg: payVm.error!,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
                               );
                             } else if (payVm.isPaid) {
                               // Show success message from API response
@@ -393,7 +389,7 @@ class _SubtotalRow extends StatelessWidget {
   }
 }
 
-// Updated Bottom Action Bar with loading state
+/// ---------------- Updated Bottom Action Bar with loading state --------------
 class _BottomActionBar extends StatelessWidget {
   final bool isPaid;
   final bool isLoading;

@@ -28,10 +28,12 @@ class StockScreen extends StatefulWidget {
 class _StockScreenState extends State<StockScreen> {
   File? image;
 
+  /// ---------------------- TextField Controllers ----------------------------
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
 
+  /// ------------------------ Initialize State --------------------------------
   @override
   void initState() {
     super.initState();
@@ -47,6 +49,7 @@ class _StockScreenState extends State<StockScreen> {
     image = null;
   }
 
+  /// ------------------------ Show Delete Stock Dialog ------------------------
   Future<void> showDeleteStockDialog(
     BuildContext context,
     String text,
@@ -95,6 +98,7 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
+  /// ------------------------ Success Delete Stock Dialog ---------------------
   Future<void> _successDeleteStock(BuildContext context, String text) async {
     showDialog(
       context: context,
@@ -147,6 +151,7 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
+  /// ------------------------ Pick Image From Gallery -------------------------
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(
@@ -161,6 +166,7 @@ class _StockScreenState extends State<StockScreen> {
     }
   }
 
+  /// ------------------------ Filter Products --------------------------------
   List<Data> filterProducts(List<Data> products, int index) {
     switch (index) {
       case 1:
@@ -174,10 +180,12 @@ class _StockScreenState extends State<StockScreen> {
     }
   }
 
+  /// ------------------------ Apply Query Filter variables --------------------
   List<Data> allProducts = [];
   String query = '';
   Timer? debouncer;
 
+  /// ------------------------ Debounce ---------------------------------------
   void debounce(
     VoidCallback callback, {
     Duration duration = const Duration(milliseconds: 1000),
@@ -188,6 +196,7 @@ class _StockScreenState extends State<StockScreen> {
     debouncer = Timer(duration, callback);
   }
 
+  /// ------------------------ Apply Query Filter -----------------------------
   List<Data> _applyQueryFilter(List<Data> products) {
     if (query.trim().isEmpty) return products;
     final q = query.trim().toLowerCase();

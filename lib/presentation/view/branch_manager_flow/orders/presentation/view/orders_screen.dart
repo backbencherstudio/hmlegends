@@ -147,16 +147,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 Expanded(
                   child: Consumer<GetProductsViewmodel>(
                     builder: (context, vm, child) {
-                      if (vm.isLoading && vm.products.isEmpty) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation(
-                              Colors.blueAccent,
-                            ),
-                            strokeWidth: 3,
-                          ),
-                        );
-                      }
+                      // if (vm.isLoading && vm.products.isEmpty) {
+                      //   return const Center(
+                      //     child: CircularProgressIndicator(
+                      //       valueColor: AlwaysStoppedAnimation(
+                      //         Colors.blueAccent,
+                      //       ),
+                      //       strokeWidth: 3,
+                      //     ),
+                      //   );
+                      // }
 
                       if (vm.errorMessage.isNotEmpty) {
                         return Center(
@@ -196,7 +196,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
                       if (vm.products.isEmpty) {
                         return const Center(
-                          child: Text("No products available"),
+                          child: Column(
+                            children: [
+                              // Icon(Icons.prod)
+                              Text("No products available"),
+                            ],
+                          ),
                         );
                       }
 
@@ -537,11 +542,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
       builder: (_) => const Center(child: CircularProgressIndicator()),
     );
 
-    final success = await orderVM.placeOrder();
+    final res = await orderVM.placeOrder(
+      productId: context.read<GetProductsViewmodel>().products.first.id,
+    );
 
     Navigator.pop(context);
 
-    if (!success) {
+    if (!res.success) {
       showDialog(
         context: context,
         builder:

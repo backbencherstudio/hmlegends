@@ -101,7 +101,7 @@ class ApiEndpoints {
   /// ----------------------- Manage Branch -----------------------------------
   static String allBranch = '$baseUrl/api/auth/all-managers';
 
-  static String singleBranch(String userId, {String period = 'today'}) =>
+  static String singleBranch(String userId, {String period = 'week'}) =>
       '$baseUrl/api/auth/manager/$userId?period=$period';
 
   static String addNewBranch = '$baseUrl/api/auth/create-manager';

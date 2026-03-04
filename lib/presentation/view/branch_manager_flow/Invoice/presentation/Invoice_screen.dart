@@ -85,6 +85,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final pending = stats?.pendingInvoice.toString() ?? '0';
     final total = stats?.totalInvoice.toString() ?? '0';
 
+    print("=========== Pending Invoice : $pending ================");
+    print("=========== Pending Invoice : $paid ================");
     final allInvoices = getAllInvoices.invoiceResponse?.data.invoices ?? [];
     final todayCount =
         allInvoices

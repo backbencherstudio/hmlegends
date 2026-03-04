@@ -74,9 +74,6 @@ class ManageBranchProvider extends ChangeNotifier {
 
   Future<void> allBranch() async {
     try {
-      isLoading = true;
-      notifyListeners();
-
       final token = await _tokenStorage.getToken();
 
       final url = Uri.parse(ApiEndpoints.allBranch);
@@ -101,9 +98,6 @@ class ManageBranchProvider extends ChangeNotifier {
       }
     } catch (error) {
       debugPrint("Error: $error");
-    } finally {
-      isLoading = false;
-      notifyListeners();
     }
   }
 
@@ -117,9 +111,6 @@ class ManageBranchProvider extends ChangeNotifier {
     required String status,
   }) async {
     try {
-      isLoading = true;
-      notifyListeners();
-
       final token = await _tokenStorage.getToken();
 
       var url = Uri.parse(ApiEndpoints.addNewBranch);
@@ -139,8 +130,6 @@ class ManageBranchProvider extends ChangeNotifier {
         body: body,
       );
 
-      isLoading = false;
-      notifyListeners();
       logger.d("The body data is $body");
       logger.i("Response url : ${response.request?.url}");
       logger.i("Response status code: ${response.statusCode}");
@@ -158,18 +147,13 @@ class ManageBranchProvider extends ChangeNotifier {
     } catch (error) {
       logger.i("The error message $error");
       return error;
-    } finally {
-      isLoading = false;
-      notifyListeners();
     }
   }
 
   /// ---------------------------- Get Single Branch ---------------------------
 
-  Future<void> getSingleBranch(String userId, {String period = 'today'}) async {
+  Future<void> getSingleBranch(String userId, {String period = 'week'}) async {
     try {
-      isLoading = true;
-      notifyListeners();
       final token = await _tokenStorage.getToken();
       final url = Uri.parse(ApiEndpoints.singleBranch(userId, period: period));
       final response = await http.get(
@@ -179,28 +163,20 @@ class ManageBranchProvider extends ChangeNotifier {
       logger.i("Response url : ${response.request?.url}");
       logger.i("Response status code: ${response.statusCode}");
       logger.i("Response body: ${response.body}");
-      isLoading = false;
-      notifyListeners();
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decodeData = jsonDecode(response.body);
         logger.d("The success message ${decodeData['message']}");
         _singleBranchModel = SingleBranchModel.fromJson(decodeData);
       } else {
         logger.d("The error message ${response.statusCode}");
-        _singleBranchModel = null;
-        notifyListeners();
       }
     } catch (error) {
       logger.i("The error message $error");
-      _singleBranchModel = null;
-      notifyListeners();
-    } finally {
-      isLoading = false;
-      notifyListeners();
     }
   }
 
-  /// ---------------------------- Update Branch ------------------------------ 
+  /// ---------------------------- Update Branch ------------------------------
   Future<dynamic> updateBranch({
     required String userId,
     required String name,
@@ -209,9 +185,6 @@ class ManageBranchProvider extends ChangeNotifier {
     File? image,
   }) async {
     try {
-      isLoading = true;
-      notifyListeners();
-
       final token = await _tokenStorage.getToken();
 
       var url = Uri.parse(ApiEndpoints.updateBranch(userId));
@@ -230,8 +203,6 @@ class ManageBranchProvider extends ChangeNotifier {
         body: body,
       );
 
-      isLoading = false;
-      notifyListeners();
       logger.d("The body data is $body");
       logger.i("Response url : ${response.request?.url}");
       logger.i("Response status code: ${response.statusCode}");
@@ -249,9 +220,6 @@ class ManageBranchProvider extends ChangeNotifier {
     } catch (error) {
       logger.i("The error message $error");
       return error;
-    } finally {
-      isLoading = false;
-      notifyListeners();
     }
   }
 }

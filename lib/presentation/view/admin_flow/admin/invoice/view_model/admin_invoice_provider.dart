@@ -44,7 +44,7 @@ class AdminInvoiceProvider extends ChangeNotifier {
 
   /// ------------------------ Get All Invoices --------------------------------
   Future<void> getAllInvoice() async {
-    _setLoading(true);
+
     _errorMessage = null;
 
     try {
@@ -77,8 +77,6 @@ class AdminInvoiceProvider extends ChangeNotifier {
     } catch (e) {
       _errorMessage = "Exception occurred: $e";
       logger.e(_errorMessage);
-    } finally {
-      _setLoading(false);
     }
   }
 

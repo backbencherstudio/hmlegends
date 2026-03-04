@@ -41,7 +41,6 @@ class DeliveryProvider extends ChangeNotifier {
   /// ------------- Function to call all deliveries API -------------------------
   Future<ResponseModel> getAllDeliveries() async {
     try {
-      _setLoading(true);
 
       var response = await _apiService.get(ApiEndpoints.adminAllDelivery);
 
@@ -56,8 +55,6 @@ class DeliveryProvider extends ChangeNotifier {
       }
     } catch (e) {
       return ResponseModel(success: false, message: e.toString());
-    } finally {
-      _setLoading(false);
     }
   }
 

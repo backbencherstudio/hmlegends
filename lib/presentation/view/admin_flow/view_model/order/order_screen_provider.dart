@@ -54,7 +54,6 @@ class OrderScreenProvider extends ChangeNotifier {
   /// --------------------- fetch Admin Order ---------------------------------
   Future<void> getAdminOrder() async {
     try {
-      _setLoading(true);
       final token = await _tokenStorage.getToken();
 
       final url = Uri.parse(
@@ -82,8 +81,6 @@ class OrderScreenProvider extends ChangeNotifier {
       }
     } catch (error) {
       logger.e("Error fetching admin orders: $error");
-    } finally {
-      _setLoading(false);
     }
   }
 
@@ -94,7 +91,6 @@ class OrderScreenProvider extends ChangeNotifier {
 
   Future<void> adminSingleOrder(String orderId) async {
     try {
-      _setLoading(true);
       final token = await _tokenStorage.getToken();
 
       final url = Uri.parse(ApiEndpoints.adminSingleOrder(orderId));
@@ -122,15 +118,13 @@ class OrderScreenProvider extends ChangeNotifier {
       }
     } catch (error) {
       logger.e("Error fetching single order: $error");
-    } finally {
-      _setLoading(false);
     }
   }
 
   ///----------------------- Approve Order --------------------------------
   Future<void> approveOrder(String orderId) async {
     try {
-      _setLoading(true);
+
       final token = await _tokenStorage.getToken();
       final url = Uri.parse(ApiEndpoints.orderAccept(orderId));
 
@@ -155,8 +149,6 @@ class OrderScreenProvider extends ChangeNotifier {
       }
     } catch (error) {
       logger.e("Approve Order Error: $error");
-    } finally {
-      _setLoading(false);
     }
   }
 }

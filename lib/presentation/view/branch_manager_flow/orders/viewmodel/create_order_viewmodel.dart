@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:hmlegends/core/network/network_service.dart';
+import 'package:hmlegends/data/model/response_model.dart';
 import '../../../../../core/constant/api_endpoint.dart';
 import '../../../../../core/services/api_service.dart';
 import '../data/create_order_model.dart';
@@ -53,62 +55,34 @@ class OrderViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> placeOrder() async {
-    _isLoading = true;
-    _errorMessage = '';
-    notifyListeners();
-
+  Future<ResponseModel> placeOrder({required String productId}) async {
     try {
       final body = {
         "products": [
-          {"product_id": "c(cmm09s1kv000dkgs8d9l9xwu0", "quantity": 1},
+          {"product_id": productId, "quantity": 1},
         ],
       };
 
-      debugPrint("=== PLACE ORDER API CALLED ===");
+      logger.d("=== PLACE ORDER API CALLED ===");
       final response = await _apiService.postHttp(
         ApiEndpoints.placeOrder,
         data: body,
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final orderResponse = OrderResponseModel.fromJson(response.data);
+      if (response['success']) {
+        final orderResponse = OrderResponseModel.fromJson(response);
 
         _orderData = orderResponse;
 
         _hasPlacedToday = true;
 
-        _isLoading = false;
-        notifyListeners();
-        return true;
+        return ResponseModel(success: true, message: response['message']);
       } else {
-        final msg =
-            response.data['message'] ?? 'Failed to place order. Try again.';
-        _errorMessage = msg;
+        return ResponseModel(success: false, message: response['message']);
       }
-    } on DioException catch (e) {
-      String msg = 'Network error';
-
-      if (e.response != null) {
-        msg =
-            e.response?.data['message'] ??
-            'Server error ${e.response?.statusCode}';
-      } else if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout ||
-          e.type == DioExceptionType.sendTimeout) {
-        msg = 'Connection timeout. Please try again.';
-      } else if (e.type == DioExceptionType.badResponse) {
-        msg = 'Server error. Please try again later.';
-      }
-
-      _errorMessage = msg;
     } catch (e) {
-      _errorMessage = 'Unexpected error occurred';
+      return ResponseModel(success: false, message: '$e');
     }
-
-    _isLoading = false;
-    notifyListeners();
-    return false;
   }
 
   void clear() {

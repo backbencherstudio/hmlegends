@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin_model/order/order_admin_model.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar.dart';
@@ -76,9 +77,16 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     // final orders = provider.orderAdminModel?.data?.orders ?? [];
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
+    final notification = notificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
-      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
+      appBar: CustomAppBar(
+        profileImage: data?.avatar,
+        notificationCount: notification?.length ?? 0,
+      ),
 
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),

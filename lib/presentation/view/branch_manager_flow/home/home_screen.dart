@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/presentation/view/branch_manager_flow/orders/viewmodel/get_all_product_viewmodel.dart';
 import 'package:provider/provider.dart';
 import '../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../widget/custom_app_bar.dart';
@@ -106,9 +107,15 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
                                   orderVm.isLoading
                                       ? null
                                       : () async {
-                                        final success =
-                                            await orderVm.placeOrder();
-                                        if (success) {
+                                        final res = await orderVm.placeOrder(
+                                          productId:
+                                              context
+                                                  .read<GetProductsViewmodel>()
+                                                  .products
+                                                  .first
+                                                  .id,
+                                        );
+                                        if (res.success) {
                                           setState(() {
                                             _currentBar = "second";
                                           });
