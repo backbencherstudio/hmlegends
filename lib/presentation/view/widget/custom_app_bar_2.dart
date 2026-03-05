@@ -85,7 +85,7 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
                             ),
                         child: CircleAvatar(
                           radius: 18.r,
-                          backgroundImage: AssetImage(profileImage),
+                          backgroundImage: NetworkImage(profileImage),
                         ),
                       ),
                     ],

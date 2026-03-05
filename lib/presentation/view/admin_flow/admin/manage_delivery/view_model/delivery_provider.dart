@@ -41,19 +41,19 @@ class DeliveryProvider extends ChangeNotifier {
   /// ------------- Function to call all deliveries API -------------------------
   Future<ResponseModel> getAllDeliveries() async {
     try {
-
       var response = await _apiService.get(ApiEndpoints.adminAllDelivery);
 
       final message = response['message'] ?? 'Failed to fetch deliveries';
 
       if (response is Map<String, dynamic> && response['success'] == true) {
         _allDeliveriesModel = AllDeliveriesModel.fromJson(response);
-
+        notifyListeners();
         return ResponseModel(success: true, message: message);
       } else {
         return ResponseModel(success: false, message: message);
       }
     } catch (e) {
+      notifyListeners();
       return ResponseModel(success: false, message: e.toString());
     }
   }

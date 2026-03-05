@@ -7,9 +7,11 @@ import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
 import 'package:hmlegends/presentation/widget/custom_text_form_field.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
+import '../../../../../../core/constant/api_endpoint.dart';
 import '../../../../../../core/constant/asset_path.dart';
 import '../../../../widget/custom_app_bar_2.dart';
+import '../../../view_model/notification_admin/admin_notification_provider.dart';
+import '../../../view_model/profile/change_pass_provider.dart';
 import '../model/invoice_detail_model.dart';
 import '../view_model/admin_invoice_provider.dart';
 import 'iInvoiceWebViewScreen.dart';
@@ -24,13 +26,13 @@ class AdminInvoiceDetailScreen extends StatefulWidget {
   static Widget _tableHeader(String text) {
     return Text(
       text,
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
     );
   }
 
   static Widget _tableCell(String text) {
     return Expanded(
-      child: Center(child: Text(text, style: TextStyle(fontSize: 14))),
+      child: Center(child: Text(text, style: TextStyle(fontSize: 14.sp))),
     );
   }
 }
@@ -57,12 +59,18 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
+    final notification = notificationProvider.adminNotificationModel?.data;
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data;
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: CustomAppBarTwo(
         title: "Invoice",
-        profileImage: AssetPaths.personIcon,
-        notificationCount: 4,
+        profileImage: '${ApiEndpoints.baseUrl}/public/storage/avatar/${data?.avatar}',
+        notificationCount: notification?.length ?? 0,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
         onBackTap: () => Navigator.pop(context),

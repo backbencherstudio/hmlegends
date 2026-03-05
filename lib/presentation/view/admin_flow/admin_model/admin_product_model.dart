@@ -2,7 +2,7 @@ class AdminProductModel {
   bool? success;
   String? message;
   List<Data>? data;
-  Null nextCursor;
+  dynamic nextCursor;
 
   AdminProductModel({this.success, this.message, this.data, this.nextCursor});
 
@@ -19,7 +19,7 @@ class AdminProductModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['success'] = this.success;
     data['message'] = this.message;
     if (this.data != null) {

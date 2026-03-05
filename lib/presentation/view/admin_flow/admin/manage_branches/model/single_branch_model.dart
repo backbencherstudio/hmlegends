@@ -111,15 +111,13 @@ class Orders {
 class OrderItems {
   String? id;
   int? quantity;
-  String? productName;
   String? productImage;
 
-  OrderItems({this.id, this.quantity});
+  OrderItems({this.id, this.quantity, this.productImage});
 
   OrderItems.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     quantity = json['quantity'];
-    productName = json['product_name'];
     productImage = json['product_image'];
   }
 
@@ -127,7 +125,6 @@ class OrderItems {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['quantity'] = quantity;
-    data['product_name'] = productName;
     data['product_image'] = productImage;
     return data;
   }

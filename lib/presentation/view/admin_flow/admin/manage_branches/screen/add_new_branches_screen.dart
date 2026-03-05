@@ -11,21 +11,47 @@ import '../../../../../../core/utlis/utils.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../widget/build_stock_status_drop_down.dart';
 
-class AddNewBranchesScreen extends StatelessWidget {
+class AddNewBranchesScreen extends StatefulWidget {
   const AddNewBranchesScreen({super.key});
+
+  @override
+  State<AddNewBranchesScreen> createState() => _AddNewBranchesScreenState();
+}
+
+class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
+  /// --------------------- Text Field Controllers -----------------------------
+  final _nameController = TextEditingController();
+
+  final _emailController = TextEditingController();
+
+  final _passwordController = TextEditingController();
+
+  final _addressController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  /// ------------------- dispose Controller -----------------------------------
+
+  @override
+  void dispose() {
+    super.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _addressController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ManageBranchProvider>();
 
     Future<void> submit() async {
-      if (provider.formKey.currentState!.validate()) {
+      if (_formKey.currentState!.validate()) {
         /// ------ Call the provider method to add a new branch --
         final result = await provider.addNewBranch(
-          name: provider.nameController.text,
-          email: provider.emailController.text,
-          password: provider.passwordController.text,
-          address: provider.addressController.text,
+          name: _nameController.text,
+          email: _emailController.text,
+          password: _passwordController.text,
+          address: _addressController.text,
           status: provider.selectedStockStatus ?? 'ACTIVE',
         );
 
@@ -39,11 +65,11 @@ class AddNewBranchesScreen extends StatelessWidget {
           );
 
           /// ---------------- Clear the form --------------------
-          provider.formKey.currentState!.reset();
-          provider.nameController.clear();
-          provider.emailController.clear();
-          provider.passwordController.clear();
-          provider.addressController.clear();
+          _formKey.currentState!.reset();
+          _nameController.clear();
+          _emailController.clear();
+          _passwordController.clear();
+          _addressController.clear();
 
           Navigator.pop(context);
         } else {
@@ -69,7 +95,7 @@ class AddNewBranchesScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
         child: Form(
-          key: provider.formKey,
+          key: _formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +103,7 @@ class AddNewBranchesScreen extends StatelessWidget {
               _buildLabel("Branch name"),
               customTextFormField(
                 hintText: "Enter branch name",
-                controller: provider.nameController,
+                controller: _nameController,
                 validator: branchNameValidator,
               ),
 
@@ -85,7 +111,7 @@ class AddNewBranchesScreen extends StatelessWidget {
               _buildLabel("Branch Address"),
               customTextFormField(
                 hintText: "Enter branch address",
-                controller: provider.addressController,
+                controller: _addressController,
                 validator: branchAddressValidator,
               ),
 
@@ -99,7 +125,7 @@ class AddNewBranchesScreen extends StatelessWidget {
               _buildLabel("Email"),
               customTextFormField(
                 hintText: "Enter your email",
-                controller: provider.emailController,
+                controller: _emailController,
                 validator: emailValidator,
               ),
 
@@ -107,7 +133,7 @@ class AddNewBranchesScreen extends StatelessWidget {
               _buildLabel("Password"),
               customTextFormField(
                 hintText: "Enter your password",
-                controller: provider.passwordController,
+                controller: _passwordController,
                 validator: passwordValidator,
                 isPassword: true,
               ),

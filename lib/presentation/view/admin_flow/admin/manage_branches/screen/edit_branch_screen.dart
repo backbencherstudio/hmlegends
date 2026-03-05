@@ -2,8 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/view_model/manage_branch_provider.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +15,9 @@ import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 
 class EditBranchScreen extends StatefulWidget {
-  const EditBranchScreen({super.key});
+  final String managerId;
+
+  const EditBranchScreen({super.key, required this.managerId});
 
   @override
   State<EditBranchScreen> createState() => _EditBranchScreenState();
@@ -21,10 +26,9 @@ class EditBranchScreen extends StatefulWidget {
 class _EditBranchScreenState extends State<EditBranchScreen> {
   // Dropdown values
   String? selectedProduct;
-  String? selectedStockStatus;
 
-  // Dropdown options
-  final List<String> stockStatusOptions = ['Active', 'Inactive'];
+  // Dropdown options - matching the API response format
+  final List<String> stockStatusOptions = ['ACTIVE', 'LOCKED'];
 
   final ImagePicker _imagePicker = ImagePicker();
 
@@ -56,36 +60,75 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
         });
       } else {
         // User canceled the picker
-        print('No image selected.');
+        debugPrint('No image selected.');
       }
     });
+  }
+
+  /// --------------------- Text Field Controllers -----------------------------
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _addressController = TextEditingController();
+
+  /// ------------------- dispose Controller -----------------------------------
+
+  @override
+  void dispose() {
+    super.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _addressController.dispose();
   }
 
   @override
   void initState() {
     super.initState();
+    debugPrint("Received Manager Id : ${widget.managerId}");
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ManageBranchProvider>(context, listen: false).getSingleBranch(
-        Provider.of<ManageBranchProvider>(
-              context,
-              listen: false,
-            ).singleBranchModel?.data?.id ??
-            "", // Replace with actual user ID
-      );
+      Provider.of<ManageBranchProvider>(
+        context,
+        listen: false,
+      ).getSingleBranch(widget.managerId);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final singleBranchProvider = Provider.of<ManageBranchProvider>(context);
+    final singleBranch = singleBranchProvider.singleBranchModel?.data;
+    final branchName = singleBranch?.name;
+    final branchAddress = singleBranch?.address;
+    final branchStatus = singleBranch?.status;
+
+    // Set the selected status in the provider when data loads
+    if (branchStatus != null && mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (singleBranchProvider.selectedStockStatus != branchStatus) {
+          singleBranchProvider.toggleStockStatus(branchStatus);
+        }
+      });
+    }
+
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
+    final notification = notificationProvider.adminNotificationModel?.data;
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final profile = profileProvider.adminInfoModel?.data;
+debugPrint("The profile image url is ${ApiEndpoints.baseUrl}/public/storage/product/${profile?.avatar}}'?? '' ''}");
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBarTwo(
         title: 'Edit Branch',
-        notificationCount: 4,
+        notificationCount: notification?.length ?? 0,
         colorMain: Colors.white,
         colorSpace: Colors.white,
         onBackTap: () => Navigator.pop(context),
-        profileImage: AssetPaths.personIcon,
+        profileImage: '${ApiEndpoints.baseUrl}/public/storage/avatar/${profile?.avatar}',
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
@@ -95,31 +138,73 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
             _buildLabel("Branch name"),
             _buildTextField(
               hint: "Branch name with ID",
-              controller: TextEditingController(
-                text:
-                    Provider.of<ManageBranchProvider>(
-                      context,
-                      listen: false,
-                    ).singleBranchModel?.data?.name,
-              ),
+              controller:
+              branchName != null
+                  ? TextEditingController(text: branchName)
+                  : null,
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a branch name';
+                }
+                return null;
+              },
             ),
 
             SizedBox(height: 16.h),
             _buildLabel("Branch location"),
             _buildTextField(
               hint: "Add location",
-              controller: TextEditingController(
-                text:
-                    Provider.of<ManageBranchProvider>(
-                      context,
-                      listen: false,
-                    ).singleBranchModel?.data?.address,
-              ),
+              controller:
+              branchAddress != null
+                  ? TextEditingController(text: branchAddress)
+                  : null,
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a branch location';
+                }
+                return null;
+              },
             ),
 
             SizedBox(height: 16.h),
+
+            /// ----------------------- Status(Active/Inactive) ----------------
             _buildLabel("Status"),
-            _buildStockStatusDropdown(),
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.editTextFieldColor,
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 14.w),
+              child: DropdownButtonHideUnderline(
+                child: Consumer<ManageBranchProvider>(
+                  builder: (context, provider, child) {
+                    return DropdownButton<String>(
+                      value: provider.selectedStockStatus,
+                      isExpanded: true,
+                      icon: const Icon(Icons.arrow_drop_down),
+                      hint: Text(
+                        "Select",
+                        style: TextStyle(color: Colors.grey[500]),
+                      ),
+                      dropdownColor: AppColors.editTextFieldColor,
+                      borderRadius: BorderRadius.circular(8.r),
+                      style: TextStyle(color: Colors.grey[600]),
+                      items:
+                      stockStatusOptions.map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        provider.toggleStockStatus(newValue);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
 
             SizedBox(height: 24.h),
             _buildLabel("Upload product Image"),
@@ -129,12 +214,10 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Consumer<ManageBranchProvider>(
                 builder: (
-                  BuildContext context,
-                  ManageBranchProvider provider,
-                  Widget? child,
-                ) {
-                  final data = provider.singleBranchModel?.data;
-
+                    BuildContext context,
+                    ManageBranchProvider provider,
+                    Widget? child,
+                    ) {
                   return AuthButton(
                     text: Text(
                       'Save & Update',
@@ -147,15 +230,17 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
                     onPressed: () {
                       // Handle save and update logic here
                       provider.updateBranch(
-                        userId:
-                            data?.id ?? "", // Use the actual user ID from data
-                        name: data?.name ?? "", // Use the actual name from data
-                        address:
-                            data?.address ??
-                            "", // Use the actual address from data
-                        status: selectedStockStatus ?? "Active",
+                        managerId: widget.managerId,
+                        name: _nameController.text.trim().isNotEmpty
+                            ? _nameController.text.trim()
+                            : branchName ?? "",
+                        address: _addressController.text.trim().isNotEmpty
+                            ? _addressController.text.trim()
+                            : branchAddress ?? "",
+                        status: provider.selectedStockStatus ?? "ACTIVE",
                         // image: selectedImage, // Handle image selection logic
                       );
+                      Navigator.pop(context);
                     },
                     color: AppColors.primaryColor,
                   );
@@ -182,63 +267,32 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   );
 
   // TextField
-
-  Widget _buildTextField({String? hint, TextEditingController? controller}) =>
-      TextField(
-        controller: controller ?? TextEditingController(),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(color: Colors.grey[500]),
-          filled: true,
-          fillColor: AppColors.editTextFieldColor,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 14.w,
-            vertical: 14.h,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.r),
-            borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.r),
-            borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.r),
-            borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
-          ),
-        ),
-      );
-
-  // Stock Status Dropdown
-  Widget _buildStockStatusDropdown() => Container(
-    decoration: BoxDecoration(
-      color: AppColors.editTextFieldColor,
-      borderRadius: BorderRadius.circular(8.r),
-      border: Border.all(color: const Color(0xFFD2D2D5)),
-    ),
-    padding: EdgeInsets.symmetric(horizontal: 14.w),
-    child: DropdownButtonHideUnderline(
-      child: DropdownButton<String>(
-        value: selectedStockStatus,
-        isExpanded: true,
-        icon: const Icon(Icons.arrow_drop_down),
-        hint: Text("Select", style: TextStyle(color: Colors.grey[500])),
-        dropdownColor:
-            AppColors.editTextFieldColor, // Dropdown menu background color
-        borderRadius: BorderRadius.circular(8.r), // Dropdown menu border radius
-        style: TextStyle(color: Colors.grey[600]), // Dropdown item text color
-        items:
-            stockStatusOptions.map((String value) {
-              return DropdownMenuItem<String>(value: value, child: Text(value));
-            }).toList(),
-        onChanged: (String? newValue) {
-          setState(() {
-            selectedStockStatus = newValue;
-          });
-        },
+  Widget _buildTextField({
+    String? hint,
+    TextEditingController? controller,
+    String? Function(String?)? validator,
+  }) => TextFormField(
+    controller: controller ?? TextEditingController(),
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(color: Colors.grey[500]),
+      filled: true,
+      fillColor: AppColors.editTextFieldColor,
+      contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide.none,
       ),
     ),
+    validator: validator,
   );
 
   // Upload Image Box
@@ -247,7 +301,6 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
     height: selectedImageFile != null ? 200.h : 160.h,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12.r),
-      border: Border.all(color: const Color(0xFFD2D2D5)),
       color: AppColors.editTextFieldColor,
     ),
     child: Center(
@@ -268,7 +321,7 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
                 children: [
                   Image.asset(AssetPaths.addIcon1, height: 20.h, width: 20.w),
                   SizedBox(width: 6.w),
-                  const Text(
+                  Text(
                     'Upload photos',
                     style: TextStyle(
                       color: Colors.redAccent,
@@ -287,7 +340,10 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
                 // Read-only Format Field
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 14.w,
+                    vertical: 12.h,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(8.r),
@@ -328,7 +384,10 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
                 // Read-only Size Field
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 14.w,
+                    vertical: 12.h,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(8.r),

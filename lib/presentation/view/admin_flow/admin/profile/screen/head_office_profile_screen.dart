@@ -11,129 +11,111 @@ import '../widget/logout_dialog.dart';
 import '../../../../../../core/constant/api_endpoint.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
 
-class HeadOfficeProfileScreen extends StatelessWidget {
+class HeadOfficeProfileScreen extends StatefulWidget {
   const HeadOfficeProfileScreen({super.key});
+
+  @override
+  State<HeadOfficeProfileScreen> createState() =>
+      _HeadOfficeProfileScreenState();
+}
+
+class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
+  @override
+  void initState() {
+    Future.microtask(
+      () => context.read<ChangePasswordProvider>().adminCheckMe(),
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ChangePasswordProvider>(context);
 
-    return FutureBuilder(
-      future: provider.adminCheckMe(),
-      builder: (context, snapshot) {
-        final data = provider.adminInfoModel?.data;
+    final data = provider.adminInfoModel?.data;
 
-        final String name = data?.name ?? "Not Found Name";
-        final String occupation = data?.occupation ?? "Not Found Occupation";
-        final String phone = data?.phoneNumber ?? "Not Found Number";
-        final String address = data?.address ?? "Not Found Address";
-        final String? avatar = data?.avatar;
+    final String name = data?.name ?? "Not Found Name";
+    final String occupation = data?.occupation ?? "Not Found Occupation";
+    final String phone = data?.phoneNumber ?? "Not Found Number";
+    final String address = data?.address ?? "Not Found Address";
+    final String? avatar = data?.avatar;
 
-        return Scaffold(
-          backgroundColor: const Color(0xffFFF6F7),
+    return Scaffold(
+      backgroundColor: const Color(0xffFFF6F7),
 
-          /// --------------------- App Bar ------------------------------------
-          appBar: CustomAppBar(
-            profileImage: data?.avatar,
-            notificationCount: 4,
-          ),
+      /// --------------------- App Bar ------------------------------------
+      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
 
-          body: SingleChildScrollView(
-            padding: EdgeInsets.only(bottom: 20.h, left: 2.w, right: 2.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 16.h),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: 20.h, left: 2.w, right: 2.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 16.h),
 
-                /// ----------- Name / Occupation / Avatar ---------------------
-                _ProfileHeader(
-                  name: name,
-                  occupation: occupation,
-                  avatar: avatar,
-                ),
+            /// ----------- Name / Occupation / Avatar ---------------------
+            _ProfileHeader(name: name, occupation: occupation, avatar: avatar),
 
-                SizedBox(height: 16.h),
+            SizedBox(height: 16.h),
 
-                ///------------------ Phone Number / Email / Address -----------
-                _ProfileInfoTile(
-                  icon: Icons.phone_outlined,
-                  title: 'Phone Number',
-                  value: phone,
-                ),
-                Divider(
-                  indent: 15.w,
-                  endIndent: 15.w,
-                  color: Colors.grey.shade300,
-                ),
-
-                _ProfileInfoTile(
-                  icon: Icons.mail_outline,
-                  title: 'Email',
-                  value: data?.email ?? "Not Found Email",
-                ),
-                Divider(
-                  indent: 15.w,
-                  endIndent: 15.w,
-                  color: Colors.grey.shade300,
-                ),
-
-                _ProfileInfoTile(
-                  icon: Icons.location_on_outlined,
-                  title: 'Address',
-                  value: address,
-                ),
-
-                Divider(
-                  indent: 15.w,
-                  endIndent: 15.w,
-                  color: Colors.grey.shade300,
-                ),
-
-                _ProfileActionTile(
-                  icon: Icons.logout,
-                  title: 'Log out',
-                  isDestructive: true,
-                  onTap: () => logoutShowSubmitDialog(context),
-                ),
-
-                Divider(
-                  indent: 15.w,
-                  endIndent: 15.w,
-                  color: Colors.grey.shade300,
-                ),
-
-                _ProfileActionTile(
-                  icon: Icons.lock_outline,
-                  title: 'Change Password',
-                  isDestructive: true,
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      RouteNames.headOfficeChangePasswordScreen,
-                    );
-                  },
-                ),
-                Divider(
-                  indent: 15.w,
-                  endIndent: 15.w,
-                  color: Colors.grey.shade300,
-                ),
-
-                _ProfileActionTile(
-                  icon: Icons.info_outline,
-                  title: 'Change info',
-                  isDestructive: true,
-                  onTap:
-                      () => Navigator.pushNamed(
-                        context,
-                        RouteNames.headOfficeChangeInfoScreen,
-                      ),
-                ),
-              ],
+            ///------------------ Phone Number / Email / Address -----------
+            _ProfileInfoTile(
+              icon: Icons.phone_outlined,
+              title: 'Phone Number',
+              value: phone,
             ),
-          ),
-        );
-      },
+            Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+
+            _ProfileInfoTile(
+              icon: Icons.mail_outline,
+              title: 'Email',
+              value: data?.email ?? "Not Found Email",
+            ),
+            Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+
+            _ProfileInfoTile(
+              icon: Icons.location_on_outlined,
+              title: 'Address',
+              value: address,
+            ),
+
+            Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+
+            _ProfileActionTile(
+              icon: Icons.logout,
+              title: 'Log out',
+              isDestructive: true,
+              onTap: () => logoutShowSubmitDialog(context),
+            ),
+
+            Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+
+            _ProfileActionTile(
+              icon: Icons.lock_outline,
+              title: 'Change Password',
+              isDestructive: true,
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  RouteNames.headOfficeChangePasswordScreen,
+                );
+              },
+            ),
+            Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+
+            _ProfileActionTile(
+              icon: Icons.info_outline,
+              title: 'Change info',
+              isDestructive: true,
+              onTap:
+                  () => Navigator.pushNamed(
+                    context,
+                    RouteNames.headOfficeChangeInfoScreen,
+                  ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

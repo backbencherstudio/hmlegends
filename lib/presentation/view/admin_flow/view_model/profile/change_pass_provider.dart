@@ -89,12 +89,14 @@ class ChangePasswordProvider with ChangeNotifier {
 
       if (response['success'] == true) {
         _adminInfoModel = AdminInfoModel.fromJson(response);
+        notifyListeners();
         return ResponseModel(
           success: true,
           message: response['message'] ?? 'Admin info fetched successfully',
         );
       } else {
         logger.e("Admin Check Me Error: $response");
+        notifyListeners();
         return ResponseModel(
           success: false,
           message: response['message'] ?? 'Failed to fetch admin info',
@@ -102,6 +104,7 @@ class ChangePasswordProvider with ChangeNotifier {
       }
     } catch (error) {
       logger.e("Admin Check Me Error: $error");
+      notifyListeners();
       return ResponseModel(success: false, message: '$error');
     }
   }
@@ -126,13 +129,17 @@ class ChangePasswordProvider with ChangeNotifier {
       logger.i("Change Password Status Code: ${response.statusCode}");
       logger.i("Change Password Response: ${response.body}");
       if (response.statusCode == 200 || response.statusCode == 201) {
+        notifyListeners();
+        logger.i("Password changed successfully.");
         return true;
       } else {
         logger.e("Change Password Error: ${response.statusCode}");
+        notifyListeners();
         return false;
       }
     } catch (e) {
       logger.e("Change Password Error: $e");
+      notifyListeners();
       return false;
     }
   }
@@ -186,13 +193,16 @@ class ChangePasswordProvider with ChangeNotifier {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         logger.i("Profile updated successfully.");
+        notifyListeners();
         return true;
       } else {
         logger.e("Profile update failed.");
+        notifyListeners();
         return false;
       }
     } catch (error) {
       logger.e("Admin Profile Update Error: $error");
+      notifyListeners();
       return false;
     }
   }

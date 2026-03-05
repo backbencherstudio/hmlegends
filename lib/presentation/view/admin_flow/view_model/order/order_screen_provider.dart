@@ -75,12 +75,15 @@ class OrderScreenProvider extends ChangeNotifier {
       logger.i("Response body: $decodeData");
       if (response.statusCode == 200 || response.statusCode == 201) {
         _orderAdminModel = OrderAdminModel.fromJson(decodeData);
+        notifyListeners();
         logger.i("message:  ${decodeData['message']}");
       } else {
         logger.i("Failed: ${decodeData['message']}");
+        notifyListeners();
       }
     } catch (error) {
       logger.e("Error fetching admin orders: $error");
+      notifyListeners();
     }
   }
 
@@ -124,7 +127,6 @@ class OrderScreenProvider extends ChangeNotifier {
   ///----------------------- Approve Order --------------------------------
   Future<void> approveOrder(String orderId) async {
     try {
-
       final token = await _tokenStorage.getToken();
       final url = Uri.parse(ApiEndpoints.orderAccept(orderId));
 
