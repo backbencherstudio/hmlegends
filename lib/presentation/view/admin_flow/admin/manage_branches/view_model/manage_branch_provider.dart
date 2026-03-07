@@ -16,6 +16,30 @@ class ManageBranchProvider extends ChangeNotifier {
   }
 
 
+  // Image selection variables
+  File? _selectedImageFile;
+  String? _imageFormat;
+  String? _imageSize;
+
+  File? get selectedImageFile => _selectedImageFile;
+  String? get imageFormat => _imageFormat;
+  String? get imageSize => _imageSize;
+
+  void setSelectedImageFile(File? value) {
+    _selectedImageFile = value;
+    notifyListeners();
+  }
+
+  void setImageFormat(String? value) {
+    _imageFormat = value;
+    notifyListeners();
+  }
+
+  void setImageSize(String? value) {
+    _imageSize = value;
+    notifyListeners();
+  }
+
 
   ///-------------------- Dropdown values --------------------------------------
   String? selectedProduct;

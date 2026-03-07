@@ -392,10 +392,6 @@ class _StockScreenState extends State<StockScreen> {
                                         padding: EdgeInsets.all(12.w),
                                         decoration: BoxDecoration(
                                           color: Colors.white,
-                                          border: Border.all(
-                                            color: Colors.grey.shade300,
-                                            width: 1.4,
-                                          ),
                                           borderRadius: BorderRadius.circular(
                                             12.r,
                                           ),

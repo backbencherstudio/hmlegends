@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../admin_flow/view_model/profile/change_pass_provider.dart';
@@ -19,7 +20,6 @@ class InvoiceScreen extends StatefulWidget {
 }
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
-
   @override
   void initState() {
     Future.microtask(() {
@@ -62,9 +62,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       final date = DateTime.tryParse(invoice.createdAt);
       if (date == null) return false;
 
-      switch (context
-          .read<GetAllInvoiceProvider>()
-          .selectedPeriod) {
+      switch (context.read<GetAllInvoiceProvider>().selectedPeriod) {
         case 'Today':
           return _isToday(date);
         case 'This Week':
@@ -90,14 +88,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final getAllInvoices = Provider.of<GetAllInvoiceProvider>(context);
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
+    final notification = notificationProvider.adminNotificationModel?.data;
 
     final stats = getAllInvoices.invoiceResponse?.data.stats;
     final paid = stats?.paidInvoice.toString() ?? '0';
     final pending = stats?.pendingInvoice.toString() ?? '0';
     final total = stats?.totalInvoice.toString() ?? '0';
 
-    print("=========== Pending Invoice : $pending ================");
-    print("=========== Pending Invoice : $paid ================");
     final allInvoices = getAllInvoices.invoiceResponse?.data.invoices ?? [];
     final todayCount =
         allInvoices
@@ -107,7 +107,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       backgroundColor: const Color(0xffFFF6F7),
       appBar: CustomAppBar(
         profileImage: data?.avatar,
-        notificationCount: 4,
+        notificationCount: notification?.length ?? 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -156,9 +156,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 Row(
                   children: [
                     Text(
-                      context
-                          .read<GetAllInvoiceProvider>()
-                          .selectedPeriod,
+                      context.read<GetAllInvoiceProvider>().selectedPeriod,
                       style: const TextStyle(
                         color: Color(0xff4A4C56),
                         fontSize: 14,
@@ -176,15 +174,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       },
                       itemBuilder:
                           (_) =>
-                          ['Today', 'This Week', 'This Month']
-                              .map(
-                                (e) =>
-                                PopupMenuItem(
-                                  value: e,
-                                  child: Text(e),
-                                ),
-                          )
-                              .toList(),
+                              ['Today', 'This Week', 'This Month']
+                                  .map(
+                                    (e) =>
+                                        PopupMenuItem(value: e, child: Text(e)),
+                                  )
+                                  .toList(),
                     ),
                   ],
                 ),
@@ -238,9 +233,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                           Text(
                             allInvoices.isEmpty
                                 ? "No invoices available"
-                                : "No invoices for ${context
-                                .read<GetAllInvoiceProvider>()
-                                .selectedPeriod}",
+                                : "No invoices for ${context.read<GetAllInvoiceProvider>().selectedPeriod}",
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey.shade600,
@@ -250,9 +243,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       ),
                     );
                   }
-                  print(
-                    "============= ${allInvoices.length} ==============",
-                  );
+                  print("============= ${allInvoices.length} ==============");
                   return ListView.builder(
                     padding: EdgeInsets.zero,
                     itemCount: allInvoices.length,
@@ -264,16 +255,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Expanded(
                                 child: Container(
                                   height: 40.h,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                      8.r,
-                                    ),
+                                    borderRadius: BorderRadius.circular(8.r),
                                   ),
                                   child: Row(
                                     children: [
@@ -284,9 +272,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                             color: const Color(0xFFD1E4C9),
                                             borderRadius: BorderRadius.only(
                                               topLeft: Radius.circular(8.r),
-                                              bottomLeft: Radius.circular(
-                                                8.r,
-                                              ),
+                                              bottomLeft: Radius.circular(8.r),
                                             ),
                                           ),
                                           padding: EdgeInsets.symmetric(
@@ -312,8 +298,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                           ),
                                           alignment: Alignment.centerLeft,
                                           child: Text(
-                                            "Total Units: ${invoice
-                                                .totalQuantity}",
+                                            "Total Units: ${invoice.totalQuantity}",
                                             style: TextStyle(
                                               fontSize: 13.sp,
                                               color: Color(0xFF4A4C56),
@@ -328,43 +313,35 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                           decoration: BoxDecoration(
                                             color: const Color(0xFFE20614),
                                             borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(
-                                                8.r,
-                                              ),
-                                              bottomRight: Radius.circular(
-                                                8.r,
-                                              ),
+                                              topRight: Radius.circular(8.r),
+                                              bottomRight: Radius.circular(8.r),
                                             ),
                                           ),
                                           child: TextButton(
                                             onPressed: () async {
                                               await context
                                                   .read<
-                                                  GetInvoiceDetailViewmodel
-                                              >()
+                                                    GetInvoiceDetailViewmodel
+                                                  >()
                                                   .fetchInvoiceDetail(
-                                                invoice.orderId,
-                                              );
+                                                    invoice.orderId,
+                                                  );
                                               if (context.mounted) {
                                                 Navigator.pushNamed(
                                                   context,
                                                   RouteNames.viewDetails,
-                                                  arguments:
-                                                  invoice.orderId,
+                                                  arguments: invoice.orderId,
                                                 );
                                               }
                                             },
                                             style: TextButton.styleFrom(
                                               padding: EdgeInsets.zero,
                                               shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                BorderRadius.only(
-                                                  topRight:
-                                                  Radius.circular(
+                                                borderRadius: BorderRadius.only(
+                                                  topRight: Radius.circular(
                                                     8.r,
                                                   ),
-                                                  bottomRight:
-                                                  Radius.circular(
+                                                  bottomRight: Radius.circular(
                                                     8.r,
                                                   ),
                                                 ),
@@ -467,9 +444,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   Widget _periodCard(String count) {
     final isSelected =
-        context
-            .read<GetAllInvoiceProvider>()
-            .selectedPeriod == 'Today';
+        context.read<GetAllInvoiceProvider>().selectedPeriod == 'Today';
     return GestureDetector(
       onTap: () {
         context.read<GetAllInvoiceProvider>().updatedPeriod('today');
@@ -515,87 +490,87 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
-// Widget _buildInvoiceRow({
-//   required int index,
-//   required String date,
-//   required String invoiceId,
-//   required String totalItems,
-//   required VoidCallback onViewPressed,
-// }) {
-//   return Card(
-//     elevation: 2,
-//     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//     child: Row(
-//       children: [
-//         Container(
-//           width: 100.w,
-//           height: 36.h,
-//           decoration: const BoxDecoration(
-//             color: Color(0xffE8F5E9),
-//             borderRadius: BorderRadius.only(
-//               topLeft: Radius.circular(12),
-//               bottomLeft: Radius.circular(12),
-//             ),
-//           ),
-//           child: Center(
-//             child: Text(
-//               '$index. $date',
-//               textAlign: TextAlign.center,
-//               style: const TextStyle(
-//                 fontWeight: FontWeight.w600,
-//                 color: Color(0xFF1B5E20),
-//                 fontSize: 13,
-//               ),
-//             ),
-//           ),
-//         ),
-//         Expanded(
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.center,
-//             children: [
-//               // Text(
-//               //   'Order ID: $invoicId',
-//               //   style: const TextStyle(fontWeight: FontWeight.w600),
-//               // ),
-//               // const SizedBox(height: 4),
-//               Text(
-//                 'Total Items: $totalItems'.padLeft(2, '0'),
-//                 style: TextStyle(color: Colors.black),
-//               ),
-//             ],
-//           ),
-//         ),
-//         Material(
-//           color: const Color(0xffE20613),
-//           borderRadius: const BorderRadius.only(
-//             topRight: Radius.circular(12),
-//             bottomRight: Radius.circular(12),
-//           ),
-//           child: InkWell(
-//             borderRadius: const BorderRadius.only(
-//               topRight: Radius.circular(12),
-//               bottomRight: Radius.circular(12),
-//             ),
-//             onTap: onViewPressed,
-//             child: Container(
-//               width: 60.w,
-//               height: 36.h,
-//               alignment: Alignment.center,
-//               child: const Text(
-//                 'View',
-//                 style: TextStyle(
-//                   color: Colors.white,
-//                   fontWeight: FontWeight.bold,
-//                   fontSize: 14,
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//       ],
-//     ),
-//   );
-// }
+  // Widget _buildInvoiceRow({
+  //   required int index,
+  //   required String date,
+  //   required String invoiceId,
+  //   required String totalItems,
+  //   required VoidCallback onViewPressed,
+  // }) {
+  //   return Card(
+  //     elevation: 2,
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  //     child: Row(
+  //       children: [
+  //         Container(
+  //           width: 100.w,
+  //           height: 36.h,
+  //           decoration: const BoxDecoration(
+  //             color: Color(0xffE8F5E9),
+  //             borderRadius: BorderRadius.only(
+  //               topLeft: Radius.circular(12),
+  //               bottomLeft: Radius.circular(12),
+  //             ),
+  //           ),
+  //           child: Center(
+  //             child: Text(
+  //               '$index. $date',
+  //               textAlign: TextAlign.center,
+  //               style: const TextStyle(
+  //                 fontWeight: FontWeight.w600,
+  //                 color: Color(0xFF1B5E20),
+  //                 fontSize: 13,
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //         Expanded(
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.center,
+  //             children: [
+  //               // Text(
+  //               //   'Order ID: $invoicId',
+  //               //   style: const TextStyle(fontWeight: FontWeight.w600),
+  //               // ),
+  //               // const SizedBox(height: 4),
+  //               Text(
+  //                 'Total Items: $totalItems'.padLeft(2, '0'),
+  //                 style: TextStyle(color: Colors.black),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //         Material(
+  //           color: const Color(0xffE20613),
+  //           borderRadius: const BorderRadius.only(
+  //             topRight: Radius.circular(12),
+  //             bottomRight: Radius.circular(12),
+  //           ),
+  //           child: InkWell(
+  //             borderRadius: const BorderRadius.only(
+  //               topRight: Radius.circular(12),
+  //               bottomRight: Radius.circular(12),
+  //             ),
+  //             onTap: onViewPressed,
+  //             child: Container(
+  //               width: 60.w,
+  //               height: 36.h,
+  //               alignment: Alignment.center,
+  //               child: const Text(
+  //                 'View',
+  //                 style: TextStyle(
+  //                   color: Colors.white,
+  //                   fontWeight: FontWeight.bold,
+  //                   fontSize: 14,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
 
 // Extension for spacing

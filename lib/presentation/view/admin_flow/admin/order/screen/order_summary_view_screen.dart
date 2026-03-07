@@ -84,7 +84,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFFFF5F5),
       appBar: CustomAppBarTwo(
         title: "Order Summary",
-        profileImage:'${ApiEndpoints.baseUrl}/public/storage/avatar/${data?.avatar}',
+        profileImage:'${data?.avatar}',
         notificationCount: notificationData?.length ?? 0,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),

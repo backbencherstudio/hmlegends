@@ -41,6 +41,24 @@ class GetProductsViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// --------------------------------------------------------------------------
+  final Map<String, int> _selectedQuantities = {};
+  Map<String, int> get selectedQuantities => _selectedQuantities;
+
+  int get totalSelectedItems =>
+      _selectedQuantities.values.fold(0, (sum, qty) => sum + qty);
+
+  void updateQuantity(String productId, int newQty){
+    if(newQty > 0){
+      _selectedQuantities[productId] = newQty;
+    }else{
+      _selectedQuantities.remove(productId);
+    }
+    notifyListeners();
+  }
+
+
+  int getQuantity(String productId) => _selectedQuantities[productId] ?? 0;
   /// ----------------------------- Fetch Products -----------------------------
   Future<bool> fetchProducts({bool loadMore = false}) async {
     if (!loadMore) {

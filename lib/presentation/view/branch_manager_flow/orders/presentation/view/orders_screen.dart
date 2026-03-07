@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../../widget/custom_app_bar.dart';
@@ -27,12 +28,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     super.initState();
   }
 
-  final Map<String, int> _selectedQuantities = {};
-
   final Map<String, ValueNotifier<int>> _quantityNotifiers = {};
-
-  int get totalSelectedItems =>
-      _selectedQuantities.values.fold(0, (sum, qty) => sum + qty);
 
   @override
   void dispose() {
@@ -42,8 +38,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
     super.dispose();
   }
 
-
   Timer? debouncer;
+
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ChangePasswordProvider>(
@@ -51,63 +47,76 @@ class _OrdersScreenState extends State<OrdersScreen> {
       listen: false,
     );
     final data = profileProvider.adminInfoModel?.data;
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
+    final notification = notificationProvider.adminNotificationModel?.data;
 
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
-      appBar: CustomAppBar(profileImage: data?.avatar, notificationCount: 4),
+      appBar: CustomAppBar(
+        profileImage: data?.avatar,
+        notificationCount: notification?.length ?? 0,
+      ),
       body: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
           children: [
             /// ------------------ Total Item Summary --------------------------
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15.r),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
+            Consumer<GetProductsViewmodel>(
+              builder: (context, provider, child) {
+                final total = provider.totalSelectedItems;
+                return Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 12.h,
                   ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Total items Selected: $totalSelectedItems',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed:
-                        totalSelectedItems > 0
-                            ? () => _showSubmitDialog(context)
-                            : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          totalSelectedItems > 0
-                              ? const Color(0xffE20613)
-                              : Colors.grey.shade100,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25.r),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15.r),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
                       ),
-                    ),
-                    child: Text(
-                      'Submit Order',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total items Selected: $total',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed:
+                            total > 0 ? () => _showSubmitDialog(context) : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              total > 0
+                                  ? const Color(0xffE20613)
+                                  : Colors.grey.shade100,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25.r),
+                          ),
+                        ),
+                        child: Text(
+                          'Submit Order',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
 
             SizedBox(height: 20.h),
@@ -183,28 +192,32 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     );
                   }
 
-                  return ListView.builder(
-                    itemCount: vm.products.length,
-                    itemBuilder: (context, index) {
-                      final product = vm.products[index];
-                      final qty = _selectedQuantities[product.id] ?? 0;
+                  return Consumer<GetProductsViewmodel>(
+                    builder: (context, selectProvider, child) {
+                      return ListView.builder(
+                        itemCount: vm.products.length,
+                        itemBuilder: (context, index) {
+                          final product = vm.products[index];
+                          final qty = selectProvider.getQuantity(product.id);
 
-                      return _buildProductCard(product, qty, (newQty) {
-                        if (newQty > 0) {
-                          _selectedQuantities[product.id] = newQty;
-                          context.read<OrderViewmodel>().addProduct(
-                            ProductSelectModel(
-                              productId: product.id,
-                              productQty: newQty.toString(),
-                            ),
-                          );
-                        } else {
-                          _selectedQuantities.remove(product.id);
-                          context.read<OrderViewmodel>().removeProduct(
-                            product.id,
-                          );
-                        }
-                      });
+                          return _buildProductCard(product, qty, (newQty) {
+                            if (newQty > 0) {
+                              selectProvider.updateQuantity(product.id, newQty);
+                              final orderVM = context.read<OrderViewmodel>();
+                              if (newQty > 0) {
+                                orderVM.addProduct(
+                                  ProductSelectModel(
+                                    productId: product.id,
+                                    productQty: newQty.toString(),
+                                  ),
+                                );
+                              } else {
+                                orderVM.removeProduct(product.id);
+                              }
+                            }
+                          });
+                        },
+                      );
                     },
                   );
                 },
@@ -422,7 +435,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             ),
                           ),
                           child: Text(
-                            quantityNotifier.value > 0 ? 'Selected' : 'Confirm',
+                            isSelected ? 'Confirm' : '',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 14.sp,

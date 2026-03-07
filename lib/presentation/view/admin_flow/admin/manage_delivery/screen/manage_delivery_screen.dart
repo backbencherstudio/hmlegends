@@ -41,7 +41,7 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
       appBar: CustomAppBarTwo(
         title: 'Manage Delivery',
         profileImage:
-            '${ApiEndpoints.baseUrl}/public/storage/avatar/${data?.avatar}',
+            '${data?.avatar}',
         notificationCount: notification?.length ?? 0,
         colorMain: Colors.white,
         colorSpace: Colors.white,

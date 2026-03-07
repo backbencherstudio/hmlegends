@@ -95,7 +95,7 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                 CustomAppBarTwo(
                   title: 'Manage Branches',
                   notificationCount: notification?.length ?? 0,
-                  profileImage: '${ApiEndpoints.baseUrl}/public/storage/avatar/${data?.avatar}',
+                  profileImage: '${data?.avatar}',
                   colorMain: const Color(0xFFFFF5F5),
                   colorSpace: const Color(0xFFFFF5F5),
                   onBackTap: () => Navigator.pop(context),

@@ -66,7 +66,7 @@ class AppRoutes {
     RouteNames.profileScreen: (context) => ProfileScreen(),
     RouteNames.changePassword: (context) => ChangePassword(),
     RouteNames.changeInfo: (context) => ChangeInfo(),
-    RouteNames.notificationScreen: (context) => NotificationScreen(),
+    // RouteNames.notificationScreen: (context) => NotificationScreen(),
     RouteNames.driverScreen: (context) => DriverScreen(),
     RouteNames.driverBottomNavBar: (context) => DriverBottomNavBar(),
     RouteNames.driverBranchParentScreen:

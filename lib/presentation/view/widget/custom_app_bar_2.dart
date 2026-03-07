@@ -5,6 +5,7 @@ import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constant/api_endpoint.dart';
 import '../../../core/route/route_names.dart';
 import '../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 
@@ -85,7 +86,7 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
                             ),
                         child: CircleAvatar(
                           radius: 18.r,
-                          backgroundImage: NetworkImage(profileImage),
+                          backgroundImage: NetworkImage('${ApiEndpoints.baseUrl}/public/storage/avatar/$profileImage'),
                         ),
                       ),
                     ],

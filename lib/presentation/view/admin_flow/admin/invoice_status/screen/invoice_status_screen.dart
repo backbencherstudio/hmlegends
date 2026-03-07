@@ -6,6 +6,7 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/invoice/model/all_invoice_model.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/invoice/view_model/admin_invoice_provider.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../core/constant/api_endpoint.dart';
@@ -67,12 +68,14 @@ class _InvoiceStatusScreenState extends State<InvoiceStatusScreen> {
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
+    final notificationProvider = Provider.of<AdminNotificationProvider>(context);
+    final notification = notificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
       appBar: CustomAppBarTwo(
         title: "Invoice status",
-        profileImage: '${ApiEndpoints.baseUrl}/public/storage/avatar/${data?.avatar}',
-        notificationCount: 4,
+        profileImage: '${data?.avatar}',
+        notificationCount: notification?.length ?? 0,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
         onBackTap: () => Navigator.pop(context),

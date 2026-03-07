@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/view_model/manage_branch_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
@@ -27,15 +25,9 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   // Dropdown values
   String? selectedProduct;
 
-  // Dropdown options - matching the API response format
   final List<String> stockStatusOptions = ['ACTIVE', 'LOCKED'];
 
   final ImagePicker _imagePicker = ImagePicker();
-
-  // Image selection variables
-  File? selectedImageFile;
-  String? imageFormat;
-  String? imageSize;
 
   Future<void> _selectImage() async {
     // Handle image selection logic here
@@ -53,15 +45,12 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
         String extension = imageFile.path.split('.').last.toUpperCase();
         String format = (extension == 'JPG') ? 'JPEG' : extension;
 
-        setState(() {
-          selectedImageFile = imageFile;
-          imageFormat = format;
-          imageSize = '${fileSizeInMB.toStringAsFixed(2)} MB';
-        });
-      } else {
-        // User canceled the picker
-        debugPrint('No image selected.');
-      }
+        context.read<ManageBranchProvider>().setSelectedImageFile(imageFile);
+        context.read<ManageBranchProvider>().setImageFormat(format);
+        context.read<ManageBranchProvider>().setImageSize(
+          '${fileSizeInMB.toStringAsFixed(2)} MB',
+        );
+      } else {}
     });
   }
 
@@ -70,6 +59,7 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _addressController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   /// ------------------- dispose Controller -----------------------------------
 
@@ -118,17 +108,16 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
     final notification = notificationProvider.adminNotificationModel?.data;
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final profile = profileProvider.adminInfoModel?.data;
-debugPrint("The profile image url is ${ApiEndpoints.baseUrl}/public/storage/product/${profile?.avatar}}'?? '' ''}");
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.bgColor,
       appBar: CustomAppBarTwo(
         title: 'Edit Branch',
         notificationCount: notification?.length ?? 0,
         colorMain: Colors.white,
         colorSpace: Colors.white,
         onBackTap: () => Navigator.pop(context),
-        profileImage: '${ApiEndpoints.baseUrl}/public/storage/avatar/${profile?.avatar}',
+        profileImage: '${profile?.avatar}',
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
@@ -139,9 +128,9 @@ debugPrint("The profile image url is ${ApiEndpoints.baseUrl}/public/storage/prod
             _buildTextField(
               hint: "Branch name with ID",
               controller:
-              branchName != null
-                  ? TextEditingController(text: branchName)
-                  : null,
+                  branchName != null
+                      ? TextEditingController(text: branchName)
+                      : null,
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a branch name';
@@ -155,9 +144,9 @@ debugPrint("The profile image url is ${ApiEndpoints.baseUrl}/public/storage/prod
             _buildTextField(
               hint: "Add location",
               controller:
-              branchAddress != null
-                  ? TextEditingController(text: branchAddress)
-                  : null,
+                  branchAddress != null
+                      ? TextEditingController(text: branchAddress)
+                      : null,
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a branch location';
@@ -191,12 +180,12 @@ debugPrint("The profile image url is ${ApiEndpoints.baseUrl}/public/storage/prod
                       borderRadius: BorderRadius.circular(8.r),
                       style: TextStyle(color: Colors.grey[600]),
                       items:
-                      stockStatusOptions.map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                          stockStatusOptions.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
                       onChanged: (String? newValue) {
                         provider.toggleStockStatus(newValue);
                       },
@@ -214,10 +203,10 @@ debugPrint("The profile image url is ${ApiEndpoints.baseUrl}/public/storage/prod
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Consumer<ManageBranchProvider>(
                 builder: (
-                    BuildContext context,
-                    ManageBranchProvider provider,
-                    Widget? child,
-                    ) {
+                  BuildContext context,
+                  ManageBranchProvider provider,
+                  Widget? child,
+                ) {
                   return AuthButton(
                     text: Text(
                       'Save & Update',
@@ -229,17 +218,21 @@ debugPrint("The profile image url is ${ApiEndpoints.baseUrl}/public/storage/prod
                     ),
                     onPressed: () {
                       // Handle save and update logic here
-                      provider.updateBranch(
-                        managerId: widget.managerId,
-                        name: _nameController.text.trim().isNotEmpty
-                            ? _nameController.text.trim()
-                            : branchName ?? "",
-                        address: _addressController.text.trim().isNotEmpty
-                            ? _addressController.text.trim()
-                            : branchAddress ?? "",
-                        status: provider.selectedStockStatus ?? "ACTIVE",
-                        // image: selectedImage, // Handle image selection logic
-                      );
+                      if (_formKey.currentState!.validate()) {
+                        provider.updateBranch(
+                          managerId: widget.managerId,
+                          name:
+                              _nameController.text.trim().isNotEmpty
+                                  ? _nameController.text.trim()
+                                  : branchName ?? "",
+                          address:
+                              _addressController.text.trim().isNotEmpty
+                                  ? _addressController.text.trim()
+                                  : branchAddress ?? "",
+                          status: provider.selectedStockStatus ?? "ACTIVE",
+                          // image: selectedImage, // Handle image selection logic
+                        );
+                      }
                       Navigator.pop(context);
                     },
                     color: AppColors.primaryColor,
@@ -298,7 +291,10 @@ debugPrint("The profile image url is ${ApiEndpoints.baseUrl}/public/storage/prod
   // Upload Image Box
   Widget _buildImageUploader() => Container(
     width: double.infinity,
-    height: selectedImageFile != null ? 200.h : 160.h,
+    height:
+        context.read<ManageBranchProvider>().selectedImageFile != null
+            ? 200.h
+            : 160.h,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12.r),
       color: AppColors.editTextFieldColor,
@@ -333,7 +329,7 @@ debugPrint("The profile image url is ${ApiEndpoints.baseUrl}/public/storage/prod
             ),
           ),
           SizedBox(height: 16.h),
-          if (selectedImageFile != null)
+          if (context.read<ManageBranchProvider>().selectedImageFile != null)
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -367,7 +363,10 @@ debugPrint("The profile image url is ${ApiEndpoints.baseUrl}/public/storage/prod
                             ),
                             SizedBox(height: 4.h),
                             Text(
-                              imageFormat ?? 'Unknown',
+                              context
+                                      .read<ManageBranchProvider>()
+                                      .imageFormat ??
+                                  'Unknown',
                               style: TextStyle(
                                 color: Colors.black87,
                                 fontSize: 14.sp,
@@ -411,7 +410,8 @@ debugPrint("The profile image url is ${ApiEndpoints.baseUrl}/public/storage/prod
                             ),
                             SizedBox(height: 4.h),
                             Text(
-                              imageSize ?? 'Unknown',
+                              context.read<ManageBranchProvider>().imageSize ??
+                                  'Unknown',
                               style: TextStyle(
                                 color: Colors.black87,
                                 fontSize: 14.sp,
