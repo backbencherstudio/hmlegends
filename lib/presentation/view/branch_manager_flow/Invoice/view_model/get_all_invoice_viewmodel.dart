@@ -25,6 +25,13 @@ class GetAllInvoiceProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  String _query = '';
+  String get query => _query;
+
+  void setQuery(String value) {
+    _query = value;
+    notifyListeners();
+  }
   /// --------------- Fetch All Invoices ---------------------------------------
   Future<bool> fetchAllInvoices() async {
     try {

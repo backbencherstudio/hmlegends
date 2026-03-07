@@ -43,8 +43,9 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
   }
 
   List<Invoices> _applyQueryFilter(List<Invoices> allInvoices) {
-    if (context.read<AdminInvoiceProvider>().query.trim().isEmpty)
+    if (context.read<AdminInvoiceProvider>().query.trim().isEmpty) {
       return allInvoices;
+    }
     final q = context.read<AdminInvoiceProvider>().query.trim().toLowerCase();
     return allInvoices.where((invoice) {
       final branchName = (invoice.branchName ?? '').toLowerCase();

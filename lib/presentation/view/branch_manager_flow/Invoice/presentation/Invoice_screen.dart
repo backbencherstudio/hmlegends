@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../../admin_flow/admin/invoice/model/all_invoice_model.dart';
 import '../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../widget/custom_app_bar.dart';
 import '../data/get_all_invoice_model.dart';
@@ -83,6 +87,28 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         : 'Invalid Date';
   }
 
+  Timer? debouncer;
+
+  void debounce(
+      VoidCallback callback, {
+        Duration duration = const Duration(milliseconds: 1000),
+      }) {
+    if (debouncer != null) {
+      debouncer!.cancel();
+    }
+    debouncer = Timer(duration, callback);
+  }
+
+  List<Invoice> _applyQueryFilter(List<Invoice> allInvoices) {
+    if (context.read<GetAllInvoiceProvider>().query.trim().isEmpty) {
+      return allInvoices;
+    }
+    final q = context.read<GetAllInvoiceProvider>().query.trim().toLowerCase();
+    return allInvoices.where((invoice) {
+      final branchName = (invoice.branchName ?? '').toLowerCase();
+      return branchName.contains(q);
+    }).toList();
+  }
   @override
   Widget build(BuildContext context) {
     final getAllInvoices = Provider.of<GetAllInvoiceProvider>(context);
@@ -113,7 +139,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildSearchBar(),
+            SearchField(
+              hintText: 'Search',
+              text: context.read<GetAllInvoiceProvider>().query,
+              onChanged: (String value) {
+                debounce(() {
+                  if (!mounted) return;
+                  context.read<GetAllInvoiceProvider>().setQuery(value);
+                });
+              },
+            ),
             SizedBox(height: 20.h),
 
             /// ----------------- Stats Cards ------------------------------
@@ -243,7 +278,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       ),
                     );
                   }
-                  print("============= ${allInvoices.length} ==============");
                   return ListView.builder(
                     padding: EdgeInsets.zero,
                     itemCount: allInvoices.length,
@@ -378,32 +412,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
-  Widget _buildSearchBar() {
-    return Container(
-      height: 45.h,
-      decoration: BoxDecoration(
-        color: const Color(0xffEFEFEF),
-        borderRadius: BorderRadius.circular(25.r),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
-        ],
-      ),
-      child: TextField(
-        controller: widget.controller,
-        decoration: InputDecoration(
-          hintText: 'Search invoices...',
-          hintStyle: TextStyle(fontSize: 16.sp, color: Colors.grey),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(
-            vertical: 12.h,
-            horizontal: 16.w,
-          ),
-          prefixIcon: Icon(Icons.search, color: Colors.grey.shade600),
-          suffixIcon: Icon(Icons.tune, color: Colors.grey.shade600),
-        ),
-      ),
-    );
-  }
+
 
   Widget _summaryCard(String title, String count) {
     return Container(
