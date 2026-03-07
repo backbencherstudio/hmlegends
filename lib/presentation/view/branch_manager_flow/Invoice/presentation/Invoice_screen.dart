@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/route/route_names.dart';
@@ -7,7 +6,6 @@ import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filte
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../../admin_flow/admin/invoice/model/all_invoice_model.dart';
 import '../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../widget/custom_app_bar.dart';
 import '../data/get_all_invoice_model.dart';
@@ -90,9 +88,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   Timer? debouncer;
 
   void debounce(
-      VoidCallback callback, {
-        Duration duration = const Duration(milliseconds: 1000),
-      }) {
+    VoidCallback callback, {
+    Duration duration = const Duration(milliseconds: 1000),
+  }) {
     if (debouncer != null) {
       debouncer!.cancel();
     }
@@ -105,10 +103,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     }
     final q = context.read<GetAllInvoiceProvider>().query.trim().toLowerCase();
     return allInvoices.where((invoice) {
-      final branchName = (invoice.branchName ?? '').toLowerCase();
+      final branchName = (invoice.branchName).toLowerCase();
       return branchName.contains(q);
     }).toList();
   }
+
   @override
   Widget build(BuildContext context) {
     final getAllInvoices = Provider.of<GetAllInvoiceProvider>(context);
@@ -157,18 +156,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _periodCard(todayCount.toString()),
-                    _summaryCard('Paid\nInvoice', paid),
+                    _periodCard(paid),
                     _summaryCard('Pending\nInvoice', pending),
-                  ].withSpace(15.w),
-                ),
-                SizedBox(height: 12.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _summaryCard('Overdue Invoice', '0'),
-                    // Update if API provides
-                    _summaryCard('Total Invoice', total),
+                    _summaryCard('Total\nInvoice', total),
                   ].withSpace(15.w),
                 ),
               ],
@@ -180,10 +170,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Total Invoices',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
                     color: Color(0xff1D1F2C),
                   ),
@@ -192,9 +182,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   children: [
                     Text(
                       context.read<GetAllInvoiceProvider>().selectedPeriod,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Color(0xff4A4C56),
-                        fontSize: 14,
+                        fontSize: 14.sp,
                       ),
                     ),
                     PopupMenuButton<String>(
@@ -264,13 +254,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             size: 60,
                             color: Colors.grey.shade400,
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16.h),
                           Text(
                             allInvoices.isEmpty
                                 ? "No invoices available"
                                 : "No invoices for ${context.read<GetAllInvoiceProvider>().selectedPeriod}",
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 16.sp,
                               color: Colors.grey.shade600,
                             ),
                           ),
@@ -412,8 +402,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
-
-
   Widget _summaryCard(String title, String count) {
     return Container(
       height: 90.h,
@@ -489,7 +477,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             ),
             const SizedBox(height: 4),
             const Text(
-              'Today’s\nInvoices',
+              'Paid\nInvoices',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: Color(0xff4A4C56)),
             ),
