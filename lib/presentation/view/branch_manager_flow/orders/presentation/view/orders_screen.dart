@@ -149,9 +149,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.error_outline,
-                            size: 60,
+                            size: 48.sp,
                             color: Colors.red,
                           ),
                           SizedBox(height: 16.h),
@@ -173,7 +173,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               ),
                             ),
                             onPressed: () => vm.fetchProducts(),
-                            child: Text("Retry"),
+                            child: Text(
+                              "Retry",
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -181,11 +188,23 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   }
 
                   if (vm.products.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Column(
                         children: [
-                          // Icon(Icons.prod)
-                          Text("No products available"),
+                          Icon(
+                            Icons.shopping_bag_outlined,
+                            size: 48.sp,
+                            color: Colors.grey.shade400,
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            "No products available",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.grey.shade400,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ],
                       ),
                     );

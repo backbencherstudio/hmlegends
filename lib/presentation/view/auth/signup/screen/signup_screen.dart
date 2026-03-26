@@ -77,6 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               SizedBox(height: 6.h),
               customTextFormField(
                 hintText: 'Enter your name',
+                textInputAction: TextInputAction.next,
                 prefixIcon: Icon(Icons.person_outline),
                 controller: provider.nameController,
                 validator: nameValidator,
@@ -86,6 +87,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               SizedBox(height: 6.h),
               customTextFormField(
                 hintText: 'Enter your email',
+                textInputAction: TextInputAction.next,
                 prefixIcon: Icon(Icons.email_outlined),
                 controller: provider.emailController,
                 validator: emailValidator,
@@ -95,10 +97,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
               SizedBox(height: 6.h),
               customTextFormField(
                 hintText: 'Enter your password',
+                textInputAction: TextInputAction.done,
                 prefixIcon: Icon(Icons.lock_outline),
                 controller: provider.passwordController,
-                isPassword: true,
+                isPassword: !provider.passwordVisible,
                 validator: passwordValidator,
+                suffixIcon: GestureDetector(
+                  onTap: provider.togglePasswordVisibility,
+                  child:
+                      provider.passwordVisible
+                          ? Icon(Icons.visibility, color: Colors.grey.shade600)
+                          : Icon(
+                            Icons.visibility_off_outlined,
+                            color: Colors.grey.shade600,
+                          ),
+                ),
               ),
             ],
           ),
@@ -146,6 +159,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 backgroundColor: Colors.green,
                 textColor: Colors.white,
               );
+              if (context.mounted) {
+                Navigator.pushNamed(context, RouteNames.loginScreen);
+              }
             } else {
               Utils.showToast(
                 msg: res.message,

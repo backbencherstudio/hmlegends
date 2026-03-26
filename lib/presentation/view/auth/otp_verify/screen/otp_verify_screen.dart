@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:hmlegends/core/constant/app_text_styles.dart';
@@ -57,46 +58,53 @@ class OtpVerifyScreen extends StatelessWidget {
               SizedBox(height: 20.h),
 
               /// VERIFY BUTTON
-              provider.isFPLoading
-                  ? const CircularProgressIndicator(color: Colors.green)
-                  : AuthButton(
-                      text: Text('Verify Code'),
-                      color: AppColors.primaryColor,
-                      onPressed: () async {
-                        final enteredOtp = _otpController.text.trim();
+              AuthButton(
+                text: Text(
+                  'Verify Code',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                color: AppColors.primaryColor,
+                onPressed: () async {
+                  final enteredOtp = _otpController.text.trim();
 
-                        if (enteredOtp.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Please enter the OTP"),
-                            ),
-                          );
-                          return;
-                        }
+                  if (enteredOtp.isEmpty) {
+                    Utils.showToast(
+                      msg: 'Please enter otp code',
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                    );
+                    return;
+                  }
 
-                        final success = await provider.otpVerify(
-                          otp: enteredOtp,
-                        );
-                        provider.setOtpToken(enteredOtp);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: success
-                                ? Colors.green
-                                : Colors.red,
-                            content: Text(provider.errorMessage),
-                          ),
-                        );
+                  final res = await provider.otpVerify(otp: enteredOtp);
 
-                        if (success && context.mounted) {
-                          Navigator.pushNamed(
-                            context,
-                            RouteNames.setNewPasswordScreen,
-                          );
-                        }
-                      },
-                    ),
+                  if (res.success) {
+                    Utils.showToast(
+                      msg: res.message,
+                      backgroundColor: Colors.green,
+                      textColor: Colors.white,
+                    );
+                    if (context.mounted) {
+                      Navigator.pushNamed(
+                        context,
+                        RouteNames.setNewPasswordScreen,
+                      );
+                    }
+                  } else {
+                    Utils.showToast(
+                      msg: res.message,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                    );
+                  }
+                },
+              ),
 
-              SizedBox(height: 10.h),
+              SizedBox(height: 12.h),
 
               _buildOtpResendLink(provider),
             ],
@@ -145,10 +153,11 @@ class OtpVerifyScreen extends StatelessWidget {
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
               ),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () async {
-                  await provider.forgetPassword(email: provider.email);
-                },
+              recognizer:
+                  TapGestureRecognizer()
+                    ..onTap = () async {
+                      await provider.forgetPassword(email: provider.email);
+                    },
             ),
           ],
         ),

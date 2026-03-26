@@ -211,8 +211,11 @@ class _StockScreenState extends State<StockScreen> {
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
-    final notificationProvider = Provider.of<AdminNotificationProvider>(context);
-    final notification = notificationProvider.adminNotificationModel?.data ?? [];
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
+    final notification =
+        notificationProvider.adminNotificationModel?.data ?? [];
     return Consumer<StockScreenProvider>(
       builder: (context, vm, child) {
         final products = vm.adminProductModel?.data ?? [];
@@ -351,16 +354,26 @@ class _StockScreenState extends State<StockScreen> {
                   child:
                       vm.isLoading
                           ? const Center(child: CircularProgressIndicator())
-                          : products.isEmpty
-                          ? Center(
-                            child: Text(
-                              "No Stocks Found",
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w500,
+                          : vm.adminProductModel?.data?.isEmpty ?? true
+                          ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.inventory,
+                                size: 48.sp,
+                                color: Colors.grey.shade400,
                               ),
-                            ),
+                              SizedBox(height: 16.h),
+                              Text(
+                                "No Stocks Found",
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.grey.shade400,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           )
                           : Builder(
                             builder: (context) {

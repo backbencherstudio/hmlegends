@@ -387,8 +387,6 @@ class LabeledInputField extends StatelessWidget {
             keyboardType: isNumeric ? TextInputType.phone : TextInputType.text,
             decoration: InputDecoration(
               hintText: placeholder,
-              filled: true,
-              fillColor: Colors.white,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15.r),
                 borderSide: BorderSide(color: Colors.grey.shade300),

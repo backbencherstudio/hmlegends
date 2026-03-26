@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import '../../../../../core/constant/app_colors.dart';
+import '../../../../../core/validator/validator.dart';
+import '../../../../widget/custom_text_form_field.dart';
 import '../../../admin_flow/view_model/auth_api/forget_password_viewmodel.dart';
 import '../../widget/auth_button.dart';
 import '../../widget/level_text.dart';
@@ -18,6 +21,7 @@ class ForgetPasswordScreen extends StatefulWidget {
 
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -55,25 +59,26 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
               SizedBox(height: 20.h),
 
               // Email Field
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RequiredLabel(labelText: 'Email'),
-                  SizedBox(height: 8.h),
-                  _buildTextField(
-                    'Your email',
-                    Icons.email_outlined,
-                    _emailController,
-                  ),
-                  SizedBox(height: 20.h),
+              Form(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RequiredLabel(labelText: 'Email'),
+                    SizedBox(height: 8.h),
+                    customTextFormField(
+                      hintText: 'Enter your email',
+                      controller: _emailController,
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      validator: emailValidator,
+                    ),
+                    SizedBox(height: 20.h),
 
-                  // Reset Button
-                  provider.isFPLoading
-                      ? const Center(
-                          child: CircularProgressIndicator(color: Colors.green),
-                        )
-                      : _resetPasswordButton(context, provider),
-                ],
+                    ///---------------- Reset Button ---------------------------
+                    _resetPasswordButton(context, provider),
+                  ],
+                ),
               ),
             ],
           ),
@@ -87,87 +92,53 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     ForgetPasswordProvider provider,
   ) {
     return AuthButton(
-      text: Text('Reset Password'),
+      text:
+          provider.isFPLoading
+              ? Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                ),
+              )
+              : Text(
+                'Reset Password',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
       color: AppColors.primaryColor,
       onPressed: () async {
         final email = _emailController.text.trim();
 
         if (email.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Please enter your email"),
-              backgroundColor: Colors.red,
-            ),
+          Utils.showToast(
+            msg: 'Please enter your email',
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
           );
           return;
         }
 
-        final success = await provider.forgetPassword(email: email);
+        final res = await provider.forgetPassword(email: email);
 
-        provider.setEmail(email);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: success ? Colors.green : Colors.red,
-            content: Text(
-              provider.errorMessage.isNotEmpty
-                  ? provider.errorMessage
-                  : success
-                  ? 'Password reset link sent successfully!'
-                  : 'Something went wrong.',
-            ),
-          ),
-        );
-
-        if (success && mounted) {
-          Navigator.pushNamed(context, RouteNames.otpVerifyScreen);
+        if (res.success) {
+          Utils.showToast(
+            msg: res.message,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+          );
+          if (context.mounted) {
+            Navigator.pushNamed(context, RouteNames.otpVerifyScreen);
+          }
+        } else {
+          Utils.showToast(
+            msg: res.message,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+          );
         }
       },
-    );
-  }
-
-  Widget _buildTextField(
-    String hint,
-    IconData icon,
-    TextEditingController controller,
-  ) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 8.h),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: AppTextStyles.hintText,
-          filled: true,
-          fillColor: AppColors.authTextFormFieldFillColor,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(
-              color: AppColors.authTextFormFieldBorderColor,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(
-              color: AppColors.authTextFormFieldBorderColor,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.r),
-            borderSide: BorderSide(
-              color: AppColors.authTextFormFieldBorderColor,
-            ),
-          ),
-          contentPadding: EdgeInsets.symmetric(
-            vertical: 12.h,
-            horizontal: 16.w,
-          ),
-          prefixIcon: Padding(
-            padding: EdgeInsets.only(left: 8.w),
-            child: Icon(icon, color: AppColors.authBodyTextColor),
-          ),
-        ),
-      ),
     );
   }
 }

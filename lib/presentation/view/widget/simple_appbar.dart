@@ -64,14 +64,10 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
                   Row(
                     spacing: 4,
                     children: [
-                      if (navigationType != NavigationType.none)
-                        GestureDetector(
-                          onTap: () => _handleNavigation(context),
-                          child: const Icon(Icons.arrow_back_ios),
-                        ),
                       Text(
                         title,
                         style: TextStyle(
+                          color: Color(0xFF1D1F2C),
                           fontWeight: FontWeight.w600,
                           fontSize: 20.sp,
                         ),

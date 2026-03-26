@@ -19,7 +19,7 @@ class AppTextStyles {
   static TextStyle hintText= TextStyle(
     fontSize: 14.sp,
     fontWeight: FontWeight.w400,
-    color: AppColors.authBodyTextColor,
+    color: Color(0xFF777980),
   );
 
   static TextStyle labelText = TextStyle(

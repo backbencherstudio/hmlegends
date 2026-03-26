@@ -11,15 +11,14 @@ class OrderResponse {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add( Data.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = {};
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -49,19 +48,19 @@ class Data {
     if (json['order_items'] != null) {
       orderItems = <OrderItems>[];
       json['order_items'].forEach((v) {
-        orderItems!.add(new OrderItems.fromJson(v));
+        orderItems!.add( OrderItems.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['total_amount'] = this.totalAmount;
-    data['total_quantity'] = this.totalQuantity;
-    data['created_at'] = this.createdAt;
-    if (this.orderItems != null) {
-      data['order_items'] = this.orderItems!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['total_amount'] = totalAmount;
+    data['total_quantity'] = totalQuantity;
+    data['created_at'] = createdAt;
+    if (orderItems != null) {
+      data['order_items'] = orderItems!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -86,12 +85,12 @@ class OrderItems {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['quantity'] = this.quantity;
-    data['price'] = this.price;
-    data['product'] = this.product;
-    data['product_image'] = this.productImage;
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['quantity'] = quantity;
+    data['price'] = price;
+    data['product'] = product;
+    data['product_image'] = productImage;
     return data;
   }
 }

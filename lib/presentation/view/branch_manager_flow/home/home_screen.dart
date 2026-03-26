@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:hmlegends/presentation/view/branch_manager_flow/orders/viewmodel/get_all_product_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -121,9 +122,23 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
                                               .id,
                                     );
                                     if (res.success) {
-                                      setState(() {
-                                        _currentBar = "second";
-                                      });
+                                      Utils.showToast(
+                                        msg: res.message,
+                                        backgroundColor: Colors.green,
+                                        textColor: Colors.white,
+                                      );
+                                      if (context.mounted) {
+                                        Navigator.pushNamed(
+                                          context,
+                                          RouteNames.ordersScreen,
+                                        );
+                                      }
+                                    } else {
+                                      Utils.showToast(
+                                        msg: res.message,
+                                        backgroundColor: Colors.red,
+                                        textColor: Colors.white,
+                                      );
                                     }
                                   },
                           child: CustomFeatureBox(
@@ -155,7 +170,7 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
                           onTap: () {
                             Navigator.pushNamed(
                               context,
-                              RouteNames.ordersScreen,
+                              RouteNames.myOrders,
                             );
                           },
                           child: CustomFeatureBox(

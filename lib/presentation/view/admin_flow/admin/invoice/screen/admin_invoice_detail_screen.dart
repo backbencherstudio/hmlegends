@@ -69,7 +69,7 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
       backgroundColor: AppColors.bgColor,
       appBar: CustomAppBarTwo(
         title: "Invoice",
-        profileImage: '${ApiEndpoints.baseUrl}/public/storage/avatar/${data?.avatar}',
+        profileImage: '${data?.avatar}',
         notificationCount: notification?.length ?? 0,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),

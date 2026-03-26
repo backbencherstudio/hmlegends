@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/validator/validator.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/view_model/manage_branch_provider.dart';
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
@@ -9,6 +8,8 @@ import 'package:provider/provider.dart';
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../../../core/utlis/utils.dart';
 import '../../../../widget/custom_app_bar_2.dart';
+import '../../../view_model/notification_admin/admin_notification_provider.dart';
+import '../../../view_model/profile/change_pass_provider.dart';
 import '../widget/build_stock_status_drop_down.dart';
 
 class AddNewBranchesScreen extends StatefulWidget {
@@ -43,7 +44,12 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ManageBranchProvider>();
-
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data;
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
+    final notification = notificationProvider.adminNotificationModel?.data;
     Future<void> submit() async {
       if (_formKey.currentState!.validate()) {
         /// ------ Call the provider method to add a new branch --
@@ -86,11 +92,11 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
       backgroundColor: Colors.white,
       appBar: CustomAppBarTwo(
         title: 'Add New Branch',
-        notificationCount: 4,
+        notificationCount: notification?.length ?? 0,
         colorMain: Colors.white,
         colorSpace: Colors.white,
         onBackTap: () => Navigator.pop(context),
-        profileImage: AssetPaths.personIcon,
+        profileImage: '${data?.avatar}',
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),

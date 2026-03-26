@@ -88,14 +88,6 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
               value: address,
             ),
 
-            Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
-
-            _ProfileActionTile(
-              icon: Icons.logout,
-              title: 'Log out',
-              isDestructive: true,
-              onTap: () => logoutShowSubmitDialog(context),
-            ),
 
             Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
 
@@ -121,6 +113,14 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
                     context,
                     RouteNames.headOfficeChangeInfoScreen,
                   ),
+            ),
+            Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
+
+            _ProfileActionTile(
+              icon: Icons.logout,
+              title: 'Log out',
+              isDestructive: true,
+              onTap: () => logoutShowSubmitDialog(context),
             ),
           ],
         ),

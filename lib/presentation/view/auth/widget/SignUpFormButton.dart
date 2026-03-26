@@ -39,7 +39,7 @@ class SignUpFormButton extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                color: AppColors.authBodyTextColor,
+                color: Color(0xff404148),
                 fontWeight: FontWeight.w400,
                 fontSize: 16.sp,
               ),

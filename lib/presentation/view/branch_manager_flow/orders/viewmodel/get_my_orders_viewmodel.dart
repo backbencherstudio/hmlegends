@@ -7,6 +7,13 @@ import '../data/get_my_orders_model.dart';
 
 class GetOrdersViewModel extends ChangeNotifier {
   bool isLoading = false;
+  String _query = '';
+  String get query => _query;
+
+  void setQuery(String value) {
+    _query = value;
+    notifyListeners();
+  }
   OrderResponse? _orderResponse;
 
   List<Data> get orders => _orderResponse?.data ?? [];

@@ -22,16 +22,14 @@ class OrderSummaryScreen extends StatefulWidget {
 }
 
 class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
-
-
-
   @override
   void initState() {
-   WidgetsBinding.instance.addPostFrameCallback((_){
-     context.read<OrderScreenProvider>().getAdminOrder();
-   });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OrderScreenProvider>().getAdminOrder();
+    });
     super.initState();
   }
+
   List<Orders> _getFilteredStats(OrderScreenProvider provider) {
     final allOrders = provider.orderAdminModel?.data?.orders ?? [];
     switch (provider.selectedFilterOrder) {
@@ -246,6 +244,29 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                           width: 20.w,
                           height: 20.h,
                           child: CircularProgressIndicator(),
+                        ),
+                      )
+                      : provider.orderAdminModel?.data?.orders?.isEmpty ?? true
+                      ? Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.shopping_bag_outlined,
+                              size: 48.sp,
+                              color: Colors.grey.shade400,
+                            ),
+                            SizedBox(height: 16.h),
+                            Text(
+                              "No Orders Found",
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: Colors.grey.shade400,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       )
                       : ListView.builder(
