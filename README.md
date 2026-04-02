@@ -1,6 +1,6 @@
-# HM Legends 🛡️
+# Foods LTD
 
-HM Legends is a high-performance, feature-rich mobile application developed with Flutter. The app provides a seamless user experience for community engagement and resource management, leveraging modern architecture and state-of-the-art Flutter development practices.
+Foods LTD is a high-performance, feature-rich mobile application developed with Flutter. The app provides a seamless user experience for community engagement and resource management, leveraging modern architecture and state-of-the-art Flutter development practices.
 
 ##  Project Overview
 Food LTD App is designed to be a scalable, maintainable platform. It integrates complex features such as real-time notifications, secure user authentication, and dynamic content feeds, all while maintaining a buttery-smooth 60 FPS UI.
