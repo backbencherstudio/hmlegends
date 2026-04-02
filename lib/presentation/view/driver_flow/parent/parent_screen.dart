@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/profile/screen/head_office_profile_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
@@ -112,7 +113,7 @@ class DriverBranchParentScreen extends StatelessWidget {
     final List<Widget> pages = [
       DriverScreen(),
       TrackingScreen(),
-      DriverProfile(),
+      HeadOfficeProfileScreen(),
     ];
 
     return Consumer<BottomNavViewModel>(

@@ -1,11 +1,13 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/presentation/view/widget/simple_appbar.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../../../../core/constant/asset_path.dart';
 import '../../../../../../../core/route/route_names.dart';
+import '../../../../../admin_flow/admin/widget/search_filter.dart';
+import '../../../../../admin_flow/view_model/notification_admin/admin_notification_provider.dart';
+import '../../../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../viewmodel/get_my_orders_viewmodel.dart';
 import '../../../data/get_my_orders_model.dart';
 
@@ -54,59 +56,62 @@ class _MyOrdersState extends State<MyOrders> {
     return groupedOrders.keys.toList();
   }
 
+  Timer? debouncer;
+
+  void debounce(
+    VoidCallback callback, {
+    Duration duration = const Duration(milliseconds: 1000),
+  }) {
+    if (debouncer != null) {
+      debouncer!.cancel();
+    }
+    debouncer = Timer(duration, callback);
+  }
+
+  List<OrderItems> _applyQueryFilter(List<OrderItems> orders) {
+    if (context.read<GetOrdersViewModel>().query.trim().isEmpty) {
+      return orders;
+    }
+    final q = context.read<GetOrdersViewModel>().query.trim().toLowerCase();
+    return orders.where((order) {
+      final product = (order.product ?? '').toLowerCase();
+      return product.contains(q);
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data;
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
+    final notification = notificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
       appBar: SimpleAppbar(
         title: 'My Orders',
-        profileImage: AssetPaths.personIcon,
-        notificationCount: 4,
-        navigationType: NavigationType.pushReplacementNamed,
+        profileImage: '${data?.avatar}',
+        notificationCount: notification?.length ?? 0,
         navigationPath: RouteNames.branchParentScreen,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
           children: [
-            /// 🔍 Search Bar
-            Container(
-              height: 45.h,
-              decoration: BoxDecoration(
-                color: const Color(0xffEFEFEF),
-                borderRadius: BorderRadius.circular(25.r),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: TextField(
-                controller: widget.controller,
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  hintStyle: TextStyle(fontSize: 16.sp, color: Colors.grey),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 10.h),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Colors.grey.shade600,
-                    size: 22.w,
-                  ),
-                  suffixIcon: Icon(
-                    Icons.calendar_today_outlined,
-                    color: Colors.grey.shade600,
-                    size: 22.w,
-                  ),
-                ),
-              ),
+            /// ------------------------- Search Bar ---------------------------
+            SearchField(
+              hintText: 'Search',
+              text: context.read<GetOrdersViewModel>().query,
+              onChanged: (String value) {
+                if (!mounted) return;
+                context.read<GetOrdersViewModel>().setQuery(value);
+              },
             ),
 
             SizedBox(height: 20.h),
 
-            /// 🔽 Filter Header
+            /// -------------------- Filter Header -----------------------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -159,7 +164,7 @@ class _MyOrdersState extends State<MyOrders> {
 
             Divider(height: 20.h),
 
-            /// 📦 Orders List
+            /// -------------------  Orders List -------------------------------
             Expanded(
               child: Consumer<GetOrdersViewModel>(
                 builder: (context, vm, child) {
@@ -180,7 +185,7 @@ class _MyOrdersState extends State<MyOrders> {
 
                   return ListView.separated(
                     itemCount: dates.length,
-                    separatorBuilder: (_, __) => Divider(thickness: 0.8.h),
+                    separatorBuilder: (_, __) => Divider(thickness: 0.4.h),
                     itemBuilder: (context, index) {
                       final date = dates[index];
                       final isExpanded = expandedDate == date;

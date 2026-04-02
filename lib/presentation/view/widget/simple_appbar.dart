@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 
+import '../../../core/constant/api_endpoint.dart';
+
 /// Defines the type of navigation to perform when back button is tapped
 enum NavigationType {
   pop,
@@ -62,14 +64,10 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
                   Row(
                     spacing: 4,
                     children: [
-                      if (navigationType != NavigationType.none)
-                        GestureDetector(
-                          onTap: () => _handleNavigation(context),
-                          child: const Icon(Icons.arrow_back_ios),
-                        ),
                       Text(
                         title,
                         style: TextStyle(
+                          color: Color(0xFF1D1F2C),
                           fontWeight: FontWeight.w600,
                           fontSize: 20.sp,
                         ),
@@ -124,7 +122,7 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
                         },
                         child: CircleAvatar(
                           radius: 18.r,
-                          backgroundImage: AssetImage(profileImage),
+                          backgroundImage: NetworkImage("${ApiEndpoints.baseUrl}/storage/avatar/$profileImage"),
                         ),
                       ),
                     ],

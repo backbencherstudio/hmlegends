@@ -228,7 +228,6 @@ class _OrderSummaryViewSuccessfulScreenState
                           .expand(
                             (order) => (order.orderItems ?? []).map(
                               (item) => {
-                                "name": item.productName,
                                 "qty": item.quantity,
                                 "image": item.productImage,
                                 "date": order.createdAt,

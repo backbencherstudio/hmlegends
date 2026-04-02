@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:hmlegends/core/network/network_service.dart';
+import 'package:hmlegends/data/model/response_model.dart';
 import '../../../../../core/constant/api_endpoint.dart';
 import '../../../../../core/services/api_service.dart';
 
 class ForgetPasswordProvider extends ChangeNotifier {
   bool _isFPLoading = false;
+
   bool get isFPLoading => _isFPLoading;
 
   String _errorMessage = '';
+
   String get errorMessage => _errorMessage;
 
   String _otpToken = '';
+
   String get otpToken => _otpToken;
 
   void setOtpToken(String token) {
@@ -18,6 +23,7 @@ class ForgetPasswordProvider extends ChangeNotifier {
   }
 
   String _email = '';
+
   String get email => _email;
 
   void setEmail(String email) {
@@ -29,7 +35,7 @@ class ForgetPasswordProvider extends ChangeNotifier {
 
   final ApiService _apiService = ApiService();
 
-  Future<bool> forgetPassword({required String email}) async {
+  Future<ResponseModel> forgetPassword({required String email}) async {
     _isFPLoading = true;
     notifyListeners();
 
@@ -38,28 +44,25 @@ class ForgetPasswordProvider extends ChangeNotifier {
         ApiEndpoints.forgetPassword,
         data: {"email": email},
       );
-      debugPrint("Response status: ${response.statusCode}");
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        _isFPLoading = false;
-        _errorMessage = response.data['message'];
+      if (response['success']) {
         notifyListeners();
-        return response.data['success'];
+        return ResponseModel(success: true, message: response['message']);
       } else {
-        _isFPLoading = false;
-        _errorMessage = response.data['message'];
         notifyListeners();
-        return false;
+        return ResponseModel(success: false, message: response['message']);
       }
     } catch (error) {
-      print('Error during forget password: $error');
+      logger.e('Error during forget password: $error');
+      notifyListeners();
+      return ResponseModel(success: false, message: '$error');
+    } finally {
       _isFPLoading = false;
       notifyListeners();
-      return false;
     }
   }
 
-  Future<bool> otpVerify({required String otp}) async {
+  Future<ResponseModel> otpVerify({required String otp}) async {
     _isFPLoading = true;
     notifyListeners();
 
@@ -68,24 +71,18 @@ class ForgetPasswordProvider extends ChangeNotifier {
         ApiEndpoints.verifyOtpOnly,
         data: {"email": _email, "token": otp},
       );
-      debugPrint("Response status: ${response.statusCode}");
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        _isFPLoading = false;
-        _errorMessage = response.data['message'];
+      if (response['success']) {
         notifyListeners();
-        return response.data['success'];
+        return ResponseModel(success: true, message: response['message']);
       } else {
-        _isFPLoading = false;
-        _errorMessage = response.data['message'];
         notifyListeners();
-        return false;
+        return ResponseModel(success: false, message: response['message']);
       }
     } catch (error) {
-      print('Error during forget password: $error');
-      _isFPLoading = false;
+      logger.e('Error during forget password: $error');
       notifyListeners();
-      return false;
+      return ResponseModel(success: false, message: '$error');
     }
   }
 

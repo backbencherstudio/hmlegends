@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -210,6 +211,11 @@ class _StockScreenState extends State<StockScreen> {
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
+    final notification =
+        notificationProvider.adminNotificationModel?.data ?? [];
     return Consumer<StockScreenProvider>(
       builder: (context, vm, child) {
         final products = vm.adminProductModel?.data ?? [];
@@ -220,7 +226,7 @@ class _StockScreenState extends State<StockScreen> {
 
           appBar: CustomAppBar(
             profileImage: data?.avatar,
-            notificationCount: 4,
+            notificationCount: notification.length ?? 0,
           ),
           body: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
@@ -348,16 +354,26 @@ class _StockScreenState extends State<StockScreen> {
                   child:
                       vm.isLoading
                           ? const Center(child: CircularProgressIndicator())
-                          : products.isEmpty
-                          ? Center(
-                            child: Text(
-                              "No Stocks Found",
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w500,
+                          : vm.adminProductModel?.data?.isEmpty ?? true
+                          ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.inventory,
+                                size: 48.sp,
+                                color: Colors.grey.shade400,
                               ),
-                            ),
+                              SizedBox(height: 16.h),
+                              Text(
+                                "No Stocks Found",
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.grey.shade400,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           )
                           : Builder(
                             builder: (context) {
@@ -389,10 +405,6 @@ class _StockScreenState extends State<StockScreen> {
                                         padding: EdgeInsets.all(12.w),
                                         decoration: BoxDecoration(
                                           color: Colors.white,
-                                          border: Border.all(
-                                            color: Colors.grey.shade300,
-                                            width: 1.4,
-                                          ),
                                           borderRadius: BorderRadius.circular(
                                             12.r,
                                           ),

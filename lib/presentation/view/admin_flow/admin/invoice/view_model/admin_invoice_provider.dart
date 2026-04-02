@@ -42,9 +42,25 @@ class AdminInvoiceProvider extends ChangeNotifier {
 
   final logger = Logger();
 
+  String _selectedPeriod = 'Today';
+  String get selectedPeriod => _selectedPeriod;
+
+  void setSelectedPeriod(String value) {
+    _selectedPeriod = value;
+    notifyListeners();
+  }
+
+  String _query = '';
+  String get query => _query;
+
+  void setQuery(String value) {
+    _query = value;
+    notifyListeners();
+  }
+
+
   /// ------------------------ Get All Invoices --------------------------------
   Future<void> getAllInvoice() async {
-
     _errorMessage = null;
 
     try {
@@ -65,7 +81,7 @@ class AdminInvoiceProvider extends ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonData = jsonDecode(response.body);
         _allInvoiceModel = AllInvoiceModel.fromJson(jsonData);
-
+        notifyListeners();
         final invoices = _allInvoiceModel?.data?.invoices ?? [];
         logger.i("Total invoices fetched: ${invoices.length}");
       } else {
@@ -73,10 +89,12 @@ class AdminInvoiceProvider extends ChangeNotifier {
             "Failed to fetch invoices • Status: ${response.statusCode}";
         logger.e(_errorMessage);
         logger.e("Server Message: ${response.body}");
+        notifyListeners();
       }
     } catch (e) {
       _errorMessage = "Exception occurred: $e";
       logger.e(_errorMessage);
+      notifyListeners();
     }
   }
 
@@ -109,14 +127,17 @@ class AdminInvoiceProvider extends ChangeNotifier {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _invoiceDetailModel = InvoiceDetailModel.fromJson(decodeData);
+        notifyListeners();
         return ResponseModel(success: true, message: decodeData['message']);
       } else {
         logger.e("API returned error: $_errorMessage");
+        notifyListeners();
         return ResponseModel(success: false, message: decodeData['message']);
       }
     } catch (e) {
       logger.e("Error fetching invoice detail: $e");
       _errorMessage = "Network error. Please check your connection.";
+      notifyListeners();
       return ResponseModel(success: false, message: '$e');
     } finally {
       _setLoading(false);

@@ -15,34 +15,44 @@ class ManageBranchProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// --------------------- Text Field Controllers -----------------------------
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final addressController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
 
-  /// ------------------- dispose Controller -----------------------------------
+  // Image selection variables
+  File? _selectedImageFile;
+  String? _imageFormat;
+  String? _imageSize;
 
-  @override
-  void dispose() {
-    super.dispose();
-    nameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    addressController.dispose();
+  File? get selectedImageFile => _selectedImageFile;
+  String? get imageFormat => _imageFormat;
+  String? get imageSize => _imageSize;
+
+  void setSelectedImageFile(File? value) {
+    _selectedImageFile = value;
+    notifyListeners();
   }
+
+  void setImageFormat(String? value) {
+    _imageFormat = value;
+    notifyListeners();
+  }
+
+  void setImageSize(String? value) {
+    _imageSize = value;
+    notifyListeners();
+  }
+
 
   ///-------------------- Dropdown values --------------------------------------
   String? selectedProduct;
-  String? selectedStockStatus;
+  String? _selectedStockStatus;
+  String? get selectedStockStatus => _selectedStockStatus;
+
 
   /// -------------------- Dropdown options ------------------------------------
   final List<String> stockStatusOptions = ['ACTIVE', 'LOCKED'];
 
   /// -------------------- Toggle Stock Status --------------------------------
   void toggleStockStatus(String? newValue) {
-    selectedStockStatus = newValue;
+    _selectedStockStatus = newValue;
     notifyListeners();
   }
 
@@ -70,6 +80,16 @@ class ManageBranchProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// ---------------------------- Query ---------------------------------------
+  String _query = '';
+
+  String get query => _query;
+
+  void setQuery(String value) {
+    _query = value;
+    notifyListeners();
+  }
+
   /// ---------------------------- Get All Branch ------------------------------
 
   Future<void> allBranch() async {
@@ -89,7 +109,7 @@ class ManageBranchProvider extends ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
         _manageBranchModel = ManageBranchModel.fromJson(data);
-
+        notifyListeners();
         debugPrint(
           "The response model data is ${_manageBranchModel?.data?.managers![0].address}",
         );
@@ -98,6 +118,7 @@ class ManageBranchProvider extends ChangeNotifier {
       }
     } catch (error) {
       debugPrint("Error: $error");
+      notifyListeners();
     }
   }
 
@@ -168,17 +189,20 @@ class ManageBranchProvider extends ChangeNotifier {
         final decodeData = jsonDecode(response.body);
         logger.d("The success message ${decodeData['message']}");
         _singleBranchModel = SingleBranchModel.fromJson(decodeData);
+        notifyListeners();
       } else {
         logger.d("The error message ${response.statusCode}");
+        notifyListeners();
       }
     } catch (error) {
       logger.i("The error message $error");
+      notifyListeners();
     }
   }
 
   /// ---------------------------- Update Branch ------------------------------
   Future<dynamic> updateBranch({
-    required String userId,
+    required String managerId,
     required String name,
     required String address,
     required String status,
@@ -187,7 +211,7 @@ class ManageBranchProvider extends ChangeNotifier {
     try {
       final token = await _tokenStorage.getToken();
 
-      var url = Uri.parse(ApiEndpoints.updateBranch(userId));
+      var url = Uri.parse(ApiEndpoints.updateBranch(managerId));
       final body = jsonEncode({
         "name": name,
         "address": address,
@@ -211,6 +235,7 @@ class ManageBranchProvider extends ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final message = decodeData['message'];
         logger.d("The success message ${decodeData['message']}");
+        notifyListeners();
         return {"success": true, "message": message};
       } else {
         final message = decodeData['message'];

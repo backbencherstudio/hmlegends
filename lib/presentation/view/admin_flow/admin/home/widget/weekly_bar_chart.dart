@@ -23,15 +23,25 @@ class WeeklyBarChart extends StatelessWidget {
           );
         }
 
-        if (apiData == null) {
+        if (provider.getLastSevenDaysOrdersModel?.data == null) {
           return Center(
-            child: Text(
-              "No Weekly Orders Found",
-              style: TextStyle(
-                fontSize: 16.sp,
-                color: Colors.black54,
-                fontWeight: FontWeight.w500,
-              ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 48.sp,
+                  color: Colors.grey.shade400,
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  "No Weekly Orders Found",
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.grey.shade400,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           );
         }
@@ -45,7 +55,7 @@ class WeeklyBarChart extends StatelessWidget {
         /// ----------------- Convert API Data To Map -------------------------
         final Map<String, double> apiDataMap = {};
 
-        for (var item in apiData) {
+        for (var item in apiData!) {
           if (item.plainDate != null && item.totalQuantity != null) {
             final parsedDate = DateTime.tryParse(item.plainDate!);
             if (parsedDate != null) {

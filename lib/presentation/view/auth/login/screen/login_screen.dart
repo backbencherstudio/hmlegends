@@ -72,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(height: 5.h),
                           customTextFormField(
                             hintText: 'Enter your email',
+                            textInputAction: TextInputAction.next,
                             controller: viewModel.emailController,
                             prefixIcon: const Icon(Icons.email_outlined),
                             validator: emailValidator,
@@ -81,6 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(height: 5.h),
                           customTextFormField(
                             hintText: 'Enter your password',
+                            textInputAction: TextInputAction.done,
                             controller: viewModel.passwordController,
                             prefixIcon: const Icon(Icons.lock_outline),
                             isPassword: !viewModel.passwordVisible,

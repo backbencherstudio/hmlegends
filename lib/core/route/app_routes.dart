@@ -66,7 +66,7 @@ class AppRoutes {
     RouteNames.profileScreen: (context) => ProfileScreen(),
     RouteNames.changePassword: (context) => ChangePassword(),
     RouteNames.changeInfo: (context) => ChangeInfo(),
-    RouteNames.notificationScreen: (context) => NotificationScreen(),
+    // RouteNames.notificationScreen: (context) => NotificationScreen(),
     RouteNames.driverScreen: (context) => DriverScreen(),
     RouteNames.driverBottomNavBar: (context) => DriverBottomNavBar(),
     RouteNames.driverBranchParentScreen:
@@ -88,7 +88,8 @@ class AppRoutes {
     RouteNames.manageBranchesScreen: (context) => ManageBranchesScreen(),
     RouteNames.addNewBranchesScreen: (context) => AddNewBranchesScreen(),
     RouteNames.invoiceStatusScreen: (context) => InvoiceStatusScreen(),
-    RouteNames.adminInvoiceDetailScreen: (context) => AdminInvoiceDetailScreen(),
+    RouteNames.adminInvoiceDetailScreen:
+        (context) => AdminInvoiceDetailScreen(),
     RouteNames.headOfficeHomeScreen: ((context) => HeadOfficeHomeScreen()),
 
     RouteNames.headOfficeProfileScreen: (context) => HeadOfficeProfileScreen(),
@@ -97,9 +98,16 @@ class AppRoutes {
     RouteNames.headOfficeChangeInfoScreen:
         (context) => HeadOfficeChangeInfoScreen(),
     RouteNames.manageDeliveryScreen: (context) => ManageDeliveryScreen(),
-    RouteNames.manageBranchesToOrderSummaryScreen:
-        (context) => ManageBranchesToOrderSummaryScreen(),
-    RouteNames.editBranchScreen: (context) => EditBranchScreen(),
+    RouteNames.manageBranchesToOrderSummaryScreen: (context) {
+      final managerId = ModalRoute.of(context)!.settings.arguments as String;
+
+      return ManageBranchesToOrderSummaryScreen(managerId: managerId);
+    },
+    RouteNames.editBranchScreen: (context) {
+      final managerId = ModalRoute.of(context)!.settings.arguments as String;
+
+      return EditBranchScreen(managerId: managerId);
+    },
     RouteNames.changeInfoDriver: (context) => ChangeInfoDriver(),
     RouteNames.adminNotificationScreen: (context) => AdminNotificationScreen(),
     RouteNames.pendingUserList: (context) => PendingUserList(),

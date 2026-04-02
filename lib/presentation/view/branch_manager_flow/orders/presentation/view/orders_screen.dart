@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../../widget/custom_app_bar.dart';
@@ -16,12 +19,15 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
-  final Map<String, int> _selectedQuantities = {};
+  @override
+  void initState() {
+    Future.microtask(() {
+      context.read<GetProductsViewmodel>().fetchProducts();
+    });
+    super.initState();
+  }
 
   final Map<String, ValueNotifier<int>> _quantityNotifiers = {};
-
-  int get totalSelectedItems =>
-      _selectedQuantities.values.fold(0, (sum, qty) => sum + qty);
 
   @override
   void dispose() {
@@ -31,6 +37,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
     super.dispose();
   }
 
+  Timer? debouncer;
+
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ChangePasswordProvider>(
@@ -38,26 +46,26 @@ class _OrdersScreenState extends State<OrdersScreen> {
       listen: false,
     );
     final data = profileProvider.adminInfoModel?.data;
-
-    final getProducts = Provider.of<GetProductsViewmodel>(
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
-      listen: false,
     );
-    return FutureBuilder(
-      future: getProducts.fetchProducts(),
-      builder: (context, snapshot) {
-        return Scaffold(
-          backgroundColor: const Color(0xffFFF6F7),
-          appBar: CustomAppBar(
-            profileImage: data?.avatar,
-            notificationCount: 4,
-          ),
-          body: Padding(
-            padding: EdgeInsets.all(16.w),
-            child: Column(
-              children: [
-                /// ------------------ Total Item Summary --------------------------
-                Container(
+    final notification = notificationProvider.adminNotificationModel?.data;
+
+    return Scaffold(
+      backgroundColor: const Color(0xffFFF6F7),
+      appBar: CustomAppBar(
+        profileImage: data?.avatar,
+        notificationCount: notification?.length ?? 0,
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          children: [
+            /// ------------------ Total Item Summary --------------------------
+            Consumer<GetProductsViewmodel>(
+              builder: (context, provider, child) {
+                final total = provider.totalSelectedItems;
+                return Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: 16.w,
                     vertical: 12.h,
@@ -77,7 +85,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Total items Selected: $totalSelectedItems',
+                        'Total items Selected: $total',
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
@@ -85,12 +93,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       ),
                       ElevatedButton(
                         onPressed:
-                            totalSelectedItems > 0
-                                ? () => _showSubmitDialog(context)
-                                : null,
+                            total > 0 ? () => _showSubmitDialog(context) : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              totalSelectedItems > 0
+                              total > 0
                                   ? const Color(0xffE20613)
                                   : Colors.grey.shade100,
                           foregroundColor: Colors.white,
@@ -108,135 +114,136 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       ),
                     ],
                   ),
-                ),
+                );
+              },
+            ),
 
-                SizedBox(height: 20.h),
+            SizedBox(height: 20.h),
 
-                /// ----------------------- Search bar -----------------------------
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 12.h,
-                  ),
-                  height: 45.h,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffEFEFEF),
-                    borderRadius: BorderRadius.circular(25.r),
-                  ),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search',
-                      hintStyle: TextStyle(
-                        color: Color(0xFFA5A5AB),
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      border: InputBorder.none,
-                      prefixIcon: Icon(
-                        Icons.search,
-                        size: 24.sp,
-                        color: Color(0xFF777980),
-                      ),
-                    ),
-                  ),
-                ),
+            /// ----------------------- Search bar -----------------------------
+            SearchField(
+              hintText: 'Search by product name',
+              text: '',
+              onChanged: (value) {},
+            ),
 
-                SizedBox(height: 20.h),
+            SizedBox(height: 20.h),
 
-                /// ------------------- Product List -------------------------------
-                Expanded(
-                  child: Consumer<GetProductsViewmodel>(
-                    builder: (context, vm, child) {
-                      // if (vm.isLoading && vm.products.isEmpty) {
-                      //   return const Center(
-                      //     child: CircularProgressIndicator(
-                      //       valueColor: AlwaysStoppedAnimation(
-                      //         Colors.blueAccent,
-                      //       ),
-                      //       strokeWidth: 3,
-                      //     ),
-                      //   );
-                      // }
+            /// ------------------- Product List -------------------------------
+            Expanded(
+              child: Consumer<GetProductsViewmodel>(
+                builder: (context, vm, child) {
+                  // if (vm.isLoading && vm.products.isEmpty) {
+                  //   return const Center(
+                  //     child: CircularProgressIndicator(
+                  //       valueColor: AlwaysStoppedAnimation(
+                  //         Colors.blueAccent,
+                  //       ),
+                  //       strokeWidth: 3,
+                  //     ),
+                  //   );
+                  // }
 
-                      if (vm.errorMessage.isNotEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.error_outline,
-                                size: 60,
-                                color: Colors.red,
-                              ),
-                              SizedBox(height: 16.h),
-                              Text(
-                                vm.errorMessage,
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              SizedBox(height: 10.h),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25.r),
-                                  ),
-                                ),
-                                onPressed: () => vm.fetchProducts(),
-                                child: Text("Retry"),
-                              ),
-                            ],
+                  if (vm.errorMessage.isNotEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 48.sp,
+                            color: Colors.red,
                           ),
-                        );
-                      }
-
-                      if (vm.products.isEmpty) {
-                        return const Center(
-                          child: Column(
-                            children: [
-                              // Icon(Icons.prod)
-                              Text("No products available"),
-                            ],
+                          SizedBox(height: 16.h),
+                          Text(
+                            vm.errorMessage,
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        );
-                      }
+                          SizedBox(height: 10.h),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25.r),
+                              ),
+                            ),
+                            onPressed: () => vm.fetchProducts(),
+                            child: Text(
+                              "Retry",
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
 
+                  if (vm.products.isEmpty) {
+                    return Center(
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.shopping_bag_outlined,
+                            size: 48.sp,
+                            color: Colors.grey.shade400,
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            "No products available",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.grey.shade400,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return Consumer<GetProductsViewmodel>(
+                    builder: (context, selectProvider, child) {
                       return ListView.builder(
                         itemCount: vm.products.length,
                         itemBuilder: (context, index) {
                           final product = vm.products[index];
-                          final qty = _selectedQuantities[product.id] ?? 0;
+                          final qty = selectProvider.getQuantity(product.id);
 
                           return _buildProductCard(product, qty, (newQty) {
                             if (newQty > 0) {
-                              _selectedQuantities[product.id] = newQty;
-                              context.read<OrderViewmodel>().addProduct(
-                                ProductSelectModel(
-                                  productId: product.id,
-                                  productQty: newQty.toString(),
-                                ),
-                              );
-                            } else {
-                              _selectedQuantities.remove(product.id);
-                              context.read<OrderViewmodel>().removeProduct(
-                                product.id,
-                              );
+                              selectProvider.updateQuantity(product.id, newQty);
+                              final orderVM = context.read<OrderViewmodel>();
+                              if (newQty > 0) {
+                                orderVM.addProduct(
+                                  ProductSelectModel(
+                                    productId: product.id,
+                                    productQty: newQty.toString(),
+                                  ),
+                                );
+                              } else {
+                                orderVM.removeProduct(product.id);
+                              }
                             }
                           });
                         },
                       );
                     },
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 
@@ -446,7 +453,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             ),
                           ),
                           child: Text(
-                            quantityNotifier.value > 0 ? 'Selected' : 'Confirm',
+                            isSelected ? 'Confirm' : '',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 14.sp,

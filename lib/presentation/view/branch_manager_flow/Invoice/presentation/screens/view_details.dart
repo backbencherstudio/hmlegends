@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../../../../core/utlis/utils.dart';
@@ -21,11 +22,13 @@ class ViewDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
+    final notificationProvider = Provider.of<AdminNotificationProvider>(context);
+    final notification = notificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
       appBar: SimpleAppbar(
-        profileImage: data?.avatar ?? AssetPaths.personIcon,
-        notificationCount: 4,
+        profileImage: data?.avatar ?? '',
+        notificationCount: notification?.length ?? 0,
         title: 'Invoice',
         navigationType: NavigationType.pop,
       ),

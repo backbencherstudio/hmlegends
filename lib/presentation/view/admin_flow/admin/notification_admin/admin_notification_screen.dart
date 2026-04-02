@@ -36,6 +36,13 @@ class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
       appBar: AppBar(
         surfaceTintColor: Color(0xffFFF6F7),
         elevation: 0,
+        automaticallyImplyLeading: false,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(Icons.arrow_back_ios, color: Color(0xFF1D1F2C)),
+        ),
         title: Text(
           "Admin Notification",
           style: TextStyle(
@@ -89,7 +96,7 @@ class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
                           SizedBox(height: 8.h),
                           Text(
                             formatTimestamp(n.createdAt),
-                            style:  TextStyle(
+                            style: TextStyle(
                               fontSize: 12.sp,
                               color: Colors.grey,
                             ),

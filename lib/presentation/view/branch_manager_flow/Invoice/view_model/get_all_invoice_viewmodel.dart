@@ -17,6 +17,7 @@ class GetAllInvoiceProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
 
   String _selectedPeriod = 'Today';
+
   String get selectedPeriod => _selectedPeriod;
 
   void updatedPeriod(String value) {
@@ -24,6 +25,13 @@ class GetAllInvoiceProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  String _query = '';
+  String get query => _query;
+
+  void setQuery(String value) {
+    _query = value;
+    notifyListeners();
+  }
   /// --------------- Fetch All Invoices ---------------------------------------
   Future<bool> fetchAllInvoices() async {
     try {
@@ -64,17 +72,16 @@ class GetAllInvoiceProvider extends ChangeNotifier {
             );
           }
 
-
+          notifyListeners();
           return true;
         } else {
           _errorMessage = jsonResponse['message'] ?? 'Server error';
           debugPrint("API Error: $_errorMessage");
-
+          notifyListeners();
         }
       } else {
         _errorMessage = 'Invalid response format';
         debugPrint("Error: Invalid response format");
-
       }
     } on DioException catch (e) {
       String msg = 'Network error';
@@ -89,11 +96,10 @@ class GetAllInvoiceProvider extends ChangeNotifier {
       }
       _errorMessage = msg;
       debugPrint("Dio Error: $msg");
-
     } catch (e) {
       _errorMessage = 'Unexpected error: $e';
       debugPrint("Unexpected Error: $e");
-
+      notifyListeners();
     }
     return false;
   }

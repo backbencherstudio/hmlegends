@@ -5,6 +5,8 @@ import 'package:hmlegends/presentation/view/driver_flow/model_view/driver_profil
 import 'package:hmlegends/presentation/view/driver_flow/tracking/tracking_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../core/route/route_names.dart';
+import '../admin_flow/view_model/notification_admin/admin_notification_provider.dart';
+import '../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../widget/custom_app_bar.dart';
 import 'model_view/delivery_provideer_Admin.dart';
 
@@ -30,66 +32,66 @@ class _DriverScreenState extends State<DriverScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final profileProvider = Provider.of<DriverProfileScreenProvider>(context);
-    final data = profileProvider.checkMeModelDriver?.data;
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      builder: (context, child) {
-        return Scaffold(
-          appBar: CustomAppBar(
-            profileImage: data?.avatar,
-            notificationCount: 4,
-          ),
+    final provider = Provider.of<ChangePasswordProvider>(context);
 
-          body: Stack(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/background.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+    final data = provider.adminInfoModel?.data;
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
+
+    final notification = notificationProvider.adminNotificationModel?.data;
+    return Scaffold(
+      appBar: CustomAppBar(
+        profileImage: data?.avatar,
+        notificationCount: notification?.length ?? 0,
+      ),
+
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/background.png'),
+                fit: BoxFit.cover,
               ),
-              Padding(
-                padding: EdgeInsets.all(20.0.w),
-                child: Consumer<DeliveryProviderAdmin>(
-                  builder: (context, provider, child) {
-                    final deliveries =
-                        provider.allDeliveryModelDriver?.data ?? [];
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(20.0.w),
+            child: Consumer<DeliveryProviderAdmin>(
+              builder: (context, provider, child) {
+                final deliveries = provider.allDeliveryModelDriver?.data ?? [];
 
-                    if (provider.isLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                    if (deliveries.isEmpty) {
-                      return const Center(child: Text("No deliveries found"));
-                    }
+                if (deliveries.isEmpty) {
+                  return const Center(child: Text("No deliveries found"));
+                }
 
-                    return ListView.builder(
-                      itemCount: deliveries.length,
-                      itemBuilder: (context, index) {
-                        final delivery = deliveries[index];
-                        return _branchInfoCard(
-                          branchName: delivery.user?.city ?? 'Unknown City',
-                          address: delivery.user?.address ?? 'No Address',
-                          totalProducts: delivery.totalQuantity ?? 0,
-                          deliveryId: delivery.delivery?.id ?? '',
-                          provider: provider,
-                        );
-                      },
+                return ListView.builder(
+                  itemCount: deliveries.length,
+                  itemBuilder: (context, index) {
+                    final delivery = deliveries[index];
+                    return _branchInfoCard(
+                      branchName: delivery.user?.city ?? 'Unknown City',
+                      address: delivery.user?.address ?? 'No Address',
+                      totalProducts: delivery.totalQuantity ?? 0,
+                      deliveryId: delivery.delivery?.id ?? '',
+                      provider: provider,
                     );
                   },
-                ),
-              ),
-            ],
+                );
+              },
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
-  // Widget getter for BranchInfoCard
+  /// ----------------------- Widget getter for BranchInfoCard -----------------
   Widget _branchInfoCard({
     required String branchName,
     required String address,
@@ -115,18 +117,11 @@ class _DriverScreenState extends State<DriverScreen> {
           child: Container(
             width: double.infinity,
             //  height: 120.h,
-            padding: EdgeInsets.all(12.w),
+            padding: EdgeInsets.all(16.w),
             decoration: BoxDecoration(
               color: const Color(0xFFFFF6F7),
-              borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(color: Colors.grey.shade300),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.shade200,
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Color(0xFFD2D2D5)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,8 +130,8 @@ class _DriverScreenState extends State<DriverScreen> {
                   branchName,
                   style: TextStyle(
                     fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF1D1F2C),
                   ),
                 ),
                 SizedBox(height: 8.h),
@@ -184,15 +179,30 @@ class _DriverScreenState extends State<DriverScreen> {
                     ],
                   ),
                 ),
+                SizedBox(height: 16.h),
                 Consumer<TrackingProvider>(
                   builder: (context, provider, child) {
                     return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFE20613),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 10.h,
+                        ),
+                      ),
                       onPressed: () async {
                         provider.setDeliveryId(deliveryId);
 
                         Navigator.pushNamed(context, RouteNames.trackingScreen);
                       },
-                      child: Text("Start your Tracking"),
+                      child: Text(
+                        "Start your Tracking",
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     );
                   },
                 ),

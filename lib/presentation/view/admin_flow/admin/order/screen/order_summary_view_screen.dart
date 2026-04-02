@@ -5,6 +5,7 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
 import 'package:provider/provider.dart';
+import '../../../../../../core/constant/api_endpoint.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
 
@@ -83,7 +84,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFFFF5F5),
       appBar: CustomAppBarTwo(
         title: "Order Summary",
-        profileImage: data?.avatar ?? AssetPaths.personIcon,
+        profileImage:'${data?.avatar}',
         notificationCount: notificationData?.length ?? 0,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
