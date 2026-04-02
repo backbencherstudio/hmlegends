@@ -1,16 +1,35 @@
-# hmlegends
+# HM Legends 🛡️
 
-A new Flutter project.
+HM Legends is a high-performance, feature-rich mobile application developed with Flutter. The app provides a seamless user experience for community engagement and resource management, leveraging modern architecture and state-of-the-art Flutter development practices.
 
-## Getting Started
+##  Project Overview
+Food LTD App is designed to be a scalable, maintainable platform. It integrates complex features such as real-time notifications, secure user authentication, and dynamic content feeds, all while maintaining a buttery-smooth 60 FPS UI.
 
-This project is a starting point for a Flutter application.
+##  Architecture
+The project follows **Clean Architecture** combined with the **MVVM (Model-View-ViewModel)** design pattern. This ensures:
+- **Separation of Concerns**: UI, Business Logic, and Data sources are strictly isolated.
+- **Testability**: Logic can be unit tested without UI dependencies.
+- **Maintainability**: New features can be added with minimal impact on existing code.
 
-A few resources to get you started if this is your first Flutter project:
+##  Folder Structure
+The `lib` directory is organized by feature to ensure modularity:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```text
+lib/
+├── core/                  # Global constants, themes, and shared utilities
+│   ├── constants/         # API endpoints, image paths, strings
+│   ├── network/           # Dio configuration & interceptors
+│   ├── theme/             # App colors, text styles, and themes
+│   └── routes/            # AppRouter and navigation logic
+├── data/                  # Data Layer (Repositories & Models)
+│   ├── models/            # JSON Parsers and DTOs
+│   ├── repositories/      # Repository implementations
+│   └── datasources/       # Remote and local data handlers
+├── domain/                # Domain Layer (Business Logic Entities)
+│   ├── entities/          # Plain Dart objects for business logic
+│   └── usecases/          # Independent business logic units
+├── presentation/          # UI Layer (MVVM)
+│   ├── viewmodels/        # Provider/Riverpod State Management
+│   ├── views/             # Screens/Pages
+│   └── widgets/           # Reusable UI components
+└── main.dart              # Entry point of the application
