@@ -33,3 +33,26 @@ lib/
 │   ├── views/             # Screens/Pages
 │   └── widgets/           # Reusable UI components
 └── main.dart              # Entry point of the application
+
+
+## Tech Stack
+Framework: Flutter (Dart)
+
+State Management: Provider / Riverpod
+
+Networking: Dio (with Interceptors)
+
+Dependency Injection: Get_it
+
+Local Storage: Shared Preferences / Hive
+
+Serialization: JsonSerializable / Equatable
+
+## Setup Instructions
+Clone the Repo: git clone https://github.com/backbencherstudio/hmlegends.git
+
+Install Dependencies: flutter pub get
+
+Run Code Generation: flutter pub run build_runner build
+
+Launch App: flutter run
