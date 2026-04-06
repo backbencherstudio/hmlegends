@@ -3,10 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
-import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
+import 'package:hmlegends/presentation/view/branch_manager_flow/notification/view_model/manager_notification_provider.dart';
 import 'package:hmlegends/presentation/view/branch_manager_flow/orders/viewmodel/get_all_product_viewmodel.dart';
+import 'package:hmlegends/presentation/view/branch_manager_flow/profile/view_model/manger_profile_provider.dart';
+import 'package:hmlegends/presentation/view/widget/custom_app_bar_manager.dart';
 import 'package:provider/provider.dart';
-import '../../admin_flow/view_model/profile/change_pass_provider.dart';
+
 import '../../widget/custom_app_bar.dart';
 import '../orders/viewmodel/create_order_viewmodel.dart';
 
@@ -36,15 +38,15 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
     if (orderVm.hasPlacedToday && _currentBar != "second") {
       _currentBar = "second";
     }
-    final profileProvider = Provider.of<ChangePasswordProvider>(context);
-    final data = profileProvider.adminInfoModel?.data;
-    final notificationProvider = Provider.of<AdminNotificationProvider>(
+    final profileProvider = Provider.of<ManagerProfileProvider>(context);
+    final data = profileProvider.managerInfoModel?.data;
+    final notificationProvider = Provider.of<ManagerNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
+    final notification = notificationProvider.managerNotificationModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
-      appBar: CustomAppBar(
+      appBar: CustomAppBarManager(
         profileImage: data?.avatar,
         notificationCount: notification?.length ?? 0,
       ),
@@ -168,10 +170,7 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              RouteNames.myOrders,
-                            );
+                            Navigator.pushNamed(context, RouteNames.myOrders);
                           },
                           child: CustomFeatureBox(
                             imagePath: 'assets/icons/second_box.png',

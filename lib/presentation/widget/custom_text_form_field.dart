@@ -23,8 +23,6 @@ Widget customTextFormField({
         fontSize: 14.sp,
         fontWeight: FontWeight.w400,
       ),
-      filled: true,
-      fillColor: const Color(0xffF8F8F8),
       contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(30.r),

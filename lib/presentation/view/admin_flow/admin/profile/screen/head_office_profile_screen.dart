@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
@@ -87,7 +86,6 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
               title: 'Address',
               value: address,
             ),
-
 
             Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
 
@@ -234,29 +232,24 @@ class _ProfileInfoTile extends StatelessWidget {
           Icon(icon, color: Color(0xFF4A4C56), size: 24.w),
           SizedBox(width: 16.w),
           Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: const Color(0xff1D1F2C),
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: const Color(0xFF4A4C56),
-                    fontWeight: FontWeight.w400,
-                  ),
-                  softWrap: true,
-                ),
-              ],
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: const Color(0xff1D1F2C),
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              textAlign: TextAlign.start,
+              value,
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: const Color(0xFF4A4C56),
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
         ],

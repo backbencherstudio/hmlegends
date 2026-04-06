@@ -72,16 +72,11 @@ class _StockScreenState extends State<StockScreen> {
               text: 'Yes',
               textColor: Colors.white,
               onPressed: () async {
-                Navigator.of(context).pop();
-
                 await context.read<StockScreenProvider>().deleteProduct(
                   productId,
                 );
 
-                _successDeleteStock(
-                  context,
-                  'You have successfully Deleted the stock!',
-                );
+                Navigator.of(context).pop();
               },
               color: AppColors.primaryColor,
             ),
@@ -308,17 +303,29 @@ class _StockScreenState extends State<StockScreen> {
                           onTap: () {
                             _showAddProductDialog(
                               onPressed: () async {
-                                await provider.createProduct(
+                                final res = await provider.createProduct(
                                   name: _nameController.text,
                                   stock: _stockController.text,
                                   price: _priceController.text,
                                   image: image,
                                 );
 
-                                clearInput();
-                                Navigator.pop(context);
-
-                                provider.getProduct();
+                                if (res.success) {
+                                  Utils.showToast(
+                                    msg: res.message,
+                                    backgroundColor: Colors.green,
+                                    textColor: Colors.white,
+                                  );
+                                  clearInput();
+                                  Navigator.pop(context);
+                                  await provider.getProduct();
+                                } else {
+                                  Utils.showToast(
+                                    msg: res.message,
+                                    backgroundColor: Colors.red,
+                                    textColor: Colors.white,
+                                  );
+                                }
                               },
                             );
                           },

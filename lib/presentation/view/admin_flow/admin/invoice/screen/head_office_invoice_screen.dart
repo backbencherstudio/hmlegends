@@ -90,13 +90,12 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
 
             /// ---------------Total / Paid / Pending Invoice ------------------
             if (stats != null)
-              Wrap(
+              Row(
                 spacing: 12.w,
-                runSpacing: 12.h,
                 children: [
-                  _buildStatCard("Total Invoice", stats.totalInvoice ?? 0),
-                  _buildStatCard("Paid Invoice", stats.paidInvoice ?? 0),
-                  _buildStatCard("Pending Invoice", stats.pendingInvoice ?? 0),
+                  Expanded(child: _buildStatCard("Total\nInvoice", stats.totalInvoice ?? 0)),
+                  Expanded(child: _buildStatCard("Paid\nInvoice", stats.paidInvoice ?? 0)),
+                  Expanded(child: _buildStatCard("Pending\nInvoice", stats.pendingInvoice ?? 0)),
                 ],
               ),
             SizedBox(height: 24.h),
@@ -148,151 +147,181 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
 
             /// --------------------- Orders List from server -----------------
             Expanded(
-              child: provider.isLoading
-                  ? Center(
-                    child: SizedBox(
-                      width: 20.w,
-                      height: 20.h,
-                      child: CircularProgressIndicator(),
-                    ),
-                  )
-                  : invoiceData.isEmpty
-                  ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.receipt_long_outlined, size: 48.sp, color: Colors.grey.shade400,),
-                      Text(
-                        "No Invoice Found",
-                        style: TextStyle(
-                          fontSize: 24.sp,
-                          color: Colors.grey.shade400,
-                          fontWeight: FontWeight.w500,
+              child:
+                  provider.isLoading
+                      ? Center(
+                        child: SizedBox(
+                          width: 20.w,
+                          height: 20.h,
+                          child: CircularProgressIndicator(),
                         ),
-                      ),
-                    ],
-                  )
-                  : Builder(
-                    builder: (context) {
-                      final queryFilterOrders = _applyQueryFilter(invoiceData);
-                      return queryFilterOrders.isEmpty
-                          ? Center(
-                            child: Text(
-                              "No invoices found",
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w500,
-                              ),
+                      )
+                      : invoiceData.isEmpty
+                      ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.receipt_long_outlined,
+                            size: 48.sp,
+                            color: Colors.grey.shade400,
+                          ),
+                          Text(
+                            "No Invoice available",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.grey.shade400,
+                              fontWeight: FontWeight.w500,
                             ),
-                          )
-                          : Expanded(
-                            child: ListView.builder(
-                              itemCount: queryFilterOrders.length,
-                              itemBuilder: (context, index) {
-                                final invoice = queryFilterOrders[index];
-                                final invoiceId = invoice.orderId ?? " ";
+                          ),
+                        ],
+                      )
+                      : Builder(
+                        builder: (context) {
+                          final queryFilterOrders = _applyQueryFilter(
+                            invoiceData,
+                          );
+                          return queryFilterOrders.isEmpty
+                              ? Center(
+                                child: Text(
+                                  "No invoices found",
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              )
+                              : Expanded(
+                                child: ListView.builder(
+                                  itemCount: queryFilterOrders.length,
+                                  itemBuilder: (context, index) {
+                                    final invoice = queryFilterOrders[index];
+                                    final invoiceId = invoice.orderId ?? " ";
 
-                                return Padding(
-                                  padding: EdgeInsets.only(bottom: 8.h),
-                                  child: Container(
-                                    height: 40.h,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8.r),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 2,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFFD1E4C9),
-                                              borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(8.r),
-                                                bottomLeft: Radius.circular(8.r),
-                                              ),
-                                            ),
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 12.w,
-                                            ),
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              "${index + 1}. ${invoice.branchName}",
-                                              style: TextStyle(
-                                                fontSize: 14.sp,
-                                                color: Color(0xFF4A4C56),
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
+                                    return Padding(
+                                      padding: EdgeInsets.only(bottom: 8.h),
+                                      child: Container(
+                                        height: 40.h,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            8.r,
                                           ),
                                         ),
-                                        Expanded(
-                                          flex: 2,
-                                          child: Container(
-                                            color: const Color(0xFFE6ECDE),
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 12.w,
-                                            ),
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              "Total Units: ${invoice.totalQuantity}",
-                                              style: TextStyle(
-                                                fontSize: 13.sp,
-                                                color: Color(0xFF4A4C56),
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            height: double.infinity,
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFFE20614),
-                                              borderRadius: BorderRadius.only(
-                                                topRight: Radius.circular(8.r),
-                                                bottomRight: Radius.circular(8.r),
-                                              ),
-                                            ),
-                                            child: GestureDetector(
-                                              onTap: () async {
-                                                final response = await provider
-                                                    .fetchInvoiceDetail(
-                                                      invoiceId,
-                                                    );
-                                                if (context.mounted &&
-                                                    response.success == true) {
-                                                  Navigator.pushNamed(
-                                                    context,
-                                                    RouteNames
-                                                        .adminInvoiceDetailScreen,
-                                                    arguments: invoiceId,
-                                                  );
-                                                }
-                                              },
-                                              child: Center(
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 2,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: const Color(
+                                                    0xFFD1E4C9,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                        topLeft:
+                                                            Radius.circular(
+                                                              8.r,
+                                                            ),
+                                                        bottomLeft:
+                                                            Radius.circular(
+                                                              8.r,
+                                                            ),
+                                                      ),
+                                                ),
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 12.w,
+                                                ),
+                                                alignment: Alignment.centerLeft,
                                                 child: Text(
-                                                  "View",
+                                                  "${index + 1}. ${invoice.branchName}",
                                                   style: TextStyle(
-                                                    color: Colors.white,
+                                                    fontSize: 14.sp,
+                                                    color: Color(0xFF4A4C56),
                                                     fontWeight: FontWeight.w500,
-                                                    fontSize: 13.sp,
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
+                                            Expanded(
+                                              flex: 2,
+                                              child: Container(
+                                                color: const Color(0xFFE6ECDE),
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 12.w,
+                                                ),
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  "Total Units: ${invoice.totalQuantity}",
+                                                  style: TextStyle(
+                                                    fontSize: 13.sp,
+                                                    color: Color(0xFF4A4C56),
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 1,
+                                              child: Container(
+                                                height: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  color: const Color(
+                                                    0xFFE20614,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                        topRight:
+                                                            Radius.circular(
+                                                              8.r,
+                                                            ),
+                                                        bottomRight:
+                                                            Radius.circular(
+                                                              8.r,
+                                                            ),
+                                                      ),
+                                                ),
+                                                child: GestureDetector(
+                                                  onTap: () async {
+                                                    final response =
+                                                        await provider
+                                                            .fetchInvoiceDetail(
+                                                              invoiceId,
+                                                            );
+                                                    if (context.mounted &&
+                                                        response.success ==
+                                                            true) {
+                                                      Navigator.pushNamed(
+                                                        context,
+                                                        RouteNames
+                                                            .adminInvoiceDetailScreen,
+                                                        arguments: invoiceId,
+                                                      );
+                                                    }
+                                                  },
+                                                  child: Center(
+                                                    child: Text(
+                                                      "View",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 13.sp,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                    },
-                  ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                        },
+                      ),
             ),
           ],
         ),
@@ -302,8 +331,7 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
 
   Widget _buildStatCard(String title, int value) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 10.h),
-      height: 100.h,
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
@@ -316,7 +344,7 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             value.toString(),
@@ -338,7 +366,6 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
-            maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
         ],

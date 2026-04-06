@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/network/network_service.dart';
 import 'package:hmlegends/core/validator/validator.dart';
 import 'package:hmlegends/presentation/widget/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
@@ -74,7 +75,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             hintText: 'Enter your email',
                             textInputAction: TextInputAction.next,
                             controller: viewModel.emailController,
-                            prefixIcon: const Icon(Icons.email_outlined),
+                            prefixIcon: Icon(
+                              Icons.email_outlined,
+                              color: Color(0xFF777980),
+                            ),
                             validator: emailValidator,
                           ),
                           SizedBox(height: 8.h),
@@ -84,7 +88,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             hintText: 'Enter your password',
                             textInputAction: TextInputAction.done,
                             controller: viewModel.passwordController,
-                            prefixIcon: const Icon(Icons.lock_outline),
+                            prefixIcon: const Icon(
+                              Icons.lock_outline,
+                              color: Color(0xFF777980),
+                            ),
                             isPassword: !viewModel.passwordVisible,
                             validator: passwordValidator,
                             suffixIcon: GestureDetector(
@@ -179,6 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (userRole == 'admin') {
                   Navigator.pushNamed(context, RouteNames.mainWrapper);
                 } else if (userRole == 'manager') {
+                  logger.d("Login User Role $userRole");
                   Navigator.pushNamed(context, RouteNames.branchParentScreen);
                 } else if (userRole == 'driver') {
                   Navigator.pushNamed(

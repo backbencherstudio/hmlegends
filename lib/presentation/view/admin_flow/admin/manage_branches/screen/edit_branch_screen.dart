@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/network/network_service.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/view_model/manage_branch_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
@@ -11,11 +11,12 @@ import 'package:provider/provider.dart';
 
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar_2.dart';
+import '../widget/build_stock_status_drop_down.dart';
 
 class EditBranchScreen extends StatefulWidget {
-  final String managerId;
+  final String branchId;
 
-  const EditBranchScreen({super.key, required this.managerId});
+  const EditBranchScreen({super.key, required this.branchId});
 
   @override
   State<EditBranchScreen> createState() => _EditBranchScreenState();
@@ -29,29 +30,15 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
 
   final ImagePicker _imagePicker = ImagePicker();
 
-  Future<void> _selectImage() async {
-    // Handle image selection logic here
-
-    _imagePicker.pickImage(source: ImageSource.gallery).then((pickedFile) {
-      if (pickedFile != null) {
-        // Handle the picked image file
-        File imageFile = File(pickedFile.path);
-
-        // Get file size in MB
-        int fileSizeInBytes = imageFile.lengthSync();
-        double fileSizeInMB = fileSizeInBytes / (1024 * 1024);
-
-        // Get image format from file extension
-        String extension = imageFile.path.split('.').last.toUpperCase();
-        String format = (extension == 'JPG') ? 'JPEG' : extension;
-
-        context.read<ManageBranchProvider>().setSelectedImageFile(imageFile);
-        context.read<ManageBranchProvider>().setImageFormat(format);
-        context.read<ManageBranchProvider>().setImageSize(
-          '${fileSizeInMB.toStringAsFixed(2)} MB',
-        );
-      } else {}
-    });
+  Future<void> _uploadImage() async {
+    final pickedFile = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile != null) {
+      context.read<ManageBranchProvider>().setSelectedImageFile(
+        File(pickedFile.path),
+      );
+    }
   }
 
   /// --------------------- Text Field Controllers -----------------------------
@@ -75,33 +62,18 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   @override
   void initState() {
     super.initState();
-    debugPrint("Received Manager Id : ${widget.managerId}");
+    debugPrint("Received Manager Id : ${widget.branchId}");
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ManageBranchProvider>(
         context,
         listen: false,
-      ).getSingleBranch(widget.managerId);
+      ).getSingleBranch(widget.branchId);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final singleBranchProvider = Provider.of<ManageBranchProvider>(context);
-    final singleBranch = singleBranchProvider.singleBranchModel?.data;
-    final branchName = singleBranch?.name;
-    final branchAddress = singleBranch?.address;
-    final branchStatus = singleBranch?.status;
-
-    // Set the selected status in the provider when data loads
-    if (branchStatus != null && mounted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (singleBranchProvider.selectedStockStatus != branchStatus) {
-          singleBranchProvider.toggleStockStatus(branchStatus);
-        }
-      });
-    }
-
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
@@ -114,100 +86,117 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
       appBar: CustomAppBarTwo(
         title: 'Edit Branch',
         notificationCount: notification?.length ?? 0,
-        colorMain: Colors.white,
-        colorSpace: Colors.white,
+        colorMain: const Color(0xFFFFF5F5),
+        colorSpace: const Color(0xFFFFF5F5),
         onBackTap: () => Navigator.pop(context),
         profileImage: '${profile?.avatar}',
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildLabel("Branch name"),
-            _buildTextField(
-              hint: "Branch name with ID",
-              controller:
-                  branchName != null
-                      ? TextEditingController(text: branchName)
-                      : null,
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a branch name';
+        child: Consumer<ManageBranchProvider>(
+          builder: (context, provider, child) {
+            final singleBranch = provider.singleBranchModel?.data;
+            final branchName = singleBranch?.name;
+            final branchAddress = singleBranch?.address;
+            final branchStatus = singleBranch?.status;
+            if (branchStatus != null && mounted) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (provider.selectedStockStatus != branchStatus) {
+                  provider.toggleStockStatus(branchStatus);
                 }
-                return null;
-              },
-            ),
+              });
+            }
+            return Form(
+              key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildLabel("Branch name"),
+                  _buildTextField(
+                    hint: "Branch name with ID",
+                    controller:
+                        branchName != null
+                            ? TextEditingController(text: branchName)
+                            : null,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a branch name';
+                      }
+                      return null;
+                    },
+                  ),
 
-            SizedBox(height: 16.h),
-            _buildLabel("Branch location"),
-            _buildTextField(
-              hint: "Add location",
-              controller:
-                  branchAddress != null
-                      ? TextEditingController(text: branchAddress)
-                      : null,
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a branch location';
-                }
-                return null;
-              },
-            ),
+                  SizedBox(height: 16.h),
+                  _buildLabel("Branch location"),
+                  _buildTextField(
+                    hint: "Add location",
+                    controller:
+                        branchAddress != null
+                            ? TextEditingController(text: branchAddress)
+                            : null,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a branch location';
+                      }
+                      return null;
+                    },
+                  ),
 
-            SizedBox(height: 16.h),
+                  SizedBox(height: 16.h),
 
-            /// ----------------------- Status(Active/Inactive) ----------------
-            _buildLabel("Status"),
-            Container(
-              decoration: BoxDecoration(
-                color: AppColors.editTextFieldColor,
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 14.w),
-              child: DropdownButtonHideUnderline(
-                child: Consumer<ManageBranchProvider>(
-                  builder: (context, provider, child) {
-                    return DropdownButton<String>(
-                      value: provider.selectedStockStatus,
-                      isExpanded: true,
-                      icon: const Icon(Icons.arrow_drop_down),
-                      hint: Text(
-                        "Select",
-                        style: TextStyle(color: Colors.grey[500]),
+                  /// ----------------------- Status(Active/Inactive) ----------------
+                  _buildLabel("Status"),
+                  BuildStockStatusDropDown(),
+
+                  SizedBox(height: 24.h),
+                  _buildLabel("Upload product Image"),
+
+                  /// ----------------------- Upload Image Box ------------------------
+                  GestureDetector(
+                    onTap: _uploadImage,
+                    child: Container(
+                      width: double.infinity,
+                      height: 150.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.r),
                       ),
-                      dropdownColor: AppColors.editTextFieldColor,
-                      borderRadius: BorderRadius.circular(8.r),
-                      style: TextStyle(color: Colors.grey[600]),
-                      items:
-                          stockStatusOptions.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                      onChanged: (String? newValue) {
-                        provider.toggleStockStatus(newValue);
-                      },
-                    );
-                  },
-                ),
-              ),
-            ),
+                      clipBehavior: Clip.hardEdge,
+                      // ensures image respects border radius
+                      child:
+                          provider.selectedImageFile != null
+                              ? Image.file(
+                                provider.selectedImageFile!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                              )
+                              : Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.upload_file,
+                                    size: 32.sp,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(height: 12.h),
+                                  Text(
+                                    "Upload Image",
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                    ),
+                  ),
 
-            SizedBox(height: 24.h),
-            _buildLabel("Upload product Image"),
-            _buildImageUploader(),
-            SizedBox(height: 24.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Consumer<ManageBranchProvider>(
-                builder: (
-                  BuildContext context,
-                  ManageBranchProvider provider,
-                  Widget? child,
-                ) {
-                  return AuthButton(
+                  SizedBox(height: 24.h),
+                  AuthButton(
                     text: Text(
                       'Save & Update',
                       style: TextStyle(
@@ -217,10 +206,10 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
                       ),
                     ),
                     onPressed: () {
-                      // Handle save and update logic here
                       if (_formKey.currentState!.validate()) {
+                        logger.d("Edit Branch Manager Id ${widget.branchId}");
                         provider.updateBranch(
-                          managerId: widget.managerId,
+                          branchId: widget.branchId,
                           name:
                               _nameController.text.trim().isNotEmpty
                                   ? _nameController.text.trim()
@@ -230,17 +219,17 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
                                   ? _addressController.text.trim()
                                   : branchAddress ?? "",
                           status: provider.selectedStockStatus ?? "ACTIVE",
-                          // image: selectedImage, // Handle image selection logic
+                          image: provider.selectedImageFile,
                         );
                       }
                       Navigator.pop(context);
                     },
                     color: AppColors.primaryColor,
-                  );
-                },
+                  ),
+                ],
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
@@ -269,170 +258,25 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
     decoration: InputDecoration(
       hintText: hint,
       hintStyle: TextStyle(color: Colors.grey[500]),
-      filled: true,
-      fillColor: AppColors.editTextFieldColor,
-      contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+
+      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.r),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(30.r),
+        borderSide: BorderSide(color: Color(0xFFE9E9EA)),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.r),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(30.r),
+        borderSide: BorderSide(color: Color(0xFFE9E9EA)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.r),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(30.r),
+        borderSide: BorderSide(color: Color(0xFFE9E9EA)),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30.r),
+        borderSide: BorderSide(color: Colors.red),
       ),
     ),
     validator: validator,
-  );
-
-  // Upload Image Box
-  Widget _buildImageUploader() => Container(
-    width: double.infinity,
-    height:
-        context.read<ManageBranchProvider>().selectedImageFile != null
-            ? 200.h
-            : 160.h,
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12.r),
-      color: AppColors.editTextFieldColor,
-    ),
-    child: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          GestureDetector(
-            onTap: () => _selectImage(),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.r),
-                border: Border.all(color: Colors.redAccent, width: 1.2),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(AssetPaths.addIcon1, height: 20.h, width: 20.w),
-                  SizedBox(width: 6.w),
-                  Text(
-                    'Upload photos',
-                    style: TextStyle(
-                      color: Colors.redAccent,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: 16.h),
-          if (context.read<ManageBranchProvider>().selectedImageFile != null)
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Read-only Format Field
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 14.w,
-                    vertical: 12.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8.r),
-                    border: Border.all(color: Colors.grey[300]!),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.lock, size: 16.sp, color: Colors.grey[600]),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Format',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              context
-                                      .read<ManageBranchProvider>()
-                                      .imageFormat ??
-                                  'Unknown',
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 10.h),
-                // Read-only Size Field
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 14.w,
-                    vertical: 12.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8.r),
-                    border: Border.all(color: Colors.grey[300]!),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.lock, size: 16.sp, color: Colors.grey[600]),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'File Size',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              context.read<ManageBranchProvider>().imageSize ??
-                                  'Unknown',
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            )
-          else
-            Text(
-              "JPEG, PNG up to 50 MB",
-              style: TextStyle(color: Colors.grey[600], fontSize: 13.sp),
-            ),
-        ],
-      ),
-    ),
   );
 }
