@@ -180,7 +180,27 @@ class _MyOrdersState extends State<MyOrders> {
                   final dates = getDateList(grouped);
 
                   if (dates.isEmpty) {
-                    return const Center(child: Text("No items found"));
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.shopping_bag_outlined,
+                            size: 48.sp,
+                            color: Colors.grey.shade300,
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            "No items found",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.grey.shade400,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   }
 
                   return ListView.separated(

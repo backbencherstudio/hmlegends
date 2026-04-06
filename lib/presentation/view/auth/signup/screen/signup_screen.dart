@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/network/network_service.dart';
 import 'package:hmlegends/core/validator/validator.dart';
 import 'package:hmlegends/presentation/widget/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +15,8 @@ import '../../widget/auth_button.dart';
 import '../../widget/social_auth_buttons.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  final String type;
+  const SignUpScreen({super.key, required this.type});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -25,10 +27,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    logger.d("Received Type: ${widget.type}");
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: SafeArea(
+      backgroundColor: Color(0xFFFFFFFF),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -78,7 +82,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
               customTextFormField(
                 hintText: 'Enter your name',
                 textInputAction: TextInputAction.next,
-                prefixIcon: Icon(Icons.person_outline),
+                prefixIcon: Icon(
+                  Icons.person_outline,
+                  color: Color(0xFF777980),
+                ),
                 controller: provider.nameController,
                 validator: nameValidator,
               ),
@@ -88,7 +95,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
               customTextFormField(
                 hintText: 'Enter your email',
                 textInputAction: TextInputAction.next,
-                prefixIcon: Icon(Icons.email_outlined),
+                prefixIcon: Icon(
+                  Icons.email_outlined,
+                  color: Color(0xFF777980),
+                ),
                 controller: provider.emailController,
                 validator: emailValidator,
               ),
@@ -98,7 +108,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               customTextFormField(
                 hintText: 'Enter your password',
                 textInputAction: TextInputAction.done,
-                prefixIcon: Icon(Icons.lock_outline),
+                prefixIcon: Icon(Icons.lock_outline, color: Color(0xFF777980)),
                 controller: provider.passwordController,
                 isPassword: !provider.passwordVisible,
                 validator: passwordValidator,
@@ -151,6 +161,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               name: provider.nameController.text.trim(),
               email: provider.emailController.text.trim(),
               password: provider.passwordController.text.trim(),
+              type: widget.type
             );
 
             if (res.success) {
@@ -194,7 +205,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           TextSpan(text: 'Have an account?', style: AppTextStyles.hintText),
           TextSpan(
             text: ' Sign In',
-            style: const TextStyle(color: AppColors.primaryColor),
+            style: TextStyle(
+              color: AppColors.primaryColor,
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w500,
+            ),
             recognizer:
                 TapGestureRecognizer()
                   ..onTap =

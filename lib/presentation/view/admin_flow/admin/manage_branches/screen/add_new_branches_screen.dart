@@ -22,11 +22,8 @@ class AddNewBranchesScreen extends StatefulWidget {
 class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
   /// --------------------- Text Field Controllers -----------------------------
   final _nameController = TextEditingController();
-
   final _emailController = TextEditingController();
-
   final _passwordController = TextEditingController();
-
   final _addressController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -61,7 +58,7 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
           status: provider.selectedStockStatus ?? 'ACTIVE',
         );
 
-        if (result['success']) {
+        if (result['success'] == true) {
           await provider.allBranch();
 
           Utils.showToast(
@@ -89,12 +86,12 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xffFFF6F7),
       appBar: CustomAppBarTwo(
         title: 'Add New Branch',
         notificationCount: notification?.length ?? 0,
-        colorMain: Colors.white,
-        colorSpace: Colors.white,
+        colorMain: const Color(0xFFFFF5F5),
+        colorSpace: const Color(0xFFFFF5F5),
         onBackTap: () => Navigator.pop(context),
         profileImage: '${data?.avatar}',
       ),
@@ -126,7 +123,6 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
 
               /// ----------------- Build Stock Status Drop Down ---------------
               BuildStockStatusDropDown(),
-
               SizedBox(height: 16.h),
               _buildLabel("Email"),
               customTextFormField(
@@ -134,42 +130,48 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
                 controller: _emailController,
                 validator: emailValidator,
               ),
-
               SizedBox(height: 16.h),
               _buildLabel("Password"),
               customTextFormField(
                 hintText: "Enter your password",
                 controller: _passwordController,
+                isPassword: !provider.isPasswordVisible,
                 validator: passwordValidator,
-                isPassword: true,
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    provider.togglePasswordVisibility();
+                  },
+                  child: Icon(
+                    provider.isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                    color: AppColors.iconColor,
+                  ),
+                ),
               ),
-
               SizedBox(height: 40.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: AuthButton(
-                  text:
-                      context.watch<ManageBranchProvider>().isLoading
-                          ? SizedBox(
-                            height: 16.h,
-                            width: 16.w,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation(Colors.white),
-                            ),
-                          )
-                          : Center(
-                            child: Text(
-                              'Add New Branch',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                color: Colors.white,
-                              ),
+              AuthButton(
+                text:
+                    context.watch<ManageBranchProvider>().isLoading
+                        ? SizedBox(
+                          height: 16.h,
+                          width: 16.w,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                          ),
+                        )
+                        : Center(
+                          child: Text(
+                            'Add New Branch',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.white,
                             ),
                           ),
-                  onPressed: submit,
-                  color: AppColors.primaryColor,
-                ),
+                        ),
+                onPressed: submit,
+                color: AppColors.primaryColor,
               ),
             ],
           ),

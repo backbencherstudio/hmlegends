@@ -117,12 +117,17 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                       SizedBox(width: 20.w),
                       GestureDetector(
-                        onTap: (){
-                          Navigator.pushNamed(context, RouteNames.headOfficeProfileScreen);
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            RouteNames.headOfficeProfileScreen,
+                          );
                         },
                         child: CircleAvatar(
                           radius: 18.r,
-                          backgroundImage: NetworkImage("${ApiEndpoints.baseUrl}/storage/avatar/$profileImage"),
+                          backgroundImage: NetworkImage(
+                            "${ApiEndpoints.baseUrl}/public/storage/avatar/$profileImage",
+                          ),
                         ),
                       ),
                     ],
@@ -162,7 +167,7 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
         Navigator.popUntil(context, (route) => route.isFirst);
         break;
       case NavigationType.none:
-      // no navigation, and no icon shown
+        // no navigation, and no icon shown
         break;
     }
   }

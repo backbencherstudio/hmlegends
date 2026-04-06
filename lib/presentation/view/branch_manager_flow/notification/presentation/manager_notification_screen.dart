@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/presentation/view/branch_manager_flow/notification/view_model/manager_notification_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../view_model/notification_admin/admin_notification_provider.dart';
 
-class AdminNotificationScreen extends StatefulWidget {
-  const AdminNotificationScreen({super.key});
+class ManagerNotificationScreen extends StatefulWidget {
+  const ManagerNotificationScreen({super.key});
 
-  static const String routeName = '/adminNotifications';
+  static const String routeName = '/managerNotifications';
 
   @override
-  State<AdminNotificationScreen> createState() =>
-      _AdminNotificationScreenState();
+  State<ManagerNotificationScreen> createState() =>
+      _ManagerNotificationScreenState();
 }
 
-class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
+class _ManagerNotificationScreenState extends State<ManagerNotificationScreen> {
   /// ----------------- Format Time Stamp --------------------------------------
   String formatTimestamp(String? timestamp) {
     if (timestamp == null) return '';
@@ -28,8 +28,8 @@ class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<AdminNotificationProvider>(context);
-    final notificationData = provider.adminNotificationModel?.data ?? [];
+    final provider = Provider.of<ManagerNotificationProvider>(context);
+    final notificationData = provider.managerNotificationModel?.data ?? [];
 
     return Scaffold(
       backgroundColor: Color(0xffFFF6F7),
@@ -44,7 +44,7 @@ class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
           child: Icon(Icons.arrow_back_ios, color: Color(0xFF1D1F2C)),
         ),
         title: Text(
-          "Admin Notification",
+          "Manager Notification",
           style: TextStyle(
             fontSize: 20.sp,
             color: Color(0xFF1D1F2C),
@@ -89,7 +89,7 @@ class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
                   return GestureDetector(
                     onTap: () {
                       if (!isRead && n.id == null) {
-                        Provider.of<AdminNotificationProvider>(
+                        Provider.of<ManagerNotificationProvider>(
                           context,
                           listen: false,
                         );

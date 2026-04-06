@@ -1,10 +1,9 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl =
-      'http://192.168.7.12:4050';
+  static const String baseUrl = 'https://api.zhfoods.cloud';
   static const String googleLogin =
-      'http://192.168.5.232:4050/api/auth/google/signin';
+      'https://api.zhfoods.cloud/api/auth/google/signin';
 
   // Admin
   static const String register = '$baseUrl/api/auth/register';
@@ -105,6 +104,10 @@ class ApiEndpoints {
       '$baseUrl/api/auth/manager/$userId?period=$period';
 
   static String addNewBranch = '$baseUrl/api/auth/create-manager';
-  static String updateBranch(String managerId) =>
-      '$baseUrl/api/auth/update-manager/$managerId';
+  static String updateBranch(String branchId) =>
+      '$baseUrl/api/auth/update-manager/$branchId';
+  static const String managerPersonalProfile = '$baseUrl/api/auth/me';
+  static const String managerChangePassword = '$baseUrl/api/auth/change-password';
+  static const String updateManagerProfile = '$baseUrl/api/auth/update';
+  static const String managerNotification = '$baseUrl/api/notification';
 }

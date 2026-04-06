@@ -6,21 +6,19 @@ import 'package:hmlegends/core/network/network_service.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/core/validator/validator.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/profile/widget/profile_header.dart';
+import 'package:hmlegends/presentation/view/branch_manager_flow/profile/view_model/manger_profile_provider.dart';
 import 'package:hmlegends/presentation/view/driver_flow/profile_driver/changeInfo_driver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../../../view_model/profile/change_pass_provider.dart';
 
-class HeadOfficeChangeInfoScreen extends StatefulWidget {
-  const HeadOfficeChangeInfoScreen({super.key});
+class ManagerChangeInfo extends StatefulWidget {
+  const ManagerChangeInfo({super.key});
 
   @override
-  State<HeadOfficeChangeInfoScreen> createState() =>
-      _HeadOfficeChangeInfoScreenState();
+  State<ManagerChangeInfo> createState() => _ManagerChangeInfoScreenState();
 }
 
-class _HeadOfficeChangeInfoScreenState
-    extends State<HeadOfficeChangeInfoScreen> {
+class _ManagerChangeInfoScreenState extends State<ManagerChangeInfo> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _occupationController = TextEditingController();
   final TextEditingController _dateOfBirthController = TextEditingController();
@@ -40,12 +38,12 @@ class _HeadOfficeChangeInfoScreenState
   }
 
   Future<void> _loadProfileData() async {
-    final provider = Provider.of<ChangePasswordProvider>(
+    final provider = Provider.of<ManagerProfileProvider>(
       context,
       listen: false,
     );
-    await provider.adminCheckMe();
-    final data = provider.adminInfoModel?.data;
+    await provider.managerCheckMe();
+    final data = provider.managerInfoModel?.data;
 
     if (data != null) {
       _nameController.text = data.name ?? "";
@@ -207,8 +205,8 @@ class _HeadOfficeChangeInfoScreenState
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           final success = await context
-                              .read<ChangePasswordProvider>()
-                              .updateAdminProfile(
+                              .read<ManagerProfileProvider>()
+                              .updateManagerProfile(
                                 name: _nameController.text,
                                 occupation: _occupationController.text,
                                 dateOfBirth: _dateOfBirthController.text,
@@ -220,26 +218,32 @@ class _HeadOfficeChangeInfoScreenState
 
                           if (success) {
                             await context
-                                .read<ChangePasswordProvider>()
-                                .adminCheckMe();
+                                .read<ManagerProfileProvider>()
+                                .managerCheckMe();
 
                             logger.i(
                               "Profile updated successfully, refreshing data...",
                             );
-                          }
 
-                          Utils.showToast(
-                            msg:
-                                success
-                                    ? "Profile updated successfully"
-                                    : "Failed to update profile",
-                            backgroundColor:
-                                success ? Colors.green : Colors.red,
-                            textColor: Colors.white,
-                          );
-                          Future.delayed(const Duration(seconds: 2), () {
-                            Navigator.pop(context);
-                          });
+                            Utils.showToast(
+                              msg:
+                                  success
+                                      ? "Profile updated successfully"
+                                      : "Failed to update profile",
+                              backgroundColor:
+                                  success ? Colors.green : Colors.red,
+                              textColor: Colors.white,
+                            );
+                            Future.delayed(const Duration(seconds: 2), () {
+                              Navigator.pop(context);
+                            });
+                          } else {
+                            Utils.showToast(
+                              msg: "Failed to update profile",
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                            );
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(

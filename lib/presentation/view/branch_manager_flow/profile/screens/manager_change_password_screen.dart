@@ -3,17 +3,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/core/validator/validator.dart';
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
+import 'package:hmlegends/presentation/view/branch_manager_flow/profile/view_model/manger_profile_provider.dart';
 import 'package:hmlegends/presentation/widget/custom_rich_text.dart';
+import 'package:hmlegends/presentation/widget/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
-import '../../../../../widget/custom_text_form_field.dart';
-import '../../../view_model/profile/change_pass_provider.dart';
 
-class HeadOfficeChangePasswordScreen extends StatelessWidget {
-  const HeadOfficeChangePasswordScreen({super.key});
+class ManagerChangePasswordScreen extends StatelessWidget {
+  const ManagerChangePasswordScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<ChangePasswordProvider>();
+    final provider = context.watch<ManagerProfileProvider>();
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
     Future<void> submitForm() async {

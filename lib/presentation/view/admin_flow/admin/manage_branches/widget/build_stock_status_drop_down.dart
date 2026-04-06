@@ -14,8 +14,7 @@ class BuildStockStatusDropDown extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.editTextFieldColor,
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: const Color(0xFFD2D2D5)),
       ),
       padding: EdgeInsets.symmetric(horizontal: 14.w),

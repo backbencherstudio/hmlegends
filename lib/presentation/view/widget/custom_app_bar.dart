@@ -134,7 +134,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      elevation: 1,
+      elevation: 0,
       shadowColor: Colors.black26,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

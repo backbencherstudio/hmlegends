@@ -1,43 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
-import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
-import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/profile/widget/logout_dialog.dart';
+import 'package:hmlegends/presentation/view/branch_manager_flow/notification/view_model/manager_notification_provider.dart';
+import 'package:hmlegends/presentation/view/branch_manager_flow/profile/view_model/manger_profile_provider.dart';
+import 'package:hmlegends/presentation/view/widget/custom_app_bar_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../widget/logout_dialog.dart';
-import '../../../../../../core/constant/api_endpoint.dart';
-import '../../../view_model/profile/change_pass_provider.dart';
-
-class HeadOfficeProfileScreen extends StatefulWidget {
-  const HeadOfficeProfileScreen({super.key});
+class ManagerProfileScreen extends StatefulWidget {
+  const ManagerProfileScreen({super.key});
 
   @override
-  State<HeadOfficeProfileScreen> createState() =>
-      _HeadOfficeProfileScreenState();
+  State<ManagerProfileScreen> createState() => _ManagerProfileScreenState();
 }
 
-class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
+class _ManagerProfileScreenState extends State<ManagerProfileScreen> {
   @override
   void initState() {
     Future.microtask(
-      () => context.read<ChangePasswordProvider>().adminCheckMe(),
+      () => context.read<ManagerProfileProvider>().managerCheckMe(),
     );
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ChangePasswordProvider>(context);
+    final provider = Provider.of<ManagerProfileProvider>(context);
 
-    final data = provider.adminInfoModel?.data;
-    final notificationProvider = Provider.of<AdminNotificationProvider>(
+    final data = provider.managerInfoModel?.data;
+    final notificationProvider = Provider.of<ManagerNotificationProvider>(
       context,
     );
 
-    final notification = notificationProvider.adminNotificationModel?.data;
+    final notification = notificationProvider.managerNotificationModel?.data;
 
     final String name = data?.name ?? "Not Found Name";
     final String occupation = data?.occupation ?? "Not Found Occupation";
@@ -49,7 +47,7 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
       backgroundColor: const Color(0xffFFF6F7),
 
       /// --------------------- App Bar ------------------------------------
-      appBar: CustomAppBar(
+      appBar: CustomAppBarManager(
         profileImage: data?.avatar,
         notificationCount: notification?.length ?? 0,
       ),
@@ -94,10 +92,7 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
               title: 'Change Password',
               isDestructive: true,
               onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  RouteNames.headOfficeChangePasswordScreen,
-                );
+                Navigator.pushNamed(context, RouteNames.managerChangePassword);
               },
             ),
             Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
@@ -106,11 +101,9 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
               icon: Icons.info_outline,
               title: 'Change info',
               isDestructive: true,
-              onTap:
-                  () => Navigator.pushNamed(
-                    context,
-                    RouteNames.headOfficeChangeInfoScreen,
-                  ),
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.managerChangeInfo);
+              },
             ),
             Divider(indent: 15.w, endIndent: 15.w, color: Colors.grey.shade300),
 
@@ -144,7 +137,7 @@ class _ProfileHeader extends StatelessWidget {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       // Handle the selected image (e.g., upload to server or update UI)
-      context.read<ChangePasswordProvider>().adminCheckMe();
+      context.read<ManagerProfileProvider>().managerCheckMe();
     }
   }
 
@@ -173,7 +166,7 @@ class _ProfileHeader extends StatelessWidget {
                 child:
                     avatar != null && avatar!.isNotEmpty
                         ? Image.network(
-                          "${ApiEndpoints.baseUrl}/storage/avatar/$avatar",
+                          "${ApiEndpoints.baseUrl}/public/storage/avatar/$avatar",
                           width: 90.w,
                           height: 90.w,
                           fit: BoxFit.cover,
