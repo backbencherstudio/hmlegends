@@ -116,7 +116,7 @@ class StockScreenProvider extends ChangeNotifier {
   }
 
   /// ------------------------- Delete Product ---------------------------------
-  Future<void> deleteProduct(String pid) async {
+  Future<ResponseModel> deleteProduct(String pid) async {
     _setLoading(true);
     try {
       final url = Uri.parse(ApiEndpoints.deleteProduct(pid));
@@ -134,18 +134,24 @@ class StockScreenProvider extends ChangeNotifier {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         logger.d("Product deleted successfully: ${decodeData['message']}");
+        notifyListeners();
+        return ResponseModel(success: true, message: decodeData['message']);
       } else {
+        notifyListeners();
         logger.d("Failed to delete product: ${decodeData['message']}");
+        return ResponseModel(success: false, message: decodeData['message']);
       }
     } catch (error) {
+      notifyListeners();
       logger.d("Error deleting product: $error");
+      return ResponseModel(success: false, message: '$e');
     } finally {
       _setLoading(false);
     }
   }
 
   /// ------------------------------ Create Product ----------------------------
-  Future<void> createProduct({
+  Future<ResponseModel> createProduct({
     required String name,
     required String stock,
     required String price,
@@ -176,11 +182,14 @@ class StockScreenProvider extends ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         _adminProductModel = AdminProductModel.fromJson(decodeData);
         logger.d("Product created successfully: ${decodeData['message']}");
+        return ResponseModel(success: true, message: decodeData['message']);
       } else {
         logger.d("Failed to create product: ${decodeData['message']}");
+        return ResponseModel(success: false, message: decodeData['message']);
       }
     } catch (error) {
       logger.d("Error creating product: $error");
+      return ResponseModel(success: false, message: '$e');
     } finally {
       _setLoading(false);
     }

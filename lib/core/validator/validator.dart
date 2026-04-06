@@ -10,6 +10,26 @@ String? emailValidator(String? value) {
   return null;
 }
 
+String? currentPasswordValidator(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Please enter current password';
+  }
+  if (value.length < 8) {
+    return 'Password must be at least 8 characters long';
+  }
+  return null;
+}
+
+String? newPasswordValidator(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Please enter a new password';
+  }
+  if (value.length < 8) {
+    return 'Password must be at least 8 characters long';
+  }
+  return null;
+}
+
 String? passwordValidator(String? value) {
   if (value == null || value.isEmpty) {
     return 'Please enter your password';
@@ -20,12 +40,12 @@ String? passwordValidator(String? value) {
   return null;
 }
 
-String? confirmPasswordValidator(String? value) {
+String? confirmPasswordValidator(String? value , String? password) {
   if (value == null || value.isEmpty) {
     return 'Please confirm your password';
   }
-  if (value.length < 8) {
-    return 'Password must be at least 8 characters long';
+  if (value != password) {
+    return 'Passwords do not match';
   }
   return null;
 }

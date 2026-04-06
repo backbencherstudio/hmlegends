@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/order/screen/order_summary_make_invoice_screen.dart';
+import 'package:hmlegends/presentation/view/branch_manager_flow/notification/presentation/manager_notification_screen.dart';
 import 'package:hmlegends/presentation/view/driver_flow/profile_driver/changeInfo_driver.dart';
 import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart';
 import '../../presentation/view/admin_flow/admin/home/screen/head_office_home_screen.dart';
@@ -29,14 +30,13 @@ import '../../presentation/view/auth/signup/screen/signup_screen.dart';
 import '../../presentation/view/branch_manager_flow/Invoice/presentation/Invoice_screen.dart';
 import '../../presentation/view/branch_manager_flow/Invoice/presentation/screens/view_details.dart';
 import '../../presentation/view/branch_manager_flow/home/home_screen.dart';
-import '../../presentation/view/branch_manager_flow/notification/notification_screen.dart';
 import '../../presentation/view/branch_manager_flow/orders/presentation/view/orders_screen.dart';
 import '../../presentation/view/branch_manager_flow/orders/presentation/view/screens/my_orders.dart';
 import '../../presentation/view/branch_manager_flow/parent/bottom_nav_bar.dart';
 import '../../presentation/view/branch_manager_flow/parent/parent_screen.dart';
-import '../../presentation/view/branch_manager_flow/profile/profile_screen.dart';
-import '../../presentation/view/branch_manager_flow/profile/screens/change_info.dart';
-import '../../presentation/view/branch_manager_flow/profile/screens/change_password.dart';
+import '../../presentation/view/branch_manager_flow/profile/screens/manager_profile_screen.dart';
+import '../../presentation/view/branch_manager_flow/profile/screens/manager_change_info.dart';
+import '../../presentation/view/branch_manager_flow/profile/screens/manager_change_password_screen.dart';
 import '../../presentation/view/driver_flow/driver_brance_detailScreen/confirm_delivery_screen.dart';
 import '../../presentation/view/driver_flow/driver_brance_detailScreen/delivery_summery_screen.dart';
 import '../../presentation/view/driver_flow/driver_brance_detailScreen/driver_brance_detail_screen.dart';
@@ -50,7 +50,11 @@ class AppRoutes {
   static final Map<String, WidgetBuilder> routes = {
     RouteNames.splashScreen: (context) => const SplashScreen(),
     RouteNames.onboardingScreen: (context) => const OnboardingScreen(),
-    RouteNames.signUpScreen: (context) => SignUpScreen(),
+    RouteNames.signUpScreen: (context) {
+      final userRole =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+      return SignUpScreen(type: userRole?['userRole'] ?? 'user');
+    },
     RouteNames.loginScreen: (context) => LoginScreen(),
     RouteNames.forgetPasswordScreen: (context) => ForgetPasswordScreen(),
     RouteNames.otpVerifyScreen: (context) => OtpVerifyScreen(),
@@ -63,10 +67,8 @@ class AppRoutes {
     RouteNames.myOrders: (context) => MyOrders(),
     RouteNames.invoiceScreen: (context) => InvoiceScreen(),
     RouteNames.viewDetails: (context) => ViewDetails(),
-    RouteNames.profileScreen: (context) => ProfileScreen(),
-    RouteNames.changePassword: (context) => ChangePassword(),
-    RouteNames.changeInfo: (context) => ChangeInfo(),
-    // RouteNames.notificationScreen: (context) => NotificationScreen(),
+    RouteNames.managerChangePassword: (context) => ManagerChangePasswordScreen(),
+    RouteNames.managerChangeInfo: (context) => ManagerChangeInfo(),
     RouteNames.driverScreen: (context) => DriverScreen(),
     RouteNames.driverBottomNavBar: (context) => DriverBottomNavBar(),
     RouteNames.driverBranchParentScreen:
@@ -104,13 +106,16 @@ class AppRoutes {
       return ManageBranchesToOrderSummaryScreen(managerId: managerId);
     },
     RouteNames.editBranchScreen: (context) {
-      final managerId = ModalRoute.of(context)!.settings.arguments as String;
+      final branchId = ModalRoute.of(context)!.settings.arguments as String;
 
-      return EditBranchScreen(managerId: managerId);
+      return EditBranchScreen(branchId: branchId);
     },
     RouteNames.changeInfoDriver: (context) => ChangeInfoDriver(),
     RouteNames.adminNotificationScreen: (context) => AdminNotificationScreen(),
     RouteNames.pendingUserList: (context) => PendingUserList(),
     RouteNames.trackingScreen: (context) => TrackingScreen(),
+    RouteNames.managerProfileScreen: (context) => ManagerProfileScreen(),
+    RouteNames.managerNotificationScreen: (context) => ManagerNotificationScreen(),
+
   };
 }

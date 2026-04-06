@@ -14,10 +14,10 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ChangePasswordProvider>();
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
     Future<void> submitForm() async {
-      if (formKey.currentState?.validate() ?? false) {
+      if (_formKey.currentState?.validate() ?? false) {
         final oldPassword = provider.currentPasswordController.text;
         final newPassword = provider.newPasswordController.text;
 
@@ -71,7 +71,8 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 25.h),
         child: Form(
-          key: formKey,
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -79,11 +80,24 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
               customRichText(labelText: 'Current Password'),
               SizedBox(height: 8.h),
               customTextFormField(
-                labelText: 'Current Password',
                 hintText: 'Enter your current password',
                 controller: provider.currentPasswordController,
-                isPassword: true,
-                validator: passwordValidator,
+                isPassword: !provider.isCurrentPasswordVisible,
+                validator: currentPasswordValidator,
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    provider.toggleCurrentPasswordVisibility(
+                      !provider.isCurrentPasswordVisible,
+                    );
+                  },
+                  child: Icon(
+                    !provider.isCurrentPasswordVisible
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                    color: Color(0xFF4A4C56),
+                    size: 20.sp,
+                  ),
+                ),
               ),
               SizedBox(height: 20.h),
 
@@ -91,11 +105,24 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
               customRichText(labelText: 'New Password'),
               SizedBox(height: 8.h),
               customTextFormField(
-                labelText: 'New Password',
                 hintText: 'Enter your new password',
-                isPassword: true,
+                isPassword: !provider.isNewPasswordVisible,
                 controller: provider.newPasswordController,
-                validator: passwordValidator,
+                validator: newPasswordValidator,
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    provider.toggleNewPasswordVisibility(
+                      !provider.isNewPasswordVisible,
+                    );
+                  },
+                  child: Icon(
+                    !provider.isNewPasswordVisible
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                    color: Color(0xFF4A4C56),
+                    size: 20.sp,
+                  ),
+                ),
               ),
               SizedBox(height: 20.h),
 
@@ -103,11 +130,28 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
               customRichText(labelText: 'Confirm Password'),
               SizedBox(height: 8.h),
               customTextFormField(
-                labelText: 'Confirm New Password',
                 hintText: 'Confirm your new password',
-                isPassword: true,
+                isPassword: !provider.isConfirmPasswordVisible,
                 controller: provider.confirmPasswordController,
-                validator: confirmPasswordValidator,
+                validator:
+                    (value) => confirmPasswordValidator(
+                      value,
+                      provider.newPasswordController.text,
+                    ),
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    provider.toggleConfirmPasswordVisibility(
+                      !provider.isConfirmPasswordVisible,
+                    );
+                  },
+                  child: Icon(
+                    !provider.isConfirmPasswordVisible
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                    color: Color(0xFF4A4C56),
+                    size: 20.sp,
+                  ),
+                ),
               ),
 
               SizedBox(height: 24.h),
@@ -126,20 +170,6 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
                 color: Color(0xffE20613),
               ),
               SizedBox(height: 10.h),
-
-              /// ---------------- Forgot Password -----------------------------
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  'Forgot password?',
-                  style: TextStyle(
-                    color: const Color(0xffE20613),
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-              ),
             ],
           ),
         ),

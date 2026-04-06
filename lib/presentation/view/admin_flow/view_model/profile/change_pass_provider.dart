@@ -18,6 +18,7 @@ class ChangePasswordProvider with ChangeNotifier {
   final _apiService = ApiService();
 
   final TokenStorage _tokenStorage = TokenStorage();
+  bool _isCurrentPasswordVisible = false;
   bool _isNewPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
@@ -26,11 +27,18 @@ class ChangePasswordProvider with ChangeNotifier {
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
+  bool get isCurrentPasswordVisible => _isCurrentPasswordVisible;
+
   bool get isNewPasswordVisible => _isNewPasswordVisible;
 
   bool get isConfirmPasswordVisible => _isConfirmPasswordVisible;
 
   /// ------------------ Toggle Password Visibility ----------------------------
+  void toggleCurrentPasswordVisibility(bool value) {
+    _isCurrentPasswordVisible = value;
+    notifyListeners();
+  }
+
   void toggleNewPasswordVisibility(bool value) {
     _isNewPasswordVisible = value;
     notifyListeners();
@@ -146,8 +154,7 @@ class ChangePasswordProvider with ChangeNotifier {
 
   /// ---------------------- Update Admin Profile -----------------------------
   Future<bool> updateAdminProfile({
-    required String firstName,
-    required String lastName,
+    required String name,
     required String occupation,
     required String dateOfBirth,
     required String phoneNumber,
@@ -164,8 +171,7 @@ class ChangePasswordProvider with ChangeNotifier {
       request.headers['Accept'] = "application/json";
 
       // Add form fields
-      request.fields['first_name'] = firstName;
-      request.fields['last_name'] = lastName;
+      request.fields['name'] = name;
       request.fields['occupation'] = occupation;
       request.fields['date_of_birth'] = dateOfBirth;
       request.fields['phone_number'] = phoneNumber;

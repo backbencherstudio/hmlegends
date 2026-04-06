@@ -35,15 +35,6 @@ void logoutShowSubmitDialog(BuildContext context) {
                         onPressed: () async {
                           await token.clearToken();
                           await userType.clearUserType();
-                          debugPrint(
-                            "====== Token clear : ${await token.getToken()} ===============",
-                          );
-                          debugPrint(
-                            "====== Token clear : ${token.clearToken()} ===============",
-                          );
-                          debugPrint(
-                            "======  clear : ${userType.clearUserType()} ===============",
-                          );
                           if (context.mounted) {
                             Navigator.pushNamedAndRemoveUntil(
                               context,

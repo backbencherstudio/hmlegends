@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
@@ -10,8 +9,7 @@ import 'package:provider/provider.dart';
 class ProfileHeader extends StatelessWidget {
   final File? pickedImage;
   final String? imageUrl;
-  final String fname;
-  final String lname;
+  final String fullName;
   final String occupation;
   final String phoneController;
   final String addressController;
@@ -20,8 +18,8 @@ class ProfileHeader extends StatelessWidget {
   const ProfileHeader({
     this.pickedImage,
     this.imageUrl,
-    required this.fname,
-    required this.lname,
+    required this.fullName,
+
     required this.onImagePick,
     required this.occupation,
     required this.phoneController,
@@ -79,7 +77,7 @@ class ProfileHeader extends StatelessWidget {
         child: Consumer<ChangePasswordProvider>(
           builder: (context, provider, child) {
             final name =
-                "${provider.adminInfoModel?.data?.name ?? fname} ${provider.adminInfoModel?.data?.name ?? lname}";
+                "${provider.adminInfoModel?.data?.name ?? 'N/A'}";
             final occupation =
                 provider.adminInfoModel?.data?.occupation ?? this.occupation;
             return Column(

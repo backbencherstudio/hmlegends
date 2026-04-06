@@ -83,8 +83,7 @@ class InvoiceSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: isWide ? double.infinity : null,
-      height: 100.h,
-      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
+      padding: EdgeInsets.all(12.r),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10.r),
@@ -101,35 +100,29 @@ class InvoiceSummaryCard extends StatelessWidget {
         ],
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Flexible(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 20.sp,
-                fontWeight: FontWeight.w600,
-                color: isHighlighted ? Colors.black : Colors.black,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w600,
+              color: isHighlighted ? Colors.black : Colors.black,
             ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: 4.h),
-          Flexible(
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 14.sp,
-                  color: AppColors.authBodyTextColor,
-                  fontWeight: FontWeight.w500
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 14.sp,
+                color: AppColors.authBodyTextColor,
+                fontWeight: FontWeight.w500
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

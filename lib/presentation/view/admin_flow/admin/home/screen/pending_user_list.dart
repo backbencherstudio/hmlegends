@@ -151,7 +151,7 @@ class PendingUserList extends StatelessWidget {
                                         : Text(
                                           "Accept",
                                           style: TextStyle(
-                                            fontSize: 14.sp,
+                                            fontSize: 12.sp,
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -179,20 +179,16 @@ class PendingUserList extends StatelessWidget {
 
                                           if (!context.mounted) return;
 
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                "${user.name ?? "User"} rejected",
-                                              ),
-                                            ),
+                                          Utils.showToast(
+                                            msg: '${user.name} rejected',
+                                            backgroundColor: Colors.red,
+                                            textColor: Colors.white,
                                           );
                                         },
                                 child: Text(
                                   "Reject",
                                   style: TextStyle(
-                                    fontSize: 14.sp,
+                                    fontSize: 12.sp,
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                   ),

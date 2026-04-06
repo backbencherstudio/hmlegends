@@ -58,9 +58,24 @@ class _AdminNotificationScreenState extends State<AdminNotificationScreen> {
       body:
           notificationData.isEmpty
               ? Center(
-                child: Text(
-                  'No notifications',
-                  style: TextStyle(fontSize: 18.sp, color: Colors.grey),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.notifications_none,
+                      size: 80,
+                      color: Colors.grey.shade400,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'No notifications Found',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.grey.shade400,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               )
               : ListView.separated(

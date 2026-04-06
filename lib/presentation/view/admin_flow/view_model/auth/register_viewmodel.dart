@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hmlegends/data/model/response_model.dart';
 import '../../../../../core/constant/api_endpoint.dart';
@@ -63,6 +62,7 @@ class RegisterProvider extends ChangeNotifier {
     required String name,
     required String email,
     required String password,
+    required String type
   }) async {
     try {
       _setLoading(true);
@@ -70,21 +70,21 @@ class RegisterProvider extends ChangeNotifier {
         "name": name,
         "email": email,
         "password": password,
-        "type": "admin",
+        "type": type,
       };
       var response = await _apiService.postHttp(ApiEndpoints.register, data: data);
 
-      final decodedData = response.data;
+      final decodedData = response;
       final message = decodedData['message'];
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response['success']) {
         return ResponseModel(success: true, message: message);
       } else {
         return ResponseModel(success: false, message: message);
       }
     } catch (e) {
       logger.e("Register Error: $e");
-      rethrow;
+     return ResponseModel(success: false, message: e.toString());
     } finally {
       _setLoading(false);
     }
