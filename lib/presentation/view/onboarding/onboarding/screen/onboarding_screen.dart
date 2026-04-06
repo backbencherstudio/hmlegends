@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/network/network_service.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import '../../../auth/widget/onboarding_elevated_button.dart';
 
@@ -16,6 +17,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _currentPage = 0;
 
   void _navigateToSignUp(String role) {
+    logger.d("Type : $role");
     Navigator.pushNamed(
       context,
       RouteNames.signUpScreen,
@@ -33,25 +35,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+      extendBodyBehindAppBar: true,
       body: Container(
-        decoration: _currentPage == 0
-            ? _buildPage1Decoration()
-            : _buildPage2Decoration(),
-        child: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  onPageChanged: (int page) {
-                    setState(() => _currentPage = page);
-                  },
-                  children: [_buildPage1(), _buildPage2()],
-                ),
+        decoration:
+            _currentPage == 0
+                ? _buildPage1Decoration()
+                : _buildPage2Decoration(),
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (int page) {
+                  setState(() => _currentPage = page);
+                },
+                children: [_buildPage1(), _buildPage2()],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

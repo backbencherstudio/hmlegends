@@ -15,6 +15,12 @@ class ManageBranchProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  ///------------------------------ Toggle Password Visibility -----------------
+  bool isPasswordVisible = false;
+  void togglePasswordVisibility() {
+    isPasswordVisible = !isPasswordVisible;
+    notifyListeners();
+  }
 
   // Image selection variables
   File? _selectedImageFile;
@@ -22,7 +28,9 @@ class ManageBranchProvider extends ChangeNotifier {
   String? _imageSize;
 
   File? get selectedImageFile => _selectedImageFile;
+
   String? get imageFormat => _imageFormat;
+
   String? get imageSize => _imageSize;
 
   void setSelectedImageFile(File? value) {
@@ -40,12 +48,11 @@ class ManageBranchProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   ///-------------------- Dropdown values --------------------------------------
   String? selectedProduct;
   String? _selectedStockStatus;
-  String? get selectedStockStatus => _selectedStockStatus;
 
+  String? get selectedStockStatus => _selectedStockStatus;
 
   /// -------------------- Dropdown options ------------------------------------
   final List<String> stockStatusOptions = ['ACTIVE', 'LOCKED'];
@@ -90,6 +97,8 @@ class ManageBranchProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+
+
   /// ---------------------------- Get All Branch ------------------------------
 
   Future<void> allBranch() async {
@@ -110,14 +119,14 @@ class ManageBranchProvider extends ChangeNotifier {
         final data = jsonDecode(response.body);
         _manageBranchModel = ManageBranchModel.fromJson(data);
         notifyListeners();
-        debugPrint(
+        logger.d(
           "The response model data is ${_manageBranchModel?.data?.managers![0].address}",
         );
       } else {
-        debugPrint("Failed: ${response.statusCode}");
+        logger.d("Failed: ${response.statusCode}");
       }
     } catch (error) {
-      debugPrint("Error: $error");
+      logger.e("Error: $error");
       notifyListeners();
     }
   }
@@ -202,49 +211,77 @@ class ManageBranchProvider extends ChangeNotifier {
 
   /// ---------------------------- Update Branch ------------------------------
   Future<dynamic> updateBranch({
-    required String managerId,
     required String name,
     required String address,
     required String status,
     File? image,
+    required String branchId,
   }) async {
     try {
+      isLoading = true;
+      notifyListeners();
+
       final token = await _tokenStorage.getToken();
+      var url = Uri.parse(ApiEndpoints.updateBranch(branchId));
+      logger.i("Update URL : $url");
+      var request = http.MultipartRequest('PATCH', url);
+      logger.d("Update Branch Request : $request");
+      request.headers['Authorization'] = 'Bearer $token';
+      request.fields['name'] = name;
+      request.fields['address'] = address;
+      request.fields['status'] = status;
 
-      var url = Uri.parse(ApiEndpoints.updateBranch(managerId));
-      final body = jsonEncode({
-        "name": name,
-        "address": address,
-        "status": status,
-        "image": image?.path,
-      });
-      var response = await http.patch(
-        url,
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json",
-        },
-        body: body,
-      );
+      if (image != null) {
 
-      logger.d("The body data is $body");
-      logger.i("Response url : ${response.request?.url}");
-      logger.i("Response status code: ${response.statusCode}");
-      logger.i("Response body: ${response.body}");
-      final decodeData = jsonDecode(response.body);
+        request.files.add(
+          await http.MultipartFile.fromPath('image', image.path),
+        );
+      }
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      logger.i("Status code: ${response.statusCode}");
+      logger.i("Raw body: ${response.body}");
+
+      // ✅ Guard: check Content-Type or try-catch JSON decode separately
+      final contentType = response.headers['content-type'] ?? '';
+      if (!contentType.contains('application/json')) {
+        logger.e("Unexpected response format: $contentType");
+        logger.e("Body: ${response.body}");
+        return {
+          "success": false,
+          "message":
+              "Server returned an unexpected response (status: ${response.statusCode}). Please check the API URL or server logs.",
+        };
+      }
+
+      dynamic decodeData;
+      try {
+        decodeData = jsonDecode(response.body);
+      } catch (e) {
+        logger.e("JSON decode failed: $e");
+        logger.e("Raw body was: ${response.body}");
+        return {
+          "success": false,
+          "message": "Failed to parse server response.",
+        };
+      }
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final message = decodeData['message'];
-        logger.d("The success message ${decodeData['message']}");
-        notifyListeners();
-        return {"success": true, "message": message};
+        return {"success": true, "message": decodeData['message']};
       } else {
-        final message = decodeData['message'];
-        logger.i("Failed to update branch: ${response.statusCode}");
-        return {"success": false, "message": message};
+        return {
+          "success": false,
+          "message": decodeData['message'] ?? "Unknown error",
+        };
       }
     } catch (error) {
-      logger.i("The error message $error");
-      return error;
+      logger.i("Error: $error");
+      return {"success": false, "message": error.toString()};
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 }

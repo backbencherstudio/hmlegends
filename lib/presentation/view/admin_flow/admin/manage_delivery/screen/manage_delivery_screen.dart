@@ -40,11 +40,10 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
       backgroundColor: AppColors.bgColor,
       appBar: CustomAppBarTwo(
         title: 'Manage Delivery',
-        profileImage:
-            '${data?.avatar}',
+        profileImage: '${data?.avatar}',
         notificationCount: notification?.length ?? 0,
-        colorMain: Colors.white,
-        colorSpace: Colors.white,
+        colorMain: const Color(0xFFFFF5F5),
+        colorSpace: const Color(0xFFFFF5F5),
         onBackTap: () => Navigator.pop(context),
       ),
       body: Padding(
@@ -59,7 +58,28 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
             // Check if data is null or empty
             if (provider.allDeliveriesModel?.data == null ||
                 provider.allDeliveriesModel!.data!.isEmpty) {
-              return const Center(child: Text('No deliveries available'));
+              return Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.delivery_dining_outlined,
+                      size: 48.sp,
+                      color: Colors.grey.shade400,
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      'No deliveries available',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.grey.shade400,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
 
             return ListView.separated(

@@ -12,13 +12,10 @@ class ChangeInfoDriver extends StatefulWidget {
   const ChangeInfoDriver({super.key});
 
   @override
-  State<ChangeInfoDriver> createState() =>
-      _HeadOfficeChangeInfoScreenState();
+  State<ChangeInfoDriver> createState() => _HeadOfficeChangeInfoScreenState();
 }
 
-class _HeadOfficeChangeInfoScreenState
-    extends State<ChangeInfoDriver> {
-
+class _HeadOfficeChangeInfoScreenState extends State<ChangeInfoDriver> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _occupationController = TextEditingController();
@@ -80,10 +77,11 @@ class _HeadOfficeChangeInfoScreenState
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: GestureDetector(
-            onTap: (){
-              Navigator.pop(context);
-            },
-            child: Icon(Icons.arrow_back_ios,color: Colors.white,)),
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(Icons.arrow_back_ios, color: Colors.white),
+        ),
         title: const Text(
           "Update Profile",
           style: TextStyle(color: Colors.white),
@@ -96,8 +94,8 @@ class _HeadOfficeChangeInfoScreenState
             _ProfileHeader(
               pickedImage: _selectedImage,
               imageUrl: _existingImageUrl,
-              fname: _firstNameController.text,
-              lname: _lastNameController.text,
+              firstNme: _firstNameController.text,
+              lastName: _lastNameController.text,
               onImagePick: chooseImage,
               occupation: _occupationController.text,
               phoneController: _phoneController.text,
@@ -107,27 +105,31 @@ class _HeadOfficeChangeInfoScreenState
             LabeledInputField(
               label: "First Name",
               placeholder: "",
-              controller: _firstNameController, validator: nameValidator,
+              controller: _firstNameController,
+              validator: nameValidator,
             ),
             LabeledInputField(
               label: "Last Name",
               placeholder: "",
-              controller: _lastNameController, validator: nameValidator,
+              controller: _lastNameController,
+              validator: nameValidator,
             ),
             LabeledInputField(
               label: "Occupation",
               placeholder: "",
-              controller: _occupationController, validator: (String? value) { 
+              controller: _occupationController,
+              validator: (String? value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Occupation cannot be empty';
                 }
                 return null;
-               },
+              },
             ),
             LabeledInputField(
               label: "Date of Birth",
               placeholder: "YYYY-MM-DD",
-              controller: _dateOfBirthController, validator: (String? value) { 
+              controller: _dateOfBirthController,
+              validator: (String? value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Date of Birth cannot be empty';
                 }
@@ -137,39 +139,42 @@ class _HeadOfficeChangeInfoScreenState
                   return 'Date of Birth must be in YYYY-MM-DD format';
                 }
                 return null;
-               },
+              },
             ),
             LabeledInputField(
               label: "Phone Number",
               placeholder: "",
               controller: _phoneController,
-              isNumeric: true, validator: (String? value) { 
+              isNumeric: true,
+              validator: (String? value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Phone Number cannot be empty';
                 }
                 return null;
-               },
+              },
             ),
             LabeledInputField(
               label: "City",
               placeholder: "",
-              controller: _cityController, validator: (String? value) { 
+              controller: _cityController,
+              validator: (String? value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'City cannot be empty';
                 }
                 return null;
-               },
+              },
             ),
             LabeledInputField(
               label: "Address",
               placeholder: "",
               controller: _addressController,
-              isMultiline: true, validator: (String? value) { 
+              isMultiline: true,
+              validator: (String? value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Address cannot be empty';
                 }
                 return null;
-               },
+              },
             ),
 
             SizedBox(height: 20.h),
@@ -189,9 +194,11 @@ class _HeadOfficeChangeInfoScreenState
                     image: _selectedImage,
                   );
 
-                  if(success){
+                  if (success) {
                     debugPrint('========');
-                    await context.read<DriverProfileScreenProvider>().checkMeDriver();
+                    await context
+                        .read<DriverProfileScreenProvider>()
+                        .checkMeDriver();
                   }
 
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -232,8 +239,8 @@ class _HeadOfficeChangeInfoScreenState
 class _ProfileHeader extends StatelessWidget {
   final File? pickedImage;
   final String? imageUrl;
-  final String fname;
-  final String lname;
+  final String firstNme;
+  final String lastName;
   final String occupation;
   final String phoneController;
   final String addressController;
@@ -242,8 +249,8 @@ class _ProfileHeader extends StatelessWidget {
   const _ProfileHeader({
     this.pickedImage,
     this.imageUrl,
-    required this.fname,
-    required this.lname,
+    required this.firstNme,
+    required this.lastName,
     required this.onImagePick,
     required this.occupation,
     required this.phoneController,
@@ -254,7 +261,7 @@ class _ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget displayImage;
 
-    final provider =  context.watch<DriverProfileScreenProvider>();
+    final provider = context.watch<DriverProfileScreenProvider>();
 
     if (pickedImage != null) {
       displayImage = Image.file(
@@ -291,7 +298,7 @@ class _ProfileHeader extends StatelessWidget {
         borderRadius: BorderRadius.circular(18.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 12.r,
             offset: Offset(0, 4.h),
           ),
@@ -338,7 +345,7 @@ class _ProfileHeader extends StatelessWidget {
             Text(
               provider.checkMeModelDriver?.data?.occupation ?? '',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 fontSize: 15.sp,
               ),
             ),
@@ -355,6 +362,7 @@ class LabeledInputField extends StatelessWidget {
   final bool isNumeric;
   final bool isMultiline;
   final TextEditingController controller;
+  final String? Function(String? value) validator;
 
   const LabeledInputField({
     super.key,
@@ -362,7 +370,8 @@ class LabeledInputField extends StatelessWidget {
     required this.placeholder,
     required this.controller,
     this.isNumeric = false,
-    this.isMultiline = false, required String? Function(String? value) validator,
+    this.isMultiline = false,
+    required this.validator,
   });
 
   @override
@@ -381,7 +390,7 @@ class LabeledInputField extends StatelessWidget {
             ),
           ),
           SizedBox(height: 6.h),
-          TextField(
+          TextFormField(
             controller: controller,
             maxLines: isMultiline ? 3 : 1,
             keyboardType: isNumeric ? TextInputType.phone : TextInputType.text,
@@ -392,6 +401,7 @@ class LabeledInputField extends StatelessWidget {
                 borderSide: BorderSide(color: Colors.grey.shade300),
               ),
             ),
+            validator: validator,
           ),
         ],
       ),

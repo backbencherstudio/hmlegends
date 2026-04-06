@@ -9,12 +9,19 @@ class AdminProductModel {
   AdminProductModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
+
     if (json['data'] != null) {
-      data = <Data>[];
-      json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
-      });
+      data = [];
+
+      if (json['data'] is List) {
+        for (var v in json['data']) {
+          data!.add(Data.fromJson(v));
+        }
+      } else if (json['data'] is Map) {
+        data!.add(Data.fromJson(json['data']));
+      }
     }
+
     nextCursor = json['next_cursor'];
   }
 

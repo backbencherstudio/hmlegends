@@ -1,5 +1,7 @@
 import 'package:hmlegends/presentation/view/admin_flow/admin/manage_delivery/view_model/delivery_provider.dart';
+import 'package:hmlegends/presentation/view/branch_manager_flow/notification/view_model/manager_notification_provider.dart';
 import 'package:hmlegends/presentation/view/branch_manager_flow/orders/viewmodel/create_order_viewmodel.dart';
+import 'package:hmlegends/presentation/view/branch_manager_flow/profile/view_model/manger_profile_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import '../../presentation/view/admin_flow/admin/invoice/view_model/admin_invoice_provider.dart';
@@ -59,6 +61,8 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => AdminNotificationProvider()),
     ChangeNotifierProvider(create: (_) => TrackingProvider()),
     ChangeNotifierProvider(create: (_) => ManageBranchProvider()),
+     ChangeNotifierProvider(create: (_) => ManagerProfileProvider()),
+     ChangeNotifierProvider(create: (_) => ManagerNotificationProvider()),
   ];
 
   static List<SingleChildWidget> getProviders() {

@@ -76,9 +76,9 @@ class Summary {
 class Managers {
   String? id;
   String? name;
-  String? address; // ✅ now can be String or null
+  String? address;
   String? status;
-  String? avatar; // ✅ now can be String or null
+  String? avatar;
   String? createdAt;
   String? updatedAt;
 

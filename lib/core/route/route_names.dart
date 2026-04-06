@@ -16,7 +16,7 @@ class RouteNames {
   static const String viewDetails = '/viewDetails';
   static const String profileScreen = '/profileScreen';
   static const String changePassword = '/changePassword';
-  static const String changeInfo = '/changeInfo';
+  static const String managerChangeInfo = '/managerChangeInfo';
   static const String notificationScreen = '/notificationScreen';
   static const String driverScreen = '/driverScreen';
   static const String driverBottomNavBar = '/driverBottomNavBar';
@@ -50,4 +50,7 @@ class RouteNames {
   static const String adminNotificationScreen = '/adminNotificationScreen';
   static const String pendingUserList = '/pendingUserList';
   static const String trackingScreen = '/trackingScreen';
+  static const String managerProfileScreen = '/managerProfileScreen';
+  static const String managerNotificationScreen = '/managerNotificationScreen';
+  static const String managerChangePassword = '/managerChangePassword';
 }
