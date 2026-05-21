@@ -110,6 +110,7 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
               _buildLabel("Branch name"),
               customTextFormField(
                 hintText: "Enter branch name",
+                textInputAction: TextInputAction.next,
                 controller: _nameController,
                 validator: branchNameValidator,
               ),
@@ -118,6 +119,7 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
               _buildLabel("Branch Address"),
               customTextFormField(
                 hintText: "Enter branch address",
+                textInputAction: TextInputAction.next,
                 controller: _addressController,
                 validator: branchAddressValidator,
               ),
@@ -132,6 +134,7 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
               _buildLabel("Email"),
               customTextFormField(
                 hintText: "Enter your email",
+                textInputAction: TextInputAction.next,
                 controller: _emailController,
                 validator: emailValidator,
               ),
@@ -140,6 +143,7 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
               _buildLabel("Password"),
               customTextFormField(
                 hintText: "Enter your password",
+                textInputAction: TextInputAction.done,
                 controller: _passwordController,
                 validator: passwordValidator,
                 isPassword: true,

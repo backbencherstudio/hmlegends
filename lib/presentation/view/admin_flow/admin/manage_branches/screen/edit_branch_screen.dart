@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/view_model/manage_branch_provider.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/model/single_branch_model.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
@@ -28,6 +31,9 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   final List<String> stockStatusOptions = ['ACTIVE', 'LOCKED'];
 
   final ImagePicker _imagePicker = ImagePicker();
+
+  bool _isInitialized = false;
+  bool _isExistingImageRemoved = false;
 
   Future<void> _selectImage() async {
     // Handle image selection logic here
@@ -96,6 +102,13 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
     final branchAddress = singleBranch?.address;
     final branchStatus = singleBranch?.status;
 
+    // Initialize controller values once branch data loads
+    if (singleBranch != null && !_isInitialized) {
+      _nameController.text = branchName ?? "";
+      _addressController.text = branchAddress ?? "";
+      _isInitialized = true;
+    }
+
     // Set the selected status in the provider when data loads
     if (branchStatus != null && mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -122,128 +135,134 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
         onBackTap: () => Navigator.pop(context),
         profileImage: '${profile?.avatar}',
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildLabel("Branch name"),
-            _buildTextField(
-              hint: "Branch name with ID",
-              controller:
-                  branchName != null
-                      ? TextEditingController(text: branchName)
-                      : null,
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a branch name';
-                }
-                return null;
-              },
-            ),
-
-            SizedBox(height: 16.h),
-            _buildLabel("Branch location"),
-            _buildTextField(
-              hint: "Add location",
-              controller:
-                  branchAddress != null
-                      ? TextEditingController(text: branchAddress)
-                      : null,
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a branch location';
-                }
-                return null;
-              },
-            ),
-
-            SizedBox(height: 16.h),
-
-            /// ----------------------- Status(Active/Inactive) ----------------
-            _buildLabel("Status"),
-            Container(
-              decoration: BoxDecoration(
-                color: AppColors.editTextFieldColor,
-                borderRadius: BorderRadius.circular(8.r),
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildLabel("Branch name"),
+              _buildTextField(
+                hint: "Branch name with ID",
+                controller: _nameController,
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a branch name';
+                  }
+                  return null;
+                },
               ),
-              padding: EdgeInsets.symmetric(horizontal: 14.w),
-              child: DropdownButtonHideUnderline(
+
+              SizedBox(height: 16.h),
+              _buildLabel("Branch location"),
+              _buildTextField(
+                hint: "Add location",
+                controller: _addressController,
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a branch location';
+                  }
+                  return null;
+                },
+              ),
+
+              SizedBox(height: 16.h),
+
+              /// ----------------------- Status(Active/Inactive) ----------------
+              _buildLabel("Status"),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.editTextFieldColor,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 14.w),
+                child: DropdownButtonHideUnderline(
+                  child: Consumer<ManageBranchProvider>(
+                    builder: (context, provider, child) {
+                      return DropdownButton<String>(
+                        value: provider.selectedStockStatus,
+                        isExpanded: true,
+                        icon: const Icon(Icons.arrow_drop_down),
+                        hint: Text(
+                          "Select",
+                          style: TextStyle(color: Colors.grey[500]),
+                        ),
+                        dropdownColor: AppColors.editTextFieldColor,
+                        borderRadius: BorderRadius.circular(8.r),
+                        style: TextStyle(color: Colors.grey[600]),
+                        items:
+                            stockStatusOptions.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                        onChanged: (String? newValue) {
+                          provider.toggleStockStatus(newValue);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 24.h),
+              _buildLabel("Upload product Image"),
+              _buildImageUploader(singleBranchProvider.singleBranchModel),
+              SizedBox(height: 24.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: Consumer<ManageBranchProvider>(
-                  builder: (context, provider, child) {
-                    return DropdownButton<String>(
-                      value: provider.selectedStockStatus,
-                      isExpanded: true,
-                      icon: const Icon(Icons.arrow_drop_down),
-                      hint: Text(
-                        "Select",
-                        style: TextStyle(color: Colors.grey[500]),
+                  builder: (
+                    BuildContext context,
+                    ManageBranchProvider provider,
+                    Widget? child,
+                  ) {
+                    return AuthButton(
+                      text: Text(
+                        'Save & Update',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      dropdownColor: AppColors.editTextFieldColor,
-                      borderRadius: BorderRadius.circular(8.r),
-                      style: TextStyle(color: Colors.grey[600]),
-                      items:
-                          stockStatusOptions.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
+                      onPressed: () async {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          final res = await provider.updateBranch(
+                            managerId: widget.managerId,
+                            name: _nameController.text.trim(),
+                            address: _addressController.text.trim(),
+                            status: provider.selectedStockStatus ?? "ACTIVE",
+                            image: provider.selectedImageFile,
+                          );
+                          
+                          if (res != null && res["success"] == true) {
+                            Utils.showToast(
+                              msg: res["message"] ?? 'Manager updated successfully',
+                              backgroundColor: Colors.green,
+                              textColor: Colors.white,
                             );
-                          }).toList(),
-                      onChanged: (String? newValue) {
-                        provider.toggleStockStatus(newValue);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          } else {
+                            Utils.showToast(
+                              msg: res != null ? res["message"] ?? 'Failed to update branch' : 'Failed to update branch',
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                            );
+                          }
+                        }
                       },
+                      color: AppColors.primaryColor,
                     );
                   },
                 ),
               ),
-            ),
-
-            SizedBox(height: 24.h),
-            _buildLabel("Upload product Image"),
-            _buildImageUploader(),
-            SizedBox(height: 24.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Consumer<ManageBranchProvider>(
-                builder: (
-                  BuildContext context,
-                  ManageBranchProvider provider,
-                  Widget? child,
-                ) {
-                  return AuthButton(
-                    text: Text(
-                      'Save & Update',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    onPressed: () {
-                      // Handle save and update logic here
-                      if (_formKey.currentState!.validate()) {
-                        provider.updateBranch(
-                          managerId: widget.managerId,
-                          name:
-                              _nameController.text.trim().isNotEmpty
-                                  ? _nameController.text.trim()
-                                  : branchName ?? "",
-                          address:
-                              _addressController.text.trim().isNotEmpty
-                                  ? _addressController.text.trim()
-                                  : branchAddress ?? "",
-                          status: provider.selectedStockStatus ?? "ACTIVE",
-                          // image: selectedImage, // Handle image selection logic
-                        );
-                      }
-                      Navigator.pop(context);
-                    },
-                    color: AppColors.primaryColor,
-                  );
-                },
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -292,150 +311,143 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   );
 
   // Upload Image Box
-  Widget _buildImageUploader() => Container(
-    width: double.infinity,
-    height:
-        context.read<ManageBranchProvider>().selectedImageFile != null
-            ? 200.h
-            : 160.h,
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12.r),
-      color: AppColors.editTextFieldColor,
-    ),
-    child: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+  Widget _buildImageUploader(SingleBranchModel? singleBranchModel) {
+    final provider = Provider.of<ManageBranchProvider>(context);
+    final selectedFile = provider.selectedImageFile;
+
+    final avatar = singleBranchModel?.data?.avatar ?? '';
+    final String fullAvatarUrl;
+    if (avatar.startsWith('http')) {
+      fullAvatarUrl = avatar;
+    } else if (avatar.isNotEmpty) {
+      if (avatar.startsWith('/')) {
+        fullAvatarUrl = "${ApiEndpoints.baseUrl}$avatar";
+      } else {
+        fullAvatarUrl = "${ApiEndpoints.baseUrl}/storage/avatar/$avatar";
+      }
+    } else {
+      fullAvatarUrl = '';
+    }
+
+    final hasLocalImage = selectedFile != null;
+    final hasRemoteImage = avatar.isNotEmpty && !_isExistingImageRemoved;
+
+    if (hasLocalImage || hasRemoteImage) {
+      return Stack(
         children: [
-          GestureDetector(
-            onTap: () => _selectImage(),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.r),
-                border: Border.all(color: Colors.redAccent, width: 1.2),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(AssetPaths.addIcon1, height: 20.h, width: 20.w),
-                  SizedBox(width: 6.w),
-                  Text(
-                    'Upload photos',
-                    style: TextStyle(
-                      color: Colors.redAccent,
-                      fontWeight: FontWeight.w600,
+          Container(
+            width: double.infinity,
+            height: 180.h,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.r),
+              color: AppColors.editTextFieldColor,
+              border: Border.all(color: Colors.grey[300]!, width: 1),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.r),
+              child: hasLocalImage
+                  ? Image.file(
+                      selectedFile,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: 180.h,
+                    )
+                  : Image.network(
+                      fullAvatarUrl,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: 180.h,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: AppColors.editTextFieldColor,
+                          child: Icon(
+                            Icons.broken_image_outlined,
+                            size: 40.sp,
+                            color: Colors.grey,
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                ],
+            ),
+          ),
+          Positioned(
+            top: 8.h,
+            right: 8.w,
+            child: GestureDetector(
+              onTap: () {
+                if (hasLocalImage) {
+                  provider.setSelectedImageFile(null);
+                  provider.setImageFormat(null);
+                  provider.setImageSize(null);
+                } else {
+                  setState(() {
+                    _isExistingImageRemoved = true;
+                  });
+                }
+              },
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
+                padding: EdgeInsets.all(6.r),
+                child: Icon(
+                  Icons.close,
+                  color: Colors.white,
+                  size: 16.sp,
+                ),
               ),
             ),
           ),
-          SizedBox(height: 16.h),
-          if (context.read<ManageBranchProvider>().selectedImageFile != null)
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Read-only Format Field
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 14.w,
-                    vertical: 12.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8.r),
-                    border: Border.all(color: Colors.grey[300]!),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.lock, size: 16.sp, color: Colors.grey[600]),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Format',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              context
-                                      .read<ManageBranchProvider>()
-                                      .imageFormat ??
-                                  'Unknown',
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+        ],
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      height: 160.h,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12.r),
+        color: AppColors.editTextFieldColor,
+        border: Border.all(color: Colors.grey[200]!, width: 1),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () => _selectImage(),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.r),
+                  border: Border.all(color: Colors.redAccent, width: 1.2),
                 ),
-                SizedBox(height: 10.h),
-                // Read-only Size Field
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 14.w,
-                    vertical: 12.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8.r),
-                    border: Border.all(color: Colors.grey[300]!),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.lock, size: 16.sp, color: Colors.grey[600]),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'File Size',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              context.read<ManageBranchProvider>().imageSize ??
-                                  'Unknown',
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(AssetPaths.addIcon1, height: 20.h, width: 20.w),
+                    SizedBox(width: 6.w),
+                    Text(
+                      'Upload photos',
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            )
-          else
+              ),
+            ),
+            SizedBox(height: 16.h),
             Text(
               "JPEG, PNG up to 50 MB",
               style: TextStyle(color: Colors.grey[600], fontSize: 13.sp),
             ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

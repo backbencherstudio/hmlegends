@@ -106,4 +106,6 @@ class ApiEndpoints {
   static String addNewBranch = '$baseUrl/api/auth/create-manager';
   static String updateBranch(String managerId) =>
       '$baseUrl/api/auth/update-manager/$managerId';
+  static String toggleBranchStatus(String userId) =>
+      '$baseUrl/api/auth/toggle-status/$userId';
 }
