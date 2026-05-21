@@ -8,13 +8,13 @@ class SingleDeliveryModelDriver {
   SingleDeliveryModelDriver.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = {};
+    data['success'] = success;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -30,13 +30,14 @@ class Data {
   String? signatureUrl;
   Order? order;
 
-  Data(
-      {this.id,
-        this.status,
-        this.receivedAt,
-        this.deliveredAt,
-        this.signatureUrl,
-        this.order});
+  Data({
+    this.id,
+    this.status,
+    this.receivedAt,
+    this.deliveredAt,
+    this.signatureUrl,
+    this.order,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -44,18 +45,18 @@ class Data {
     receivedAt = json['received_at'];
     deliveredAt = json['delivered_at'];
     signatureUrl = json['signature_url'];
-    order = json['order'] != null ? new Order.fromJson(json['order']) : null;
+    order = json['order'] != null ? Order.fromJson(json['order']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['status'] = this.status;
-    data['received_at'] = this.receivedAt;
-    data['delivered_at'] = this.deliveredAt;
-    data['signature_url'] = this.signatureUrl;
-    if (this.order != null) {
-      data['order'] = this.order!.toJson();
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['status'] = status;
+    data['received_at'] = receivedAt;
+    data['delivered_at'] = deliveredAt;
+    data['signature_url'] = signatureUrl;
+    if (order != null) {
+      data['order'] = order!.toJson();
     }
     return data;
   }
@@ -69,24 +70,24 @@ class Order {
   Order({this.user, this.totalQuantity, this.orderItems});
 
   Order.fromJson(Map<String, dynamic> json) {
-    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
     totalQuantity = json['total_quantity'];
     if (json['order_items'] != null) {
       orderItems = <OrderItems>[];
       json['order_items'].forEach((v) {
-        orderItems!.add(new OrderItems.fromJson(v));
+        orderItems!.add(OrderItems.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.user != null) {
-      data['user'] = this.user!.toJson();
+    final Map<String, dynamic> data = {};
+    if (user != null) {
+      data['user'] = user!.toJson();
     }
-    data['total_quantity'] = this.totalQuantity;
-    if (this.orderItems != null) {
-      data['order_items'] = this.orderItems!.map((v) => v.toJson()).toList();
+    data['total_quantity'] = totalQuantity;
+    if (orderItems != null) {
+      data['order_items'] = orderItems!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -108,11 +109,11 @@ class User {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['city'] = this.city;
-    data['address'] = this.address;
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['name'] = name;
+    data['city'] = city;
+    data['address'] = address;
     return data;
   }
 }
@@ -128,15 +129,15 @@ class OrderItems {
     id = json['id'];
     quantity = json['quantity'];
     product =
-    json['product'] != null ? new Product.fromJson(json['product']) : null;
+        json['product'] != null ? Product.fromJson(json['product']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['quantity'] = this.quantity;
-    if (this.product != null) {
-      data['product'] = this.product!.toJson();
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['quantity'] = quantity;
+    if (product != null) {
+      data['product'] = product!.toJson();
     }
     return data;
   }
@@ -154,9 +155,9 @@ class Product {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['name'] = name;
     return data;
   }
 }

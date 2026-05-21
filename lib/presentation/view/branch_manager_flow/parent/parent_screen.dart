@@ -4,9 +4,8 @@ import 'package:hmlegends/presentation/view/branch_manager_flow/orders/presentat
 import 'package:provider/provider.dart';
 import '../../admin_flow/admin/profile/screen/head_office_profile_screen.dart';
 import '../../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
-import '../Invoice/presentation/Invoice_screen.dart';
+import '../Invoice/presentation/invoice_screen.dart';
 import '../home/home_screen.dart';
-import '../orders/presentation/view/orders_screen.dart';
 import 'bottom_nav_bar.dart';
 
 class BranchParentScreen extends StatefulWidget {
@@ -17,15 +16,6 @@ class BranchParentScreen extends StatefulWidget {
 }
 
 class _BranchParentScreenState extends State<BranchParentScreen> {
-
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   WidgetsBinding.instance.addPersistentFrameCallback((_) async {
-  //     await context.read<ChangePasswordProvider>().adminCheckMe();
-  //   });
-  // }
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [

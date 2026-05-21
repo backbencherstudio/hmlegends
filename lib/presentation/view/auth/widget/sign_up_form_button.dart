@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/core/constant/app_colors.dart';
 
 class SignUpFormButton extends StatelessWidget {
   const SignUpFormButton({
@@ -30,11 +29,7 @@ class SignUpFormButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              image,
-              width: 24.w,
-              height: 24.h,
-            ),
+            Image.asset(image, width: 24.w, height: 24.h),
             SizedBox(width: 10.w),
             Text(
               title,

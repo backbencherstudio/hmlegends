@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
@@ -58,129 +57,6 @@ class HeadOfficeHomeScreen extends StatelessWidget {
       ),
     );
   }
-
-  /// ------------- Stock Card Widget ------------------------------------------
-  Widget _stockCard(BuildContext context) => Container(
-    padding: EdgeInsets.all(16.w),
-    decoration: BoxDecoration(
-      color: AppColors.headOfficeRadiusColor,
-      borderRadius: BorderRadius.circular(10.r),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Icon(CupertinoIcons.calendar, color: Colors.white, size: 16.w),
-                SizedBox(width: 8.w),
-                Text(
-                  '20 Sep, 2025',
-                  style: TextStyle(color: Colors.white, fontSize: 14.sp),
-                ),
-              ],
-            ),
-
-            /// ---------------- Stock Chip -------------------------------------
-            _stockChip(),
-          ],
-        ),
-
-        SizedBox(height: 10.h),
-
-        Text(
-          'Stock Management',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 18.sp,
-          ),
-        ),
-
-        SizedBox(height: 10.h),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Stock level',
-              style: TextStyle(color: Colors.white, fontSize: 14.sp),
-            ),
-            Text(
-              '15%',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-
-        SizedBox(height: 8.h),
-        Container(
-          height: 12.h,
-          decoration: BoxDecoration(
-            color: Colors.white24,
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              double progress = 0.15; // 15%
-              return Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white24,
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                  ),
-                  Container(
-                    width: constraints.maxWidth * progress,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ],
-    ),
-  );
-
-  /// --------------- Stock Chip Widget ----------------------------------------
-  Widget _stockChip() => Container(
-    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16.r),
-    ),
-    child: Row(
-      children: [
-        Icon(
-          CupertinoIcons.exclamationmark_triangle_fill,
-          color: Colors.red,
-          size: 16.sp,
-        ),
-        SizedBox(width: 5.w),
-        Transform.translate(
-          offset: Offset(0, 1.h),
-          child: Text(
-            'Stock Low',
-            style: TextStyle(
-              color: AppColors.headOfficeRadiusColor,
-              fontSize: 14.sp,
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
 
   Widget _gridCards(BuildContext context, HomeScreenProvider provider) {
     final data = provider.invoiceStatusModel?.data;
@@ -274,6 +150,7 @@ class HeadOfficeHomeScreen extends StatelessWidget {
                 return InfoCard(
                   onTaps: () async {
                     await provider.getPendingUser();
+                    // ignore: use_build_context_synchronously
                     Navigator.pushNamed(context, RouteNames.pendingUserList);
                   },
 

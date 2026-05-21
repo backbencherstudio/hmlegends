@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
-import '../../../../../core/services/api_service.dart';
 import '../data/get_invoices_details_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,9 +15,6 @@ class GetInvoiceDetailViewmodel extends ChangeNotifier {
 
   InvoiceDetailResponse? _invoiceDetail;
   InvoiceDetailResponse? get invoiceDetail => _invoiceDetail;
-
-
-  final ApiService _apiService = ApiService();
 
   Future<bool> fetchInvoiceDetail(String orderID) async {
     _isLoading = true;
@@ -79,7 +74,6 @@ class GetInvoiceDetailViewmodel extends ChangeNotifier {
       return false;
     }
   }
-
 
   void clear() {
     _invoiceDetail = null;

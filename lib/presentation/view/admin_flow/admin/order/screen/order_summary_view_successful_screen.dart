@@ -24,8 +24,10 @@ class _OrderSummaryViewSuccessfulScreenState
   void initState() {
     super.initState();
     Future.microtask(() {
+      // ignore: use_build_context_synchronously
       branchId = ModalRoute.of(context)?.settings.arguments as String?;
       if (branchId != null) {
+        // ignore: use_build_context_synchronously
         context.read<ManageBranchProvider>().getSingleBranch(branchId!);
       }
     });
@@ -63,7 +65,7 @@ class _OrderSummaryViewSuccessfulScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               /// --------------- Branch Name ------------------------------------
-              Consumer<ManageBranchProvider>( 
+              Consumer<ManageBranchProvider>(
                 builder: (
                   BuildContext context,
                   ManageBranchProvider provider,
@@ -174,6 +176,7 @@ class _OrderSummaryViewSuccessfulScreenState
                       setState(() {
                         selectedPeriod = value;
                       });
+
                       ///----------- Call API with new period -----------------
                       if (branchId != null) {
                         context.read<ManageBranchProvider>().getSingleBranch(
@@ -400,34 +403,36 @@ class _OrderSummaryViewSuccessfulScreenState
                                       ),
                                       SizedBox(width: 8.w),
                                       ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(6.r),
-                                        child: item["image"] != null
-                                            ? Image.network(
-                                              item["image"],
-                                              height: 40.h,
-                                              width: 40.h,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (
-                                                context,
-                                                error,
-                                                stackTrace,
-                                              ) {
-                                                return Container(
+                                        borderRadius: BorderRadius.circular(
+                                          6.r,
+                                        ),
+                                        child:
+                                            item["image"] != null
+                                                ? Image.network(
+                                                  item["image"],
+                                                  height: 40.h,
+                                                  width: 40.h,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) {
+                                                    return Container(
+                                                      height: 40.h,
+                                                      width: 40.h,
+                                                      color: Colors.grey[300],
+                                                      child: Icon(
+                                                        Icons.broken_image,
+                                                      ),
+                                                    );
+                                                  },
+                                                )
+                                                : Container(
                                                   height: 40.h,
                                                   width: 40.h,
                                                   color: Colors.grey[300],
-                                                  child: Icon(
-                                                    Icons.broken_image,
-                                                  ),
-                                                );
-                                              },
-                                            )
-                                            : Container(
-                                              height: 40.h,
-                                              width: 40.h,
-                                              color: Colors.grey[300],
-                                            ),
+                                                ),
                                       ),
                                       SizedBox(width: 10.w),
                                       Expanded(

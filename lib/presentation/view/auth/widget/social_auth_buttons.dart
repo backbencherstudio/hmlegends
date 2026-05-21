@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 
 import '../../../widget/google_button.dart';
-import 'SignUpFormButton.dart';
+import 'sign_up_form_button.dart';
 
 class SocialAuthButtons extends StatelessWidget {
   final VoidCallback? onApplePressed;

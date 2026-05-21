@@ -1,11 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/manage_delivery/view_model/delivery_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
 import 'package:provider/provider.dart';
-import '../../../../../../core/constant/api_endpoint.dart';
 import '../../../../../../core/constant/app_colors.dart';
-import '../../../../../../core/constant/asset_path.dart';
 import '../../../../../../core/network/network_service.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/notification_admin/admin_notification_provider.dart';
@@ -23,6 +23,7 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
   @override
   void initState() {
     Future.microtask(() {
+      // ignore: use_build_context_synchronously
       Provider.of<DeliveryProvider>(context, listen: false).getAllDeliveries();
     });
     super.initState();
@@ -40,8 +41,7 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
       backgroundColor: AppColors.bgColor,
       appBar: CustomAppBarTwo(
         title: 'Manage Delivery',
-        profileImage:
-            '${data?.avatar}',
+        profileImage: '${data?.avatar}',
         notificationCount: notification?.length ?? 0,
         colorMain: Colors.white,
         colorSpace: Colors.white,
@@ -108,7 +108,7 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
                   buttonText = 'Assign to Driver';
                 }
 
-                print("======== status : ${branch.status}");
+                log("======== status : ${branch.status}");
                 return BranchCard(
                   name: branch.user?.name ?? "N/A",
                   totalProducts: branch.totalQuantity ?? 0,

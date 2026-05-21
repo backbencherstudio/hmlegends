@@ -2,9 +2,8 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'http://192.168.7.12:4050';
-  static const String googleLogin =
-      'http://192.168.5.232:4050/api/auth/google/signin';
+      'https://linux-jpeg-brings-male.trycloudflare.com';
+  static const String googleLogin = '$baseUrl/api/auth/google/signin';
 
   // Admin
   static const String register = '$baseUrl/api/auth/register';

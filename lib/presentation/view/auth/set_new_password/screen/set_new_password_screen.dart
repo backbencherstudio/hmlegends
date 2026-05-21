@@ -14,9 +14,11 @@ class SetNewPasswordScreen extends StatelessWidget {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
+  SetNewPasswordScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    final forgetProvider = Provider.of<ForgetPasswordProvider>(context);
+    Provider.of<ForgetPasswordProvider>(context);
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -64,55 +66,53 @@ class SetNewPasswordScreen extends StatelessWidget {
                     return provider.isFPLoading
                         ? const CircularProgressIndicator(color: Colors.green)
                         : AuthButton(
-                            text: Text('Update Password'),
-                            color: AppColors.primaryColor,
-                            onPressed: () async {
-                              final password = _passwordController.text.trim();
-                              final confirmPassword = _confirmPasswordController
-                                  .text
-                                  .trim();
+                          text: Text('Update Password'),
+                          color: AppColors.primaryColor,
+                          onPressed: () async {
+                            final password = _passwordController.text.trim();
+                            final confirmPassword =
+                                _confirmPasswordController.text.trim();
 
-                              if (password != confirmPassword) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    backgroundColor: Colors.red,
-                                    content: Text("Passwords do not match."),
-                                  ),
-                                );
-                                return;
-                              }
-
-                              if (password.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    backgroundColor: Colors.red,
-                                    content: Text("Password cannot be empty."),
-                                  ),
-                                );
-                                return;
-                              }
-
-                              final success = await provider.setPassword(
-                                password: password,
-                              );
-
+                            if (password != confirmPassword) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: success
-                                      ? Colors.green
-                                      : Colors.red,
-                                  content: Text(provider.errorMessage),
+                                const SnackBar(
+                                  backgroundColor: Colors.red,
+                                  content: Text("Passwords do not match."),
                                 ),
                               );
+                              return;
+                            }
 
-                              if (success && context.mounted) {
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  RouteNames.loginScreen,
-                                );
-                              }
-                            },
-                          );
+                            if (password.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: Colors.red,
+                                  content: Text("Password cannot be empty."),
+                                ),
+                              );
+                              return;
+                            }
+
+                            final success = await provider.setPassword(
+                              password: password,
+                            );
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor:
+                                    success ? Colors.green : Colors.red,
+                                content: Text(provider.errorMessage),
+                              ),
+                            );
+
+                            if (success && context.mounted) {
+                              Navigator.pushReplacementNamed(
+                                context,
+                                RouteNames.loginScreen,
+                              );
+                            }
+                          },
+                        );
                   },
                 ),
               ],
@@ -191,9 +191,9 @@ class SetNewPasswordScreen extends StatelessWidget {
         return viewModel.errorMessage != null &&
                 viewModel.errorMessage!.isNotEmpty
             ? Text(
-                viewModel.errorMessage!,
-                style: const TextStyle(color: Colors.red),
-              )
+              viewModel.errorMessage!,
+              style: const TextStyle(color: Colors.red),
+            )
             : const SizedBox.shrink();
       },
     );

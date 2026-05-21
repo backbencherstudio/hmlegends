@@ -21,11 +21,6 @@ class OrderScreenProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  void _setLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
-
   ///---------------------------- Order Data -----------------------------------
   OrderAdminModel? _orderAdminModel;
 

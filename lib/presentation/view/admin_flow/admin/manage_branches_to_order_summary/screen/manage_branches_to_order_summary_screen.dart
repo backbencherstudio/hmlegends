@@ -31,6 +31,7 @@ class _ManageBranchesToOrderSummaryScreenState
 
     Future.microtask(() {
       final provider =
+      // ignore: use_build_context_synchronously
       Provider.of<ManageBranchProvider>(context, listen: false);
       provider.getSingleBranch(widget.managerId ?? '');
     });
@@ -50,44 +51,6 @@ class _ManageBranchesToOrderSummaryScreenState
     final singleBranch = managerBranchProvider.singleBranchModel?.data;
     final singleBranchOrders = singleBranch?.orders ?? [];
     final singleBranchOrdersItems = singleBranchOrders.first.orderItems ?? [];
-
-    final List<Map<String, dynamic>> orderItems = [
-      {
-        "name": "Peri Chicken Wrap",
-        "qty": 20,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-      {
-        "name": "Billy's Special",
-        "qty": 15,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-      {
-        "name": "Chicken Steak & Chips",
-        "qty": 5,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-      {
-        "name": "Billy's Special",
-        "qty": 12,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-      {
-        "name": "The Spicy Dip",
-        "qty": 10,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-      {
-        "name": "Charlie's Special",
-        "qty": 2,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-      {
-        "name": "Chicken Steak & Rice",
-        "qty": 12,
-        "image": AssetPaths.orderSummaryIcon1,
-      },
-    ];
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),

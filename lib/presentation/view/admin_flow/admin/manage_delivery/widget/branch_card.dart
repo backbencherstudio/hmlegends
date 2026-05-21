@@ -86,7 +86,7 @@ class BranchCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30.r),
                   ),
                 ),
-                elevation: MaterialStateProperty.all(0),
+                elevation: WidgetStateProperty.all(0),
               ),
               child: Text(
                 text ?? "Assign to Driver",

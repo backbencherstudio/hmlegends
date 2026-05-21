@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import '../constant/api_endpoint.dart';
 import '../services/token_storage.dart';
-import 'logger.dart';
 
 final logger = Logger();
 

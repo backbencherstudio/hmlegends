@@ -77,6 +77,7 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
           _passwordController.clear();
           _addressController.clear();
 
+          // ignore: use_build_context_synchronously
           Navigator.pop(context);
         } else {
           Utils.showToast(

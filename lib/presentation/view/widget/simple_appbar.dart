@@ -117,12 +117,17 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                       SizedBox(width: 20.w),
                       GestureDetector(
-                        onTap: (){
-                          Navigator.pushNamed(context, RouteNames.headOfficeProfileScreen);
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            RouteNames.headOfficeProfileScreen,
+                          );
                         },
                         child: CircleAvatar(
                           radius: 18.r,
-                          backgroundImage: NetworkImage("${ApiEndpoints.baseUrl}/storage/avatar/$profileImage"),
+                          backgroundImage: NetworkImage(
+                            "${ApiEndpoints.baseUrl}/storage/avatar/$profileImage",
+                          ),
                         ),
                       ),
                     ],
@@ -135,36 +140,6 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
     );
-  }
-
-  /// Handles navigation behavior based on the [navigationType]
-  void _handleNavigation(BuildContext context) {
-    if (customNavigationAction != null) {
-      customNavigationAction!();
-      return;
-    }
-
-    switch (navigationType) {
-      case NavigationType.pop:
-        Navigator.pop(context);
-        break;
-      case NavigationType.pushNamed:
-        if (navigationPath != null) {
-          Navigator.pushNamed(context, navigationPath!);
-        }
-        break;
-      case NavigationType.pushReplacementNamed:
-        if (navigationPath != null) {
-          Navigator.pushReplacementNamed(context, navigationPath!);
-        }
-        break;
-      case NavigationType.popUntilFirst:
-        Navigator.popUntil(context, (route) => route.isFirst);
-        break;
-      case NavigationType.none:
-      // no navigation, and no icon shown
-        break;
-    }
   }
 
   @override

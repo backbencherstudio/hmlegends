@@ -144,7 +144,6 @@ class LoginViewModel with ChangeNotifier {
         debugPrint("Login success");
         return {"success": true, "data": ""};
       } else {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
         return {"success": false, "message": "Login failed. Please try again."};
       }
     } catch (error) {

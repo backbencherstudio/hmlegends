@@ -7,14 +7,12 @@ import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
 import 'package:hmlegends/presentation/widget/custom_text_form_field.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../../../../../core/constant/api_endpoint.dart';
-import '../../../../../../core/constant/asset_path.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/notification_admin/admin_notification_provider.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
 import '../model/invoice_detail_model.dart';
 import '../view_model/admin_invoice_provider.dart';
-import 'iInvoiceWebViewScreen.dart';
+import 'invoice_web_view_screen.dart';
 
 class AdminInvoiceDetailScreen extends StatefulWidget {
   const AdminInvoiceDetailScreen({super.key});
@@ -93,9 +91,8 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
 
           /// If safe → extract invoice
           final invoice = provider.invoiceDetailModel!.data;
-          final allInVoices = provider.allInvoiceModel?.data?.invoices?.first
-              .id;
-
+          final allInVoices =
+              provider.allInvoiceModel?.data?.invoices?.first.id;
 
           return SingleChildScrollView(
             padding: EdgeInsets.all(16),
@@ -174,66 +171,70 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
                             ),
                           ),
                           onPressed: () {
-                            showDialog(context: context, builder: (context) =>
-                                Dialog(
-                                  child: Container(
-                                    height: 300.h,
-                                    padding: EdgeInsets.all(16),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Container(
-                                          width: 99.w,
-                                          height: 2.h,
-                                          decoration: BoxDecoration(
-                                            color: Color(0xFFD2D2D2),
-                                          ),
-                                        ),
-                                        SizedBox(height: 60.h),
-                                        Text(
-                                          "Type the email of the recipient",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Color(0xFF4A4C56),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        SizedBox(height: 16.h),
-
-                                        customTextFormField(
-                                          hintText: 'Enter your email',
-                                          controller: _controller,
-                                          validator: emailValidator,
-                                        ),
-                                        SizedBox(height: 20.h),
-                                        AuthButton(
-                                          text: Text(
-                                            'Send',
-                                            style: TextStyle(
-                                              fontSize: 16.sp,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w500,
+                            showDialog(
+                              context: context,
+                              builder:
+                                  (context) => Dialog(
+                                    child: Container(
+                                      height: 300.h,
+                                      padding: EdgeInsets.all(16),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Container(
+                                            width: 99.w,
+                                            height: 2.h,
+                                            decoration: BoxDecoration(
+                                              color: Color(0xFFD2D2D2),
                                             ),
                                           ),
-                                          onPressed: () async {
-                                            if (_formKey.currentState!
-                                                .validate()) {
-                                              final res = await provider
-                                                  .adminSendInvoice(
-                                                email: _controller.text,
-                                                allInVoices!,
-                                              );
-                                              Utils.showToast(msg: res.message,
+                                          SizedBox(height: 60.h),
+                                          Text(
+                                            "Type the email of the recipient",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Color(0xFF4A4C56),
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          SizedBox(height: 16.h),
+
+                                          customTextFormField(
+                                            hintText: 'Enter your email',
+                                            controller: _controller,
+                                            validator: emailValidator,
+                                          ),
+                                          SizedBox(height: 20.h),
+                                          AuthButton(
+                                            text: Text(
+                                              'Send',
+                                              style: TextStyle(
+                                                fontSize: 16.sp,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            onPressed: () async {
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                final res = await provider
+                                                    .adminSendInvoice(
+                                                      email: _controller.text,
+                                                      allInVoices!,
+                                                    );
+                                                Utils.showToast(
+                                                  msg: res.message,
                                                   backgroundColor: Colors.green,
-                                                  textColor: Colors.white);
-                                            }
-                                          },
-                                          color: AppColors.primaryColor,
-                                        ),
-                                      ],
+                                                  textColor: Colors.white,
+                                                );
+                                              }
+                                            },
+                                            color: AppColors.primaryColor,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
                             );
                           },
                           child: Text(

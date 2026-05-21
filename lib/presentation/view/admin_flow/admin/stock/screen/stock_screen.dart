@@ -226,7 +226,7 @@ class _StockScreenState extends State<StockScreen> {
 
           appBar: CustomAppBar(
             profileImage: data?.avatar,
-            notificationCount: notification.length ?? 0,
+            notificationCount: notification.length,
           ),
           body: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
@@ -316,6 +316,7 @@ class _StockScreenState extends State<StockScreen> {
                                 );
 
                                 clearInput();
+                                // ignore: use_build_context_synchronously
                                 Navigator.pop(context);
 
                                 provider.getProduct();

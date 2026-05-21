@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/model/manage_branch_model.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import 'package:provider/provider.dart';
 import 'package:hmlegends/core/route/route_names.dart';
-import '../../../../../../core/constant/api_endpoint.dart';
 import '../../widget/search_filter.dart';
 import '../view_model/manage_branch_provider.dart';
 import '../widget/manage_branches_card.dart';
@@ -25,13 +23,14 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
   void initState() {
     super.initState();
 
-
     Future.microtask(() {
       final provider =
+      // ignore: use_build_context_synchronously
       Provider.of<ManageBranchProvider>(context, listen: false);
       provider.allBranch();
     });
   }
+
   List<Managers> _getFilteredManagers(ManageBranchProvider provider) {
     final allManagers = provider.manageBranchModel?.data?.managers ?? [];
 
@@ -175,25 +174,25 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                 else
                   ManageBranchesCard(
                     totalBranches:
-                    provider
-                        .manageBranchModel
-                        ?.data
-                        ?.summary
-                        ?.totalBranch ??
+                        provider
+                            .manageBranchModel
+                            ?.data
+                            ?.summary
+                            ?.totalBranch ??
                         0,
                     activeBranches:
-                    provider
-                        .manageBranchModel
-                        ?.data
-                        ?.summary
-                        ?.totalActiveBranch ??
+                        provider
+                            .manageBranchModel
+                            ?.data
+                            ?.summary
+                            ?.totalActiveBranch ??
                         0,
                     lockedBranches:
-                    provider
-                        .manageBranchModel
-                        ?.data
-                        ?.summary
-                        ?.totalLockedBranch ??
+                        provider
+                            .manageBranchModel
+                            ?.data
+                            ?.summary
+                            ?.totalLockedBranch ??
                         0,
                     selectedIndex: provider.selectedBranchFilter,
                     onCardTap: (index) {
@@ -208,9 +207,9 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                   child: ListView.builder(
                     padding: EdgeInsets.only(bottom: 20.h),
                     itemCount:
-                    _applyQueryFilter(
-                      _getFilteredManagers(provider),
-                    ).length,
+                        _applyQueryFilter(
+                          _getFilteredManagers(provider),
+                        ).length,
                     itemBuilder: (context, index) {
                       final filteredManagers = _applyQueryFilter(
                         _getFilteredManagers(provider),
@@ -229,34 +228,28 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                           child: Column(
                             children: [
                               Row(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
                                     height: 80.h,
                                     width: 80.w,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                        10.r,
-                                      ),
+                                      borderRadius: BorderRadius.circular(10.r),
                                       color: Colors.grey.shade200,
                                       image:
-                                      items.avatar != null
-                                          ? DecorationImage(
-                                        image: NetworkImage(
-                                          items.avatar!,
-                                        ),
-                                        fit: BoxFit.cover,
-                                      )
-                                          : null,
+                                          items.avatar != null
+                                              ? DecorationImage(
+                                                image: NetworkImage(
+                                                  items.avatar!,
+                                                ),
+                                                fit: BoxFit.cover,
+                                              )
+                                              : null,
                                     ),
                                     child:
-                                    items.avatar == null
-                                        ? const Icon(
-                                      Icons.person,
-                                      size: 40,
-                                    )
-                                        : null,
+                                        items.avatar == null
+                                            ? const Icon(Icons.person, size: 40)
+                                            : null,
                                   ),
 
                                   SizedBox(width: 12.w),
@@ -264,7 +257,7 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: [
@@ -273,46 +266,40 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                                                 items.name ?? "N/A",
                                                 style: TextStyle(
                                                   fontSize: 16.sp,
-                                                  fontWeight:
-                                                  FontWeight.bold,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
                                             ),
 
                                             Container(
                                               padding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 6,
-                                              ),
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 6,
+                                                  ),
                                               decoration: BoxDecoration(
                                                 color:
-                                                isActive
-                                                    ? const Color(
-                                                  0xffDEF0DC,
-                                                )
-                                                    : const Color(
-                                                  0xffFCE6E7,
-                                                ),
+                                                    isActive
+                                                        ? const Color(
+                                                          0xffDEF0DC,
+                                                        )
+                                                        : const Color(
+                                                          0xffFCE6E7,
+                                                        ),
                                                 borderRadius:
-                                                BorderRadius.circular(
-                                                  15.r,
-                                                ),
+                                                    BorderRadius.circular(15.r),
                                               ),
                                               child: Text(
-                                                isActive
-                                                    ? "Active"
-                                                    : "Locked",
+                                                isActive ? "Active" : "Locked",
                                                 style: TextStyle(
                                                   fontSize: 14.sp,
                                                   color:
-                                                  isActive
-                                                      ? const Color(
-                                                    0xff5BB450,
-                                                  )
-                                                      : Colors.red,
-                                                  fontWeight:
-                                                  FontWeight.w400,
+                                                      isActive
+                                                          ? const Color(
+                                                            0xff5BB450,
+                                                          )
+                                                          : Colors.red,
+                                                  fontWeight: FontWeight.w400,
                                                 ),
                                               ),
                                             ),
@@ -324,7 +311,7 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                                         /// Location Row (Exact same layout)
                                         Row(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Icon(
                                               Icons.location_on,
@@ -337,13 +324,11 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                                                 items.address ??
                                                     "No address available",
                                                 maxLines: 2,
-                                                overflow:
-                                                TextOverflow.ellipsis,
+                                                overflow: TextOverflow.ellipsis,
                                                 softWrap: true,
                                                 style: TextStyle(
                                                   fontSize: 14.sp,
-                                                  color:
-                                                  Colors.grey.shade700,
+                                                  color: Colors.grey.shade700,
                                                 ),
                                               ),
                                             ),
@@ -360,13 +345,11 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                               /// 🔥 Bottom Action Buttons (Restored exactly)
                               Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceAround,
+                                    MainAxisAlignment.spaceAround,
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      debugPrint(
-                                        "THe userIUD : ${items.id}",
-                                      );
+                                      debugPrint("THe userIUD : ${items.id}");
 
                                       Navigator.pushNamed(
                                         context,
