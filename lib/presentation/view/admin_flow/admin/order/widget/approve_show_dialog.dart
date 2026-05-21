@@ -56,7 +56,10 @@ void showApproveDialog(BuildContext context, String text) {
             textColor: Colors.white,
             onPressed: () {
               Navigator.of(context).pop();
-              SuccessOrderSummaryCard(context, 'You have successfully approved the order!');
+              successOrderSummaryCard(
+                context,
+                'You have successfully approved the order!',
+              );
             },
             color: AppColors.primaryColor,
           ),

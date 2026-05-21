@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://linux-jpeg-brings-male.trycloudflare.com';
+      'https://currency-intention-plymouth-till.trycloudflare.com';
   static const String googleLogin = '$baseUrl/api/auth/google/signin';
 
   // Admin

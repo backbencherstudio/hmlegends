@@ -96,7 +96,7 @@ class CustomBottomNavBar extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 20.r,
             offset: const Offset(0, -4),
           ),
@@ -108,45 +108,45 @@ class CustomBottomNavBar extends StatelessWidget {
           topRight: Radius.circular(24.r),
         ),
         child: Consumer<BottomNavViewModel>(
-            builder: (context, bottomProvider, child) {
-              return BottomNavigationBar(
-                currentIndex: bottomProvider.currentIndex,
-                onTap: bottomProvider.updateIndex,
-                type: BottomNavigationBarType.fixed,
-                backgroundColor: Colors.white,
-                elevation: 0,
-                selectedItemColor: AppColors.headOfficeRadiusColor,
-                unselectedItemColor: AppColors.authBodyTextColor,
-                selectedFontSize: 13.sp,
-                unselectedFontSize: 13.sp,
-                items: [
-                  _buildBottomNavItem(
-                    iconPath: AssetPaths.homeNavIcon,
-                    activeIconPath: AssetPaths.homeNavIcon,
-                    label: 'Home',
-                    isActive: bottomProvider.currentIndex == 0,
-                  ),
-                  _buildBottomNavItem(
-                    iconPath: AssetPaths.stockNavIcon,
-                    activeIconPath: AssetPaths.stockNavIcon,
-                    label: 'Stock',
-                    isActive: bottomProvider.currentIndex == 1,
-                  ),
-                  _buildBottomNavItem(
-                    iconPath: AssetPaths.orderNavIcon,
-                    activeIconPath: AssetPaths.orderNavIcon,
-                    label: 'Order',
-                    isActive: bottomProvider.currentIndex == 2,
-                  ),
-                  _buildBottomNavItem(
-                    iconPath: AssetPaths.invoiceNavIcon,
-                    activeIconPath: AssetPaths.invoiceNavIcon,
-                    label: 'Invoice',
-                    isActive: bottomProvider.currentIndex == 3,
-                  ),
-                ],
-              );
-            }
+          builder: (context, bottomProvider, child) {
+            return BottomNavigationBar(
+              currentIndex: bottomProvider.currentIndex,
+              onTap: bottomProvider.updateIndex,
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.white,
+              elevation: 0,
+              selectedItemColor: AppColors.headOfficeRadiusColor,
+              unselectedItemColor: AppColors.authBodyTextColor,
+              selectedFontSize: 13.sp,
+              unselectedFontSize: 13.sp,
+              items: [
+                _buildBottomNavItem(
+                  iconPath: AssetPaths.homeNavIcon,
+                  activeIconPath: AssetPaths.homeNavIcon,
+                  label: 'Home',
+                  isActive: bottomProvider.currentIndex == 0,
+                ),
+                _buildBottomNavItem(
+                  iconPath: AssetPaths.stockNavIcon,
+                  activeIconPath: AssetPaths.stockNavIcon,
+                  label: 'Stock',
+                  isActive: bottomProvider.currentIndex == 1,
+                ),
+                _buildBottomNavItem(
+                  iconPath: AssetPaths.orderNavIcon,
+                  activeIconPath: AssetPaths.orderNavIcon,
+                  label: 'Order',
+                  isActive: bottomProvider.currentIndex == 2,
+                ),
+                _buildBottomNavItem(
+                  iconPath: AssetPaths.invoiceNavIcon,
+                  activeIconPath: AssetPaths.invoiceNavIcon,
+                  label: 'Invoice',
+                  isActive: bottomProvider.currentIndex == 3,
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -163,13 +163,19 @@ class CustomBottomNavBar extends StatelessWidget {
         iconPath,
         width: 25.w,
         height: 25.h,
-        color: AppColors.authBodyTextColor, // Unselected color
+        colorFilter: ColorFilter.mode(
+          AppColors.authBodyTextColor,
+          BlendMode.srcIn,
+        ),
       ),
       activeIcon: SvgPicture.asset(
         activeIconPath,
         width: 25.w,
         height: 25.h,
-        color: AppColors.headOfficeRadiusColor, // Selected color
+        colorFilter: ColorFilter.mode(
+          AppColors.headOfficeRadiusColor,
+          BlendMode.srcIn,
+        ),
       ),
       label: label,
     );

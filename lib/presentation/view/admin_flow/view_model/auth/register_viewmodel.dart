@@ -75,17 +75,13 @@ class RegisterProvider extends ChangeNotifier {
         data: data,
       );
 
-      final decodedData = response.data;
-      final message = decodedData['message'];
+      final isSuccess = response['success'] == true;
+      final message = response['message'] ?? 'An error occurred';
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return ResponseModel(success: true, message: message);
-      } else {
-        return ResponseModel(success: false, message: message);
-      }
+      return ResponseModel(success: isSuccess, message: message);
     } catch (e) {
       logger.e("Register Error: $e");
-      rethrow;
+      return ResponseModel(success: false, message: '$e');
     } finally {
       _setLoading(false);
     }

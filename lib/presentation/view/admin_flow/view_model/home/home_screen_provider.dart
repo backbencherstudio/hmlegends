@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import '../../../../../core/network/network_service.dart';
 import '../../admin_model/invoice_status_model.dart';
 import '../../admin_model/order/get_last_seven_days_orders_model.dart';
-import '../../admin_model/pending_userModel.dart';
+import '../../admin_model/pending_user_model.dart';
 
 class HomeScreenProvider extends ChangeNotifier {
   HomeScreenProvider() {
@@ -36,7 +36,6 @@ class HomeScreenProvider extends ChangeNotifier {
       _getLastSevenDaysOrdersModel;
 
   String? loadingUserId;
-
 
   //    Get Admin Status
   Future<void> statusGet() async {

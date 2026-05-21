@@ -1,5 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import '../constant/api_endpoint.dart';
 
@@ -7,7 +9,7 @@ class SocketService with ChangeNotifier {
   static final SocketService _instance = SocketService._internal();
   factory SocketService() => _instance;
 
-  late IO.Socket _socket;
+  late io.Socket _socket;
   bool _isInitialized = false;
 
   bool _isConnected = false;
@@ -18,13 +20,13 @@ class SocketService with ChangeNotifier {
   void connect({required String token}) {
     debugPrint("Token is socket: $token");
     if (_isInitialized && _socket.connected) {
-      print(' Socket already connected');
+      log(' Socket already connected');
       return;
     }
 
-    _socket = IO.io(
+    _socket = io.io(
       ApiEndpoints.baseUrl,
-      IO.OptionBuilder()
+      io.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()
           .setExtraHeaders({'Authorization': 'Bearer $token'})
@@ -38,32 +40,32 @@ class SocketService with ChangeNotifier {
     _socket.onConnect((_) {
       _isConnected = true;
       notifyListeners();
-      print('  Socket connected successfully');
+      log('  Socket connected successfully');
     });
 
     /// On disconnect
     _socket.onDisconnect((_) {
       _isConnected = false;
       notifyListeners();
-      print('  Socket disconnected');
+      log('  Socket disconnected');
     });
 
     /// On connection error
     _socket.onConnectError((data) {
-      print('  Connect Error: $data');
+      log('  Connect Error: $data');
     });
 
     _socket.onError((data) {
-      print(' ️ Socket Error: $data');
+      log(' ️ Socket Error: $data');
     });
   }
 
   void emit(String event, dynamic data) {
     if (_isConnected) {
       _socket.emit(event, data);
-      print(' Event emitted: $event with data: $data');
+      log(' Event emitted: $event with data: $data');
     } else {
-      print(' Cannot emit event, socket not connected.');
+      log(' Cannot emit event, socket not connected.');
     }
   }
 
@@ -73,7 +75,7 @@ class SocketService with ChangeNotifier {
       _socket.disconnect();
       _isConnected = false;
       notifyListeners();
-      print('  Socket disconnected and listeners cleared');
+      log('  Socket disconnected and listeners cleared');
     }
   }
 }
