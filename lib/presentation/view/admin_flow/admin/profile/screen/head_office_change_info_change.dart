@@ -45,7 +45,7 @@ class _HeadOfficeChangeInfoScreenState
       listen: false,
     );
     await provider.adminCheckMe();
-    final data = provider.adminInfoModel?.data ;
+    final data = provider.adminInfoModel?.data;
 
     if (data != null) {
       _firstNameController.text = data.name ?? "";
@@ -226,10 +226,11 @@ class _HeadOfficeChangeInfoScreenState
                           );
 
                       if (success) {
+                        // ignore: use_build_context_synchronously
                         await context
                             .read<ChangePasswordProvider>()
                             .adminCheckMe();
-                
+
                         logger.i(
                           "Profile updated successfully, refreshing data...",
                         );

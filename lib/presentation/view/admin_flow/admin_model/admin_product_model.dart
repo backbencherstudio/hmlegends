@@ -12,20 +12,20 @@ class AdminProductModel {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(Data.fromJson(v));
       });
     }
     nextCursor = json['next_cursor'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['success'] = this.success;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = {};
+    data['success'] = success;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
-    data['next_cursor'] = this.nextCursor;
+    data['next_cursor'] = nextCursor;
     return data;
   }
 }
@@ -39,14 +39,15 @@ class Data {
   String? stockStatus;
   String? createdAt;
 
-  Data(
-      {this.id,
-        this.name,
-        this.image,
-        this.stock,
-        this.price,
-        this.stockStatus,
-        this.createdAt});
+  Data({
+    this.id,
+    this.name,
+    this.image,
+    this.stock,
+    this.price,
+    this.stockStatus,
+    this.createdAt,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -59,14 +60,14 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['image'] = this.image;
-    data['stock'] = this.stock;
-    data['price'] = this.price;
-    data['stock_status'] = this.stockStatus;
-    data['created_at'] = this.createdAt;
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['name'] = name;
+    data['image'] = image;
+    data['stock'] = stock;
+    data['price'] = price;
+    data['stock_status'] = stockStatus;
+    data['created_at'] = createdAt;
     return data;
   }
 }

@@ -4,9 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/profile/screen/head_office_profile_screen.dart';
 import 'package:provider/provider.dart';
-
 import '../../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
-import '../profile_driver/driver_profile.dart';
 import '../driver_screen.dart';
 import '../tracking/tracking_screen.dart';
 
@@ -42,39 +40,39 @@ class DriverBottomNavBar extends StatelessWidget {
             topRight: Radius.circular(24.r),
           ),
           child: Consumer<BottomNavViewModel>(
-              builder: (context, bottomProvider, child) {
-                return BottomNavigationBar(
-                  currentIndex: bottomProvider.currentIndex,
-                  onTap: bottomProvider.updateIndex,
-                  type: BottomNavigationBarType.fixed,
-                  backgroundColor: Colors.white,
-                  elevation: 0,
-                  selectedItemColor: AppColors.headOfficeRadiusColor,
-                  unselectedItemColor: AppColors.authBodyTextColor,
-                  selectedFontSize: 13.sp,
-                  unselectedFontSize: 13.sp,
-                  items: [
-                    _buildBottomNavItem(
-                      iconPath: 'assets/icons/mynaui_home.svg',
-                      activeIconPath: 'assets/icons/mynaui_home.svg',
-                      label: 'Home',
-                      isActive: bottomProvider.currentIndex == 0,
-                    ),
-                    _buildBottomNavItem(
-                      iconPath: 'assets/icons/mynaui_home.svg',
-                      activeIconPath: 'assets/icons/mynaui_home.svg',
-                      label: 'Tacking',
-                      isActive: bottomProvider.currentIndex == 1,
-                    ),
-                    _buildBottomNavItem(
-                      iconPath: 'assets/icons/user.svg',
-                      activeIconPath: 'assets/icons/user.svg',
-                      label: 'Profile',
-                      isActive: bottomProvider.currentIndex == 2,
-                    ),
-                  ],
-                );
-              }
+            builder: (context, bottomProvider, child) {
+              return BottomNavigationBar(
+                currentIndex: bottomProvider.currentIndex,
+                onTap: bottomProvider.updateIndex,
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.white,
+                elevation: 0,
+                selectedItemColor: AppColors.headOfficeRadiusColor,
+                unselectedItemColor: AppColors.authBodyTextColor,
+                selectedFontSize: 13.sp,
+                unselectedFontSize: 13.sp,
+                items: [
+                  _buildBottomNavItem(
+                    iconPath: 'assets/icons/mynaui_home.svg',
+                    activeIconPath: 'assets/icons/mynaui_home.svg',
+                    label: 'Home',
+                    isActive: bottomProvider.currentIndex == 0,
+                  ),
+                  _buildBottomNavItem(
+                    iconPath: 'assets/icons/mynaui_home.svg',
+                    activeIconPath: 'assets/icons/mynaui_home.svg',
+                    label: 'Tacking',
+                    isActive: bottomProvider.currentIndex == 1,
+                  ),
+                  _buildBottomNavItem(
+                    iconPath: 'assets/icons/user.svg',
+                    activeIconPath: 'assets/icons/user.svg',
+                    label: 'Profile',
+                    isActive: bottomProvider.currentIndex == 2,
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),

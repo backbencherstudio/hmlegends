@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
-import 'package:hmlegends/presentation/view/auth/login/screen/login_screen.dart';
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
-
 import '../../bottom_nav/screen/wrapper.dart';
-import '../../bottom_nav/widget/custom_bottom_nav_bar.dart';
 
 void showSendInvoiceBottomSheet(BuildContext context) {
   showModalBottomSheet(
@@ -103,7 +100,10 @@ void showSendInvoiceBottomSheet(BuildContext context) {
                     ),
                   );
                 }
-                Navigator.push(context, MaterialPageRoute(builder: (context) => MainWrapper()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MainWrapper()),
+                );
               },
               color: AppColors.primaryColor,
             ),

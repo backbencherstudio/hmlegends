@@ -45,8 +45,11 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
         String extension = imageFile.path.split('.').last.toUpperCase();
         String format = (extension == 'JPG') ? 'JPEG' : extension;
 
+        // ignore: use_build_context_synchronously
         context.read<ManageBranchProvider>().setSelectedImageFile(imageFile);
+        // ignore: use_build_context_synchronously
         context.read<ManageBranchProvider>().setImageFormat(format);
+        // ignore: use_build_context_synchronously
         context.read<ManageBranchProvider>().setImageSize(
           '${fileSizeInMB.toStringAsFixed(2)} MB',
         );

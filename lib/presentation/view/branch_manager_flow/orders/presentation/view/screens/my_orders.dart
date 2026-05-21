@@ -30,6 +30,7 @@ class _MyOrdersState extends State<MyOrders> {
     expandedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
     Future.microtask(() {
+      // ignore: use_build_context_synchronously
       Provider.of<GetOrdersViewModel>(context, listen: false).fetchOrders();
     });
   }
@@ -66,17 +67,6 @@ class _MyOrdersState extends State<MyOrders> {
       debouncer!.cancel();
     }
     debouncer = Timer(duration, callback);
-  }
-
-  List<OrderItems> _applyQueryFilter(List<OrderItems> orders) {
-    if (context.read<GetOrdersViewModel>().query.trim().isEmpty) {
-      return orders;
-    }
-    final q = context.read<GetOrdersViewModel>().query.trim().toLowerCase();
-    return orders.where((order) {
-      final product = (order.product ?? '').toLowerCase();
-      return product.contains(q);
-    }).toList();
   }
 
   @override

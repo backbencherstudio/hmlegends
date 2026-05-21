@@ -2,14 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/invoice/model/all_invoice_model.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/invoice/view_model/admin_invoice_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../../../core/constant/api_endpoint.dart';
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
@@ -26,12 +23,12 @@ class InvoiceStatusScreen extends StatefulWidget {
 class _InvoiceStatusScreenState extends State<InvoiceStatusScreen> {
   @override
   void initState() {
-    Future.microtask((){
-       Provider.of<AdminInvoiceProvider>(
+    Future.microtask(() {
+      Provider.of<AdminInvoiceProvider>(
+        // ignore: use_build_context_synchronously
         context,
         listen: false,
       ).getAllInvoice();
-
     });
     super.initState();
   }
@@ -68,7 +65,9 @@ class _InvoiceStatusScreenState extends State<InvoiceStatusScreen> {
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
-    final notificationProvider = Provider.of<AdminNotificationProvider>(context);
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
     final notification = notificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),

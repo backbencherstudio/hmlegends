@@ -5,7 +5,6 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
 import 'package:provider/provider.dart';
-import '../../../../../../core/constant/api_endpoint.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
 
@@ -72,19 +71,13 @@ class OrderSummaryViewScreen extends StatelessWidget {
     );
     final notificationData = notificationProvider.adminNotificationModel?.data;
 
-
-
     // Calculate total items
-    final totalItems = singleOrder.fold<int>(
-      0,
-      (sum, item) => sum + (item.quantity ?? 0),
-    );
-
+    singleOrder.fold<int>(0, (sum, item) => sum + (item.quantity ?? 0));
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
       appBar: CustomAppBarTwo(
         title: "Order Summary",
-        profileImage:'${data?.avatar}',
+        profileImage: '${data?.avatar}',
         notificationCount: notificationData?.length ?? 0,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
@@ -124,6 +117,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
                           onTap: () async {
                             await provider.approveOrder(orderId);
                             showDialog(
+                              // ignore: use_build_context_synchronously
                               context: context,
                               barrierDismissible: false,
                               builder: (BuildContext dialogContext) {
@@ -244,7 +238,6 @@ class OrderSummaryViewScreen extends StatelessWidget {
                   // }
 
                   // ---------------- Item Row ----------------
-                  final data = singleOrder[index];
 
                   return Container(
                     padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -265,7 +258,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
                         ///----------------  Product Name ----------------------
                         Expanded(
                           child: Text(
-                             "N/A",
+                            "N/A",
                             style: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,

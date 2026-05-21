@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hmlegends/data/model/response_model.dart';
 import '../../../../../core/constant/api_endpoint.dart';
@@ -13,7 +12,6 @@ class RegisterProvider extends ChangeNotifier {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
 
   @override
   void dispose() {
@@ -72,7 +70,10 @@ class RegisterProvider extends ChangeNotifier {
         "password": password,
         "type": "admin",
       };
-      var response = await _apiService.postHttp(ApiEndpoints.register, data: data);
+      var response = await _apiService.postHttp(
+        ApiEndpoints.register,
+        data: data,
+      );
 
       final decodedData = response.data;
       final message = decodedData['message'];

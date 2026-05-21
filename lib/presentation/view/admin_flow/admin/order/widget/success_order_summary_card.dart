@@ -51,17 +51,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 
-
+// ignore: non_constant_identifier_names
 void SuccessOrderSummaryCard(BuildContext context, String text) {
   showDialog(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext dialogContext) {
       Future.delayed(Duration(seconds: 1), () {
+        // ignore: use_build_context_synchronously
         Navigator.of(dialogContext).pop();
-        Navigator.of(dialogContext).pushReplacementNamed(
-          RouteNames.orderSummaryViewSuccessfulScreen,
-        );
+        // ignore: use_build_context_synchronously
+        Navigator.of(
+          dialogContext,
+        ).pushReplacementNamed(RouteNames.orderSummaryViewSuccessfulScreen);
       });
 
       return Dialog(
@@ -103,4 +105,3 @@ void SuccessOrderSummaryCard(BuildContext context, String text) {
     },
   );
 }
-

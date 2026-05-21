@@ -286,6 +286,7 @@ class OrderSummaryMakeInvoiceScreen extends StatelessWidget {
               /// how to add invoice id
               final invoiceId = invoiceData?.first.orderId ?? '';
               await invoiceProvider.fetchInvoiceDetail(invoiceId);
+              // ignore: use_build_context_synchronously
               Navigator.pushNamed(context, RouteNames.adminInvoiceDetailScreen);
             },
             color: Color(0xFFE20613),

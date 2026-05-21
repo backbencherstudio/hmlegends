@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../../widget/custom_app_bar.dart';
-import '../data/get_all_invoice_model.dart';
 import '../view_model/get_all_invoice_viewmodel.dart';
 import '../view_model/get_invoices_details_viewmodel.dart';
 
@@ -25,56 +24,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   @override
   void initState() {
     Future.microtask(() {
+      // ignore: use_build_context_synchronously
       context.read<GetAllInvoiceProvider>().fetchAllInvoices();
     });
     super.initState();
-  }
-
-  // Helper: Check if date is today
-  bool _isToday(DateTime? date) {
-    if (date == null) return false;
-    final now = DateTime.now();
-    return date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day;
-  }
-
-  // Helper: Check if date is this week
-  bool _isThisWeek(DateTime? date) {
-    if (date == null) return false;
-    final now = DateTime.now();
-    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    final endOfWeek = startOfWeek.add(const Duration(days: 6));
-    return date.isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
-        date.isBefore(endOfWeek.add(const Duration(days: 1)));
-  }
-
-  // Helper: Check if date is this month
-  bool _isThisMonth(DateTime? date) {
-    if (date == null) return false;
-    final now = DateTime.now();
-    return date.year == now.year && date.month == now.month;
-  }
-
-  // Filter invoices based on selected period
-  List<Invoice> _getFilteredInvoices(List<Invoice> allInvoices) {
-    if (allInvoices.isEmpty) return [];
-
-    return allInvoices.where((invoice) {
-      final date = DateTime.tryParse(invoice.createdAt);
-      if (date == null) return false;
-
-      switch (context.read<GetAllInvoiceProvider>().selectedPeriod) {
-        case 'Today':
-          return _isToday(date);
-        case 'This Week':
-          return _isThisWeek(date);
-        case 'This Month':
-          return _isThisMonth(date);
-        default:
-          return true;
-      }
-    }).toList();
   }
 
   String _formatDate(String? dateStr) {
@@ -97,17 +50,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     debouncer = Timer(duration, callback);
   }
 
-  List<Invoice> _applyQueryFilter(List<Invoice> allInvoices) {
-    if (context.read<GetAllInvoiceProvider>().query.trim().isEmpty) {
-      return allInvoices;
-    }
-    final q = context.read<GetAllInvoiceProvider>().query.trim().toLowerCase();
-    return allInvoices.where((invoice) {
-      final branchName = (invoice.branchName).toLowerCase();
-      return branchName.contains(q);
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     final getAllInvoices = Provider.of<GetAllInvoiceProvider>(context);
@@ -123,11 +65,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final pending = stats?.pendingInvoice.toString() ?? '0';
     final total = stats?.totalInvoice.toString() ?? '0';
 
-    final allInvoices = getAllInvoices.invoiceResponse?.data.invoices ?? [];
-    final todayCount =
-        allInvoices
-            .where((i) => _isToday(DateTime.tryParse(i.createdAt)))
-            .length;
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
       appBar: CustomAppBar(

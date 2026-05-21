@@ -8,13 +8,13 @@ class SingleProductModel {
   SingleProductModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = {};
+    data['success'] = success;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -31,14 +31,15 @@ class Data {
   String? stockStatus;
   String? createdAt;
 
-  Data(
-      {this.id,
-        this.name,
-        this.image,
-        this.stock,
-        this.price,
-        this.stockStatus,
-        this.createdAt});
+  Data({
+    this.id,
+    this.name,
+    this.image,
+    this.stock,
+    this.price,
+    this.stockStatus,
+    this.createdAt,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -51,14 +52,14 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['image'] = this.image;
-    data['stock'] = this.stock;
-    data['price'] = this.price;
-    data['stock_status'] = this.stockStatus;
-    data['created_at'] = this.createdAt;
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['name'] = name;
+    data['image'] = image;
+    data['stock'] = stock;
+    data['price'] = price;
+    data['stock_status'] = stockStatus;
+    data['created_at'] = createdAt;
     return data;
   }
 }

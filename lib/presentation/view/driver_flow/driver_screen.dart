@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
-import 'package:hmlegends/presentation/view/driver_flow/model_view/driver_profile_screen_provider.dart';
 import 'package:hmlegends/presentation/view/driver_flow/tracking/tracking_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../core/route/route_names.dart';
@@ -77,7 +76,7 @@ class _DriverScreenState extends State<DriverScreen> {
                     return _branchInfoCard(
                       branchName: delivery.user?.city ?? 'Unknown City',
                       address: delivery.user?.address ?? 'No Address',
-                      totalProducts: delivery.totalQuantity ?? 0,
+                      totalProducts: delivery.totalQuantity,
                       deliveryId: delivery.delivery?.id ?? '',
                       provider: provider,
                     );
@@ -105,6 +104,7 @@ class _DriverScreenState extends State<DriverScreen> {
           onTap: () async {
             if (deliveryId.isNotEmpty) {
               await provider.getSingleDeliveryAdmin(deliveryId);
+              // ignore: use_build_context_synchronously
               Navigator.pushNamed(context, RouteNames.driverBranseDetailScreen);
             } else {
               Utils.showToast(

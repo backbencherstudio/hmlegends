@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
-import 'package:hmlegends/core/route/route_names.dart';
 
 class OnBoardingElevatedButton extends StatelessWidget {
   final String text;
@@ -50,17 +49,11 @@ class OnBoardingElevatedButton extends StatelessWidget {
           children: [
             Text(
               text,
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
             ),
             if (suffixIcon != null) ...[
               SizedBox(width: 8.w),
-              Icon(
-                suffixIcon,
-                size: 18.sp,
-              ),
+              Icon(suffixIcon, size: 18.sp),
             ],
           ],
         ),

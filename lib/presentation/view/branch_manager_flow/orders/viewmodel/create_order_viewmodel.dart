@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/network/network_service.dart';
 import 'package:hmlegends/data/model/response_model.dart';

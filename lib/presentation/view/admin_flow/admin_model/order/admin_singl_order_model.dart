@@ -1,5 +1,3 @@
-import 'package:hmlegends/presentation/view/driver_flow/model/single_delivery_admin.dart';
-
 class AdminSingleOrderModel {
   bool? success;
   String? message;

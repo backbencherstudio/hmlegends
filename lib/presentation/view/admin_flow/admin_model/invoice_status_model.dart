@@ -8,13 +8,13 @@ class InvoiceStatusModel {
   InvoiceStatusModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = {};
+    data['success'] = success;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -32,28 +32,26 @@ class Data {
 
   Data.fromJson(Map<String, dynamic> json) {
     invoice =
-    json['invoice'] != null ? new Invoice.fromJson(json['invoice']) : null;
-    branch =
-    json['branch'] != null ? new Branch.fromJson(json['branch']) : null;
-    order = json['order'] != null ? new Order.fromJson(json['order']) : null;
-    delivery = json['delivery'] != null
-        ? new Delivery.fromJson(json['delivery'])
-        : null;
+        json['invoice'] != null ? Invoice.fromJson(json['invoice']) : null;
+    branch = json['branch'] != null ? Branch.fromJson(json['branch']) : null;
+    order = json['order'] != null ? Order.fromJson(json['order']) : null;
+    delivery =
+        json['delivery'] != null ? Delivery.fromJson(json['delivery']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.invoice != null) {
-      data['invoice'] = this.invoice!.toJson();
+    final Map<String, dynamic> data = {};
+    if (invoice != null) {
+      data['invoice'] = invoice!.toJson();
     }
-    if (this.branch != null) {
-      data['branch'] = this.branch!.toJson();
+    if (branch != null) {
+      data['branch'] = branch!.toJson();
     }
-    if (this.order != null) {
-      data['order'] = this.order!.toJson();
+    if (order != null) {
+      data['order'] = order!.toJson();
     }
-    if (this.delivery != null) {
-      data['delivery'] = this.delivery!.toJson();
+    if (delivery != null) {
+      data['delivery'] = delivery!.toJson();
     }
     return data;
   }
@@ -71,9 +69,9 @@ class Invoice {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total_invoice'] = this.totalInvoice;
-    data['paid_invoice'] = this.paidInvoice;
+    final Map<String, dynamic> data = {};
+    data['total_invoice'] = totalInvoice;
+    data['paid_invoice'] = paidInvoice;
     return data;
   }
 }
@@ -90,9 +88,9 @@ class Branch {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['active_branch'] = this.activeBranch;
-    data['locked_branch'] = this.lockedBranch;
+    final Map<String, dynamic> data = {};
+    data['active_branch'] = activeBranch;
+    data['locked_branch'] = lockedBranch;
     return data;
   }
 }
@@ -109,9 +107,9 @@ class Order {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total_order'] = this.totalOrder;
-    data['total_completed_order'] = this.totalCompletedOrder;
+    final Map<String, dynamic> data = {};
+    data['total_order'] = totalOrder;
+    data['total_completed_order'] = totalCompletedOrder;
     return data;
   }
 }
@@ -128,9 +126,9 @@ class Delivery {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['todays_delivery'] = this.todaysDelivery;
-    data['assigned_delivery'] = this.assignedDelivery;
+    final Map<String, dynamic> data = {};
+    data['todays_delivery'] = todaysDelivery;
+    data['assigned_delivery'] = assignedDelivery;
     return data;
   }
 }
