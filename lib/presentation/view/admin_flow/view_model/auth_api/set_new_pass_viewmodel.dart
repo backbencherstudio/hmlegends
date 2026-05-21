@@ -53,10 +53,10 @@ class SetPasswordViewModel extends ChangeNotifier {
         },
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response['success'] == true) {
         return true;
       } else {
-        errorMessage = response.data['message'] ?? "Failed to update password";
+        errorMessage = response['message'] ?? "Failed to update password";
         notifyListeners();
         return false;
       }

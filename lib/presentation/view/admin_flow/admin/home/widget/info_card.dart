@@ -40,7 +40,7 @@ class InfoCard extends StatelessWidget {
           border: Border.all(color: AppColors.headOfficeCardBorderColor),
           boxShadow: [
             BoxShadow(
-              color: Colors.black12.withOpacity(.03),
+              color: Colors.black12.withValues(alpha: 0.03),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

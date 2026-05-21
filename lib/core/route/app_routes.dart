@@ -42,8 +42,8 @@ import '../../presentation/view/driver_flow/driver_brance_detailScreen/driver_br
 import '../../presentation/view/driver_flow/driver_screen.dart';
 import '../../presentation/view/driver_flow/parent/parent_screen.dart';
 import '../../presentation/view/driver_flow/tracking/tracking_screen.dart';
-import '../../presentation/view/onboarding/onboarding/screen/onboarding_screen.dart';
-import '../../presentation/view/splash/splash/screen/splash_screen.dart';
+import '../../presentation/view/onboarding/view/onboarding_screen.dart';
+import '../../presentation/view/splash/view/splash_screen.dart';
 
 class AppRoutes {
   static final Map<String, WidgetBuilder> routes = {

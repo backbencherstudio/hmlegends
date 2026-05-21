@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
-import '../../../auth/widget/onboarding_elevated_button.dart';
+import '../../auth/widget/onboarding_elevated_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -34,9 +34,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: _currentPage == 0
-            ? _buildPage1Decoration()
-            : _buildPage2Decoration(),
+        decoration:
+            _currentPage == 0
+                ? _buildPage1Decoration()
+                : _buildPage2Decoration(),
         child: SafeArea(
           child: Column(
             children: [

@@ -95,26 +95,26 @@ class ForgetPasswordProvider extends ChangeNotifier {
         ApiEndpoints.setNewPassword,
         data: {"email": _email, "token": _otpToken, "password": password},
       );
-      debugPrint("Response status: ${response.statusCode}");
+      debugPrint("Response success: ${response['success']}");
       debugPrint("THe message $_email $password $_otpToken");
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response['success'] == true) {
         _isFPLoading = false;
 
         debugPrint("The success");
-        _errorMessage = response.data['message'];
+        _errorMessage = response['message'] ?? 'Password reset successfully';
         notifyListeners();
-        return response.data['success'];
+        return true;
       } else {
         debugPrint("The failed");
 
         _isFPLoading = false;
-        _errorMessage = response.data['message'];
+        _errorMessage = response['message'] ?? 'Failed to reset password';
         notifyListeners();
         return false;
       }
     } catch (error) {
-      print('Error during forget password: $error');
+      debugPrint('Error during forget password: $error');
       _isFPLoading = false;
       notifyListeners();
       return false;

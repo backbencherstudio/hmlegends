@@ -29,16 +29,27 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final startTime = DateTime.now();
       final token = await TokenStorage().getToken();
 
       debugPrint("Token in splash screen: $token");
       final userType = await UserTypeStorage().getUserType();
       debugPrint("User type in splash screen: $userType");
+
       if (token != null && userType == "admin") {
         await context.read<ChangePasswordProvider>().adminCheckMe();
-        Future.delayed(Duration(seconds: 2)).then((_) {
-          Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
-        });
+      }
+
+      final elapsed = DateTime.now().difference(startTime);
+      final remaining = const Duration(seconds: 5) - elapsed;
+      if (remaining > Duration.zero) {
+        await Future.delayed(remaining);
+      }
+
+      if (!mounted) return;
+
+      if (token != null && userType == "admin") {
+        Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
       } else if (token != null && userType == 'manager') {
         Navigator.pushReplacementNamed(context, RouteNames.branchParentScreen);
       } else if (token != null && userType == "driver") {

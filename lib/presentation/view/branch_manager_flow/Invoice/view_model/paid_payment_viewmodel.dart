@@ -35,12 +35,11 @@ class PayInvoiceViewModel extends ChangeNotifier {
         url,
       );
 
-      debugPrint('Response Status: ${response.statusCode}');
-      debugPrint('Response Body: ${response.data}');
+      debugPrint('Response Success: ${response['success']}');
 
       // Success
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final payResponse = PayInvoiceResponse.fromJson(response.data);
+      if (response['success'] == true) {
+        final payResponse = PayInvoiceResponse.fromJson(response);
 
         if (payResponse.success == true && payResponse.data?.status == "PAID") {
           _isPaid = true;
@@ -52,9 +51,8 @@ class PayInvoiceViewModel extends ChangeNotifier {
               : "Payment failed – status not PAID";
         }
       } else {
-        // Any non-2xx status
-        _error = response.data?['message'] ??
-            "Server error: ${response.statusCode}";
+        // Any failure returned inside response
+        _error = response['message'] ?? "Server error";
       }
     } on DioException catch (e) {
       // This is the ONLY place where 404 is caught when ApiService throws

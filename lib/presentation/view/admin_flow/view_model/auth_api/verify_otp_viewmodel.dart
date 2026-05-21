@@ -32,15 +32,12 @@ class VerifyOtpViewmodel extends ChangeNotifier {
         data: {"email": email},
       );
 
-      debugPrint("Response status: ${response.statusCode}");
-      debugPrint("Response data: ${response.data}");
+      debugPrint("Response success: ${response['success']}");
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = response.data;
-
-        _email = data['email'] ?? '';
-        _otpToken = data['token'] ?? '';
-        _tempPassword = data['password'] ?? '';
+      if (response['success'] == true) {
+        _email = response['email'] ?? '';
+        _otpToken = response['token'] ?? '';
+        _tempPassword = response['password'] ?? '';
         _errorMessage = "OTP sent to $_email";
 
         _isFPLoading = false;
@@ -48,7 +45,7 @@ class VerifyOtpViewmodel extends ChangeNotifier {
         return true;
       } else {
         _isFPLoading = false;
-        _errorMessage = response.data['message'] ?? 'Something went wrong';
+        _errorMessage = response['message'] ?? 'Something went wrong';
         notifyListeners();
         return false;
       }
