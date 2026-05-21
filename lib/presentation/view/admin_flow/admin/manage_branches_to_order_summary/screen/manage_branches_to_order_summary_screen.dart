@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
@@ -50,7 +51,23 @@ class _ManageBranchesToOrderSummaryScreenState
 
     final singleBranch = managerBranchProvider.singleBranchModel?.data;
     final singleBranchOrders = singleBranch?.orders ?? [];
-    final singleBranchOrdersItems = singleBranchOrders.first.orderItems ?? [];
+    final singleBranchOrdersItems = singleBranchOrders.isNotEmpty
+        ? (singleBranchOrders.first.orderItems ?? [])
+        : [];
+
+    final avatar = singleBranch?.avatar ?? '';
+    final String fullAvatarUrl;
+    if (avatar.startsWith('http')) {
+      fullAvatarUrl = avatar;
+    } else if (avatar.isNotEmpty) {
+      if (avatar.startsWith('/')) {
+        fullAvatarUrl = "${ApiEndpoints.baseUrl}$avatar";
+      } else {
+        fullAvatarUrl = "${ApiEndpoints.baseUrl}/storage/avatar/$avatar";
+      }
+    } else {
+      fullAvatarUrl = '';
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
@@ -86,15 +103,37 @@ class _ManageBranchesToOrderSummaryScreenState
                           /// Branch Image
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8.r),
-                            child: Image.network(
-                              singleBranch?.avatar ?? '',
-                              height: 65.h,
-                              width: 65.h,
-                              fit: BoxFit.cover,
-                              errorBuilder:
-                                  (c, o, s) =>
-                                      const Icon(Icons.image_not_supported),
-                            ),
+                            child: fullAvatarUrl.isNotEmpty
+                                ? Image.network(
+                                    fullAvatarUrl,
+                                    height: 65.h,
+                                    width: 65.h,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (context, child, loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        return child;
+                                      }
+                                      return SizedBox(
+                                        height: 65.h,
+                                        width: 65.h,
+                                        child: const Center(
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder: (c, o, s) => SizedBox(
+                                      height: 65.h,
+                                      width: 65.h,
+                                      child: const Icon(Icons.image_not_supported),
+                                    ),
+                                  )
+                                : SizedBox(
+                                    height: 65.h,
+                                    width: 65.h,
+                                    child: const Icon(Icons.image_not_supported),
+                                  ),
                           ),
 
                           SizedBox(width: 12.w),
@@ -227,6 +266,19 @@ class _ManageBranchesToOrderSummaryScreenState
                             ),
                         itemBuilder: (context, index) {
                           final item = singleBranchOrdersItems[index];
+                          final productImage = item.productImage ?? '';
+                          final String fullProductImageUrl;
+                          if (productImage.startsWith('http')) {
+                            fullProductImageUrl = productImage;
+                          } else if (productImage.isNotEmpty) {
+                            if (productImage.startsWith('/')) {
+                              fullProductImageUrl = "${ApiEndpoints.baseUrl}$productImage";
+                            } else {
+                              fullProductImageUrl = "${ApiEndpoints.baseUrl}/$productImage";
+                            }
+                          } else {
+                            fullProductImageUrl = '';
+                          }
 
                           return Row(
                             children: [
@@ -243,12 +295,43 @@ class _ManageBranchesToOrderSummaryScreenState
 
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(6.r),
-                                child: Image.network(
-                                  item.productImage ?? 'N/A',
-                                  height: 40.h,
-                                  width: 40.h,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: fullProductImageUrl.isNotEmpty
+                                    ? Image.network(
+                                        fullProductImageUrl,
+                                        height: 40.h,
+                                        width: 40.h,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder: (context, child, loadingProgress) {
+                                          if (loadingProgress == null) {
+                                            return child;
+                                          }
+                                          return SizedBox(
+                                            height: 40.h,
+                                            width: 40.h,
+                                            child: const Center(
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        errorBuilder: (c, o, s) => SizedBox(
+                                          height: 40.h,
+                                          width: 40.h,
+                                          child: const Icon(
+                                            Icons.image_not_supported,
+                                            size: 20,
+                                          ),
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        height: 40.h,
+                                        width: 40.h,
+                                        child: const Icon(
+                                          Icons.image_not_supported,
+                                          size: 20,
+                                        ),
+                                      ),
                               ),
 
                               SizedBox(width: 10.w),

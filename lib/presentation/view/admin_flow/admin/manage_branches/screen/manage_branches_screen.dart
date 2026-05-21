@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/constant/api_endpoint.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/manage_branches/model/manage_branch_model.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
@@ -10,6 +11,7 @@ import 'package:hmlegends/core/route/route_names.dart';
 import '../../widget/search_filter.dart';
 import '../view_model/manage_branch_provider.dart';
 import '../widget/manage_branches_card.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
 
 class ManageBranchesScreen extends StatefulWidget {
   const ManageBranchesScreen({super.key});
@@ -19,6 +21,32 @@ class ManageBranchesScreen extends StatefulWidget {
 }
 
 class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
+  String? _togglingBranchId;
+
+  Widget _buildAvatarImage(String? avatar) {
+    if (avatar == null || avatar.isEmpty) {
+      return const Icon(Icons.person, size: 40);
+    }
+    final String fullAvatarUrl =
+        avatar.startsWith('http')
+            ? avatar
+            : (avatar.startsWith('/')
+                ? "${ApiEndpoints.baseUrl}$avatar"
+                : "${ApiEndpoints.baseUrl}/storage/avatar/$avatar");
+    return Image.network(
+      fullAvatarUrl,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) {
+          return child;
+        }
+        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+      },
+      errorBuilder:
+          (context, error, stackTrace) => const Icon(Icons.person, size: 40),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -230,26 +258,14 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    height: 80.h,
-                                    width: 80.w,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10.r),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10.r),
+                                    child: Container(
+                                      height: 80.h,
+                                      width: 80.w,
                                       color: Colors.grey.shade200,
-                                      image:
-                                          items.avatar != null
-                                              ? DecorationImage(
-                                                image: NetworkImage(
-                                                  items.avatar!,
-                                                ),
-                                                fit: BoxFit.cover,
-                                              )
-                                              : null,
+                                      child: _buildAvatarImage(items.avatar),
                                     ),
-                                    child:
-                                        items.avatar == null
-                                            ? const Icon(Icons.person, size: 40)
-                                            : null,
                                   ),
 
                                   SizedBox(width: 12.w),
@@ -375,10 +391,50 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                                     },
                                     child: _actionButton(Icons.edit),
                                   ),
-                                  _actionButton(
-                                    isActive
-                                        ? Icons.lock_open
-                                        : Icons.lock_outline,
+                                  GestureDetector(
+                                    onTap: _togglingBranchId != null || items.id == null
+                                        ? null
+                                        : () async {
+                                            setState(() {
+                                              _togglingBranchId = items.id;
+                                            });
+                                            try {
+                                              final res = await provider.toggleBranch(items.id!);
+                                              if (res != null && res["success"] == true) {
+                                                Utils.showToast(
+                                                  msg: res["message"] ?? "Status updated successfully",
+                                                  backgroundColor: Colors.green,
+                                                  textColor: Colors.white,
+                                                );
+                                              } else {
+                                                Utils.showToast(
+                                                  msg: res != null ? res["message"] ?? "Failed to update status" : "Failed to update status",
+                                                  backgroundColor: Colors.red,
+                                                  textColor: Colors.white,
+                                                );
+                                              }
+                                            } catch (e) {
+                                              debugPrint("Error toggling status: $e");
+                                              Utils.showToast(
+                                                msg: "An error occurred",
+                                                backgroundColor: Colors.red,
+                                                textColor: Colors.white,
+                                              );
+                                            } finally {
+                                              if (mounted) {
+                                                setState(() {
+                                                  _togglingBranchId = null;
+                                                });
+                                              }
+                                            }
+                                          },
+                                    child: _actionButton(
+                                      items.id != null && _togglingBranchId == items.id
+                                          ? null
+                                          : (isActive
+                                              ? Icons.lock_open
+                                              : Icons.lock_outline),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -397,14 +453,23 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
     );
   }
 
-  Widget _actionButton(IconData icon) {
+  Widget _actionButton(IconData? icon) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: const BoxDecoration(
         color: Color(0xffFCE6E7),
         shape: BoxShape.circle,
       ),
-      child: Icon(icon, color: Colors.red),
+      child: icon == null
+          ? const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+              ),
+            )
+          : Icon(icon, color: Colors.red),
     );
   }
 }

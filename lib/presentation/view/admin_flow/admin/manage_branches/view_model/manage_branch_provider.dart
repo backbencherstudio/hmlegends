@@ -92,7 +92,11 @@ class ManageBranchProvider extends ChangeNotifier {
 
   /// ---------------------------- Get All Branch ------------------------------
 
-  Future<void> allBranch() async {
+  Future<void> allBranch({bool showLoading = true}) async {
+    if (showLoading) {
+      isLoading = true;
+      notifyListeners();
+    }
     try {
       final token = await _tokenStorage.getToken();
 
@@ -109,7 +113,6 @@ class ManageBranchProvider extends ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
         _manageBranchModel = ManageBranchModel.fromJson(data);
-        notifyListeners();
         debugPrint(
           "The response model data is ${_manageBranchModel?.data?.managers![0].address}",
         );
@@ -118,6 +121,10 @@ class ManageBranchProvider extends ChangeNotifier {
       }
     } catch (error) {
       debugPrint("Error: $error");
+    } finally {
+      if (showLoading) {
+        isLoading = false;
+      }
       notifyListeners();
     }
   }
@@ -210,31 +217,47 @@ class ManageBranchProvider extends ChangeNotifier {
   }) async {
     try {
       final token = await _tokenStorage.getToken();
-
       var url = Uri.parse(ApiEndpoints.updateBranch(managerId));
-      final body = jsonEncode({
-        "name": name,
-        "address": address,
-        "status": status,
-        "image": image?.path,
-      });
-      var response = await http.patch(
-        url,
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json",
-        },
-        body: body,
-      );
 
-      logger.d("The body data is $body");
-      logger.i("Response url : ${response.request?.url}");
+      var request = http.MultipartRequest("PATCH", url);
+      request.headers['Authorization'] = "Bearer $token";
+      request.headers['Accept'] = "application/json";
+
+      // Add form fields
+      request.fields['name'] = name;
+      request.fields['address'] = address;
+      request.fields['status'] = status;
+
+      // Add image file if provided
+      if (image != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath('image', image.path),
+        );
+      }
+
+      logger.d("Updating branch with fields: ${request.fields} and image: ${image?.path}");
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      logger.i("Response url : ${url}");
       logger.i("Response status code: ${response.statusCode}");
       logger.i("Response body: ${response.body}");
+
       final decodeData = jsonDecode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         final message = decodeData['message'];
         logger.d("The success message ${decodeData['message']}");
+        
+        // Clear selected image and details in provider upon successful update
+        _selectedImageFile = null;
+        _imageFormat = null;
+        _imageSize = null;
+
+        // Fetch single branch and all branches to ensure consistency
+        await getSingleBranch(managerId);
+        await allBranch();
+
         notifyListeners();
         return {"success": true, "message": message};
       } else {
@@ -244,7 +267,45 @@ class ManageBranchProvider extends ChangeNotifier {
       }
     } catch (error) {
       logger.i("The error message $error");
-      return error;
+      return {"success": false, "message": error.toString()};
+    }
+  }
+
+  /// ---------------------------- Toggle Branch Status ------------------------
+  Future<dynamic> toggleBranch(String userId) async {
+    try {
+      final token = await _tokenStorage.getToken();
+      var url = Uri.parse(ApiEndpoints.toggleBranchStatus(userId));
+
+      var response = await http.patch(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+      );
+
+      logger.i("Response url : $url");
+      logger.i("Response status code: ${response.statusCode}");
+      logger.i("Response body: ${response.body}");
+
+      final decodeData = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final message = decodeData['message'];
+        logger.d("The success message ${decodeData['message']}");
+        
+        // Refresh the branches list in the background
+        await allBranch(showLoading: false);
+        
+        return {"success": true, "message": message};
+      } else {
+        final message = decodeData['message'];
+        logger.i("Failed to toggle branch status: ${response.statusCode}");
+        return {"success": false, "message": message};
+      }
+    } catch (error) {
+      logger.i("The error message $error");
+      return {"success": false, "message": error.toString()};
     }
   }
 }
