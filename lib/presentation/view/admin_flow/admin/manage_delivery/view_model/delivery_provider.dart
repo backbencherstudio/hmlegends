@@ -25,8 +25,13 @@ class DeliveryProvider extends ChangeNotifier {
 
   /// --------------- Loading State --------------------------------------------
   bool _isLoading = false;
-
   bool get isLoading => _isLoading;
+
+  bool _isDriversLoading = false;
+  bool get isDriversLoading => _isDriversLoading;
+
+  String? _assigningOrderId;
+  String? get assigningOrderId => _assigningOrderId;
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -41,27 +46,31 @@ class DeliveryProvider extends ChangeNotifier {
   /// ------------- Function to call all deliveries API -------------------------
   Future<ResponseModel> getAllDeliveries() async {
     try {
+      _isLoading = true;
+      notifyListeners();
       var response = await _apiService.get(ApiEndpoints.adminAllDelivery);
 
       final message = response['message'] ?? 'Failed to fetch deliveries';
 
       if (response is Map<String, dynamic> && response['success'] == true) {
         _allDeliveriesModel = AllDeliveriesModel.fromJson(response);
-        notifyListeners();
         return ResponseModel(success: true, message: message);
       } else {
         return ResponseModel(success: false, message: message);
       }
     } catch (e) {
-      notifyListeners();
       return ResponseModel(success: false, message: e.toString());
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
   /// ------------------- Function to call all drivers API ---------------------
   Future<ResponseModel> getAllDrivers() async {
     try {
-      _setLoading(true);
+      _isDriversLoading = true;
+      notifyListeners();
       final response = await _apiService.get(ApiEndpoints.adminAllDrivers);
 
       final message = response['message'] ?? 'Successfully fetched drivers';
@@ -76,34 +85,38 @@ class DeliveryProvider extends ChangeNotifier {
     } catch (e) {
       return ResponseModel(success: false, message: e.toString());
     } finally {
-      _setLoading(false);
+      _isDriversLoading = false;
+      notifyListeners();
     }
   }
 
   /// ---------------- Function to call assign to driver API -------------------
   Future<ResponseModel> assignToDriver(String orderId, String driverId) async {
     try {
-      _setLoading(true);
+      _assigningOrderId = orderId;
+      notifyListeners();
       final response = await _apiService.postHttp(
         ApiEndpoints.adminAssignToDriver,
         data: {"order_id": orderId, "driver_id": driverId},
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response is Map<String, dynamic> && response['success'] == true) {
         /// 🔹 Update local status instantly (UI update without reload)
         final deliveries = allDeliveriesModel?.data ?? [];
         final index = deliveries.indexWhere((d) => d.id == orderId);
         if (index != -1) {
           deliveries[index].status = "PROCESSING";
         }
-        return ResponseModel(success: true, message: response['message']);
+        return ResponseModel(success: true, message: response['message'] ?? 'Successfully assigned to driver');
       } else {
-        return ResponseModel(success: false, message: response['message']);
+        final msg = response is Map ? response['message'] : 'Failed to assign driver';
+        return ResponseModel(success: false, message: msg);
       }
     } catch (e) {
       return ResponseModel(success: false, message: e.toString());
     } finally {
-      _setLoading(false);
+      _assigningOrderId = null;
+      notifyListeners();
     }
   }
 }

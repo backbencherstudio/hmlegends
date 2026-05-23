@@ -121,7 +121,6 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final profile = profileProvider.adminInfoModel?.data;
 
@@ -129,7 +128,7 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
       backgroundColor: AppColors.bgColor,
       appBar: CustomAppBarTwo(
         title: 'Edit Branch',
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
         colorMain: Colors.white,
         colorSpace: Colors.white,
         onBackTap: () => Navigator.pop(context),

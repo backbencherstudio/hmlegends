@@ -88,12 +88,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
       appBar: CustomAppBar(
         profileImage: data?.avatar,
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
       ),
 
       body: Padding(
@@ -107,12 +106,21 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               hintText: 'Search by branch name',
               text: query,
               onChanged: (String value) {
-                debounce(() {
-                  if (!mounted) return;
+                if (value.isEmpty) {
+                  if (debouncer != null) {
+                    debouncer!.cancel();
+                  }
                   setState(() {
-                    query = value;
+                    query = '';
                   });
-                });
+                } else {
+                  debounce(() {
+                    if (!mounted) return;
+                    setState(() {
+                      query = value;
+                    });
+                  }, duration: const Duration(milliseconds: 300));
+                }
               },
             ),
             SizedBox(height: 20.h),

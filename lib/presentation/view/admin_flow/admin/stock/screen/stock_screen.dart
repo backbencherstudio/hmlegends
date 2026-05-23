@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:hmlegends/core/utlis/utils.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
+import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../../../core/constant/asset_path.dart';
 import '../../../../../../core/route/route_names.dart';
-import '../../../../widget/custom_app_bar.dart';
 import '../../../../widget/custom_text_field.dart';
 import '../../../../widget/dialog_button.dart';
 import '../../../admin_model/admin_product_model.dart';
@@ -78,6 +78,7 @@ class _StockScreenState extends State<StockScreen> {
                   productId,
                 );
 
+                if (!context.mounted) return;
                 _successDeleteStock(
                   context,
                   'You have successfully Deleted the stock!',
@@ -105,11 +106,8 @@ class _StockScreenState extends State<StockScreen> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
-        Future.delayed(Duration(seconds: 1), () {
-          Navigator.of(dialogContext).pop();
-          Navigator.of(
-            dialogContext,
-          ).pushReplacementNamed(RouteNames.mainWrapper);
+        Future.delayed(const Duration(seconds: 1), () {
+          if (dialogContext.mounted) Navigator.of(dialogContext).pop();
         });
 
         return Dialog(
@@ -152,21 +150,6 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  /// ------------------------ Pick Image From Gallery -------------------------
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-    );
-
-    if (pickedFile != null) {
-      setState(() {
-        image = File(pickedFile.path);
-      });
-    }
-  }
-
   /// ------------------------ Filter Products --------------------------------
   List<Data> filterProducts(List<Data> products, int index) {
     switch (index) {
@@ -197,6 +180,15 @@ class _StockScreenState extends State<StockScreen> {
     debouncer = Timer(duration, callback);
   }
 
+  String _statusLabel(String? status) {
+    switch (status) {
+      case 'IN_STOCK': return 'In Stock';
+      case 'LOW_STOCK': return 'Low Stock';
+      case 'OUT_OF_STOCK': return 'Out of Stock';
+      default: return status ?? '';
+    }
+  }
+
   /// ------------------------ Apply Query Filter -----------------------------
   List<Data> _applyQueryFilter(List<Data> products) {
     if (query.trim().isEmpty) return products;
@@ -214,8 +206,6 @@ class _StockScreenState extends State<StockScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification =
-        notificationProvider.adminNotificationModel?.data ?? [];
     return Consumer<StockScreenProvider>(
       builder: (context, vm, child) {
         final products = vm.adminProductModel?.data ?? [];
@@ -224,9 +214,14 @@ class _StockScreenState extends State<StockScreen> {
         return Scaffold(
           backgroundColor: AppColors.bgColor,
 
-          appBar: CustomAppBar(
+          appBar: CustomAppBarTwo(
+            title: "Stock Management",
             profileImage: data?.avatar,
-            notificationCount: notification.length,
+            notificationCount: notificationProvider.unreadCount,
+            colorMain: AppColors.bgColor,
+            colorSpace: AppColors.bgColor,
+            isIconPresent: true,
+            useBottomNavBack: true,
           ),
           body: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
@@ -280,12 +275,21 @@ class _StockScreenState extends State<StockScreen> {
                   hintText: 'Search by product name',
                   text: query,
                   onChanged: (String value) {
-                    debounce(() {
-                      if (!mounted) return;
+                    if (value.isEmpty) {
+                      if (debouncer != null) {
+                        debouncer!.cancel();
+                      }
                       setState(() {
-                        query = value;
+                        query = '';
                       });
-                    });
+                    } else {
+                      debounce(() {
+                        if (!mounted) return;
+                        setState(() {
+                          query = value;
+                        });
+                      }, duration: const Duration(milliseconds: 300));
+                    }
                   },
                 ),
                 SizedBox(height: 10.h),
@@ -541,8 +545,7 @@ class _StockScreenState extends State<StockScreen> {
                                                             ),
 
                                                             Text(
-                                                              product.stockStatus ??
-                                                                  "",
+                                                              _statusLabel(product.stockStatus),
                                                               style: TextStyle(
                                                                 fontSize: 12.sp,
                                                                 fontWeight:
@@ -583,75 +586,19 @@ class _StockScreenState extends State<StockScreen> {
                                                         ),
                                                       ),
                                                       const Spacer(),
-                                                      Consumer<
-                                                        StockScreenProvider
-                                                      >(
-                                                        builder: (
-                                                          context,
-                                                          provider,
-                                                          child,
-                                                        ) {
-                                                          return IconButton(
-                                                            onPressed: () async {
-                                                              _showEditProductDialog(
-                                                                onPressed: () async {
-                                                                  var res = await provider.editProduct(
-                                                                    pId:
-                                                                        product
-                                                                            .id ??
-                                                                        '',
-                                                                    name:
-                                                                        _nameController
-                                                                            .text,
-                                                                    stock:
-                                                                        _stockController
-                                                                            .text,
-                                                                    price:
-                                                                        _priceController
-                                                                            .text,
-                                                                    image:
-                                                                        image,
-                                                                  );
-                                                                  clearInput();
-                                                                  if (res
-                                                                      .success) {
-                                                                    Utils.showToast(
-                                                                      msg:
-                                                                          res.message,
-                                                                      backgroundColor:
-                                                                          Colors
-                                                                              .green,
-                                                                      textColor:
-                                                                          Colors
-                                                                              .white,
-                                                                    );
-                                                                    if (context
-                                                                        .mounted) {
-                                                                      Navigator.pop(
-                                                                        context,
-                                                                      );
-                                                                    }
-                                                                  } else {
-                                                                    Utils.showToast(
-                                                                      msg:
-                                                                          res.message,
-                                                                      backgroundColor:
-                                                                          Colors
-                                                                              .red,
-                                                                      textColor:
-                                                                          Colors
-                                                                              .white,
-                                                                    );
-                                                                  }
-                                                                },
-                                                              );
-                                                            },
-                                                            icon: Image.asset(
-                                                              'assets/icons/edit_icon.png',
-                                                              scale: 3.5,
-                                                            ),
+                                                      IconButton(
+                                                        onPressed: () {
+                                                          Navigator.pushNamed(
+                                                            context,
+                                                            RouteNames
+                                                                .editStockScreen,
+                                                            arguments: product,
                                                           );
                                                         },
+                                                        icon: Image.asset(
+                                                          'assets/icons/edit_icon.png',
+                                                          scale: 3.5,
+                                                        ),
                                                       ),
                                                       Consumer<
                                                         StockScreenProvider
@@ -701,225 +648,172 @@ class _StockScreenState extends State<StockScreen> {
 
   /// ---------------------- Show Add Product Dialog ---------------------------
   Future<void> _showAddProductDialog({required VoidCallback onPressed}) async {
+    File? dialogImage;
+
     showDialog(
       context: context,
-      builder: (_) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          insetPadding: const EdgeInsets.all(20),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: Colors.white,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Add New Product',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            Future<void> pickDialogImage() async {
+              final picker = ImagePicker();
+              final picked = await picker.pickImage(
+                source: ImageSource.gallery,
+                imageQuality: 85,
+              );
+              if (picked != null) {
+                setDialogState(() => dialogImage = File(picked.path));
+                image = dialogImage;
+              }
+            }
 
-                  SizedBox(height: 16.h),
-
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: Container(
-                      height: 150.h,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[200],
-                        image:
-                            image != null
-                                ? DecorationImage(
-                                  image: FileImage(image!),
-                                  fit: BoxFit.cover,
-                                )
-                                : null,
-                      ),
-                      child:
-                          image == null
-                              ? const Center(
-                                child: Icon(
-                                  Icons.camera_alt,
-                                  size: 40,
-                                  color: Colors.grey,
-                                ),
-                              )
-                              : null,
-                    ),
-                  ),
-
-                  SizedBox(height: 16.h),
-
-                  CustomTextField(
-                    hint: "Product Name",
-                    controller: _nameController,
-                  ),
-                  SizedBox(height: 12.h),
-
-                  CustomTextField(hint: "Price", controller: _priceController),
-                  SizedBox(height: 12.h),
-
-                  CustomTextField(hint: "Stock", controller: _stockController),
-
-                  SizedBox(height: 20.h),
-
-                  Consumer<StockScreenProvider>(
-                    builder: (context, provider, child) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              clearInput();
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              "Cancel",
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                          ),
-                          SizedBox(width: 10.w),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xffE20613),
-                            ),
-                            onPressed: onPressed,
-                            child: const Text(
-                              "Save",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ],
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  /// ------------------------ Show Edit Product Dialog ------------------------
-  Future<void> _showEditProductDialog({required VoidCallback onPressed}) async {
-    showDialog(
-      context: context,
-      builder: (_) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          insetPadding: const EdgeInsets.all(20),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: Colors.white,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Edit Product',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-
-                  SizedBox(height: 16.h),
-
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: Container(
-                      height: 150.h,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[200],
-                        image:
-                            image != null
-                                ? DecorationImage(
-                                  image: FileImage(image!),
-                                  fit: BoxFit.cover,
-                                )
-                                : null,
+              insetPadding: const EdgeInsets.all(20),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.white,
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Add New Product',
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      child:
-                          image == null
-                              ? const Center(
-                                child: Icon(
-                                  Icons.camera_alt,
-                                  size: 40,
-                                  color: Colors.grey,
-                                ),
-                              )
-                              : null,
-                    ),
-                  ),
 
-                  SizedBox(height: 16.h),
+                      SizedBox(height: 16.h),
 
-                  CustomTextField(
-                    hint: "Product Name",
-                    controller: _nameController,
-                  ),
-                  SizedBox(height: 12.h),
-
-                  CustomTextField(hint: "Price", controller: _priceController),
-                  SizedBox(height: 12.h),
-
-                  CustomTextField(hint: "Stock", controller: _stockController),
-
-                  SizedBox(height: 20.h),
-
-                  Consumer<StockScreenProvider>(
-                    builder: (context, provider, child) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      Stack(
                         children: [
-                          TextButton(
-                            onPressed: () {
-                              clearInput();
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              "Cancel",
-                              style: TextStyle(color: Colors.black54),
+                          GestureDetector(
+                            onTap: pickDialogImage,
+                            child: Container(
+                              height: 150.h,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.grey[200],
+                              ),
+                              clipBehavior: Clip.hardEdge,
+                              child:
+                                  dialogImage != null
+                                      ? Image.file(
+                                        dialogImage!,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                      )
+                                      : const Center(
+                                        child: Icon(
+                                          Icons.camera_alt,
+                                          size: 40,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
                             ),
                           ),
-                          SizedBox(width: 10.w),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xffE20613),
+                          if (dialogImage != null)
+                            Positioned(
+                              top: 6.h,
+                              right: 6.w,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setDialogState(() => dialogImage = null);
+                                  image = null;
+                                },
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black54,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  padding: EdgeInsets.all(4.w),
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 16.sp,
+                                  ),
+                                ),
+                              ),
                             ),
-                            onPressed: onPressed,
-                            child: const Text(
-                              "Save",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
                         ],
-                      );
-                    },
+                      ),
+
+                      SizedBox(height: 16.h),
+
+                      CustomTextField(
+                        hint: "Product Name",
+                        textInputAction: TextInputAction.next,
+                        controller: _nameController,
+                      ),
+                      SizedBox(height: 12.h),
+
+                      CustomTextField(
+                        hint: "Price",
+                        textInputAction: TextInputAction.next,
+                        controller: _priceController,
+                      ),
+                      SizedBox(height: 12.h),
+
+                      CustomTextField(
+                        hint: "Stock",
+                        textInputAction: TextInputAction.done,
+                        controller: _stockController,
+                      ),
+
+                      SizedBox(height: 20.h),
+
+                      Consumer<StockScreenProvider>(
+                        builder: (context, provider, child) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  clearInput();
+                                  Navigator.pop(dialogContext);
+                                },
+                                child: const Text(
+                                  "Cancel",
+                                  style: TextStyle(color: Colors.black54),
+                                ),
+                              ),
+                              SizedBox(width: 10.w),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xffE20613),
+                                  minimumSize: Size(72.w, 36.h),
+                                ),
+                                onPressed:
+                                    provider.isLoading ? null : onPressed,
+                                child:
+                                    provider.isLoading
+                                        ? SpinKitSpinningLines(
+                                          color: Colors.white,
+                                          size: 20.sp,
+                                        )
+                                        : const Text(
+                                          "Save",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );

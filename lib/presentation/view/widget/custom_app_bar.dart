@@ -184,7 +184,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                               clipBehavior: Clip.none,
                               children: [
                                 Icon(CupertinoIcons.bell, size: 28.sp),
-                                if (notificationCount > 0)
+                                if (provider.unreadCount > 0)
                                   Positioned(
                                     right: 1.w,
                                     top: -7.h,
@@ -195,7 +195,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                         shape: BoxShape.circle,
                                       ),
                                       child: Text(
-                                        '$notificationCount',
+                                        '${provider.unreadCount}',
                                         style: TextStyle(
                                           fontSize: 11.sp,
                                           color: Colors.white,

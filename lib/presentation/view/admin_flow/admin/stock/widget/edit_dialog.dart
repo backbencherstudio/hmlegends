@@ -95,7 +95,14 @@ class EditDialog extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () async {
-                    await provider.editProduct(pId: productId, image: image, name: '', stock: '', price: '');
+                    await provider.editProduct(
+                      pId: productId,
+                      name: nameController.text.trim(),
+                      stock: stockController.text.trim(),
+                      price: priceController.text.trim(),
+                      stockStatus: product.stockStatus ?? 'IN_STOCK',
+                      image: image,
+                    );
 
                     if (!dialogContext.mounted) return;
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../../../../../core/constant/asset_path.dart';
 
 class BranchCard extends StatelessWidget {
@@ -9,6 +10,7 @@ class BranchCard extends StatelessWidget {
   final WidgetStateProperty<Color> backgroundColor;
   final Function()? onAssignTap;
   final String? text;
+  final bool isLoading;
 
   const BranchCard({
     super.key,
@@ -18,6 +20,7 @@ class BranchCard extends StatelessWidget {
     required this.onAssignTap,
     required this.backgroundColor,
     this.text,
+    this.isLoading = false,
   });
 
   @override
@@ -88,14 +91,19 @@ class BranchCard extends StatelessWidget {
                 ),
                 elevation: WidgetStateProperty.all(0),
               ),
-              child: Text(
-                text ?? "Assign to Driver",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: isLoading
+                  ? const SpinKitSpinningLines(
+                      color: Colors.white,
+                      size: 24.0,
+                    )
+                  : Text(
+                      text ?? "Assign to Driver",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
             ),
           ),
         ],

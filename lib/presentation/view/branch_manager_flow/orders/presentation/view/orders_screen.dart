@@ -49,13 +49,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
 
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
       appBar: CustomAppBar(
         profileImage: data?.avatar,
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.w),

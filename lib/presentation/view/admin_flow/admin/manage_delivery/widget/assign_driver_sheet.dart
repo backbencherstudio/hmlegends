@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/manage_delivery/view_model/delivery_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../../../../core/constant/app_colors.dart';
@@ -146,8 +148,13 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                 SizedBox(height: 15.h),
 
                 /// ---------------- Loading ----------------
-                if (provider.isLoading)
-                  const Center(child: CircularProgressIndicator())
+                if (provider.isDriversLoading)
+                  const Center(
+                    child: SpinKitSpinningLines(
+                      color: Colors.red,
+                      size: 40.0,
+                    ),
+                  )
                 else ...[
                   Text(
                     "Total Products: ${totalQuantity.toString().padLeft(2, '0')}",
@@ -232,26 +239,42 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                             return;
                           }
 
-                          await provider.assignToDriver(
+                          final res = await provider.assignToDriver(
                             selectedDelivery.id!,
                             provider.selectedDriverId!,
                           );
-                          // ignore: use_build_context_synchronously
-                          Navigator.pop(context);
+                          
+                          if (res != null && res.success) {
+                            Utils.showToast(
+                              msg: res.message ?? "Driver assigned successfully",
+                              backgroundColor: Colors.green,
+                              textColor: Colors.white,
+                            );
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          } else {
+                            Utils.showToast(
+                              msg: res != null ? res.message ?? "Failed to assign driver" : "Failed to assign driver",
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                            );
+                          }
                         },
                         child:
-                            provider.isLoading
-                                ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                                : Text(
-                                  "Send",
-                                  style: TextStyle(
-                                    fontSize: 16.sp,
+                            provider.assigningOrderId != null
+                                ? const SpinKitSpinningLines(
                                     color: Colors.white,
-                                    fontWeight: FontWeight.w500,
+                                    size: 24.0,
+                                  )
+                                : Text(
+                                    "Send",
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                ),
                       ),
                     ),
                   ],

@@ -58,7 +58,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
 
     final stats = getAllInvoices.invoiceResponse?.data.stats;
     final paid = stats?.paidInvoice.toString() ?? '0';
@@ -69,7 +68,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       backgroundColor: const Color(0xffFFF6F7),
       appBar: CustomAppBar(
         profileImage: data?.avatar,
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -77,12 +76,19 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           children: [
             SearchField(
               hintText: 'Search',
-              text: context.read<GetAllInvoiceProvider>().query,
+              text: getAllInvoices.query,
               onChanged: (String value) {
-                debounce(() {
-                  if (!mounted) return;
-                  context.read<GetAllInvoiceProvider>().setQuery(value);
-                });
+                if (value.isEmpty) {
+                  if (debouncer != null) {
+                    debouncer!.cancel();
+                  }
+                  getAllInvoices.setQuery('');
+                } else {
+                  debounce(() {
+                    if (!mounted) return;
+                    getAllInvoices.setQuery(value);
+                  }, duration: const Duration(milliseconds: 300));
+                }
               },
             ),
             SizedBox(height: 20.h),

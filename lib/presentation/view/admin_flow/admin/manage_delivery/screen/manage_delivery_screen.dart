@@ -36,109 +36,120 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
     final adminNotificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = adminNotificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: CustomAppBarTwo(
         title: 'Manage Delivery',
         profileImage: '${data?.avatar}',
-        notificationCount: notification?.length ?? 0,
+        notificationCount: adminNotificationProvider.unreadCount,
         colorMain: Colors.white,
         colorSpace: Colors.white,
         onBackTap: () => Navigator.pop(context),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-        child: Consumer<DeliveryProvider>(
-          builder: (context, provider, _) {
-            // Show loading indicator while data is being fetched
-            if (provider.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            // Check if data is null or empty
-            if (provider.allDeliveriesModel?.data == null ||
-                provider.allDeliveriesModel!.data!.isEmpty) {
-              return const Center(child: Text('No deliveries available'));
-            }
-
-            return ListView.separated(
-              physics: const BouncingScrollPhysics(),
-              itemCount: provider.allDeliveriesModel!.data!.length,
-              separatorBuilder: (_, __) => SizedBox(height: 10.h),
-              itemBuilder: (context, index) {
-                var branch = provider.allDeliveriesModel!.data![index];
-
-                final status = (branch.status ?? '').toString().toUpperCase();
-                final isProcessing = status == "PROCESSING";
-                final isApproved = status == 'APPROVED';
-                final isPending = status == 'PENDING';
-                final isShipped = status == 'SHIPPED';
-                final isDelivered = status == 'DELIVERED';
-                final isCancelled = status == 'CANCELLED';
-                final isCompleted = status == 'COMPLETED';
-
-                // Determine button color and label based on status
-                Color buttonColor;
-                String buttonText;
-
-                if (isApproved) {
-                  buttonColor = Colors.blue;
-                  buttonText = 'Approved';
-                } else if (isPending) {
-                  buttonColor = Colors.orange;
-                  buttonText = 'Pending';
-                } else if (isShipped) {
-                  buttonColor = Colors.purple;
-                  buttonText = 'Shipped';
-                } else if (isDelivered) {
-                  buttonColor = Colors.green;
-                  buttonText = 'Delivered';
-                } else if (isCancelled) {
-                  buttonColor = Colors.red;
-                  buttonText = 'Cancelled';
-                } else if (isCompleted) {
-                  buttonColor = Colors.teal;
-                  buttonText = 'Completed';
-                } else if (isProcessing) {
-                  buttonColor = Colors.green;
-                  buttonText = 'Processing';
-                } else {
-                  buttonColor = AppColors.primaryColor;
-                  buttonText = 'Assign to Driver';
-                }
-
-                log("======== status : ${branch.status}");
-                return BranchCard(
-                  name: branch.user?.name ?? "N/A",
-                  totalProducts: branch.totalQuantity ?? 0,
-                  address: branch.user?.address ?? "N/A",
-                  backgroundColor: WidgetStateProperty.all<Color>(buttonColor),
-                  text: buttonText,
-
-                  onAssignTap: () async {
-                    // Only show assign driver sheet if not already processing
-                    if (!isProcessing) {
-                      /// ------------ Open bottom sheet ---------------
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20.r),
-                          ),
-                        ),
-                        builder:
-                            (_) => AssignDriverSheet(deliveryId: branch.id),
-                      );
-                      logger.d(branch.id);
-                    }
-                  },
-                );
-              },
-            );
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await context.read<DeliveryProvider>().getAllDeliveries();
           },
+          child: Consumer<DeliveryProvider>(
+            builder: (context, provider, _) {
+              // Show loading indicator while data is being fetched
+              if (provider.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              // Check if data is null or empty
+              if (provider.allDeliveriesModel?.data == null ||
+                  provider.allDeliveriesModel!.data!.isEmpty) {
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    SizedBox(height: 150.h),
+                    const Center(child: Text('No deliveries available')),
+                  ],
+                );
+              }
+
+              return ListView.separated(
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: provider.allDeliveriesModel!.data!.length,
+                separatorBuilder: (_, __) => SizedBox(height: 10.h),
+                itemBuilder: (context, index) {
+                  var branch = provider.allDeliveriesModel!.data![index];
+
+                  final status = (branch.status ?? '').toString().toUpperCase();
+                  final isProcessing = status == "PROCESSING";
+                  final isApproved = status == 'APPROVED';
+                  final isPending = status == 'PENDING';
+                  final isShipped = status == 'SHIPPED';
+                  final isDelivered = status == 'DELIVERED';
+                  final isCancelled = status == 'CANCELLED';
+                  final isCompleted = status == 'COMPLETED';
+
+                  // Determine button color and label based on status
+                  Color buttonColor;
+                  String buttonText;
+
+                  if (isApproved) {
+                    buttonColor = Colors.blue;
+                    buttonText = 'Approved';
+                  } else if (isPending) {
+                    buttonColor = Colors.orange;
+                    buttonText = 'Pending';
+                  } else if (isShipped) {
+                    buttonColor = Colors.purple;
+                    buttonText = 'Shipped';
+                  } else if (isDelivered) {
+                    buttonColor = Colors.green;
+                    buttonText = 'Delivered';
+                  } else if (isCancelled) {
+                    buttonColor = Colors.red;
+                    buttonText = 'Cancelled';
+                  } else if (isCompleted) {
+                    buttonColor = Colors.teal;
+                    buttonText = 'Completed';
+                  } else if (isProcessing) {
+                    buttonColor = Colors.green;
+                    buttonText = 'Processing';
+                  } else {
+                    buttonColor = AppColors.primaryColor;
+                    buttonText = 'Assign to Driver';
+                  }
+
+                  log("======== status : ${branch.status}");
+                  return BranchCard(
+                    name: branch.user?.name ?? "N/A",
+                    totalProducts: branch.totalQuantity ?? 0,
+                    address: branch.user?.address ?? "N/A",
+                    backgroundColor: WidgetStateProperty.all<Color>(buttonColor),
+                    text: buttonText,
+                    isLoading: provider.assigningOrderId == branch.id,
+
+                    onAssignTap: () async {
+                      // Only show assign driver sheet if not already processing
+                      if (!isProcessing) {
+                        /// ------------ Open bottom sheet ---------------
+                        await showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20.r),
+                            ),
+                          ),
+                          builder:
+                              (_) => AssignDriverSheet(deliveryId: branch.id),
+                        );
+                        log(branch.id ?? '');
+                      }
+                    },
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

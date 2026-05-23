@@ -69,7 +69,6 @@ class OrderSummaryViewScreen extends StatelessWidget {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notificationData = notificationProvider.adminNotificationModel?.data;
 
     // Calculate total items
     singleOrder.fold<int>(0, (sum, item) => sum + (item.quantity ?? 0));
@@ -78,7 +77,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
       appBar: CustomAppBarTwo(
         title: "Order Summary",
         profileImage: '${data?.avatar}',
-        notificationCount: notificationData?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
         onBackTap: () => Navigator.pop(context),

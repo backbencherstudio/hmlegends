@@ -7,6 +7,7 @@ import 'package:hmlegends/presentation/view/admin_flow/view_model/home/home_scre
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
 import 'package:provider/provider.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 import '../../../view_model/notification_admin/admin_notification_provider.dart';
 import '../widget/info_card.dart';
 import '../widget/weekly_bar_chart.dart';
@@ -22,13 +23,12 @@ class HeadOfficeHomeScreen extends StatelessWidget {
     final adminNotificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = adminNotificationProvider.adminNotificationModel?.data;
 
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: CustomAppBar(
         profileImage: data?.avatar,
-        notificationCount: notification?.length ?? 0,
+        notificationCount: adminNotificationProvider.unreadCount,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -117,11 +117,9 @@ class HeadOfficeHomeScreen extends StatelessWidget {
 
           case 2:
             return InfoCard(
-              onTaps:
-                  () => Navigator.pushNamed(
-                    context,
-                    RouteNames.orderSummaryScreen,
-                  ),
+              onTaps: () {
+                context.read<BottomNavViewModel>().updateIndex(2);
+              },
               title: 'Orders',
               subtitle: 'Summary',
               label1: 'Completed Orders',

@@ -49,7 +49,6 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
     Future<void> submit() async {
       if (_formKey.currentState!.validate()) {
         /// ------ Call the provider method to add a new branch --
@@ -93,7 +92,7 @@ class _AddNewBranchesScreenState extends State<AddNewBranchesScreen> {
       backgroundColor: Colors.white,
       appBar: CustomAppBarTwo(
         title: 'Add New Branch',
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
         colorMain: Colors.white,
         colorSpace: Colors.white,
         onBackTap: () => Navigator.pop(context),
