@@ -141,6 +141,7 @@ class OrderScreenProvider extends ChangeNotifier {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         logger.i("Order Approved Successfully: ${decodeData['message']}");
+        await getAdminOrder();
       } else {
         logger.i("Order Approval Failed: ${decodeData['message']}");
       }

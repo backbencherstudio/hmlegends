@@ -77,12 +77,19 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           children: [
             SearchField(
               hintText: 'Search',
-              text: context.read<GetAllInvoiceProvider>().query,
+              text: getAllInvoices.query,
               onChanged: (String value) {
-                debounce(() {
-                  if (!mounted) return;
-                  context.read<GetAllInvoiceProvider>().setQuery(value);
-                });
+                if (value.isEmpty) {
+                  if (debouncer != null) {
+                    debouncer!.cancel();
+                  }
+                  getAllInvoices.setQuery('');
+                } else {
+                  debounce(() {
+                    if (!mounted) return;
+                    getAllInvoices.setQuery(value);
+                  }, duration: const Duration(milliseconds: 300));
+                }
               },
             ),
             SizedBox(height: 20.h),

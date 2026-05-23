@@ -100,14 +100,23 @@ class _InvoiceStatusScreenState extends State<InvoiceStatusScreen> {
               children: [
                 SearchField(
                   hintText: 'Search by branch name',
-                  text: '',
+                  text: query,
                   onChanged: (String value) {
-                    debounce(() {
-                      if (!mounted) return;
+                    if (value.isEmpty) {
+                      if (debouncer != null) {
+                        debouncer!.cancel();
+                      }
                       setState(() {
-                        query = value;
+                        query = '';
                       });
-                    });
+                    } else {
+                      debounce(() {
+                        if (!mounted) return;
+                        setState(() {
+                          query = value;
+                        });
+                      }, duration: const Duration(milliseconds: 300));
+                    }
                   },
                 ),
                 SizedBox(height: 20.h),

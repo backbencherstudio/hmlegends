@@ -8,8 +8,19 @@ import '../../order/screen/order_summary_screen.dart';
 import '../../stock/screen/stock_screen.dart';
 import '../widget/custom_bottom_nav_bar.dart';
 
-class MainWrapper extends StatelessWidget {
+class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
+
+  @override
+  State<MainWrapper> createState() => _MainWrapperState();
+}
+
+class _MainWrapperState extends State<MainWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<BottomNavViewModel>().updateIndex(0);
+  }
 
   @override
   Widget build(BuildContext context) {

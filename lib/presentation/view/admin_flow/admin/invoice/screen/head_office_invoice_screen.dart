@@ -79,12 +79,19 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
             /// ------------ Search Field ------------------------------
             SearchField(
               hintText: 'Search by branch name',
-              text: context.read<AdminInvoiceProvider>().query,
+              text: provider.query,
               onChanged: (String value) {
-                debounce(() {
-                  if (!mounted) return;
-                  context.read<AdminInvoiceProvider>().setQuery(value);
-                });
+                if (value.isEmpty) {
+                  if (debouncer != null) {
+                    debouncer!.cancel();
+                  }
+                  provider.setQuery('');
+                } else {
+                  debounce(() {
+                    if (!mounted) return;
+                    provider.setQuery(value);
+                  }, duration: const Duration(milliseconds: 300));
+                }
               },
             ),
             SizedBox(height: 16.h),

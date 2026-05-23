@@ -81,14 +81,14 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
   List<Data> managersData = [];
   Timer? debouncer;
 
-  List<Managers> _applyQueryFilter(List<Managers> managers) {
-    if (context.read<ManageBranchProvider>().query.trim().isEmpty) {
+  List<Managers> _applyQueryFilter(List<Managers> managers, String query) {
+    if (query.trim().isEmpty) {
       return managers;
     }
-    final q = context.read<ManageBranchProvider>().query.trim().toLowerCase();
+    final q = query.trim().toLowerCase();
     return managers.where((manager) {
       final name = manager.name ?? '';
-      return name.contains(q);
+      return name.toLowerCase().contains(q);
     }).toList();
   }
 
@@ -133,12 +133,19 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                 ///------------------ Search Field ----------------------------------
                 SearchField(
                   hintText: 'Search by manager name',
-                  text: context.read<ManageBranchProvider>().query,
+                  text: provider.query,
                   onChanged: (String value) {
-                    debounce(() {
-                      if (!mounted) return;
-                      context.read<ManageBranchProvider>().setQuery(value);
-                    });
+                    if (value.isEmpty) {
+                      if (debouncer != null) {
+                        debouncer!.cancel();
+                      }
+                      provider.setQuery('');
+                    } else {
+                      debounce(() {
+                        if (!mounted) return;
+                        provider.setQuery(value);
+                      }, duration: const Duration(milliseconds: 300));
+                    }
                   },
                 ),
 
@@ -237,10 +244,12 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
                     itemCount:
                         _applyQueryFilter(
                           _getFilteredManagers(provider),
+                          provider.query,
                         ).length,
                     itemBuilder: (context, index) {
                       final filteredManagers = _applyQueryFilter(
                         _getFilteredManagers(provider),
+                        provider.query,
                       );
                       final items = filteredManagers[index];
                       final bool isActive = items.status == "ACTIVE";
