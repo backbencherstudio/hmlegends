@@ -56,7 +56,7 @@ void showDeleteStockDialog(BuildContext context, String text) {
             textColor: Colors.white,
             onPressed: () {
               Navigator.of(context).pop();
-              SuccessDeleteStock(context, 'You have successfully Deleted the stock!');
+              successDeleteStock(context, 'You have successfully Deleted the stock!');
             },
             color: AppColors.primaryColor,
           ),

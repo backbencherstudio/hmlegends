@@ -11,28 +11,28 @@ import '../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 
 class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final String profileImage;
+  final String? profileImage;
   final int notificationCount;
   final Color colorMain;
   final Color colorSpace;
   final VoidCallback? onProfileTap;
   final VoidCallback? onNotificationTap;
   final VoidCallback? onBackTap;
-  final bool useBottomNavBack; // Add this parameter
+  final bool useBottomNavBack;
   final bool? isIconPresent;
 
   const CustomAppBarTwo({
     super.key,
     required this.title,
-    required this.profileImage,
+    this.profileImage,
     required this.notificationCount,
     this.onProfileTap,
     this.onNotificationTap,
     this.onBackTap,
     required this.colorMain,
     required this.colorSpace,
-    this.useBottomNavBack = false, // Default to false
-    this.isIconPresent = true, // Default to true
+    this.useBottomNavBack = false,
+    this.isIconPresent = true,
   });
 
   @override
@@ -52,41 +52,49 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Left Section with back arrow
+                  // Left: back arrow + title
                   Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Back arrow icon
-                      isIconPresent == true
-                          ? GestureDetector(
-                            onTap:
-                                onBackTap ??
-                                () => _handleBackNavigation(context),
-                            child: Icon(
-                              Icons.arrow_back_ios,
-                              size: 24.sp,
-                              color: AppColors.authHeaderTextColor,
-                            ),
-                          )
-                          : SizedBox.shrink(),
-                      SizedBox(width: 12.w),
+                      if (isIconPresent == true)
+                        GestureDetector(
+                          onTap: onBackTap ??
+                              () => _handleBackNavigation(context),
+                          child: Icon(
+                            Icons.arrow_back_ios,
+                            size: 24.sp,
+                            color: AppColors.authHeaderTextColor,
+                          ),
+                        ),
+                      SizedBox(width: 8.w),
                       Text(title, style: AppTextStyles.appHeaderText),
                     ],
                   ),
-                  // Right Section
+
+                  // Right: notification + profile
                   Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       _buildNotificationIcon(context),
                       SizedBox(width: 20.w),
                       GestureDetector(
-                        onTap:
-                            onProfileTap ??
+                        onTap: onProfileTap ??
                             () => Navigator.pushNamed(
-                              context,
-                              RouteNames.headOfficeProfileScreen,
-                            ),
+                                  context,
+                                  RouteNames.headOfficeProfileScreen,
+                                ),
                         child: CircleAvatar(
                           radius: 18.r,
-                          backgroundImage: NetworkImage('${ApiEndpoints.baseUrl}/public/storage/avatar/$profileImage'),
+                          backgroundImage: (profileImage != null &&
+                                  profileImage!.isNotEmpty &&
+                                  !profileImage!.startsWith('assets/'))
+                              ? NetworkImage(
+                                  '${ApiEndpoints.baseUrl}/public/storage/avatar/$profileImage',
+                                )
+                              : const AssetImage(
+                                    'assets/icons/profile_icon.png',
+                                  )
+                                  as ImageProvider,
                         ),
                       ),
                     ],

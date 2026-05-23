@@ -1,19 +1,15 @@
 
 import 'package:flutter/material.dart';
 import '../../../../../../core/constant/asset_path.dart';
-import '../../../../../../core/route/route_names.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-void SuccessDeleteStock(BuildContext context, String text) {
+void successDeleteStock(BuildContext context, String text) {
   showDialog(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext dialogContext) {
-      Future.delayed(Duration(seconds: 1), () {
-        Navigator.of(dialogContext).pop();
-        Navigator.of(dialogContext).pushReplacementNamed(
-          RouteNames.mainWrapper,
-        );
+      Future.delayed(const Duration(seconds: 1), () {
+        if (dialogContext.mounted) Navigator.of(dialogContext).pop();
       });
 
       return Dialog(
