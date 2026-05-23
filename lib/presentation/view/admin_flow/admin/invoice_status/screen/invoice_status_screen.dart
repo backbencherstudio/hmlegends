@@ -68,13 +68,12 @@ class _InvoiceStatusScreenState extends State<InvoiceStatusScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
       appBar: CustomAppBarTwo(
         title: "Invoice status",
         profileImage: '${data?.avatar}',
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
         onBackTap: () => Navigator.pop(context),

@@ -50,14 +50,13 @@ class _TrackingScreenState extends State<TrackingScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
     return Consumer<TrackingProvider>(
       builder: (context, tracker, child) {
         return Scaffold(
           backgroundColor: AppColors.bgColor,
           appBar: CustomAppBar(
             profileImage: data?.avatar,
-            notificationCount: notification?.length ?? 0,
+            notificationCount: notificationProvider.unreadCount,
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(20.0),

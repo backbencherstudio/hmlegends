@@ -37,7 +37,6 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
       context,
     );
 
-    final notification = notificationProvider.adminNotificationModel?.data;
 
     final String name = data?.name ?? "Not Found Name";
     final String occupation = data?.occupation ?? "Not Found Occupation";
@@ -51,7 +50,7 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
       /// --------------------- App Bar ------------------------------------
       appBar: CustomAppBar(
         profileImage: data?.avatar,
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
       ),
 
       body: SingleChildScrollView(

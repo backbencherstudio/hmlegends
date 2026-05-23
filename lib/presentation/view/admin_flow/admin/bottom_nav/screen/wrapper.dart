@@ -19,16 +19,18 @@ class _MainWrapperState extends State<MainWrapper> {
   @override
   void initState() {
     super.initState();
-    context.read<BottomNavViewModel>().updateIndex(0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BottomNavViewModel>().reset();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       const HeadOfficeHomeScreen(),
-      StockScreen(fromBottomNav: true,),
-      OrderSummaryScreen(fromBottomNav: true,),
-      HeadOfficeInvoiceScreen(fromBottomNav: true,),
+      StockScreen(fromBottomNav: true),
+      OrderSummaryScreen(fromBottomNav: true),
+      HeadOfficeInvoiceScreen(fromBottomNav: true),
     ];
 
     return Consumer<BottomNavViewModel>(

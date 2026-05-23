@@ -60,7 +60,6 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
     return Scaffold(
@@ -68,7 +67,7 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
       appBar: CustomAppBarTwo(
         title: "Invoice",
         profileImage: '${data?.avatar}',
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
         colorMain: const Color(0xFFFFF5F5),
         colorSpace: const Color(0xFFFFF5F5),
         onBackTap: () => Navigator.pop(context),

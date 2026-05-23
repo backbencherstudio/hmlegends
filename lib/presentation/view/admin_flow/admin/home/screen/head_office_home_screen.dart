@@ -23,13 +23,12 @@ class HeadOfficeHomeScreen extends StatelessWidget {
     final adminNotificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = adminNotificationProvider.adminNotificationModel?.data;
 
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: CustomAppBar(
         profileImage: data?.avatar,
-        notificationCount: notification?.length ?? 0,
+        notificationCount: adminNotificationProvider.unreadCount,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),

@@ -87,7 +87,7 @@ class SimpleAppbar extends StatelessWidget implements PreferredSizeWidget {
                               onTap: () {
                                 Navigator.pushNamed(
                                   context,
-                                  RouteNames.notificationScreen,
+                                  RouteNames.adminNotificationScreen,
                                 );
                               },
                               child: Icon(CupertinoIcons.bell, size: 28.sp),

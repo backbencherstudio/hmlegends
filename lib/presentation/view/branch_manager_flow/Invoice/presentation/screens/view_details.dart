@@ -24,12 +24,11 @@ class ViewDetails extends StatelessWidget {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
       appBar: SimpleAppbar(
         profileImage: data?.avatar ?? '',
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
         title: 'Invoice',
         navigationType: NavigationType.pop,
       ),

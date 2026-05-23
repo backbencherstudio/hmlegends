@@ -107,7 +107,6 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
 
@@ -121,7 +120,7 @@ class _ManageBranchesScreenState extends State<ManageBranchesScreen> {
               children: [
                 CustomAppBarTwo(
                   title: 'Manage Branches',
-                  notificationCount: notification?.length ?? 0,
+                  notificationCount: notificationProvider.unreadCount,
                   profileImage: '${data?.avatar}',
                   colorMain: const Color(0xFFFFF5F5),
                   colorSpace: const Color(0xFFFFF5F5),

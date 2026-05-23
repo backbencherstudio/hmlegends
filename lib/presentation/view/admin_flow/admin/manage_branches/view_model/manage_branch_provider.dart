@@ -181,6 +181,8 @@ class ManageBranchProvider extends ChangeNotifier {
   /// ---------------------------- Get Single Branch ---------------------------
 
   Future<void> getSingleBranch(String userId, {String period = 'week'}) async {
+    isLoading = true;
+    notifyListeners();
     try {
       final token = await _tokenStorage.getToken();
       final url = Uri.parse(ApiEndpoints.singleBranch(userId, period: period));
@@ -196,13 +198,13 @@ class ManageBranchProvider extends ChangeNotifier {
         final decodeData = jsonDecode(response.body);
         logger.d("The success message ${decodeData['message']}");
         _singleBranchModel = SingleBranchModel.fromJson(decodeData);
-        notifyListeners();
       } else {
         logger.d("The error message ${response.statusCode}");
-        notifyListeners();
       }
     } catch (error) {
       logger.i("The error message $error");
+    } finally {
+      isLoading = false;
       notifyListeners();
     }
   }

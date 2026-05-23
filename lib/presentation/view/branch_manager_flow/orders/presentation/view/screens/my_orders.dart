@@ -76,13 +76,12 @@ class _MyOrdersState extends State<MyOrders> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
       appBar: SimpleAppbar(
         title: 'My Orders',
         profileImage: '${data?.avatar}',
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
         navigationPath: RouteNames.branchParentScreen,
       ),
       body: Padding(

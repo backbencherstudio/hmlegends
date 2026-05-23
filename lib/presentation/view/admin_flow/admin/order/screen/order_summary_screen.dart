@@ -88,12 +88,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
       appBar: CustomAppBar(
         profileImage: data?.avatar,
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
       ),
 
       body: Padding(

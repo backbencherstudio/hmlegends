@@ -124,7 +124,7 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
       onTap:
           onNotificationTap ??
           () {
-            Navigator.pushNamed(context, RouteNames.notificationScreen);
+            Navigator.pushNamed(context, RouteNames.adminNotificationScreen);
           },
       child: Stack(
         clipBehavior: Clip.none,

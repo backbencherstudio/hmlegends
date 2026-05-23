@@ -36,13 +36,12 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
     final adminNotificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = adminNotificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: CustomAppBarTwo(
         title: 'Manage Delivery',
         profileImage: '${data?.avatar}',
-        notificationCount: notification?.length ?? 0,
+        notificationCount: adminNotificationProvider.unreadCount,
         colorMain: Colors.white,
         colorSpace: Colors.white,
         onBackTap: () => Navigator.pop(context),

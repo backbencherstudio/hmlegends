@@ -58,7 +58,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
 
     final stats = getAllInvoices.invoiceResponse?.data.stats;
     final paid = stats?.paidInvoice.toString() ?? '0';
@@ -69,7 +68,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       backgroundColor: const Color(0xffFFF6F7),
       appBar: CustomAppBar(
         profileImage: data?.avatar,
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

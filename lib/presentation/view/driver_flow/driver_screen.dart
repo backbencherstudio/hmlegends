@@ -38,11 +38,10 @@ class _DriverScreenState extends State<DriverScreen> {
       context,
     );
 
-    final notification = notificationProvider.adminNotificationModel?.data;
     return Scaffold(
       appBar: CustomAppBar(
         profileImage: data?.avatar,
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
       ),
 
       body: Stack(

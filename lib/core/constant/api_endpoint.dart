@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://era-dna-maintaining-supplies.trycloudflare.com';
+      'https://stuff-helped-pressed-designated.trycloudflare.com';
   static const String googleLogin = '$baseUrl/api/auth/google/signin';
 
   // Admin
@@ -40,6 +40,18 @@ class ApiEndpoints {
   static String getInvoiceDetailAdmin(String orderId) =>
       '$baseUrl/api/invoice/order/$orderId';
   static const String adminNotification = "$baseUrl/api/notification";
+
+  static String notification({String period = 'today', String? cursor}) {
+    var url = '$baseUrl/api/notification?period=$period';
+    if (cursor != null && cursor.isNotEmpty) url += '&cursor=$cursor';
+    return url;
+  }
+
+  static String markNotificationRead(String id) =>
+      '$baseUrl/api/notification/$id/read';
+
+  static const String markAllNotificationsRead =
+      '$baseUrl/api/notification/read-all';
   static const String pendingUser = "$baseUrl/api/auth/pending-approvals";
 
   static String acceptRequest(String userId) =>

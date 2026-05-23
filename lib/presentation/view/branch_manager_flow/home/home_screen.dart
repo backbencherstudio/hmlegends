@@ -41,12 +41,11 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification = notificationProvider.adminNotificationModel?.data;
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
       appBar: CustomAppBar(
         profileImage: data?.avatar,
-        notificationCount: notification?.length ?? 0,
+        notificationCount: notificationProvider.unreadCount,
       ),
       body: Stack(
         alignment: Alignment.bottomCenter,
