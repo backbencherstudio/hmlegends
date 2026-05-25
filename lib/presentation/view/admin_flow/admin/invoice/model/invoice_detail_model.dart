@@ -163,11 +163,21 @@ class OrderItem {
     required this.product,
   });
 
-  factory OrderItem.fromJson(Map<String, dynamic> json) => OrderItem(
-    quantity: json["quantity"] ?? 0,
-    price: json["price"] ?? 0,
-    product: json['product']
-  );
+  factory OrderItem.fromJson(Map<String, dynamic> json) {
+    String? productName;
+    if (json['product'] != null) {
+      if (json['product'] is Map) {
+        productName = json['product']['name']?.toString();
+      } else {
+        productName = json['product']?.toString();
+      }
+    }
+    return OrderItem(
+      quantity: json["quantity"] ?? 0,
+      price: json["price"] ?? 0,
+      product: productName,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "quantity": quantity,

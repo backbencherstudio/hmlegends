@@ -13,6 +13,7 @@ import '../../../view_model/profile/change_pass_provider.dart';
 import '../model/invoice_detail_model.dart';
 import '../view_model/admin_invoice_provider.dart';
 import 'invoice_web_view_screen.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class AdminInvoiceDetailScreen extends StatefulWidget {
   const AdminInvoiceDetailScreen({super.key});
@@ -22,15 +23,25 @@ class AdminInvoiceDetailScreen extends StatefulWidget {
       _AdminInvoiceDetailScreenState();
 
   static Widget _tableHeader(String text) {
-    return Text(
-      text,
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+    return Expanded(
+      child: Center(
+        child: Text(
+          text,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+        ),
+      ),
     );
   }
 
   static Widget _tableCell(String text) {
     return Expanded(
-      child: Center(child: Text(text, style: TextStyle(fontSize: 14.sp))),
+      child: Center(
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 14.sp),
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }
 }
@@ -40,9 +51,9 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
     if (dateString == null || dateString.isEmpty) return 'N/A';
     try {
       final DateTime dateTime = DateTime.parse(dateString);
-      return DateFormat('dd/MM/yyyy').format(dateTime);
+      return DateFormat('d MMMM yyyy').format(dateTime).toUpperCase();
     } catch (e) {
-      return dateString;
+      return dateString.toUpperCase();
     }
   }
 
@@ -53,6 +64,182 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _showSendInvoiceBottomSheet(
+    BuildContext context, 
+    String invoiceId, 
+    AdminInvoiceProvider provider
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(24.r),
+                topRight: Radius.circular(24.r),
+              ),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+            child: Form(
+              key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Drag Handle
+                  Container(
+                    width: 48.w,
+                    height: 4.h,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD2D2D2),
+                      borderRadius: BorderRadius.circular(2.r),
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+                  
+                  // Title
+                  Text(
+                    "Type the email of the recipient.",
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: const Color(0xFF4A4C56),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Email Text Field
+                  TextFormField(
+                    controller: _controller,
+                    validator: emailValidator,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      hintText: "branch01@gmail.com",
+                      hintStyle: TextStyle(
+                        fontSize: 14.sp,
+                        color: const Color(0xFFA5A5AB),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xFFF6F6F6),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16.w, 
+                        vertical: 14.h
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+
+                  // Send Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50.h,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffE20614),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.r),
+                        ),
+                        elevation: 0,
+                      ),
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          final navigator = Navigator.of(context);
+                          final res = await provider.adminSendInvoice(
+                            invoiceId,
+                            email: _controller.text,
+                          );
+                          navigator.pop(); // Close bottomsheet
+                          _controller.clear();
+                          Utils.showToast(
+                            msg: res.message,
+                            backgroundColor: res.success ? Colors.green : Colors.red,
+                            textColor: Colors.white,
+                          );
+                        }
+                      },
+                      child: Text(
+                        "Send",
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _exportPdfButton(InvoiceData invoice) {
+    return GestureDetector(
+      onTap: invoice.url.isEmpty
+          ? () {
+              Utils.showToast(
+                msg: "PDF URL is not available yet",
+                backgroundColor: Colors.orange,
+                textColor: Colors.white,
+              );
+            }
+          : () {
+              openInvoice(invoice.url);
+            },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 44.r,
+            height: 44.r,
+            decoration: const BoxDecoration(
+              color: Color(0xFFFCE8E6),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.picture_as_pdf,
+              color: Color(0xffE20614),
+              size: 22,
+            ),
+          ),
+          SizedBox(width: 8.w),
+          Text(
+            "Export pdf",
+            style: TextStyle(
+              fontSize: 16.sp,
+              color: const Color(0xffE20614),
+              fontWeight: FontWeight.w600,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -75,7 +262,12 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
       body: Consumer<AdminInvoiceProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(
+              child: SpinKitSpinningLines(
+                color: AppColors.primaryColor,
+                size: 50,
+              ),
+            );
           }
 
           if (provider.invoiceDetailModel == null ||
@@ -88,13 +280,10 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
             );
           }
 
-          /// If safe → extract invoice
           final invoice = provider.invoiceDetailModel!.data;
-          final allInVoices =
-              provider.allInvoiceModel?.data?.invoices?.first.id;
 
           return SingleChildScrollView(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.r),
             child: Column(
               children: [
                 Container(
@@ -107,171 +296,66 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _title("Invoice From"),
+                      SizedBox(height: 4.h),
                       _addressCard(invoice!.creator),
-
-                      SizedBox(height: 16),
+                      SizedBox(height: 12.h),
+                      const Divider(color: Color(0xFFE5E5E5), thickness: 1),
+                      SizedBox(height: 12.h),
                       _title("Ship to"),
+                      SizedBox(height: 4.h),
                       _addressCard(invoice.receiver),
-
-                      SizedBox(height: 20),
-                      Divider(),
-
-                      Text(
-                        "DATE: ${_formatDate(invoice.createdAt)}",
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      Text(
-                        "SKU: ${invoice.sku}",
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ),
-
-                      SizedBox(height: 10),
-                      _itemsTable(invoice.order.orderItems),
-
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          "Subtotal:   £${invoice.order.totalAmount}",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Divider(color: Color(0xFFA5A5AB), thickness: 1),
-                SizedBox(height: 25.h),
-                Text(
-                  textAlign: TextAlign.center,
-                  "Branch name's invoice is ready. Now you can send/export it",
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF4A4C56),
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                Form(
-                  key: _formKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xffE20614),
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder:
-                                  (context) => Dialog(
-                                    child: Container(
-                                      height: 300.h,
-                                      padding: EdgeInsets.all(16),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Container(
-                                            width: 99.w,
-                                            height: 2.h,
-                                            decoration: BoxDecoration(
-                                              color: Color(0xFFD2D2D2),
-                                            ),
-                                          ),
-                                          SizedBox(height: 60.h),
-                                          Text(
-                                            "Type the email of the recipient",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Color(0xFF4A4C56),
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          SizedBox(height: 16.h),
-
-                                          customTextFormField(
-                                            hintText: 'Enter your email',
-                                            controller: _controller,
-                                            validator: emailValidator,
-                                          ),
-                                          SizedBox(height: 20.h),
-                                          AuthButton(
-                                            text: Text(
-                                              'Send',
-                                              style: TextStyle(
-                                                fontSize: 16.sp,
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            onPressed: () async {
-                                              if (_formKey.currentState!
-                                                  .validate()) {
-                                                final res = await provider
-                                                    .adminSendInvoice(
-                                                      email: _controller.text,
-                                                      allInVoices!,
-                                                    );
-                                                Utils.showToast(
-                                                  msg: res.message,
-                                                  backgroundColor: Colors.green,
-                                                  textColor: Colors.white,
-                                                );
-                                              }
-                                            },
-                                            color: AppColors.primaryColor,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                            );
-                          },
-                          child: Text(
-                            "Send Invoice",
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      TextButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.red,
-                          padding: EdgeInsets.symmetric(
-                            vertical: 14,
-                            horizontal: 20,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        onPressed: () {
-                          openInvoice(invoice.url);
-                        },
+                      SizedBox(height: 20.h),
+                      
+                      const Divider(color: Color(0xFFE5E5E5), thickness: 1),
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.h),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(
-                              Icons.picture_as_pdf,
-                              size: 24.sp,
-                              color: Color(0xFF5BB450),
-                            ),
-                            SizedBox(width: 4.w),
                             Text(
-                              "Export PDF",
+                              "DATE: ${_formatDate(invoice.createdAt)}",
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF4A4C56),
+                              ),
+                            ),
+                            Text(
+                              "INVOICE NO: ${invoice.sku.toUpperCase()}",
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF4A4C56),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Divider(color: Color(0xFFE5E5E5), thickness: 1),
+                      SizedBox(height: 16.h),
+                      
+                      _itemsTable(invoice.order.orderItems),
+                      const Divider(color: Color(0xFFE5E5E5), thickness: 1),
+                      
+                      Padding(
+                        padding: EdgeInsets.only(top: 12.h),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              "Subtotal:   ",
                               style: TextStyle(
                                 fontSize: 16.sp,
-                                color: Color(0xFF5BB450),
+                                color: const Color(0xFF777980),
                                 fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              "£${invoice.order.totalAmount}",
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
@@ -280,6 +364,59 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
                     ],
                   ),
                 ),
+                SizedBox(height: 24.h),
+                
+                Text(
+                  "${invoice.receiver.name}'s invoice is ready. Now you can\nsend/export it.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF4A4C56),
+                    height: 1.4,
+                  ),
+                ),
+                SizedBox(height: 24.h),
+                
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 6,
+                      child: SizedBox(
+                        height: 50.h,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xffE20614),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.r),
+                            ),
+                            elevation: 0,
+                          ),
+                          onPressed: () {
+                            _showSendInvoiceBottomSheet(context, invoice.id, provider);
+                          },
+                          child: Text(
+                            "Send Invoice",
+                            style: TextStyle(
+                              fontSize: 16.sp, 
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      flex: 5,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: _exportPdfButton(invoice),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 24.h),
               ],
             ),
           );
@@ -290,11 +427,12 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
 
   // Section Title
   Widget _title(String title) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 8),
-      child: Text(
-        title,
-        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 14.sp, 
+        fontWeight: FontWeight.bold,
+        color: const Color(0xFF777980),
       ),
     );
   }
@@ -304,12 +442,63 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("${person.name} ", style: TextStyle(fontWeight: FontWeight.bold)),
-        SizedBox(height: 4),
-        Text(person.address),
-        SizedBox(height: 2),
-        Text("(${person.phoneNumber})"),
+        Text(
+          person.name.toUpperCase(), 
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16.sp,
+            color: Colors.black,
+          ),
+        ),
+        SizedBox(height: 6.h),
+        Text(
+          person.address,
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: const Color(0xFF4A4C56),
+            height: 1.3,
+          ),
+        ),
+        SizedBox(height: 4.h),
+        Text(
+          person.phoneNumber,
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: const Color(0xFF4A4C56),
+          ),
+        ),
       ],
+    );
+  }
+
+  // Helper Headers
+  static Widget _tableHeader(String text, {required int flex, TextAlign align = TextAlign.center}) {
+    return Expanded(
+      flex: flex,
+      child: Text(
+        text,
+        style: TextStyle(
+          fontWeight: FontWeight.bold, 
+          fontSize: 14.sp,
+          color: const Color(0xFF4A4C56),
+        ),
+        textAlign: align,
+      ),
+    );
+  }
+
+  static Widget _tableCell(String text, {required int flex, TextAlign align = TextAlign.center, FontWeight? fontWeight}) {
+    return Expanded(
+      flex: flex,
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 14.sp,
+          color: const Color(0xFF4A4C56),
+          fontWeight: fontWeight,
+        ),
+        textAlign: align,
+      ),
     );
   }
 
@@ -318,39 +507,36 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(vertical: 8.h),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              AdminInvoiceDetailScreen._tableHeader("NO"),
-              AdminInvoiceDetailScreen._tableHeader("Product Name"),
-              AdminInvoiceDetailScreen._tableHeader("Price"),
-              AdminInvoiceDetailScreen._tableHeader("Qty"),
-              AdminInvoiceDetailScreen._tableHeader("Total"),
+              _tableHeader("NO", flex: 1, align: TextAlign.left),
+              _tableHeader("Product Name", flex: 4, align: TextAlign.left),
+              _tableHeader("Price", flex: 2, align: TextAlign.center),
+              _tableHeader("Quantity", flex: 2, align: TextAlign.center),
+              _tableHeader("Total", flex: 2, align: TextAlign.right),
             ],
           ),
         ),
-        Divider(),
-
+        const Divider(color: Color(0xFFE5E5E5), thickness: 1),
         ...List.generate(items.length, (i) {
           final item = items[i];
           final total = item.price * item.quantity;
 
           return Padding(
-            padding: EdgeInsets.symmetric(vertical: 6),
+            padding: EdgeInsets.symmetric(vertical: 6.h),
             child: Row(
               children: [
-                AdminInvoiceDetailScreen._tableCell("${i + 1}".padLeft(2, '0')),
-                AdminInvoiceDetailScreen._tableCell(
-                  item.product ?? "Peri Chicken Wrap",
-                ),
-                AdminInvoiceDetailScreen._tableCell("£${item.price}"),
-                AdminInvoiceDetailScreen._tableCell("${item.quantity}"),
-                AdminInvoiceDetailScreen._tableCell("£$total"),
+                _tableCell("${i + 1}".padLeft(2, '0'), flex: 1, align: TextAlign.left),
+                _tableCell(item.product ?? "Product Name", flex: 4, align: TextAlign.left),
+                _tableCell("£${item.price}", flex: 2, align: TextAlign.center),
+                _tableCell("${item.quantity}", flex: 2, align: TextAlign.center),
+                _tableCell("£$total", flex: 2, align: TextAlign.right),
               ],
             ),
           );
         }),
+        SizedBox(height: 8.h),
       ],
     );
   }
