@@ -77,12 +77,13 @@ class AdminInvoiceProvider extends ChangeNotifier {
 
   final logger = Logger();
 
-  String _selectedPeriod = 'Today';
+  String _selectedPeriod = 'This week';
   String get selectedPeriod => _selectedPeriod;
 
   void setSelectedPeriod(String value) {
     _selectedPeriod = value;
     notifyListeners();
+    getAllInvoice(period: value);
   }
 
   String _query = '';
@@ -95,8 +96,14 @@ class AdminInvoiceProvider extends ChangeNotifier {
 
 
   /// ------------------------ Get All Invoices --------------------------------
-  Future<void> getAllInvoice() async {
+  Future<void> getAllInvoice({String? period}) async {
     _errorMessage = null;
+
+    final apiPeriod = (period ?? _selectedPeriod) == 'Today'
+        ? 'today'
+        : (period ?? _selectedPeriod) == 'This week'
+            ? 'week'
+            : 'month';
 
     try {
       final token = await _tokenStorage.getToken();
@@ -104,7 +111,7 @@ class AdminInvoiceProvider extends ChangeNotifier {
       final response = await http.get(
         Uri.parse(
           ApiEndpoints.getAllInvoice,
-        ).replace(queryParameters: {"period": "month"}),
+        ).replace(queryParameters: {"period": apiPeriod}),
         headers: {"Authorization": "Bearer $token"},
       );
 

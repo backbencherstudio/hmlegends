@@ -7,9 +7,10 @@ import 'package:hmlegends/presentation/view/admin_flow/admin/invoice/model/all_i
 import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:provider/provider.dart';
-import '../../../../widget/custom_app_bar.dart';
+import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
 import '../view_model/admin_invoice_provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class HeadOfficeInvoiceScreen extends StatefulWidget {
   final bool fromBottomNav;
@@ -32,6 +33,7 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
   }
 
   Timer? debouncer;
+  String? loadingInvoiceId;
 
   void debounce(
     VoidCallback callback, {
@@ -64,13 +66,16 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification =
-        notificationProvider.adminNotificationModel?.data ?? [];
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
-      appBar: CustomAppBar(
+      appBar: CustomAppBarTwo(
+        title: "Invoice",
         profileImage: data?.avatar,
-        notificationCount: notification.length,
+        notificationCount: notificationProvider.unreadCount,
+        colorMain: const Color(0xFFFFF5F5),
+        colorSpace: const Color(0xFFFFF5F5),
+        isIconPresent: true,
+        useBottomNavBack: widget.fromBottomNav,
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -157,12 +162,11 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
             /// --------------------- Orders List from server -----------------
             Expanded(
               child:
-                  provider.isLoading
-                      ? Center(
-                        child: SizedBox(
-                          width: 20.w,
-                          height: 20.h,
-                          child: CircularProgressIndicator(),
+                  provider.isLoading && loadingInvoiceId == null
+                      ? const Center(
+                        child: SpinKitSpinningLines(
+                          color: AppColors.primaryColor,
+                          size: 50,
                         ),
                       )
                       : invoiceData.isEmpty
@@ -201,133 +205,142 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
                                   ),
                                 ),
                               )
-                              : Expanded(
-                                child: ListView.builder(
-                                  itemCount: queryFilterOrders.length,
-                                  itemBuilder: (context, index) {
-                                    final invoice = queryFilterOrders[index];
-                                    final invoiceId = invoice.orderId ?? " ";
+                              : ListView.builder(
+                                itemCount: queryFilterOrders.length,
+                                itemBuilder: (context, index) {
+                                  final invoice = queryFilterOrders[index];
+                                  final invoiceId = invoice.orderId ?? " ";
 
-                                    return Padding(
-                                      padding: EdgeInsets.only(bottom: 8.h),
-                                      child: Container(
-                                        height: 40.h,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            8.r,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              flex: 2,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: const Color(
-                                                    0xFFD1E4C9,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                        topLeft:
-                                                            Radius.circular(
-                                                              8.r,
-                                                            ),
-                                                        bottomLeft:
-                                                            Radius.circular(
-                                                              8.r,
-                                                            ),
-                                                      ),
-                                                ),
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: 12.w,
-                                                ),
-                                                alignment: Alignment.centerLeft,
-                                                child: Text(
-                                                  "${index + 1}. ${invoice.branchName}",
-                                                  style: TextStyle(
-                                                    fontSize: 14.sp,
-                                                    color: Color(0xFF4A4C56),
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 2,
-                                              child: Container(
-                                                color: const Color(0xFFE6ECDE),
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: 12.w,
-                                                ),
-                                                alignment: Alignment.centerLeft,
-                                                child: Text(
-                                                  "Total Units: ${invoice.totalQuantity}",
-                                                  style: TextStyle(
-                                                    fontSize: 13.sp,
-                                                    color: Color(0xFF4A4C56),
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 1,
-                                              child: Container(
-                                                height: double.infinity,
-                                                decoration: BoxDecoration(
-                                                  color: const Color(
-                                                    0xFFE20614,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                        topRight:
-                                                            Radius.circular(
-                                                              8.r,
-                                                            ),
-                                                        bottomRight:
-                                                            Radius.circular(
-                                                              8.r,
-                                                            ),
-                                                      ),
-                                                ),
-                                                child: GestureDetector(
-                                                  onTap: () async {
-                                                    final response =
-                                                        await provider
-                                                            .fetchInvoiceDetail(
-                                                              invoiceId,
-                                                            );
-                                                    if (context.mounted &&
-                                                        response.success ==
-                                                            true) {
-                                                      Navigator.pushNamed(
-                                                        context,
-                                                        RouteNames
-                                                            .adminInvoiceDetailScreen,
-                                                        arguments: invoiceId,
-                                                      );
-                                                    }
-                                                  },
-                                                  child: Center(
-                                                    child: Text(
-                                                      "View",
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontSize: 13.sp,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                  return Padding(
+                                    padding: EdgeInsets.only(bottom: 8.h),
+                                    child: Container(
+                                      height: 40.h,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(
+                                          8.r,
                                         ),
                                       ),
-                                    );
-                                  },
-                                ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 2,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFFD1E4C9),
+                                                borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(8.r),
+                                                  bottomLeft: Radius.circular(
+                                                    8.r,
+                                                  ),
+                                                ),
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 12.w,
+                                              ),
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                "${index + 1}. ${invoice.branchName}",
+                                                style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  color: Color(0xFF4A4C56),
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 2,
+                                            child: Container(
+                                              color: const Color(0xFFE6ECDE),
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 12.w,
+                                              ),
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                "Total Units: ${invoice.totalQuantity}",
+                                                style: TextStyle(
+                                                  fontSize: 13.sp,
+                                                  color: Color(0xFF4A4C56),
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Container(
+                                              height: double.infinity,
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFFE20614),
+                                                borderRadius: BorderRadius.only(
+                                                  topRight: Radius.circular(
+                                                    8.r,
+                                                  ),
+                                                  bottomRight: Radius.circular(
+                                                    8.r,
+                                                  ),
+                                                ),
+                                              ),
+                                              child: GestureDetector(
+                                                onTap:
+                                                    loadingInvoiceId != null
+                                                        ? null
+                                                        : () async {
+                                                          setState(() {
+                                                            loadingInvoiceId =
+                                                                invoiceId;
+                                                          });
+                                                          final response =
+                                                              await provider
+                                                                  .fetchInvoiceDetail(
+                                                                    invoiceId,
+                                                                  );
+                                                          if (mounted) {
+                                                            setState(() {
+                                                              loadingInvoiceId =
+                                                                  null;
+                                                            });
+                                                          }
+                                                          if (context.mounted &&
+                                                              response.success ==
+                                                                  true) {
+                                                            Navigator.pushNamed(
+                                                              context,
+                                                              RouteNames
+                                                                  .adminInvoiceDetailScreen,
+                                                              arguments:
+                                                                  invoiceId,
+                                                            );
+                                                          }
+                                                        },
+                                                child: Center(
+                                                  child:
+                                                      loadingInvoiceId ==
+                                                              invoiceId
+                                                          ? const SpinKitSpinningLines(
+                                                            color: Colors.white,
+                                                            size: 16,
+                                                          )
+                                                          : Text(
+                                                            "View",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontSize: 13.sp,
+                                                            ),
+                                                          ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
                               );
                         },
                       ),
