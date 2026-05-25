@@ -41,13 +41,29 @@ class OrderScreenProvider extends ChangeNotifier {
 
   String get selectedPeriod => _selectedPeriod;
 
+  String get selectedPeriodLabel {
+    switch (_selectedPeriod) {
+      case 'today':
+        return 'Today';
+      case 'week':
+        return 'This week';
+      case 'month':
+        return 'This month';
+      default:
+        return 'This week';
+    }
+  }
+
   void setSelectedPeriod(String period) {
     _selectedPeriod = period;
     notifyListeners();
+    getAdminOrder();
   }
 
   /// --------------------- fetch Admin Order ---------------------------------
   Future<void> getAdminOrder() async {
+    _isLoading = true;
+    notifyListeners();
     try {
       final token = await _tokenStorage.getToken();
 
@@ -70,14 +86,14 @@ class OrderScreenProvider extends ChangeNotifier {
       logger.i("Response body: $decodeData");
       if (response.statusCode == 200 || response.statusCode == 201) {
         _orderAdminModel = OrderAdminModel.fromJson(decodeData);
-        notifyListeners();
         logger.i("message:  ${decodeData['message']}");
       } else {
         logger.i("Failed: ${decodeData['message']}");
-        notifyListeners();
       }
     } catch (error) {
       logger.e("Error fetching admin orders: $error");
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
