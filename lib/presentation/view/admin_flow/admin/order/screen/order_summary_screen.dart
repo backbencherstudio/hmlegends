@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin_model/order/order_admin_model.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../../../../core/constant/app_colors.dart';
-import '../../../../widget/custom_app_bar.dart';
+import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
 import '../../widget/search_filter.dart';
@@ -22,6 +23,8 @@ class OrderSummaryScreen extends StatefulWidget {
 }
 
 class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
+  String? loadingOrderId;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -90,9 +93,13 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     );
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
-      appBar: CustomAppBar(
+      appBar: CustomAppBarTwo(
+        title: 'Order Summary',
         profileImage: data?.avatar,
         notificationCount: notificationProvider.unreadCount,
+        colorMain: Colors.white,
+        colorSpace: Colors.white,
+        useBottomNavBack: true,
       ),
 
       body: Padding(
@@ -198,7 +205,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                   itemBuilder:
                       (context) => [
                         PopupMenuItem(
-                          value: 'Today',
+                          value: 'today',
                           child: Text(
                             'Today',
                             style: TextStyle(
@@ -208,7 +215,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                           ),
                         ),
                         PopupMenuItem(
-                          value: 'This week',
+                          value: 'week',
                           child: Text(
                             'This week',
                             style: TextStyle(
@@ -218,7 +225,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                           ),
                         ),
                         PopupMenuItem(
-                          value: 'This month',
+                          value: 'month',
                           child: Text(
                             'This month',
                             style: TextStyle(
@@ -232,7 +239,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                   child: Row(
                     children: [
                       Text(
-                        provider.selectedPeriod,
+                        provider.selectedPeriodLabel,
                         style: TextStyle(fontSize: 14.sp),
                       ),
                       Icon(Icons.keyboard_arrow_down_rounded, size: 20.sp),
@@ -356,20 +363,37 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                                         ),
                                       ),
                                       child: TextButton(
-                                        onPressed: () async {
-                                          final navigator = Navigator.of(
-                                            context,
-                                          );
-                                          await provider.adminSingleOrder(
-                                            item.id ?? "",
-                                          );
-                                          if (mounted) {
-                                            navigator.pushNamed(
-                                              RouteNames.orderSummaryViewScreen,
-                                              arguments: item.id ?? "",
-                                            );
-                                          }
-                                        },
+                                        onPressed: loadingOrderId != null
+                                            ? null
+                                            : () async {
+                                                final navigator = Navigator.of(
+                                                  context,
+                                                );
+                                                setState(() {
+                                                  loadingOrderId = item.id;
+                                                });
+                                                try {
+                                                  await provider.adminSingleOrder(
+                                                    item.id ?? "",
+                                                  );
+                                                  if (mounted) {
+                                                    final status = provider.adminSingleOrderModel?.order?.status;
+                                                    final route = status == "APPROVED"
+                                                        ? RouteNames.orderSummaryMakeInvoiceScreen
+                                                        : RouteNames.orderSummaryViewScreen;
+                                                    navigator.pushNamed(
+                                                      route,
+                                                      arguments: item.id ?? "",
+                                                    );
+                                                  }
+                                                } finally {
+                                                  if (mounted) {
+                                                    setState(() {
+                                                      loadingOrderId = null;
+                                                    });
+                                                  }
+                                                }
+                                              },
                                         style: TextButton.styleFrom(
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(
@@ -379,14 +403,19 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                                             ),
                                           ),
                                         ),
-                                        child: Text(
-                                          "View",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 13.sp,
-                                          ),
-                                        ),
+                                        child: loadingOrderId == item.id
+                                            ? SpinKitSpinningLines(
+                                                color: Colors.white,
+                                                size: 20.sp,
+                                              )
+                                            : Text(
+                                                "View",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 13.sp,
+                                                ),
+                                              ),
                                       ),
                                     ),
                                   ),

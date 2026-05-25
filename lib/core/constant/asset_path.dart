@@ -33,6 +33,7 @@ class AssetPaths {
   static const String mbi3 = '$_iconUrl/AssetPaths_mbi3.png';
   static const String mbi4 = '$_iconUrl/manage_branches_icon4.png';
   static const String mbi3i = '$_iconUrl/manage_branches_icon3i.png';
+  static const String errorImage = '$_iconUrl/error.png';
 
 
 

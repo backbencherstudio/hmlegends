@@ -36,6 +36,41 @@ class AdminInvoiceProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<ResponseModel> createInvoice(String orderId) async {
+    _setLoading(true);
+    try {
+      final token = await _tokenStorage.getToken();
+      final url = Uri.parse(ApiEndpoints.getAllInvoice);
+
+      final response = await http.post(
+        url,
+        body: jsonEncode({"order_id": orderId}),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+      );
+
+      logger.i("=== CREATE INVOICE API RESPONSE ===");
+      logger.i("Response url: ${response.request?.url}");
+      logger.i("Status Code: ${response.statusCode}");
+      logger.i("Response Body: ${response.body}");
+
+      final decodeData = jsonDecode(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return ResponseModel(success: true, message: decodeData['message']);
+      } else {
+        return ResponseModel(success: false, message: decodeData['message']);
+      }
+    } catch (e) {
+      logger.e("Error creating invoice: $e");
+      return ResponseModel(success: false, message: e.toString());
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   String? _errorMessage;
 
   String? get errorMessage => _errorMessage;

@@ -4,6 +4,7 @@ import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
+import 'package:hmlegends/presentation/widget/custom_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
@@ -13,47 +14,90 @@ class OrderSummaryViewScreen extends StatelessWidget {
 
   Future<void> _showDialog(
     BuildContext context,
-    String? title,
-    Widget? child,
-    String? noText,
+    String title,
+    VoidCallback onYesPressed,
   ) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            textAlign: TextAlign.center,
-            title ?? "Are you sure?",
-            style: TextStyle(
-              fontSize: 16.sp,
-              color: Color(0xFF1D1F2C),
-              fontWeight: FontWeight.w500,
+        return Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24.r),
+          ),
+          child: Container(
+            width: 320.w,
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: const Color(0xFF1D1F2C),
+                    fontWeight: FontWeight.w600,
+                    height: 1.4,
+                  ),
+                ),
+                SizedBox(height: 24.h),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xffE20613),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.r),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                          elevation: 0,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          onYesPressed();
+                        },
+                        child: Text(
+                          "Yes",
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE9E9EA),
+                          foregroundColor: const Color(0xFF777980),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.r),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                          elevation: 0,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          actions: [
-            FilledButton(
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(Color(0xFFE20613)),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: child,
-            ),
-            FilledButton(
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(Color(0xFF777980)),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                noText ?? "No",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
         );
       },
     );
@@ -71,7 +115,10 @@ class OrderSummaryViewScreen extends StatelessWidget {
     );
 
     // Calculate total items
-    singleOrder.fold<int>(0, (sum, item) => sum + (item.quantity ?? 0));
+    final totalItems = singleOrder.fold<int>(
+      0,
+      (sum, item) => sum + (item.quantity ?? 0),
+    );
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
       appBar: CustomAppBarTwo(
@@ -112,15 +159,18 @@ class OrderSummaryViewScreen extends StatelessWidget {
                       _showDialog(
                         context,
                         "Are you sure you want to approve today's order?",
-                        InkWell(
-                          onTap: () async {
-                            await provider.approveOrder(orderId);
+                        () async {
+                          await provider.approveOrder(orderId);
+                          if (context.mounted) {
                             showDialog(
-                              // ignore: use_build_context_synchronously
                               context: context,
                               barrierDismissible: false,
                               builder: (BuildContext dialogContext) {
-                                Navigator.pop(context);
+                                Future.delayed(const Duration(seconds: 1), () {
+                                  if (dialogContext.mounted) {
+                                    Navigator.of(dialogContext).pop();
+                                  }
+                                });
                                 return Dialog(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(14.r),
@@ -162,13 +212,8 @@ class OrderSummaryViewScreen extends StatelessWidget {
                                 );
                               },
                             );
-                          },
-                          child: const Text(
-                            "Yes",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        "No",
+                          }
+                        },
                       );
                     },
                     child: Container(
@@ -200,43 +245,7 @@ class OrderSummaryViewScreen extends StatelessWidget {
               child: ListView.builder(
                 itemCount: singleOrder.length,
                 itemBuilder: (context, index) {
-                  // if (index == singleOrder.length) {
-                  //   return Padding(
-                  //     padding: EdgeInsets.symmetric(
-                  //       horizontal: 5.w,
-                  //       vertical: 18.h,
-                  //     ),
-                  //     child: Row(
-                  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //       children: [
-                  //         Text(
-                  //           "Total Items:",
-                  //           style: TextStyle(
-                  //             fontWeight: FontWeight.w700,
-                  //             fontSize: 15.sp,
-                  //           ),
-                  //         ),
-                  //
-                  //         RichText(
-                  //           text: TextSpan(
-                  //             children: [
-                  //               TextSpan(
-                  //                 text: "$totalItems",
-                  //                 style: TextStyle(color: Colors.black),
-                  //               ),
-                  //               TextSpan(
-                  //                 text: "  PCS",
-                  //                 style: TextStyle(color: Colors.grey),
-                  //               ),
-                  //             ],
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //   );
-                  // }
-
-                  // ---------------- Item Row ----------------
+                  final item = singleOrder[index];
 
                   return Container(
                     padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -254,10 +263,19 @@ class OrderSummaryViewScreen extends StatelessWidget {
 
                         SizedBox(width: 12.w),
 
+                        CustomNetworkImage(
+                          imageUrl: item.product?.image ?? "",
+                          height: 32.h,
+                          width: 50.w,
+                          borderRadius: 6.r,
+                        ),
+
+                        SizedBox(width: 12.w),
+
                         ///----------------  Product Name ----------------------
                         Expanded(
                           child: Text(
-                            "N/A",
+                            item.product?.name ?? "Unknown Product",
                             style: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
@@ -271,10 +289,13 @@ class OrderSummaryViewScreen extends StatelessWidget {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                style: TextStyle(color: Colors.black),
-                                text: "",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                text: "${item.quantity ?? 0}",
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: "  PCS",
                                 style: TextStyle(color: Colors.grey),
                               ),
@@ -285,6 +306,39 @@ class OrderSummaryViewScreen extends StatelessWidget {
                     ),
                   );
                 },
+              ),
+            ),
+            const Divider(color: Colors.black12, thickness: 1),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 12.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Total Items:",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15.sp,
+                    ),
+                  ),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "$totalItems",
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const TextSpan(
+                          text: "  PCS",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

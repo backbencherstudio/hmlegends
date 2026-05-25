@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
+import 'package:hmlegends/presentation/widget/custom_network_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -182,10 +183,14 @@ class _StockScreenState extends State<StockScreen> {
 
   String _statusLabel(String? status) {
     switch (status) {
-      case 'IN_STOCK': return 'In Stock';
-      case 'LOW_STOCK': return 'Low Stock';
-      case 'OUT_OF_STOCK': return 'Out of Stock';
-      default: return status ?? '';
+      case 'IN_STOCK':
+        return 'In Stock';
+      case 'LOW_STOCK':
+        return 'Low Stock';
+      case 'OUT_OF_STOCK':
+        return 'Out of Stock';
+      default:
+        return status ?? '';
     }
   }
 
@@ -416,34 +421,40 @@ class _StockScreenState extends State<StockScreen> {
                                         ),
                                         child: Row(
                                           children: [
-                                            /// ----------- Product Image --------------
-                                            Container(
-                                              width: 90.w,
+                                            // /// ----------- Product Image --------------
+                                            // Container(
+                                            //   width: 90.w,
+                                            //   height: 90.w,
+                                            //   decoration: BoxDecoration(
+                                            //     borderRadius:
+                                            //         BorderRadius.circular(8.r),
+                                            //     image:
+                                            //         product.image != null
+                                            //             ? DecorationImage(
+                                            //               image: NetworkImage(
+                                            //                 product.image!,
+                                            //               ),
+                                            //               fit: BoxFit.cover,
+                                            //             )
+                                            //             : null,
+                                            //     color:
+                                            //         product.image == null
+                                            //             ? Colors.grey[300]
+                                            //             : null,
+                                            //   ),
+                                            //   child:
+                                            //       product.image == null
+                                            //           ? const Icon(
+                                            //             Icons.image,
+                                            //             size: 30,
+                                            //           )
+                                            //           : null,
+                                            // ),
+                                            CustomNetworkImage(
+                                              imageUrl: product.image ?? "",
                                               height: 90.w,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.r),
-                                                image:
-                                                    product.image != null
-                                                        ? DecorationImage(
-                                                          image: NetworkImage(
-                                                            product.image!,
-                                                          ),
-                                                          fit: BoxFit.cover,
-                                                        )
-                                                        : null,
-                                                color:
-                                                    product.image == null
-                                                        ? Colors.grey[300]
-                                                        : null,
-                                              ),
-                                              child:
-                                                  product.image == null
-                                                      ? const Icon(
-                                                        Icons.image,
-                                                        size: 30,
-                                                      )
-                                                      : null,
+                                              width: 90.w,
+                                              borderRadius: 12.r,
                                             ),
 
                                             SizedBox(width: 12.w),
@@ -545,7 +556,10 @@ class _StockScreenState extends State<StockScreen> {
                                                             ),
 
                                                             Text(
-                                                              _statusLabel(product.stockStatus),
+                                                              _statusLabel(
+                                                                product
+                                                                    .stockStatus,
+                                                              ),
                                                               style: TextStyle(
                                                                 fontSize: 12.sp,
                                                                 fontWeight:

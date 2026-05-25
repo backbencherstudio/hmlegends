@@ -103,16 +103,26 @@ class OrderItems {
 
 class Product {
   String? image;
+  String? name;
+  double? price;
 
-  Product({this.image});
+  Product({this.image, this.name, this.price});
 
   Product.fromJson(Map<String, dynamic> json) {
     image = json['image'];
+    name = json['name'];
+    price = json['price'] != null
+        ? (json['price'] is int
+            ? (json['price'] as int).toDouble()
+            : (json['price'] as num).toDouble())
+        : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
     data['image'] = image;
+    data['name'] = name;
+    data['price'] = price;
     return data;
   }
 }

@@ -30,6 +30,7 @@ class _EditStockScreenState extends State<EditStockScreen> {
   String? _selectedStockStatus;
   File? _pickedImage;
   bool _isSubmitting = false;
+  bool _imageRemoved = false;
 
   static const _statusLabels = {
     'IN_STOCK': 'In stock',
@@ -47,9 +48,10 @@ class _EditStockScreenState extends State<EditStockScreen> {
     _priceController = TextEditingController(
       text: widget.product.price != null ? '${widget.product.price}' : '',
     );
-    _selectedStockStatus = _statusLabels.containsKey(widget.product.stockStatus)
-        ? widget.product.stockStatus
-        : 'IN_STOCK';
+    _selectedStockStatus =
+        _statusLabels.containsKey(widget.product.stockStatus)
+            ? widget.product.stockStatus
+            : 'IN_STOCK';
   }
 
   @override
@@ -83,13 +85,13 @@ class _EditStockScreenState extends State<EditStockScreen> {
     setState(() => _isSubmitting = true);
 
     final result = await context.read<StockScreenProvider>().editProduct(
-          pId: widget.product.id ?? '',
-          name: _nameController.text.trim(),
-          stock: _stockController.text.trim(),
-          price: _priceController.text.trim(),
-          stockStatus: _selectedStockStatus ?? 'IN_STOCK',
-          image: _pickedImage,
-        );
+      pId: widget.product.id ?? '',
+      name: _nameController.text.trim(),
+      stock: _stockController.text.trim(),
+      price: _priceController.text.trim(),
+      stockStatus: _selectedStockStatus ?? 'IN_STOCK',
+      image: _pickedImage,
+    );
 
     if (!mounted) return;
     setState(() => _isSubmitting = false);
@@ -150,15 +152,16 @@ class _EditStockScreenState extends State<EditStockScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: AuthButton(
-                text: _isSubmitting
-                    ? SpinKitSpinningLines(color: Colors.white, size: 24.sp)
-                    : const Text(
-                        'Save & Update',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                text:
+                    _isSubmitting
+                        ? SpinKitSpinningLines(color: Colors.white, size: 24.sp)
+                        : const Text(
+                          'Save & Update',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
                 onPressed: _isSubmitting ? () {} : _save,
                 color: AppColors.primaryColor,
               ),
@@ -171,149 +174,195 @@ class _EditStockScreenState extends State<EditStockScreen> {
   }
 
   Widget _label(String text) => Padding(
-        padding: EdgeInsets.only(bottom: 12.h),
-        child: Text(
-          text,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 15.sp,
-            color: Colors.black87,
-          ),
-        ),
-      );
+    padding: EdgeInsets.only(bottom: 12.h),
+    child: Text(
+      text,
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 15.sp,
+        color: Colors.black87,
+      ),
+    ),
+  );
 
   Widget _textField(
     String hint, {
     required TextEditingController controller,
     TextInputType? keyboardType,
-  }) =>
-      TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(color: Colors.grey[500]),
-          filled: true,
-          fillColor: AppColors.editTextFieldColor,
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.r),
-            borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.r),
-            borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.r),
-            borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
-          ),
-        ),
-      );
+  }) => TextField(
+    controller: controller,
+    keyboardType: keyboardType,
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(color: Colors.grey[500]),
+      filled: true,
+      fillColor: AppColors.editTextFieldColor,
+      contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: const BorderSide(color: Color(0xFFD2D2D5)),
+      ),
+    ),
+  );
 
   Widget _stockStatusDropdown() => Container(
-        decoration: BoxDecoration(
-          color: AppColors.editTextFieldColor,
-          borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(color: const Color(0xFFD2D2D5)),
+    decoration: BoxDecoration(
+      color: AppColors.editTextFieldColor,
+      borderRadius: BorderRadius.circular(8.r),
+      border: Border.all(color: const Color(0xFFD2D2D5)),
+    ),
+    padding: EdgeInsets.symmetric(horizontal: 14.w),
+    child: DropdownButtonHideUnderline(
+      child: DropdownButton<String>(
+        value: _selectedStockStatus,
+        isExpanded: true,
+        icon: const Icon(Icons.arrow_drop_down),
+        dropdownColor: AppColors.editTextFieldColor,
+        borderRadius: BorderRadius.circular(8.r),
+        style: TextStyle(
+          color: Colors.grey[800],
+          fontSize: 14.sp,
+          fontFamily: 'Poppins',
         ),
-        padding: EdgeInsets.symmetric(horizontal: 14.w),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            value: _selectedStockStatus,
-            isExpanded: true,
-            icon: const Icon(Icons.arrow_drop_down),
-            dropdownColor: AppColors.editTextFieldColor,
-            borderRadius: BorderRadius.circular(8.r),
-            style: TextStyle(
-              color: Colors.grey[800],
-              fontSize: 14.sp,
-              fontFamily: 'Poppins',
-            ),
-            items: _statusLabels.entries
-                .map((e) => DropdownMenuItem<String>(
-                      value: e.key,
-                      child: Text(e.value),
-                    ))
+        items:
+            _statusLabels.entries
+                .map(
+                  (e) => DropdownMenuItem<String>(
+                    value: e.key,
+                    child: Text(e.value),
+                  ),
+                )
                 .toList(),
-            onChanged: (value) {
-              if (value != null) setState(() => _selectedStockStatus = value);
-            },
-          ),
-        ),
-      );
+        onChanged: (value) {
+          if (value != null) setState(() => _selectedStockStatus = value);
+        },
+      ),
+    ),
+  );
 
   Widget _imageUploader() {
     final hasNetworkImage =
-        widget.product.image != null && widget.product.image!.isNotEmpty;
+        !_imageRemoved &&
+        widget.product.image != null &&
+        widget.product.image!.isNotEmpty;
+    final showImage = _pickedImage != null || hasNetworkImage;
 
-    return GestureDetector(
-      onTap: _pickImage,
-      child: Container(
-        width: double.infinity,
-        height: 160.h,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: const Color(0xFFD2D2D5)),
-          color: AppColors.editTextFieldColor,
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: showImage ? null : _pickImage,
+          child: Container(
+            width: double.infinity,
+            height: 160.h,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: const Color(0xFFD2D2D5)),
+              color: AppColors.editTextFieldColor,
+            ),
+            child:
+                _pickedImage != null
+                    ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12.r),
+                      child: Image.file(_pickedImage!, fit: BoxFit.cover),
+                    )
+                    : hasNetworkImage
+                    ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12.r),
+                      child: Image.network(
+                        widget.product.image!,
+                        fit: BoxFit.cover,
+                        loadingBuilder:
+                            (_, child, progress) =>
+                                progress == null ? child : _uploadPlaceholder(),
+                        errorBuilder: (_, __, ___) => _uploadPlaceholder(),
+                      ),
+                    )
+                    : _uploadPlaceholder(),
+          ),
         ),
-        child: _pickedImage != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(12.r),
-                child: Image.file(_pickedImage!, fit: BoxFit.cover),
-              )
-            : hasNetworkImage
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(12.r),
-                    child: Image.network(
-                      widget.product.image!,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (_, child, progress) =>
-                          progress == null ? child : _uploadPlaceholder(),
-                      errorBuilder: (_, __, ___) => _uploadPlaceholder(),
-                    ),
-                  )
-                : _uploadPlaceholder(),
-      ),
+        if (showImage)
+          Positioned(
+            top: 8.h,
+            right: 8.w,
+            child: GestureDetector(
+              onTap:
+                  () => setState(() {
+                    _pickedImage = null;
+                    _imageRemoved = true;
+                  }),
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                padding: EdgeInsets.all(2.r),
+                child: Icon(Icons.cancel, color: Colors.redAccent, size: 26.sp),
+              ),
+            ),
+          ),
+        if (!showImage)
+          Positioned(
+            top: 8.h,
+            right: 8.w,
+            child: GestureDetector(
+              onTap: _pickImage,
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                padding: EdgeInsets.all(2.r),
+                child: Icon(
+                  Icons.add_circle,
+                  color: AppColors.primaryColor,
+                  size: 26.sp,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
   Widget _uploadPlaceholder() => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.r),
-                border: Border.all(color: Colors.redAccent, width: 1.2),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.r),
+            border: Border.all(color: Colors.redAccent, width: 1.2),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(AssetPaths.addIcon1, height: 20.h, width: 20.w),
+              SizedBox(width: 6.w),
+              const Text(
+                'Upload photos',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    AssetPaths.addIcon1,
-                    height: 20.h,
-                    width: 20.w,
-                  ),
-                  SizedBox(width: 6.w),
-                  const Text(
-                    'Upload photos',
-                    style: TextStyle(
-                      color: Colors.redAccent,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              "JPEG, PNG up to 50 MB",
-              style: TextStyle(color: Colors.grey[600], fontSize: 13.sp),
-            ),
-          ],
+            ],
+          ),
         ),
-      );
+        SizedBox(height: 16.h),
+        Text(
+          "JPEG, PNG up to 50 MB",
+          style: TextStyle(color: Colors.grey[600], fontSize: 13.sp),
+        ),
+      ],
+    ),
+  );
 }
