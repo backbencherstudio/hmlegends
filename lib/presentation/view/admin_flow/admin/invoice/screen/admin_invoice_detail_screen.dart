@@ -3,8 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/core/validator/validator.dart';
-import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
-import 'package:hmlegends/presentation/widget/custom_text_form_field.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../../widget/custom_app_bar_2.dart';
@@ -22,28 +20,7 @@ class AdminInvoiceDetailScreen extends StatefulWidget {
   State<AdminInvoiceDetailScreen> createState() =>
       _AdminInvoiceDetailScreenState();
 
-  static Widget _tableHeader(String text) {
-    return Expanded(
-      child: Center(
-        child: Text(
-          text,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
-        ),
-      ),
-    );
-  }
 
-  static Widget _tableCell(String text) {
-    return Expanded(
-      child: Center(
-        child: Text(
-          text,
-          style: TextStyle(fontSize: 14.sp),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
 }
 
 class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
