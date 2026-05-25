@@ -66,8 +66,6 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    final notification =
-        notificationProvider.adminNotificationModel?.data ?? [];
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
       appBar: CustomAppBarTwo(
