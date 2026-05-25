@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://stuff-helped-pressed-designated.trycloudflare.com';
+      'https://tips-this-aerial-journey.trycloudflare.com';
   static const String googleLogin = '$baseUrl/api/auth/google/signin';
 
   // Admin

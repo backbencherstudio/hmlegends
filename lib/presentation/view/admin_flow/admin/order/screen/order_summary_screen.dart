@@ -7,6 +7,7 @@ import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_a
 import 'package:provider/provider.dart';
 import '../../../../../../core/constant/app_colors.dart';
 import '../../../../widget/custom_app_bar.dart';
+import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
 import '../../widget/search_filter.dart';
@@ -90,9 +91,13 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     );
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
-      appBar: CustomAppBar(
+      appBar: CustomAppBarTwo(
+        title: 'Order Summary',
         profileImage: data?.avatar,
         notificationCount: notificationProvider.unreadCount,
+        colorMain: Colors.white,
+        colorSpace: Colors.white,
+        useBottomNavBack: true,
       ),
 
       body: Padding(
