@@ -7,8 +7,9 @@ import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import '../../../admin_flow/view_model/auth/set_new_password_viewModel.dart';
 import '../../../admin_flow/view_model/auth_api/forget_password_viewmodel.dart';
-import '../../widget/auth_button.dart';
-import '../../widget/level_text.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
+import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
+import 'package:hmlegends/presentation/view/auth/widget/level_text.dart';
 
 class SetNewPasswordScreen extends StatelessWidget {
   final TextEditingController _passwordController = TextEditingController();
@@ -25,6 +26,8 @@ class SetNewPasswordScreen extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: SafeArea(
             child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: 100.h),
                 Center(
@@ -46,13 +49,19 @@ class SetNewPasswordScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 25.h),
-                RequiredLabel(labelText: 'Password'),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: RequiredLabel(labelText: 'Password'),
+                ),
                 SizedBox(height: 5.h),
                 _buildPasswordField(),
 
                 SizedBox(height: 15.h),
 
-                RequiredLabel(labelText: 'Confirm Password'),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: RequiredLabel(labelText: 'Confirm Password'),
+                ),
                 SizedBox(height: 5.h),
                 _buildConfirmPasswordField(),
 
@@ -66,7 +75,10 @@ class SetNewPasswordScreen extends StatelessWidget {
                     return provider.isFPLoading
                         ? const CircularProgressIndicator(color: Colors.green)
                         : AuthButton(
-                          text: Text('Update Password'),
+                          text: Text(
+                            'Update Password',
+                            style: TextStyle(color: Colors.white),
+                          ),
                           color: AppColors.primaryColor,
                           onPressed: () async {
                             final password = _passwordController.text.trim();
@@ -74,21 +86,19 @@ class SetNewPasswordScreen extends StatelessWidget {
                                 _confirmPasswordController.text.trim();
 
                             if (password != confirmPassword) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  backgroundColor: Colors.red,
-                                  content: Text("Passwords do not match."),
-                                ),
+                              Utils.showToast(
+                                msg: "Passwords do not match.",
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
                               );
                               return;
                             }
 
                             if (password.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  backgroundColor: Colors.red,
-                                  content: Text("Password cannot be empty."),
-                                ),
+                              Utils.showToast(
+                                msg: "Password cannot be empty.",
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
                               );
                               return;
                             }
@@ -97,19 +107,27 @@ class SetNewPasswordScreen extends StatelessWidget {
                               password: password,
                             );
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor:
-                                    success ? Colors.green : Colors.red,
-                                content: Text(provider.errorMessage),
-                              ),
+                            Utils.showToast(
+                              msg: provider.errorMessage,
+                              backgroundColor: success ? Colors.green : Colors.red,
+                              textColor: Colors.white,
                             );
 
                             if (success && context.mounted) {
-                              Navigator.pushReplacementNamed(
-                                context,
-                                RouteNames.loginScreen,
-                              );
+                              final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+                              final fromChangePassword = args?['fromChangePassword'] ?? false;
+
+                              if (fromChangePassword) {
+                                Navigator.popUntil(
+                                  context,
+                                  (route) => route.settings.name == RouteNames.headOfficeChangePasswordScreen,
+                                );
+                              } else {
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  RouteNames.loginScreen,
+                                );
+                              }
                             }
                           },
                         );
@@ -131,6 +149,7 @@ class SetNewPasswordScreen extends StatelessWidget {
           controller: _passwordController,
           obscureText: !viewModel.passwordVisible,
           onChanged: viewModel.setPassword,
+          textInputAction: TextInputAction.next,
           decoration: InputDecoration(
             hintText: 'Enter Your New Password',
             hintStyle: AppTextStyles.hintText,
@@ -161,6 +180,7 @@ class SetNewPasswordScreen extends StatelessWidget {
         return TextField(
           controller: _confirmPasswordController,
           obscureText: !viewModel.confirmPasswordVisible,
+          textInputAction: TextInputAction.done,
           onChanged: viewModel.setConfirmPassword,
           decoration: InputDecoration(
             hintText: 'Re-enter Your New Password',

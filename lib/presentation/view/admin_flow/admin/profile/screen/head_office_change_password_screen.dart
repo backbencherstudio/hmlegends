@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/core/validator/validator.dart';
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
@@ -8,16 +9,28 @@ import 'package:provider/provider.dart';
 import '../../../../../widget/custom_text_form_field.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
 
-class HeadOfficeChangePasswordScreen extends StatelessWidget {
+class HeadOfficeChangePasswordScreen extends StatefulWidget {
   const HeadOfficeChangePasswordScreen({super.key});
+
+  @override
+  State<HeadOfficeChangePasswordScreen> createState() =>
+      _HeadOfficeChangePasswordScreenState();
+}
+
+class _HeadOfficeChangePasswordScreenState
+    extends State<HeadOfficeChangePasswordScreen> {
+  bool _obscureCurrentPassword = true;
+  bool _obscureNewPassword = true;
+  bool _obscureConfirmPassword = true;
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ChangePasswordProvider>();
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
     Future<void> submitForm() async {
-      if (formKey.currentState?.validate() ?? false) {
+      if (_formKey.currentState?.validate() ?? false) {
         final oldPassword = provider.currentPasswordController.text;
         final newPassword = provider.newPasswordController.text;
 
@@ -32,6 +45,13 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
             backgroundColor: Colors.green,
             textColor: Colors.white,
           );
+
+          provider.currentPasswordController.clear();
+          provider.newPasswordController.clear();
+          provider.confirmPasswordController.clear();
+          if (mounted) {
+            Navigator.pop(context);
+          }
         } else {
           Utils.showToast(
             msg: 'Failed to change password',
@@ -71,7 +91,7 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 25.h),
         child: Form(
-          key: formKey,
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -79,10 +99,23 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
               customRichText(labelText: 'Current Password'),
               SizedBox(height: 8.h),
               customTextFormField(
-                labelText: 'Current Password',
                 hintText: 'Enter your current password',
                 controller: provider.currentPasswordController,
-                isPassword: true,
+                isPassword: _obscureCurrentPassword,
+                textInputAction: TextInputAction.next,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureCurrentPassword
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: const Color(0xFF4A4C56),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureCurrentPassword = !_obscureCurrentPassword;
+                    });
+                  },
+                ),
                 validator: passwordValidator,
               ),
               SizedBox(height: 20.h),
@@ -91,10 +124,23 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
               customRichText(labelText: 'New Password'),
               SizedBox(height: 8.h),
               customTextFormField(
-                labelText: 'New Password',
                 hintText: 'Enter your new password',
-                isPassword: true,
                 controller: provider.newPasswordController,
+                isPassword: _obscureNewPassword,
+                textInputAction: TextInputAction.next,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureNewPassword
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: const Color(0xFF4A4C56),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureNewPassword = !_obscureNewPassword;
+                    });
+                  },
+                ),
                 validator: passwordValidator,
               ),
               SizedBox(height: 20.h),
@@ -103,11 +149,32 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
               customRichText(labelText: 'Confirm Password'),
               SizedBox(height: 8.h),
               customTextFormField(
-                labelText: 'Confirm New Password',
                 hintText: 'Confirm your new password',
-                isPassword: true,
                 controller: provider.confirmPasswordController,
-                validator: confirmPasswordValidator,
+                isPassword: _obscureConfirmPassword,
+                textInputAction: TextInputAction.done,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureConfirmPassword
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: const Color(0xFF4A4C56),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                    });
+                  },
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please confirm your password';
+                  }
+                  if (value != provider.newPasswordController.text) {
+                    return 'Passwords do not match';
+                  }
+                  return null;
+                },
               ),
 
               SizedBox(height: 24.h),
@@ -129,7 +196,13 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
 
               /// ---------------- Forgot Password -----------------------------
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.forgetPasswordScreen,
+                    arguments: {'fromChangePassword': true},
+                  );
+                },
                 child: Text(
                   'Forgot password?',
                   style: TextStyle(

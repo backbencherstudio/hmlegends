@@ -46,6 +46,7 @@ class ForgetPasswordProvider extends ChangeNotifier {
       );
 
       if (response['success']) {
+        _email = email;
         notifyListeners();
         return ResponseModel(success: true, message: response['message']);
       } else {
@@ -62,17 +63,19 @@ class ForgetPasswordProvider extends ChangeNotifier {
     }
   }
 
-  Future<ResponseModel> otpVerify({required String otp}) async {
+  Future<ResponseModel> otpVerify({required String email, required String otp}) async {
     _isFPLoading = true;
     notifyListeners();
 
     try {
       final response = await _apiService.postHttp(
         ApiEndpoints.verifyOtpOnly,
-        data: {"email": _email, "token": otp},
+        data: {"email": email, "token": otp},
       );
 
       if (response['success']) {
+        _email = email;
+        _otpToken = otp;
         notifyListeners();
         return ResponseModel(success: true, message: response['message']);
       } else {
@@ -80,9 +83,12 @@ class ForgetPasswordProvider extends ChangeNotifier {
         return ResponseModel(success: false, message: response['message']);
       }
     } catch (error) {
-      logger.e('Error during forget password: $error');
+      logger.e('Error during otp verify: $error');
       notifyListeners();
       return ResponseModel(success: false, message: '$error');
+    } finally {
+      _isFPLoading = false;
+      notifyListeners();
     }
   }
 
