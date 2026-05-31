@@ -31,56 +31,58 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: SafeArea(
-          child: Column(
-            children: [
-              SizedBox(height: 100.h),
-              Center(
-                child: Image.asset(
-                  AssetPaths.authLogo,
-                  width: 100.w,
-                  height: 100.h,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 100.h),
+                Center(
+                  child: Image.asset(
+                    AssetPaths.authLogo,
+                    width: 100.w,
+                    height: 100.h,
+                  ),
                 ),
-              ),
-              SizedBox(height: 20.h),
-              Text('Forgot Password', style: AppTextStyles.authHeadline),
-              SizedBox(height: 8.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Please enter your email to reset the password',
-                      style: AppTextStyles.authBodyText.copyWith(
-                        fontSize: 15.sp,
+                SizedBox(height: 20.h),
+                Text('Forgot Password', style: AppTextStyles.authHeadline),
+                SizedBox(height: 8.h),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Please enter your email to reset the password',
+                        style: AppTextStyles.authBodyText.copyWith(
+                          fontSize: 15.sp,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20.h),
-
-              // Email Field
-              Form(
-                key: _formKey,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RequiredLabel(labelText: 'Email'),
-                    SizedBox(height: 8.h),
-                    customTextFormField(
-                      hintText: 'Enter your email',
-                      controller: _emailController,
-                      prefixIcon: const Icon(Icons.email_outlined),
-                      validator: emailValidator,
-                    ),
-                    SizedBox(height: 20.h),
-
-                    ///---------------- Reset Button ---------------------------
-                    _resetPasswordButton(context, provider),
                   ],
                 ),
-              ),
-            ],
+                SizedBox(height: 20.h),
+            
+                // Email Field
+                Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RequiredLabel(labelText: 'Email'),
+                      SizedBox(height: 8.h),
+                      customTextFormField(
+                        hintText: 'Enter your email',
+                        controller: _emailController,
+                        prefixIcon: const Icon(Icons.email_outlined),
+                        validator: emailValidator,
+                      ),
+                      SizedBox(height: 20.h),
+            
+                      ///---------------- Reset Button ---------------------------
+                      _resetPasswordButton(context, provider),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -129,7 +131,12 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             textColor: Colors.white,
           );
           if (context.mounted) {
-            Navigator.pushNamed(context, RouteNames.otpVerifyScreen);
+            final args = ModalRoute.of(context)?.settings.arguments;
+            Navigator.pushNamed(
+              context,
+              RouteNames.otpVerifyScreen,
+              arguments: args,
+            );
           }
         } else {
           Utils.showToast(

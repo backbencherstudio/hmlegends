@@ -8,6 +8,9 @@ class LabeledInputField extends StatelessWidget {
   final bool isMultiline;
   final TextEditingController controller;
   final String? Function(String?)? validator;
+  final Widget? suffixIcon;
+  final VoidCallback? onTap;
+  final bool readOnly;
 
   const LabeledInputField({
     super.key,
@@ -17,6 +20,9 @@ class LabeledInputField extends StatelessWidget {
     this.isNumeric = false,
     this.isMultiline = false,
     this.validator,
+    this.suffixIcon,
+    this.onTap,
+    this.readOnly = false,
   });
 
   @override
@@ -39,7 +45,10 @@ class LabeledInputField extends StatelessWidget {
             controller: controller,
             maxLines: isMultiline ? 3 : 1,
             keyboardType: isNumeric ? TextInputType.phone : TextInputType.text,
+            readOnly: readOnly,
+            onTap: onTap,
             decoration: InputDecoration(
+              suffixIcon: suffixIcon,
               hintText: placeholder,
               filled: true,
               fillColor: Color(0xFFF6F6F7),

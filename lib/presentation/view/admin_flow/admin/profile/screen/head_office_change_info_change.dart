@@ -6,7 +6,7 @@ import 'package:hmlegends/core/network/network_service.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/core/validator/validator.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/profile/widget/profile_header.dart';
-import 'package:hmlegends/presentation/view/driver_flow/profile_driver/changeInfo_driver.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/profile/widget/label_input_field.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
@@ -33,6 +33,89 @@ class _HeadOfficeChangeInfoScreenState
   String? _existingImageUrl;
 
   final _formKey = GlobalKey<FormState>();
+  String _formatDateToUI(String? apiDate) {
+    if (apiDate == null || apiDate.trim().isEmpty) return "";
+    try {
+      final parsed = DateTime.tryParse(apiDate);
+      if (parsed != null) {
+        final day = parsed.day.toString().padLeft(2, '0');
+        final month = parsed.month.toString().padLeft(2, '0');
+        final year = parsed.year.toString();
+        return "$day/$month/$year";
+      }
+      final parts = apiDate.split('-');
+      if (parts.length == 3) {
+        final year = parts[0].trim();
+        final month = parts[1].trim().padLeft(2, '0');
+        final day = parts[2].trim().padLeft(2, '0');
+        return "$day/$month/$year";
+      }
+    } catch (_) {}
+    return apiDate;
+  }
+
+  String _formatDateToAPI(String uiDate) {
+    if (uiDate.trim().isEmpty) return "";
+    try {
+      final parts = uiDate.split('/');
+      if (parts.length == 3) {
+        final day = parts[0].trim().padLeft(2, '0');
+        final month = parts[1].trim().padLeft(2, '0');
+        final year = parts[2].trim();
+        return "$year-$month-$day";
+      }
+    } catch (_) {}
+    return uiDate;
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime initialDate = DateTime.now();
+    if (_dateOfBirthController.text.isNotEmpty) {
+      try {
+        final parts = _dateOfBirthController.text.split('/');
+        if (parts.length == 3) {
+          final day = int.parse(parts[0]);
+          final month = int.parse(parts[1]);
+          final year = int.parse(parts[2]);
+          initialDate = DateTime(year, month, day);
+        }
+      } catch (_) {}
+    }
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFFE20613),
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFFE20613),
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      final day = picked.day.toString().padLeft(2, '0');
+      final month = picked.month.toString().padLeft(2, '0');
+      final year = picked.year.toString();
+      setState(() {
+        _dateOfBirthController.text = "$day/$month/$year";
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -50,7 +133,7 @@ class _HeadOfficeChangeInfoScreenState
     if (data != null) {
       _firstNameController.text = data.name ?? "";
       _occupationController.text = data.occupation ?? "";
-      _dateOfBirthController.text = data.dateOfBirth ?? "";
+      _dateOfBirthController.text = _formatDateToUI(data.dateOfBirth);
       _phoneController.text = data.phoneNumber ?? "";
       _cityController.text = data.city ?? "";
       _addressController.text = data.address ?? "";
@@ -127,17 +210,17 @@ class _HeadOfficeChangeInfoScreenState
               ),
 
               LabeledInputField(
-                label: "First Name",
+                label: "Full Name",
                 placeholder: "",
                 controller: _firstNameController,
                 validator: nameValidator,
               ),
-              LabeledInputField(
-                label: "Last Name",
-                placeholder: "",
-                controller: _lastNameController,
-                validator: nameValidator,
-              ),
+              // LabeledInputField(
+              //   label: "Last Name",
+              //   placeholder: "",
+              //   controller: _lastNameController,
+              //   validator: nameValidator,
+              // ),
               LabeledInputField(
                 label: "Occupation",
                 placeholder: "",
@@ -151,16 +234,22 @@ class _HeadOfficeChangeInfoScreenState
               ),
               LabeledInputField(
                 label: "Date of Birth",
-                placeholder: "YYYY-MM-DD",
+                placeholder: "DD/MM/YYYY",
                 controller: _dateOfBirthController,
+                readOnly: true,
+                onTap: () => _selectDate(context),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.calendar_month, color: Color(0xFFE20613)),
+                  onPressed: () => _selectDate(context),
+                ),
                 validator: (String? value) {
                   if (value == null || value.trim().isEmpty) {
                     return "Date of Birth cannot be empty";
                   }
-                  // Simple regex for YYYY-MM-DD format
-                  final regex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+                  // Simple regex for DD/MM/YYYY format
+                  final regex = RegExp(r'^\d{2}/\d{2}/\d{4}$');
                   if (!regex.hasMatch(value)) {
-                    return "Date of Birth must be in YYYY-MM-DD format";
+                    return "Date of Birth must be in DD/MM/YYYY format";
                   }
                   return null;
                 },
@@ -218,7 +307,7 @@ class _HeadOfficeChangeInfoScreenState
                             firstName: _firstNameController.text,
                             lastName: _lastNameController.text,
                             occupation: _occupationController.text,
-                            dateOfBirth: _dateOfBirthController.text,
+                            dateOfBirth: _formatDateToAPI(_dateOfBirthController.text),
                             phoneNumber: _phoneController.text,
                             city: _cityController.text,
                             address: _addressController.text,

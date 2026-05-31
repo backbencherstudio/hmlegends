@@ -24,90 +24,98 @@ class OtpVerifyScreen extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: SafeArea(
-          child: Column(
-            children: [
-              SizedBox(height: 100.h),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 100.h),
 
-              /// LOGO
-              Center(
-                child: Image.asset(
-                  AssetPaths.authLogo,
-                  width: 100.w,
-                  height: 100.h,
-                ),
-              ),
-
-              SizedBox(height: 20.h),
-
-              Text('Check Your Mail', style: AppTextStyles.authHeadline),
-              SizedBox(height: 8.h),
-
-              /// EMAIL DISPLAY
-              Text(
-                'We sent a reset code to ${provider.email.isNotEmpty ? provider.email : "your email"}. '
-                'Enter the 6-digit code below.',
-                style: AppTextStyles.authBodyText,
-                textAlign: TextAlign.center,
-              ),
-
-              SizedBox(height: 20.h),
-
-              /// OTP FIELD
-              _buildOtpField(),
-
-              SizedBox(height: 20.h),
-
-              /// VERIFY BUTTON
-              AuthButton(
-                text: Text(
-                  'Verify Code',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
+                /// LOGO
+                Center(
+                  child: Image.asset(
+                    AssetPaths.authLogo,
+                    width: 100.w,
+                    height: 100.h,
                   ),
                 ),
-                color: AppColors.primaryColor,
-                onPressed: () async {
-                  final enteredOtp = _otpController.text.trim();
 
-                  if (enteredOtp.isEmpty) {
-                    Utils.showToast(
-                      msg: 'Please enter otp code',
-                      backgroundColor: Colors.red,
-                      textColor: Colors.white,
+                SizedBox(height: 20.h),
+
+                Text('Check Your Mail', style: AppTextStyles.authHeadline),
+                SizedBox(height: 8.h),
+
+                /// EMAIL DISPLAY
+                Text(
+                  'We sent a reset code to ${provider.email.isNotEmpty ? provider.email : "your email"}. '
+                  'Enter the 6-digit code below.',
+                  style: AppTextStyles.authBodyText,
+                  textAlign: TextAlign.center,
+                ),
+
+                SizedBox(height: 20.h),
+
+                /// OTP FIELD
+                _buildOtpField(),
+
+                SizedBox(height: 20.h),
+
+                /// VERIFY BUTTON
+                AuthButton(
+                  text: Text(
+                    'Verify Code',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  color: AppColors.primaryColor,
+                  onPressed: () async {
+                    
+                    final enteredOtp = _otpController.text.trim();
+
+                    if (enteredOtp.isEmpty) {
+                      Utils.showToast(
+                        msg: 'Please enter otp code',
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                      );
+                      return;
+                    }
+
+                    final res = await provider.otpVerify(
+                      email: provider.email,
+                      otp: enteredOtp,
                     );
-                    return;
-                  }
 
-                  final res = await provider.otpVerify(otp: enteredOtp);
-
-                  if (res.success) {
-                    Utils.showToast(
-                      msg: res.message,
-                      backgroundColor: Colors.green,
-                      textColor: Colors.white,
-                    );
-                    if (context.mounted) {
-                      Navigator.pushNamed(
-                        context,
-                        RouteNames.setNewPasswordScreen,
+                    if (res.success) {
+                      Utils.showToast(
+                        msg: res.message,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                      );
+                      if (context.mounted) {
+                        final args = ModalRoute.of(context)?.settings.arguments;
+                        Navigator.pushNamed(
+                          context,
+                          RouteNames.setNewPasswordScreen,
+                          arguments: args,
+                        );
+                      }
+                    } else {
+                      Utils.showToast(
+                        msg: res.message,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
                       );
                     }
-                  } else {
-                    Utils.showToast(
-                      msg: res.message,
-                      backgroundColor: Colors.red,
-                      textColor: Colors.white,
-                    );
-                  }
-                },
-              ),
+                  },
+                ),
 
-              SizedBox(height: 12.h),
+                SizedBox(height: 12.h),
 
-              _buildOtpResendLink(provider),
-            ],
+                _buildOtpResendLink(provider),
+              ],
+            ),
           ),
         ),
       ),
@@ -146,9 +154,9 @@ class OtpVerifyScreen extends StatelessWidget {
               style: AppTextStyles.hintText,
             ),
             TextSpan(
-              text: 'Resend Email',
+              text: provider.isFPLoading ? 'Sending...' : 'Resend Email',
               style: TextStyle(
-                color: AppColors.primaryColor,
+                color: provider.isFPLoading ? Colors.grey : AppColors.primaryColor,
                 letterSpacing: 0.2,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
@@ -156,7 +164,21 @@ class OtpVerifyScreen extends StatelessWidget {
               recognizer:
                   TapGestureRecognizer()
                     ..onTap = () async {
-                      await provider.forgetPassword(email: provider.email);
+                      if (provider.isFPLoading) return;
+                      final res = await provider.forgetPassword(email: provider.email);
+                      if (res.success) {
+                        Utils.showToast(
+                          msg: res.message,
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                        );
+                      } else {
+                        Utils.showToast(
+                          msg: res.message,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                        );
+                      }
                     },
             ),
           ],
