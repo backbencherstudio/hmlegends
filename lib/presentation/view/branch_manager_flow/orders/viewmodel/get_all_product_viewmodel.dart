@@ -26,6 +26,16 @@ class GetProductsViewmodel extends ChangeNotifier {
 
   List<Products> get products => _products;
 
+  List<Products> get filteredProducts {
+    if (_query.trim().isEmpty) {
+      return _products;
+    }
+    return _products
+        .where((product) =>
+            product.name.toLowerCase().contains(_query.toLowerCase()))
+        .toList();
+  }
+
   /// -------------------- Next Cursor -----------------------------------------
   String? _nextCursor;
 

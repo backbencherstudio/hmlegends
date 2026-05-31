@@ -7,6 +7,7 @@ import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_a
 import 'package:hmlegends/presentation/view/branch_manager_flow/orders/viewmodel/get_all_product_viewmodel.dart';
 import 'package:provider/provider.dart';
 import '../../admin_flow/view_model/profile/change_pass_provider.dart';
+import '../../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 import '../../widget/custom_app_bar.dart';
 import '../orders/viewmodel/create_order_viewmodel.dart';
 
@@ -91,11 +92,10 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
                   'Branch Name – (BR001)',
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
                 ),
-                SizedBox(height: 10.h),
+                // SizedBox(height: 10.h),
 
                 /// TOP BARS SWITCH
-                _getTopBarWidget(orderVm),
-
+                // _getTopBarWidget(orderVm),
                 SizedBox(height: 40.h),
 
                 /// BUTTON GRID
@@ -108,38 +108,20 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
                       spacing: 10,
                       children: [
                         GestureDetector(
-                          onTap:
-                              orderVm.isLoading
-                                  ? null
-                                  : () async {
-                                    final res = await orderVm.placeOrder(
-                                      productId:
-                                          context
-                                              .read<GetProductsViewmodel>()
-                                              .products
-                                              .first
-                                              .id,
-                                    );
-                                    if (res.success) {
-                                      Utils.showToast(
-                                        msg: res.message,
-                                        backgroundColor: Colors.green,
-                                        textColor: Colors.white,
-                                      );
-                                      if (context.mounted) {
-                                        Navigator.pushNamed(
-                                          context,
-                                          RouteNames.ordersScreen,
-                                        );
-                                      }
-                                    } else {
-                                      Utils.showToast(
-                                        msg: res.message,
-                                        backgroundColor: Colors.red,
-                                        textColor: Colors.white,
-                                      );
-                                    }
-                                  },
+                          onTap: orderVm.hasPlacedToday
+                              ? () {
+                                  Utils.showToast(
+                                    msg: "You have already placed an order today.",
+                                    backgroundColor: Colors.orange,
+                                    textColor: Colors.white,
+                                  );
+                                }
+                              : () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    RouteNames.ordersScreen,
+                                  );
+                                },
                           child: CustomFeatureBox(
                             imagePath: 'assets/icons/first_box.png',
                             text: 'Place Order',
@@ -149,10 +131,7 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
 
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              RouteNames.invoiceScreen,
-                            );
+                            context.read<BottomNavViewModel>().updateIndex(2);
                           },
                           child: CustomFeatureBox(
                             imagePath: 'assets/icons/third_box.png',
@@ -167,10 +146,7 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              RouteNames.myOrders,
-                            );
+                            context.read<BottomNavViewModel>().updateIndex(1);
                           },
                           child: CustomFeatureBox(
                             imagePath: 'assets/icons/second_box.png',
