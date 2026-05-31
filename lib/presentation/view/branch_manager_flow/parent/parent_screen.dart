@@ -17,6 +17,16 @@ class BranchParentScreen extends StatefulWidget {
 
 class _BranchParentScreenState extends State<BranchParentScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<BottomNavViewModel>().updateIndex(0);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       BranchHomeScreen(),

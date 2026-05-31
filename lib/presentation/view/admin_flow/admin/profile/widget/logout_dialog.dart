@@ -7,106 +7,129 @@ import 'package:hmlegends/core/services/user_type_storage.dart';
 void logoutShowSubmitDialog(BuildContext context) {
   final TokenStorage token = TokenStorage();
   final UserTypeStorage userType = UserTypeStorage();
+
   showDialog(
     context: context,
-    builder:
-        (context) => AlertDialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.r),
-          ),
-          //contentPadding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w, 20.h),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Are you sure you want\nto log out?',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+    builder: (context) => Dialog(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.r),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Premium Branded Logout Icon Header
+            Container(
+              width: 56.w,
+              height: 56.w,
+              decoration: BoxDecoration(
+                color: const Color(0xffE20613).withOpacity(0.1),
+                shape: BoxShape.circle,
               ),
-              SizedBox(height: 20.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6.w),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          await token.clearToken();
-                          await userType.clearUserType();
-                          debugPrint(
-                            "====== Token clear : ${await token.getToken()} ===============",
+              child: Icon(
+                Icons.logout_rounded,
+                color: const Color(0xffE20613),
+                size: 28.sp,
+              ),
+            ),
+            SizedBox(height: 16.h),
+            
+            // Header Title
+            Text(
+              'Logout',
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF1F2024),
+              ),
+            ),
+            SizedBox(height: 8.h),
+            
+            // Subtitle Description
+            Text(
+              'Are you sure you want to log out?',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w400,
+                color: const Color(0xFF71727A),
+              ),
+            ),
+            SizedBox(height: 24.h),
+            
+            // Action Buttons
+            Row(
+              children: [
+                // Log me out (Outlined/Cancel Style)
+                Expanded(
+                  child: SizedBox(
+                    height: 48.h,
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        await token.clearToken();
+                        await userType.clearUserType();
+                        if (context.mounted) {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            RouteNames.loginScreen,
+                            (route) => false,
                           );
-                          debugPrint(
-                            "====== Token clear : ${token.clearToken()} ===============",
-                          );
-                          debugPrint(
-                            "======  clear : ${userType.clearUserType()} ===============",
-                          );
-                          if (context.mounted) {
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              RouteNames.loginScreen,
-                              (route) => false,
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xffE20613),
-                          side: const BorderSide(color: Color(0xffE20613)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.r),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 6.w,
-                            vertical: 12.h,
-                          ),
+                        }
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xffE20613), width: 1.5),
+                        foregroundColor: const Color(0xffE20613),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24.r),
                         ),
-                        child: Text(
-                          'Log me out',
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        padding: EdgeInsets.zero,
+                      ),
+                      child: Text(
+                        'Log me out',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(width: 4.w),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 4.w),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xffE20613),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.r),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 6.w,
-                            vertical: 12.h,
-                          ),
+                ),
+                SizedBox(width: 12.w),
+                
+                // Stay logged in (Filled/Confirm Style)
+                Expanded(
+                  child: SizedBox(
+                    height: 48.h,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffE20613),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24.r),
                         ),
-                        child: Text(
-                          'Stay logged in',
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        padding: EdgeInsets.zero,
+                      ),
+                      child: Text(
+                        'Stay logged in',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
+      ),
+    ),
   );
 }

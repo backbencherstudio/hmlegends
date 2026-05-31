@@ -33,8 +33,11 @@ class _SearchFieldState extends State<SearchField> {
   @override
   void didUpdateWidget(covariant SearchField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.text != widget.text) {
+    if (widget.text != controller.text) {
       controller.text = widget.text;
+      controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: controller.text.length),
+      );
     }
   }
 

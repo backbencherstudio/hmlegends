@@ -54,12 +54,17 @@ class OrderViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<ResponseModel> placeOrder({required String productId}) async {
+  Future<ResponseModel> placeOrder() async {
     try {
+      if (_productList.isEmpty) {
+        return ResponseModel(success: false, message: 'No products selected');
+      }
+
       final body = {
-        "products": [
-          {"product_id": productId, "quantity": 1},
-        ],
+        "products": _productList.map((e) => {
+          "product_id": e.productId,
+          "quantity": int.tryParse(e.productQty) ?? 1,
+        }).toList(),
       };
 
       logger.d("=== PLACE ORDER API CALLED ===");
