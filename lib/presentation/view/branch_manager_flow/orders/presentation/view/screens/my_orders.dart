@@ -21,17 +21,20 @@ class MyOrders extends StatefulWidget {
 }
 
 class _MyOrdersState extends State<MyOrders> {
-  String selectedPeriod = 'This Week';
+  String selectedPeriod = 'Today';
   String? expandedDate;
 
   @override
   void initState() {
     super.initState();
-    expandedDate = null;
+    expandedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
     Future.microtask(() {
       // ignore: use_build_context_synchronously
-      Provider.of<GetOrdersViewModel>(context, listen: false).fetchOrders(period: 'week');
+      Provider.of<GetOrdersViewModel>(
+        context,
+        listen: false,
+      ).fetchOrders(period: 'today');
     });
   }
 
@@ -44,6 +47,23 @@ class _MyOrdersState extends State<MyOrders> {
 
   List<String> getDateList(Map<String, List<Data>> groupedOrders) {
     return groupedOrders.keys.toList();
+  }
+
+  List<OrderItems> _getFilteredItems(List<Data> orders, String query) {
+    List<OrderItems> items = [];
+    final q = query.trim().toLowerCase();
+    for (var order in orders) {
+      if (order.orderItems != null) {
+        for (var item in order.orderItems!) {
+          if (q.isEmpty ||
+              (item.product != null &&
+                  item.product!.toLowerCase().contains(q))) {
+            items.add(item);
+          }
+        }
+      }
+    }
+    return items;
   }
 
   Timer? debouncer;
@@ -82,220 +102,362 @@ class _MyOrdersState extends State<MyOrders> {
           onBackTap: () => _handleBack(context),
         ),
         body: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          children: [
-            /// ------------------------- Search Bar ---------------------------
-            SearchField(
-              hintText: 'Search by name',
-              text: context.watch<GetOrdersViewModel>().query,
-              onChanged: (String value) {
-                if (!mounted) return;
-                context.read<GetOrdersViewModel>().setQuery(value);
-              },
-            ),
-
-            SizedBox(height: 20.h),
-
-            /// -------------------- Filter Header -----------------------------
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Total Items',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.sp,
-                  ),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      selectedPeriod,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.keyboard_arrow_down_sharp),
-                      onSelected: (value) {
-                        setState(() {
-                          selectedPeriod = value;
-                          expandedDate =
-                              value == 'Today'
-                                  ? DateFormat(
-                                    'dd/MM/yyyy',
-                                  ).format(DateTime.now())
-                                  : null;
-                        });
-                        final apiPeriod = value == 'Today'
-                            ? 'today'
-                            : value == 'This Week'
-                                ? 'week'
-                                : 'month';
-                        Provider.of<GetOrdersViewModel>(context, listen: false)
-                            .fetchOrders(period: apiPeriod);
-                      },
-                      itemBuilder:
-                          (context) => const [
-                            PopupMenuItem(value: 'Today', child: Text('Today')),
-                            PopupMenuItem(
-                              value: 'This Week',
-                              child: Text('This Week'),
-                            ),
-                            PopupMenuItem(
-                              value: 'This Month',
-                              child: Text('This Month'),
-                            ),
-                          ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            Divider(height: 20.h),
-
-            /// -------------------  Orders List -------------------------------
-            Expanded(
-              child: Consumer<GetOrdersViewModel>(
-                builder: (context, vm, child) {
-                  if (vm.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (vm.error != null) {
-                    return Center(child: Text(vm.error!));
-                  }
-
-                  final grouped = vm.groupedByDate();
-                  final dates = getDateList(grouped);
-
-                  if (dates.isEmpty) {
-                    return const Center(child: Text("No items found"));
-                  }
-
-                  return ListView.separated(
-                    itemCount: dates.length,
-                    separatorBuilder: (_, __) => Divider(thickness: 0.4.h),
-                    itemBuilder: (context, index) {
-                      final date = dates[index];
-                      final isExpanded = expandedDate == date;
-                      final ordersOfDate = grouped[date]!;
-
-                      return Column(
-                        children: [
-                          /// --------------------- Date Header ----------------
-                          ListTile(
-                            leading: Text(
-                              '${index + 1}.',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16.sp,
-                              ),
-                            ),
-                            title: Text(
-                              date,
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            trailing: IconButton(
-                              icon: Icon(
-                                isExpanded
-                                    ? Icons.keyboard_arrow_up_sharp
-                                    : Icons.keyboard_arrow_down_sharp,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  expandedDate = isExpanded ? null : date;
-                                });
-                              },
-                            ),
-                          ),
-
-                          /// ----------------- Expanded Items -----------------
-                          if (isExpanded)
-                            Column(
-                              children:
-                                  ordersOfDate.map((order) {
-                                    return Column(
-                                      children:
-                                          order.orderItems!.map((item) {
-                                            return Column(
-                                              children: [
-                                                ListTile(
-                                                  leading: Container(
-                                                    width: 50.w,
-                                                    height: 50.h,
-                                                    clipBehavior:
-                                                        Clip.antiAlias,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            12.r,
-                                                          ),
-                                                    ),
-                                                    child: Image.network(
-                                                      item.productImage ?? '',
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder:
-                                                          (
-                                                            _,
-                                                            __,
-                                                            ___,
-                                                          ) => const Icon(
-                                                            Icons
-                                                                .image_not_supported,
-                                                          ),
-                                                      loadingBuilder: (
-                                                        context,
-                                                        child,
-                                                        progress,
-                                                      ) {
-                                                        if (progress == null) {
-                                                          return child;
-                                                        }
-                                                        return const Center(
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                                strokeWidth: 2,
-                                                              ),
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                                  title: Text(
-                                                    item.product ?? '',
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                  trailing: Text(
-                                                    "${item.quantity ?? 0} Pcs",
-                                                  ),
-                                                ),
-                                                Divider(thickness: 0.6.h),
-                                              ],
-                                            );
-                                          }).toList(),
-                                    );
-                                  }).toList(),
-                            ),
-                        ],
-                      );
-                    },
-                  );
+          padding: EdgeInsets.all(16.w),
+          child: Column(
+            children: [
+              /// ------------------------- Search Bar ---------------------------
+              SearchField(
+                hintText: 'Search by name',
+                text: context.watch<GetOrdersViewModel>().query,
+                onChanged: (String value) {
+                  if (!mounted) return;
+                  context.read<GetOrdersViewModel>().setQuery(value);
                 },
               ),
-            ),
-          ],
+
+              SizedBox(height: 20.h),
+
+              /// -------------------- Filter Header -----------------------------
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    selectedPeriod == 'Today' ? 'Total Items' : 'Total Orders',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16.sp,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        selectedPeriod,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                      PopupMenuButton<String>(
+                        icon: const Icon(Icons.keyboard_arrow_down_sharp),
+                        onSelected: (value) {
+                          setState(() {
+                            selectedPeriod = value;
+                            expandedDate =
+                                value == 'Today'
+                                    ? DateFormat(
+                                      'dd/MM/yyyy',
+                                    ).format(DateTime.now())
+                                    : null;
+                          });
+                          final apiPeriod =
+                              value == 'Today'
+                                  ? 'today'
+                                  : value == 'This Week'
+                                  ? 'week'
+                                  : 'month';
+                          Provider.of<GetOrdersViewModel>(
+                            context,
+                            listen: false,
+                          ).fetchOrders(period: apiPeriod);
+                        },
+                        itemBuilder:
+                            (context) => const [
+                              PopupMenuItem(
+                                value: 'Today',
+                                child: Text('Today'),
+                              ),
+                              PopupMenuItem(
+                                value: 'This Week',
+                                child: Text('This Week'),
+                              ),
+                              PopupMenuItem(
+                                value: 'This Month',
+                                child: Text('This Month'),
+                              ),
+                            ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              Divider(height: 20.h),
+
+              /// -------------------  Orders List -------------------------------
+              Expanded(
+                child: Consumer<GetOrdersViewModel>(
+                  builder: (context, vm, child) {
+                    if (vm.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (vm.error != null) {
+                      return Center(child: Text(vm.error!));
+                    }
+
+                    if (selectedPeriod == 'Today') {
+                      final todayItems = _getFilteredItems(vm.orders, vm.query);
+
+                      if (todayItems.isEmpty) {
+                        return const Center(child: Text("No items found"));
+                      }
+
+                      return ListView.separated(
+                        padding: EdgeInsets.zero,
+                        itemCount: todayItems.length,
+                        separatorBuilder:
+                            (_, __) => Divider(thickness: 0.6.h, height: 12.h),
+                        itemBuilder: (context, index) {
+                          final item = todayItems[index];
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '${index + 1}. ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16.sp,
+                                    color: const Color(0xff4A4C56),
+                                  ),
+                                ),
+                                SizedBox(width: 8.w),
+                                Container(
+                                  width: 40.w,
+                                  height: 24.h,
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  child: Image.network(
+                                    item.productImage ?? '',
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (_, __, ___) => const Icon(
+                                          Icons.image_not_supported,
+                                        ),
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return const Center(
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            title: Text(
+                              item.product ?? '',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15.sp,
+                                color: const Color(0xff1D1F2C),
+                              ),
+                            ),
+                            trailing: RichText(
+                              text: TextSpan(
+                                style: TextStyle(
+                                  fontSize: 15.sp,
+                                  color: const Color(0xff1D1F2C),
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: "${item.quantity ?? 0} ",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const TextSpan(
+                                    text: "Pcs",
+                                    style: TextStyle(color: Color(0xff8E909A)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+
+                    final grouped = vm.groupedByDate();
+                    final dates = getDateList(grouped);
+
+                    if (dates.isEmpty) {
+                      return const Center(child: Text("No items found"));
+                    }
+
+                    return ListView.separated(
+                      padding: EdgeInsets.zero,
+                      itemCount: dates.length,
+                      separatorBuilder: (_, __) => Divider(thickness: 0.4.h),
+                      itemBuilder: (context, index) {
+                        final date = dates[index];
+                        final isExpanded = expandedDate == date;
+                        final ordersOfDate = grouped[date]!;
+
+                        return Column(
+                          children: [
+                            /// --------------------- Date Header ----------------
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: Text(
+                                '${index + 1}.',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16.sp,
+                                ),
+                              ),
+                              title: Text(
+                                date,
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              trailing: IconButton(
+                                icon: Icon(
+                                  isExpanded
+                                      ? Icons.keyboard_arrow_up_sharp
+                                      : Icons.keyboard_arrow_down_sharp,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    expandedDate = isExpanded ? null : date;
+                                  });
+                                },
+                              ),
+                            ),
+
+                            /// ----------------- Expanded Items -----------------
+                            if (isExpanded)
+                              Builder(
+                                builder: (context) {
+                                  final itemsOfDate = _getFilteredItems(
+                                    ordersOfDate,
+                                    vm.query,
+                                  );
+                                  return Column(
+                                    children: List.generate(itemsOfDate.length, (
+                                      itemIndex,
+                                    ) {
+                                      final item = itemsOfDate[itemIndex];
+                                      return Column(
+                                        children: [
+                                          ListTile(
+                                            contentPadding: EdgeInsets.zero,
+                                            leading: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  '${itemIndex + 1}. ',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 16.sp,
+                                                    color: const Color(
+                                                      0xff4A4C56,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 8.w),
+                                                Container(
+                                                  width: 40.w,
+                                                  height: 24.h,
+                                                  clipBehavior: Clip.antiAlias,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8.r,
+                                                        ),
+                                                  ),
+                                                  child: Image.network(
+                                                    item.productImage ?? '',
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder:
+                                                        (
+                                                          _,
+                                                          __,
+                                                          ___,
+                                                        ) => const Icon(
+                                                          Icons
+                                                              .image_not_supported,
+                                                        ),
+                                                    loadingBuilder: (
+                                                      context,
+                                                      child,
+                                                      progress,
+                                                    ) {
+                                                      if (progress == null)
+                                                        return child;
+                                                      return const Center(
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                              strokeWidth: 2,
+                                                            ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            title: Text(
+                                              item.product ?? '',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 15.sp,
+                                                color: const Color(0xff1D1F2C),
+                                              ),
+                                            ),
+                                            trailing: RichText(
+                                              text: TextSpan(
+                                                style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  color: const Color(
+                                                    0xff1D1F2C,
+                                                  ),
+                                                ),
+                                                children: [
+                                                  TextSpan(
+                                                    text:
+                                                        "${item.quantity ?? 0} ",
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  const TextSpan(
+                                                    text: "Pcs",
+                                                    style: TextStyle(
+                                                      color: Color(0xff8E909A),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Divider(
+                                            thickness: 0.6.h,
+                                            height: 12.h,
+                                          ),
+                                        ],
+                                      );
+                                    }),
+                                  );
+                                },
+                              ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-   );
+    );
   }
 }

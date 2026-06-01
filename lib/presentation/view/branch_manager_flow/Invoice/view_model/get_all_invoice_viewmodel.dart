@@ -7,22 +7,31 @@ import '../../../../../core/constant/api_endpoint.dart';
 
 class GetAllInvoiceProvider extends ChangeNotifier {
   String _errorMessage = '';
-
   String get errorMessage => _errorMessage;
 
   InvoiceResponse? _invoiceResponse;
-
   InvoiceResponse? get invoiceResponse => _invoiceResponse;
 
   final ApiService _apiService = ApiService();
 
-  String _selectedPeriod = 'Today';
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
+  String _selectedPeriod = 'This Week';
   String get selectedPeriod => _selectedPeriod;
 
   void updatedPeriod(String value) {
-    _selectedPeriod = value;
+    if (value.toLowerCase() == 'today') {
+      _selectedPeriod = 'Today';
+    } else if (value.toLowerCase().contains('week')) {
+      _selectedPeriod = 'This Week';
+    } else if (value.toLowerCase().contains('month')) {
+      _selectedPeriod = 'This Month';
+    } else {
+      _selectedPeriod = value;
+    }
     notifyListeners();
+    fetchAllInvoices();
   }
 
   String _query = '';
@@ -32,16 +41,30 @@ class GetAllInvoiceProvider extends ChangeNotifier {
     _query = value;
     notifyListeners();
   }
+
   /// --------------- Fetch All Invoices ---------------------------------------
   Future<bool> fetchAllInvoices() async {
+    _isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
     try {
       final token = await TokenStorage().getToken();
       if (token == null || token.isEmpty) {
         debugPrint('--- Token not found ---');
+        _isLoading = false;
+        notifyListeners();
         return false;
       }
 
-      final response = await _apiService.get(ApiEndpoints.getInvoices);
+      final apiPeriod = _selectedPeriod.toLowerCase() == 'today'
+          ? 'today'
+          : _selectedPeriod.toLowerCase().contains('week')
+              ? 'week'
+              : 'month';
+
+      final response = await _apiService.get(
+        ApiEndpoints.managerInvoice(period: apiPeriod),
+      );
 
       debugPrint("=== INVOICE API RESPONSE ===");
       debugPrint("Response: $response");
@@ -72,12 +95,10 @@ class GetAllInvoiceProvider extends ChangeNotifier {
             );
           }
 
-          notifyListeners();
           return true;
         } else {
           _errorMessage = jsonResponse['message'] ?? 'Server error';
           debugPrint("API Error: $_errorMessage");
-          notifyListeners();
         }
       } else {
         _errorMessage = 'Invalid response format';
@@ -99,6 +120,8 @@ class GetAllInvoiceProvider extends ChangeNotifier {
     } catch (e) {
       _errorMessage = 'Unexpected error: $e';
       debugPrint("Unexpected Error: $e");
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
     return false;
