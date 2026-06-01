@@ -121,4 +121,7 @@ class ApiEndpoints {
       '$baseUrl/api/auth/update-manager/$managerId';
   static String toggleBranchStatus(String userId) =>
       '$baseUrl/api/auth/toggle-status/$userId';
+
+  static String managerInvoice({String period = 'week'}) =>
+      '$baseUrl/api/invoice?period=$period';
 }
