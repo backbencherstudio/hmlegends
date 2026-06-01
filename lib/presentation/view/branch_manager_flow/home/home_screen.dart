@@ -4,7 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
-import 'package:hmlegends/presentation/view/branch_manager_flow/orders/viewmodel/get_all_product_viewmodel.dart';
 import 'package:provider/provider.dart';
 import '../../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
@@ -178,12 +177,6 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
     );
   }
 
-  /// Select which top bar to show
-  Widget _getTopBarWidget(OrderViewmodel vm) {
-    if (vm.hasPlacedToday) return const AlignTopBarSecond();
-    if (_currentBar == "third") return const AlignTopBarThird();
-    return const AlignTopBarFirst();
-  }
 }
 
 class AlignTopBarFirst extends StatelessWidget {

@@ -33,10 +33,6 @@ class DeliveryProvider extends ChangeNotifier {
   String? _assigningOrderId;
   String? get assigningOrderId => _assigningOrderId;
 
-  void _setLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
 
   /// --------------- Admin, Driver, Manager -----------------------------------
   final selected = <String>{};

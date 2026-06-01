@@ -244,9 +244,9 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                             provider.selectedDriverId!,
                           );
                           
-                          if (res != null && res.success) {
+                          if (res.success) {
                             Utils.showToast(
-                              msg: res.message ?? "Driver assigned successfully",
+                              msg: res.message,
                               backgroundColor: Colors.green,
                               textColor: Colors.white,
                             );
@@ -255,7 +255,7 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                             }
                           } else {
                             Utils.showToast(
-                              msg: res != null ? res.message ?? "Failed to assign driver" : "Failed to assign driver",
+                              msg: res.message,
                               backgroundColor: Colors.red,
                               textColor: Colors.white,
                             );
