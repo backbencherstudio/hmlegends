@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/presentation/view/widget/simple_appbar.dart';
+import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../../../../../../core/route/route_names.dart';
 import '../../../../../admin_flow/admin/widget/search_filter.dart';
 import '../../../../../admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import '../../../../../admin_flow/view_model/profile/change_pass_provider.dart';
+import '../../../../../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 import '../../../viewmodel/get_my_orders_viewmodel.dart';
 import '../../../data/get_my_orders_model.dart';
 
@@ -21,39 +21,28 @@ class MyOrders extends StatefulWidget {
 }
 
 class _MyOrdersState extends State<MyOrders> {
-  String selectedPeriod = 'Today';
+  String selectedPeriod = 'This Week';
   String? expandedDate;
 
   @override
   void initState() {
     super.initState();
-    expandedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+    expandedDate = null;
 
     Future.microtask(() {
       // ignore: use_build_context_synchronously
-      Provider.of<GetOrdersViewModel>(context, listen: false).fetchOrders();
+      Provider.of<GetOrdersViewModel>(context, listen: false).fetchOrders(period: 'week');
     });
   }
 
-  List<String> getDateList(Map<String, List<Data>> groupedOrders) {
-    final now = DateTime.now();
-
-    if (selectedPeriod == 'Today') {
-      return groupedOrders.keys
-          .where((date) => date == DateFormat('dd/MM/yyyy').format(now))
-          .toList();
-    } else if (selectedPeriod == 'This Week') {
-      return groupedOrders.keys.where((date) {
-        final d = DateFormat('dd/MM/yyyy').parse(date);
-        return d.isAfter(now.subtract(const Duration(days: 6)));
-      }).toList();
-    } else if (selectedPeriod == 'This Month') {
-      return groupedOrders.keys.where((date) {
-        final d = DateFormat('dd/MM/yyyy').parse(date);
-        return d.month == now.month && d.year == now.year;
-      }).toList();
+  void _handleBack(BuildContext context) {
+    context.read<BottomNavViewModel>().updateIndex(0);
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
     }
+  }
 
+  List<String> getDateList(Map<String, List<Data>> groupedOrders) {
     return groupedOrders.keys.toList();
   }
 
@@ -76,22 +65,30 @@ class _MyOrdersState extends State<MyOrders> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-    return Scaffold(
-      backgroundColor: const Color(0xffFFF6F7),
-      appBar: SimpleAppbar(
-        title: 'My Orders',
-        profileImage: '${data?.avatar}',
-        notificationCount: notificationProvider.unreadCount,
-        navigationPath: RouteNames.branchParentScreen,
-      ),
-      body: Padding(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _handleBack(context);
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xffFFF6F7),
+        appBar: CustomAppBarTwo(
+          title: 'My Orders',
+          profileImage: data?.avatar,
+          notificationCount: notificationProvider.unreadCount,
+          colorMain: Colors.white,
+          colorSpace: const Color(0xffFFF6F7),
+          onBackTap: () => _handleBack(context),
+        ),
+        body: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
           children: [
             /// ------------------------- Search Bar ---------------------------
             SearchField(
-              hintText: 'Search',
-              text: context.read<GetOrdersViewModel>().query,
+              hintText: 'Search by name',
+              text: context.watch<GetOrdersViewModel>().query,
               onChanged: (String value) {
                 if (!mounted) return;
                 context.read<GetOrdersViewModel>().setQuery(value);
@@ -132,6 +129,13 @@ class _MyOrdersState extends State<MyOrders> {
                                   ).format(DateTime.now())
                                   : null;
                         });
+                        final apiPeriod = value == 'Today'
+                            ? 'today'
+                            : value == 'This Week'
+                                ? 'week'
+                                : 'month';
+                        Provider.of<GetOrdersViewModel>(context, listen: false)
+                            .fetchOrders(period: apiPeriod);
                       },
                       itemBuilder:
                           (context) => const [
@@ -291,6 +295,7 @@ class _MyOrdersState extends State<MyOrders> {
           ],
         ),
       ),
-    );
+    ),
+   );
   }
 }

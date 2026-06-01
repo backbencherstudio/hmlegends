@@ -76,7 +76,8 @@ class ApiEndpoints {
   //orders
   static String getAllProducts = '$baseUrl/api/product';
   static String placeOrder = '$baseUrl/api/order';
-  static String getMyOrders = '$baseUrl/api/order';
+  static String getMyOrders({String period = 'week'}) =>
+      '$baseUrl/api/order?period=$period';
 
   // core/constant/api_endpoint.dart
 

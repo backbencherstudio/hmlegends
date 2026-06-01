@@ -16,18 +16,29 @@ class GetOrdersViewModel extends ChangeNotifier {
   }
   OrderResponse? _orderResponse;
 
-  List<Data> get orders => _orderResponse?.data ?? [];
+  List<Data> get orders {
+    final allOrders = _orderResponse?.data ?? [];
+    if (_query.trim().isEmpty) {
+      return allOrders;
+    }
+    return allOrders.where((order) {
+      if (order.orderItems == null) return false;
+      return order.orderItems!.any((item) =>
+          item.product != null &&
+          item.product!.toLowerCase().contains(_query.toLowerCase()));
+    }).toList();
+  }
 
   String? error;
 
   final ApiService _apiService = ApiService();
 
-  Future<void> fetchOrders() async {
+  Future<void> fetchOrders({String period = 'week'}) async {
     try {
       isLoading = true;
       notifyListeners();
 
-      final response = await _apiService.get(ApiEndpoints.getMyOrders);
+      final response = await _apiService.get(ApiEndpoints.getMyOrders(period: period));
 
       if (response is Map<String, dynamic> && response['success'] == true) {
         _orderResponse = OrderResponse.fromJson(response);
