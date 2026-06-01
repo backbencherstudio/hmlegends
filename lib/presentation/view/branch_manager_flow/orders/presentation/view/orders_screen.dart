@@ -67,15 +67,26 @@ class _OrdersScreenState extends State<OrdersScreen> {
       context,
     );
 
-    return Scaffold(
-      backgroundColor: const Color(0xffFFF6F7),
-      appBar: CustomAppBarTwo(
-        title: "Place Order",
-        profileImage: data?.avatar,
-        notificationCount: notificationProvider.unreadCount,
-        colorMain: Colors.white,
-        colorSpace: const Color(0xffFFF6F7),
-      ),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        context.read<BottomNavViewModel>().updateIndex(0);
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xffFFF6F7),
+        appBar: CustomAppBarTwo(
+          title: "Place Order",
+          profileImage: data?.avatar,
+          notificationCount: notificationProvider.unreadCount,
+          colorMain: Colors.white,
+          colorSpace: const Color(0xffFFF6F7),
+          onBackTap: () {
+            context.read<BottomNavViewModel>().updateIndex(0);
+            Navigator.pop(context);
+          },
+        ),
       body: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -303,7 +314,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ],
         ),
       ),
-    );
+    ),
+   );
   }
 
   /// ---------------------- PRODUCT CARD --------------------------------------
