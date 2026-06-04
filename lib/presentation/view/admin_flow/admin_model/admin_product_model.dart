@@ -34,8 +34,8 @@ class Data {
   String? id;
   String? name;
   String? image;
-  int? stock;
-  int? price;
+  num? stock;
+  num? price;
   String? stockStatus;
   String? createdAt;
 

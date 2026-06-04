@@ -2,7 +2,7 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl =
-      'https://barrier-bet-hobby-foam.trycloudflare.com';
+      'https://elliot-haemic-biuniquely.ngrok-free.dev';
   static const String googleLogin = '$baseUrl/api/auth/google/signin';
 
   // Admin
