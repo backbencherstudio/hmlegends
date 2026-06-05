@@ -5,6 +5,7 @@ import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
 import 'package:hmlegends/presentation/widget/custom_network_image.dart';
+import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
@@ -169,6 +170,13 @@ class OrderSummaryViewScreen extends StatelessWidget {
                                 Future.delayed(const Duration(seconds: 1), () {
                                   if (dialogContext.mounted) {
                                     Navigator.of(dialogContext).pop();
+                                    if (context.mounted) {
+                                      Navigator.pushReplacementNamed(
+                                        context,
+                                        RouteNames.orderSummaryMakeInvoiceScreen,
+                                        arguments: orderId,
+                                      );
+                                    }
                                   }
                                 });
                                 return Dialog(
