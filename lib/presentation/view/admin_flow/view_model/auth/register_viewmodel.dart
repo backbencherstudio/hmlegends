@@ -61,6 +61,7 @@ class RegisterProvider extends ChangeNotifier {
     required String name,
     required String email,
     required String password,
+    required String role,
   }) async {
     try {
       _setLoading(true);
@@ -68,7 +69,7 @@ class RegisterProvider extends ChangeNotifier {
         "name": name,
         "email": email,
         "password": password,
-        "type": "admin",
+        "type": role,
       };
       var response = await _apiService.postHttp(
         ApiEndpoints.register,

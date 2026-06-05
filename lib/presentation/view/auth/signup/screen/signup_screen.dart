@@ -25,6 +25,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final role = args?['userRole'] ?? 'admin';
+
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -49,7 +52,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 SizedBox(height: 20.h),
                 _buildFormFields(),
                 SizedBox(height: 24.h),
-                _buildSignUpButton(),
+                _buildSignUpButton(role),
                 SizedBox(height: 20.h),
                 _buildOrJoinWithDivider(),
                 SizedBox(height: 20.h),
@@ -129,7 +132,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     ),
   );
 
-  Widget _buildSignUpButton() => Consumer<RegisterProvider>(
+  Widget _buildSignUpButton(String role) => Consumer<RegisterProvider>(
     builder: (context, provider, child) {
       return AuthButton(
         text:
@@ -151,6 +154,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               name: provider.nameController.text.trim(),
               email: provider.emailController.text.trim(),
               password: provider.passwordController.text.trim(),
+              role: role,
             );
 
             if (res.success) {
@@ -159,6 +163,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 backgroundColor: Colors.green,
                 textColor: Colors.white,
               );
+              provider.nameController.clear();
+              provider.emailController.clear();
+              provider.passwordController.clear();
               if (context.mounted) {
                 Navigator.pushNamed(context, RouteNames.loginScreen);
               }
