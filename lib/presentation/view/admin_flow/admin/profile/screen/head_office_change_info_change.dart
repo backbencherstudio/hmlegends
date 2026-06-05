@@ -334,6 +334,7 @@ class _HeadOfficeChangeInfoScreenState
                         textColor: Colors.white,
                       );
                       Future.delayed(const Duration(seconds: 2), () {
+                        // ignore: use_build_context_synchronously
                         Navigator.pop(context);
                       });
                     }

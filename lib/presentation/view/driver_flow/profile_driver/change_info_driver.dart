@@ -191,9 +191,11 @@ class _HeadOfficeChangeInfoScreenState
 
                   if(success){
                     debugPrint('========');
+                    // ignore: use_build_context_synchronously
                     await context.read<DriverProfileScreenProvider>().checkMeDriver();
                   }
 
+                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -291,7 +293,7 @@ class _ProfileHeader extends StatelessWidget {
         borderRadius: BorderRadius.circular(18.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 12.r,
             offset: Offset(0, 4.h),
           ),
@@ -338,7 +340,7 @@ class _ProfileHeader extends StatelessWidget {
             Text(
               provider.checkMeModelDriver?.data?.occupation ?? '',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha:0.9),
                 fontSize: 15.sp,
               ),
             ),

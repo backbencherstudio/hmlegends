@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:signature/signature.dart';
 import '../../../../core/route/route_names.dart';
-import '../model_view/delivery_provideer_Admin.dart';
+import '../model_view/delivery_provideer_admin.dart';
 import '../../widget/custom_app_bar.dart';
 
 class ConfirmDeliveryScreen extends StatefulWidget {
@@ -60,6 +60,7 @@ class _ConfirmDeliveryScreenState extends State<ConfirmDeliveryScreen> {
 
       if (signatureFile != null) {
         final provider = Provider.of<DeliveryProviderAdmin>(
+          // ignore: use_build_context_synchronously
           context,
           listen: false,
         );
@@ -130,6 +131,7 @@ class _ConfirmDeliveryScreenState extends State<ConfirmDeliveryScreen> {
       }
     } catch (e) {
       debugPrint("Error confirming delivery: $e");
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Failed to confirm delivery")),
       );
@@ -266,7 +268,7 @@ class _ConfirmDeliveryScreenState extends State<ConfirmDeliveryScreen> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 6,
                             offset: const Offset(0, 2),
                           ),

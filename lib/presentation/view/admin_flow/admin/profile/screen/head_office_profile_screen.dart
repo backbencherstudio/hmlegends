@@ -23,6 +23,7 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
   @override
   void initState() {
     Future.microtask(
+      // ignore: use_build_context_synchronously
       () => context.read<ChangePasswordProvider>().adminCheckMe(),
     );
     super.initState();
@@ -141,7 +142,7 @@ class _ProfileHeader extends StatelessWidget {
   Future<void> _pickImage(BuildContext context) async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      // Handle the selected image (e.g., upload to server or update UI)
+      // ignore: use_build_context_synchronously
       context.read<ChangePasswordProvider>().adminCheckMe();
     }
   }

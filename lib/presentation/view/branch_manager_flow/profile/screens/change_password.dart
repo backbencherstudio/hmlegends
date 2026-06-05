@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -11,9 +12,9 @@ class ChangePassword extends StatelessWidget {
     final provider = context.watch<ChangePasswordProvider>();
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-    void _submitForm() {
+    void submitForm() {
       if (formKey.currentState?.validate() ?? false) {
-        print('Password Change Request Sent!');
+        log('Password Change Request Sent!');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Password changed successfully')),
         );
@@ -164,7 +165,7 @@ class ChangePassword extends StatelessWidget {
                     width: double.infinity,
                     height: 46.h,
                     child: ElevatedButton(
-                      onPressed: _submitForm,
+                      onPressed: submitForm,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xffE20613),
                         shape: RoundedRectangleBorder(

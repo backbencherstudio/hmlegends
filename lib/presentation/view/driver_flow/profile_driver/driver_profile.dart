@@ -19,6 +19,7 @@ class _DriverProfileState extends State<DriverProfile> {
     super.initState();
     Future.microtask(() {
       final driverProvider = Provider.of<DriverProfileScreenProvider>(
+        // ignore: use_build_context_synchronously
         context,
         listen: false,
       );

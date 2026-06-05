@@ -50,6 +50,7 @@ class _HeadOfficeChangePasswordScreenState
           provider.newPasswordController.clear();
           provider.confirmPasswordController.clear();
           if (mounted) {
+            // ignore: use_build_context_synchronously
             Navigator.pop(context);
           }
         } else {

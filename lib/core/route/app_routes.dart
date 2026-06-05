@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/order/screen/order_summary_make_invoice_screen.dart';
-import 'package:hmlegends/presentation/view/driver_flow/profile_driver/changeInfo_driver.dart';
+import 'package:hmlegends/presentation/view/driver_flow/profile_driver/change_info_driver.dart';
 import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart';
 import '../../presentation/view/admin_flow/admin/home/screen/head_office_home_screen.dart';
 import '../../presentation/view/admin_flow/admin/home/screen/pending_user_list.dart';

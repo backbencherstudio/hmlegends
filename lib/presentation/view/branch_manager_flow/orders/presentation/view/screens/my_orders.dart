@@ -32,6 +32,7 @@ class _MyOrdersState extends State<MyOrders> {
     Future.microtask(() {
       // ignore: use_build_context_synchronously
       Provider.of<GetOrdersViewModel>(
+        // ignore: use_build_context_synchronously
         context,
         listen: false,
       ).fetchOrders(period: 'today');
@@ -389,8 +390,9 @@ class _MyOrdersState extends State<MyOrders> {
                                                       child,
                                                       progress,
                                                     ) {
-                                                      if (progress == null)
+                                                      if (progress == null) {
                                                         return child;
+                                                      }
                                                       return const Center(
                                                         child:
                                                             CircularProgressIndicator(

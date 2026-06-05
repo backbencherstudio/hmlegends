@@ -5,7 +5,7 @@ import 'package:provider/single_child_widget.dart';
 import '../../presentation/view/admin_flow/admin/invoice/view_model/admin_invoice_provider.dart';
 import '../../presentation/view/admin_flow/admin/manage_branches/view_model/manage_branch_provider.dart';
 import '../../presentation/view/admin_flow/view_model/auth/login_viewmodel.dart';
-import '../../presentation/view/admin_flow/view_model/auth/set_new_password_viewModel.dart';
+import '../../presentation/view/admin_flow/view_model/auth/new_password_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth_api/forget_password_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth/register_viewmodel.dart';
 import '../../presentation/view/admin_flow/view_model/auth_api/set_new_pass_viewmodel.dart';
@@ -23,7 +23,7 @@ import '../../presentation/view/branch_manager_flow/Invoice/view_model/paid_paym
 import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_all_product_viewmodel.dart';
 import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_my_orders_viewmodel.dart';
 import '../../presentation/view/driver_flow/driver_provider/branch_product_provider.dart';
-import '../../presentation/view/driver_flow/model_view/delivery_provideer_Admin.dart';
+import '../../presentation/view/driver_flow/model_view/delivery_provideer_admin.dart';
 import '../../presentation/view/driver_flow/model_view/driver_profile_screen_provider.dart';
 import '../../presentation/view/driver_flow/tracking/tracking_provider.dart';
 class AppProviders {

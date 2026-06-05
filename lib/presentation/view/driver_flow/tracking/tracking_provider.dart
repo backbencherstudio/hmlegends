@@ -9,6 +9,7 @@ import 'package:hmlegends/core/services/token_storage.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:http/http.dart' as http;
 
+// ignore: constant_identifier_names
 enum DriverStatus { Office, OnTheWay, Arrived }
 
 class TrackingProvider extends ChangeNotifier {
@@ -213,6 +214,7 @@ class TrackingProvider extends ChangeNotifier {
           if (_isTracking) {
             try {
               Position position = await Geolocator.getCurrentPosition(
+                // ignore: deprecated_member_use
                 desiredAccuracy: LocationAccuracy.high,
               );
               _handleLocationUpdate(position);
@@ -237,6 +239,7 @@ class TrackingProvider extends ChangeNotifier {
 
       try {
         Position finalPosition = await Geolocator.getCurrentPosition(
+          // ignore: deprecated_member_use
           desiredAccuracy: LocationAccuracy.high,
         );
         _handleLocationUpdate(finalPosition); // final update call

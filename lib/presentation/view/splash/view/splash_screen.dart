@@ -37,6 +37,7 @@ class _SplashScreenState extends State<SplashScreen>
       debugPrint("User type in splash screen: $userType");
 
       if (token != null && userType == "admin") {
+        // ignore: use_build_context_synchronously
         await context.read<ChangePasswordProvider>().adminCheckMe();
       }
 
