@@ -26,9 +26,7 @@ class BranchProductProvider extends ChangeNotifier {
       _products = await getBranchProducts();
       // Ensure isSelected is not null for items you want checkbox to show initially
       for (var p in _products) {
-        if (p.isSelected == null) {
-          p.isSelected = null; // initially no checkbox
-        }
+        p.isSelected ??= null;
       }
     } catch (e) {
       debugPrint("Error fetching products: $e");

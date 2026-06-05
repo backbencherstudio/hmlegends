@@ -14,7 +14,7 @@ class OnBoardingElevatedButton extends StatelessWidget {
   final double borderRadius;
 
   const OnBoardingElevatedButton({
-    Key? key,
+    super.key,
     required this.text,
     this.suffixIcon,
     required this.onPressed,
@@ -24,7 +24,7 @@ class OnBoardingElevatedButton extends StatelessWidget {
     this.height,
     this.enabled = true,
     this.borderRadius = 30,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +36,8 @@ class OnBoardingElevatedButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           foregroundColor: foregroundColor,
-          disabledBackgroundColor: backgroundColor.withOpacity(0.5),
-          disabledForegroundColor: foregroundColor.withOpacity(0.5),
+          disabledBackgroundColor: backgroundColor.withValues(alpha: 0.5),
+          disabledForegroundColor: foregroundColor.withValues(alpha: 0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius.r),
           ),

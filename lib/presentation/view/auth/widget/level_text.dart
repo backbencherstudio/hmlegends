@@ -5,7 +5,7 @@ class RequiredLabel extends StatelessWidget {
   final String labelText;
   final TextStyle? labelStyle;
 
-  const RequiredLabel({required this.labelText, this.labelStyle});
+  const RequiredLabel({super.key, required this.labelText, this.labelStyle});
 
   @override
   Widget build(BuildContext context) {

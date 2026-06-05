@@ -91,7 +91,7 @@ class DeliverySummeryScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -154,7 +154,7 @@ class DeliverySummeryScreen extends StatelessWidget {
               ),
             )
           else
-            ...items.map((e) => _DeliveredTile(item: e)).toList(),
+            ...items.map((e) => _DeliveredTile(item: e)),
 
           const SizedBox(height: 28),
         ],

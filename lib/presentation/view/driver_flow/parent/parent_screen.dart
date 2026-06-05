@@ -28,7 +28,7 @@ class DriverBottomNavBar extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha:0.08),
               blurRadius: 20.r,
               offset: const Offset(0, -4),
             ),
@@ -90,13 +90,19 @@ class DriverBottomNavBar extends StatelessWidget {
         iconPath,
         width: 25.w,
         height: 25.h,
-        color: Colors.black54, // Unselected color
+        colorFilter: ColorFilter.mode(
+          Colors.black54,
+          BlendMode.srcIn,
+        ), // Unselected color
       ),
       activeIcon: SvgPicture.asset(
         activeIconPath,
         width: 25.w,
         height: 25.h,
-        color: AppColors.headOfficeRadiusColor, // Selected color
+        colorFilter: ColorFilter.mode(
+          AppColors.headOfficeRadiusColor,
+          BlendMode.srcIn,
+        ), // Selected color
       ),
       label: label,
     );

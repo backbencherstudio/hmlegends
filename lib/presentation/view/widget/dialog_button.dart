@@ -7,7 +7,7 @@ class DialogButton extends StatelessWidget {
   final Color color;
   final Color textColor;
 
-  DialogButton({
+  const DialogButton({super.key, 
     required this.text,
     required this.onPressed,
     required this.color, required this.textColor,

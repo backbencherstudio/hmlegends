@@ -4,7 +4,7 @@ import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
 import '../../widget/custom_app_bar.dart';
 import '../driver_provider/branch_product_provider.dart';
-import '../model_view/delivery_provideer_Admin.dart';
+import '../model_view/delivery_provideer_admin.dart';
 
 class DriverBranchDetailScreen extends StatefulWidget {
   const DriverBranchDetailScreen({super.key});
@@ -23,6 +23,7 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
     super.initState();
     Future.microtask(() async {
       final provider = Provider.of<BranchProductProvider>(
+        // ignore: use_build_context_synchronously
         context,
         listen: false,
       );

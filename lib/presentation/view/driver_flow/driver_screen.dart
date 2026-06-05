@@ -7,7 +7,7 @@ import '../../../core/route/route_names.dart';
 import '../admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import '../admin_flow/view_model/profile/change_pass_provider.dart';
 import '../widget/custom_app_bar.dart';
-import 'model_view/delivery_provideer_Admin.dart';
+import 'model_view/delivery_provideer_admin.dart';
 
 class DriverScreen extends StatefulWidget {
   const DriverScreen({super.key});

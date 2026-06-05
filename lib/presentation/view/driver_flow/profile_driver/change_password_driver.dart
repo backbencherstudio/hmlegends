@@ -11,7 +11,7 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
     final provider = context.watch<ChangePasswordProvider>();
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-    void _submitForm() {
+    void submitForm() {
       if (formKey.currentState?.validate() ?? false) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Password changed successfully')),
@@ -183,7 +183,7 @@ class HeadOfficeChangePasswordScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 50.h,
                 child: ElevatedButton(
-                  onPressed: _submitForm,
+                  onPressed: submitForm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xffE20613),
                     shape: RoundedRectangleBorder(

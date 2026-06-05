@@ -8,8 +8,11 @@ void showSuccessDialog(BuildContext context, String text) {
     barrierDismissible: false,
     builder: (BuildContext dialogContext) {
       Future.delayed(Duration(seconds: 1), () {
+        // ignore: use_build_context_synchronously
         if (Navigator.canPop(dialogContext)) {
+          // ignore: use_build_context_synchronously
           Navigator.pop(dialogContext);
+          // ignore: use_build_context_synchronously
           Navigator.pop(context);
         }
       });

@@ -242,7 +242,7 @@ class ManageBranchProvider extends ChangeNotifier {
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
-      logger.i("Response url : ${url}");
+      logger.i("Response url : $url");
       logger.i("Response status code: ${response.statusCode}");
       logger.i("Response body: ${response.body}");
 

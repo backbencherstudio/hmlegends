@@ -5,7 +5,7 @@ import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/route/route_names.dart';
-import '../../../admin_flow/view_model/auth/set_new_password_viewModel.dart';
+import '../../../admin_flow/view_model/auth/new_password_viewmodel.dart';
 import '../../../admin_flow/view_model/auth_api/forget_password_viewmodel.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';

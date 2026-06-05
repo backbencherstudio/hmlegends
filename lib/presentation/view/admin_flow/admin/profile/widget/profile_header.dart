@@ -17,7 +17,7 @@ class ProfileHeader extends StatelessWidget {
   final String addressController;
   final VoidCallback onImagePick;
 
-  const ProfileHeader({
+  const ProfileHeader({super.key, 
     this.pickedImage,
     this.imageUrl,
     required this.fname,

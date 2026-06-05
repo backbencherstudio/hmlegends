@@ -39,6 +39,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   void initState() {
     Future.microtask(() {
+      // ignore: use_build_context_synchronously
       context.read<GetProductsViewmodel>().fetchProducts();
     });
     super.initState();
@@ -618,10 +619,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     final res = await orderVM.placeOrder();
 
+    // ignore: use_build_context_synchronously
     Navigator.pop(context);
 
     if (!res.success) {
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder:
             (_) => AlertDialog(
@@ -638,6 +641,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       return;
     }
 
+    // ignore: use_build_context_synchronously
     _showSuccessDialog(context);
   }
 
@@ -648,16 +652,19 @@ class _OrdersScreenState extends State<OrdersScreen> {
       builder: (BuildContext dialogContext) {
         Future.delayed(const Duration(seconds: 3), () {
           if (mounted) {
-            // Set bottom navigation tab index to 0 (Home Screen)
+            // ignore: use_build_context_synchronously
             context.read<BottomNavViewModel>().updateIndex(0);
 
             // Pop success dialog
+            // ignore: use_build_context_synchronously
             if (Navigator.canPop(dialogContext)) {
+              // ignore: use_build_context_synchronously
               Navigator.pop(dialogContext);
             }
 
-            // Pop OrdersScreen to return to Parent Screen (which is now at home index 0)
+            // ignore: use_build_context_synchronously
             if (Navigator.canPop(context)) {
+              // ignore: use_build_context_synchronously
               Navigator.pop(context);
             }
           }

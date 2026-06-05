@@ -23,6 +23,7 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
   @override
   void initState() {
     Future.microtask(
+      // ignore: use_build_context_synchronously
       () => context.read<ChangePasswordProvider>().adminCheckMe(),
     );
     super.initState();
@@ -36,7 +37,6 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
     final notificationProvider = Provider.of<AdminNotificationProvider>(
       context,
     );
-
 
     final String name = data?.name ?? "Not Found Name";
     final String occupation = data?.occupation ?? "Not Found Occupation";
@@ -142,7 +142,7 @@ class _ProfileHeader extends StatelessWidget {
   Future<void> _pickImage(BuildContext context) async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      // Handle the selected image (e.g., upload to server or update UI)
+      // ignore: use_build_context_synchronously
       context.read<ChangePasswordProvider>().adminCheckMe();
     }
   }
@@ -210,6 +210,57 @@ class _ProfileHeader extends StatelessWidget {
   }
 }
 
+// class _ProfileInfoTile extends StatelessWidget {
+//   final IconData icon;
+//   final String title;
+//   final String value;
+
+//   const _ProfileInfoTile({
+//     required this.icon,
+//     required this.title,
+//     required this.value,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+//       child: Row(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Icon(icon, color: Color(0xFF4A4C56), size: 24.w),
+//           SizedBox(width: 16.w),
+//           Expanded(
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   title,
+//                   style: TextStyle(
+//                     fontSize: 16.sp,
+//                     color: const Color(0xff1D1F2C),
+//                     fontWeight: FontWeight.w400,
+//                   ),
+//                 ),
+//                 SizedBox(height: 4.h),
+//                 Text(
+//                   value,
+//                   style: TextStyle(
+//                     fontSize: 14.sp,
+//                     color: const Color(0xFF4A4C56),
+//                     fontWeight: FontWeight.w400,
+//                   ),
+//                   softWrap: true,
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 class _ProfileInfoTile extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -228,30 +279,40 @@ class _ProfileInfoTile extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Color(0xFF4A4C56), size: 24.w),
+          Icon(icon, color: const Color(0xFF4A4C56), size: 24.w),
+
           SizedBox(width: 16.w),
+
           Expanded(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: const Color(0xff1D1F2C),
-                    fontWeight: FontWeight.w400,
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: const Color(0xff1D1F2C),
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
-                SizedBox(height: 4.h),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: const Color(0xFF4A4C56),
-                    fontWeight: FontWeight.w400,
+
+                SizedBox(width: 12.w),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    value,
+                    textAlign: TextAlign.end,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: const Color(0xFF4A4C56),
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                  softWrap: true,
                 ),
               ],
             ),

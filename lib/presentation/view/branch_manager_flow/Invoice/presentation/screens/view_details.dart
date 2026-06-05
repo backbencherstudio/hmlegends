@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../../../../core/utlis/utils.dart';
 import '../../../../admin_flow/view_model/profile/change_pass_provider.dart';
-import '../../../../widget/simple_appbar.dart';
+import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import '../../view_model/get_invoices_details_viewmodel.dart';
 import '../../view_model/paid_payment_viewmodel.dart';
 
@@ -26,11 +26,12 @@ class ViewDetails extends StatelessWidget {
     );
     return Scaffold(
       backgroundColor: const Color(0xffFFF6F7),
-      appBar: SimpleAppbar(
-        profileImage: data?.avatar ?? '',
-        notificationCount: notificationProvider.unreadCount,
+      appBar: CustomAppBarTwo(
         title: 'Invoice',
-        navigationType: NavigationType.pop,
+        profileImage: data?.avatar,
+        notificationCount: notificationProvider.unreadCount,
+        colorMain: Colors.white,
+        colorSpace: const Color(0xffFFF6F7),
       ),
       body: SafeArea(
         child: Consumer2<GetInvoiceDetailViewmodel, PayInvoiceViewModel>(
@@ -210,6 +211,7 @@ class ViewDetails extends StatelessWidget {
                                   payVm.lastPaymentResponse?.message ??
                                   "Invoice paid successfully!";
 
+                              // ignore: use_build_context_synchronously
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   backgroundColor: Colors.green,
