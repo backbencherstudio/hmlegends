@@ -77,6 +77,7 @@ class ApiEndpoints {
   //orders
   static String getAllProducts = '$baseUrl/api/product';
   static String placeOrder = '$baseUrl/api/order';
+  static const String todayOrderStatus = '$baseUrl/api/order/today/status';
   static String getMyOrders({String period = 'week'}) =>
       '$baseUrl/api/order?period=$period';
 

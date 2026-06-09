@@ -20,13 +20,15 @@ class BranchHomeScreen extends StatefulWidget {
 class _BranchHomeScreenState extends State<BranchHomeScreen> {
   String _currentBar = "first";
 
-  // @override
-  // void initState() {
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     Provider.of<ChangePasswordProvider>(context).adminCheckMe();
-  //   });
-  //   super.initState();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Provider.of<OrderViewmodel>(context, listen: false).fetchTodayOrderStatus();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

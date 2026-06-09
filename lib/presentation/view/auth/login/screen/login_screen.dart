@@ -178,19 +178,31 @@ class _LoginScreenState extends State<LoginScreen> {
                 final userRole = viewModel.userType ?? '';
                 if (userRole == 'admin') {
                   // ignore: use_build_context_synchronously
-                  Navigator.pushNamed(context, RouteNames.mainWrapper);
+                  Navigator.pushReplacementNamed(
+                    // ignore: use_build_context_synchronously
+                    context,
+                    RouteNames.mainWrapper,
+                  );
                 } else if (userRole == 'manager') {
                   // ignore: use_build_context_synchronously
-                  Navigator.pushNamed(context, RouteNames.branchParentScreen);
+                  Navigator.pushReplacementNamed(
+                    // ignore: use_build_context_synchronously
+                    context,
+                    RouteNames.branchParentScreen,
+                  );
                 } else if (userRole == 'driver') {
-                  Navigator.pushNamed(
+                  Navigator.pushReplacementNamed(
                     // ignore: use_build_context_synchronously
                     context,
                     RouteNames.driverBranchParentScreen,
                   );
                 } else {
                   // ignore: use_build_context_synchronously
-                  Navigator.pushNamed(context, RouteNames.mainWrapper);
+                  Navigator.pushReplacementNamed(
+                    // ignore: use_build_context_synchronously
+                    context,
+                    RouteNames.mainWrapper,
+                  );
                 }
               } else {
                 Fluttertoast.showToast(
