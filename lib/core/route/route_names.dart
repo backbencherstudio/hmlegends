@@ -50,4 +50,5 @@ class RouteNames {
   static const String adminNotificationScreen = '/adminNotificationScreen';
   static const String pendingUserList = '/pendingUserList';
   static const String trackingScreen = '/trackingScreen';
+  static const String deliveryProgressScreen = '/deliveryProgressScreen';
 }

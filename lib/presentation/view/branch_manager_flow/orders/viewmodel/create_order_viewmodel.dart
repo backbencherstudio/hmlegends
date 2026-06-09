@@ -89,6 +89,31 @@ class OrderViewmodel extends ChangeNotifier {
     }
   }
 
+  Future<void> fetchTodayOrderStatus() async {
+    _isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
+
+    try {
+      final response = await _apiService.get(ApiEndpoints.todayOrderStatus);
+      logger.d("=== TODAY ORDER STATUS RESPONSE: $response ===");
+      if (response != null && response['success'] == true) {
+        final data = response['data'];
+        if (data != null) {
+          _hasPlacedToday = data['has_ordered_today'] ?? false;
+        }
+      } else {
+        _errorMessage = response?['message'] ?? 'Failed to fetch order status';
+      }
+    } catch (e) {
+      _errorMessage = '$e';
+      logger.e("Error fetching today order status: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   void clear() {
     _errorMessage = '';
     _isLoading = false;
