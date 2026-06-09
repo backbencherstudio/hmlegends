@@ -27,7 +27,7 @@ import '../../presentation/view/auth/login/screen/login_screen.dart';
 import '../../presentation/view/auth/otp_verify/screen/otp_verify_screen.dart';
 import '../../presentation/view/auth/set_new_password/screen/set_new_password_screen.dart';
 import '../../presentation/view/auth/signup/screen/signup_screen.dart';
-import '../../presentation/view/branch_manager_flow/Invoice/presentation/invoice_screen.dart';
+import '../../presentation/view/branch_manager_flow/Invoice/presentation/branch_invoice_screen.dart';
 import '../../presentation/view/branch_manager_flow/Invoice/presentation/screens/view_details.dart';
 import '../../presentation/view/branch_manager_flow/home/home_screen.dart';
 import '../../presentation/view/branch_manager_flow/orders/presentation/view/orders_screen.dart';
