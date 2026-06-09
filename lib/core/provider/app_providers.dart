@@ -22,6 +22,7 @@ import '../../presentation/view/branch_manager_flow/Invoice/view_model/get_invoi
 import '../../presentation/view/branch_manager_flow/Invoice/view_model/paid_payment_viewmodel.dart';
 import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_all_product_viewmodel.dart';
 import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_my_orders_viewmodel.dart';
+import '../../presentation/view/branch_manager_flow/delivery_progress/viewmodel/delivery_progress_viewmodel.dart';
 import '../../presentation/view/driver_flow/driver_provider/branch_product_provider.dart';
 import '../../presentation/view/driver_flow/model_view/delivery_provideer_admin.dart';
 import '../../presentation/view/driver_flow/model_view/driver_profile_screen_provider.dart';
@@ -59,6 +60,7 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => AdminNotificationProvider()),
     ChangeNotifierProvider(create: (_) => TrackingProvider()),
     ChangeNotifierProvider(create: (_) => ManageBranchProvider()),
+    ChangeNotifierProvider(create: (_) => DeliveryProgressViewModel()),
   ];
 
   static List<SingleChildWidget> getProviders() {

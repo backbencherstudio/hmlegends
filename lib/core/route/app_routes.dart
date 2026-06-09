@@ -46,6 +46,8 @@ import '../../presentation/view/driver_flow/tracking/tracking_screen.dart';
 import '../../presentation/view/onboarding/view/onboarding_screen.dart';
 import '../../presentation/view/splash/view/splash_screen.dart';
 
+import '../../presentation/view/branch_manager_flow/delivery_progress/presentation/view/delivery_progress_screen.dart';
+
 class AppRoutes {
   static final Map<String, WidgetBuilder> routes = {
     RouteNames.splashScreen: (context) => const SplashScreen(),
@@ -115,5 +117,9 @@ class AppRoutes {
     RouteNames.adminNotificationScreen: (context) => AdminNotificationScreen(),
     RouteNames.pendingUserList: (context) => PendingUserList(),
     RouteNames.trackingScreen: (context) => TrackingScreen(),
+    RouteNames.deliveryProgressScreen: (context) {
+      final orderId = ModalRoute.of(context)!.settings.arguments as String?;
+      return DeliveryProgressScreen(orderId: orderId);
+    },
   };
 }

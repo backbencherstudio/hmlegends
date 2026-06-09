@@ -154,9 +154,17 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
                             text: 'My orders',
                           ),
                         ),
-                        CustomFeatureBox(
-                          imagePath: 'assets/icons/fourth_box.png',
-                          text: 'My Delivery',
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              RouteNames.deliveryProgressScreen,
+                            );
+                          },
+                          child: CustomFeatureBox(
+                            imagePath: 'assets/icons/fourth_box.png',
+                            text: 'My Delivery',
+                          ),
                         ),
                       ],
                     ),
