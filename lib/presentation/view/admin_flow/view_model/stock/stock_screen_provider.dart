@@ -137,6 +137,7 @@ class StockScreenProvider extends ChangeNotifier {
     required String name,
     required String stock,
     required String price,
+    String? tax,
     File? image,
   }) async {
     _setLoading(true);
@@ -150,6 +151,10 @@ class StockScreenProvider extends ChangeNotifier {
       request.fields['name'] = name;
       request.fields['stock'] = stock;
       request.fields['price'] = price;
+
+      if (tax != null && tax.isNotEmpty) {
+        request.fields['tax'] = tax;
+      }
 
       if (image != null) {
         request.files.add(
@@ -180,6 +185,7 @@ class StockScreenProvider extends ChangeNotifier {
     required String stock,
     required String price,
     required String stockStatus,
+    String? tax,
     File? image,
   }) async {
     _setLoading(true);
@@ -196,6 +202,10 @@ class StockScreenProvider extends ChangeNotifier {
       request.fields['stock'] = stock;
       request.fields['price'] = price;
       request.fields['stock_status'] = stockStatus;
+
+      if (tax != null && tax.isNotEmpty) {
+        request.fields['tax'] = tax;
+      }
 
       if (image != null) {
         request.files.add(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:signature/signature.dart';
 import 'package:provider/provider.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
@@ -383,9 +384,7 @@ class _DriverDeliveryNoteScreenState extends State<DriverDeliveryNoteScreen> {
                                           if (success && mounted) {
                                             _showSuccessDialogAndNavigate(args);
                                           } else if (!success && mounted) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(content: Text(vm.error ?? "Failed to confirm delivery")),
-                                            );
+                                            Utils.showToast(msg: '${vm.error}', backgroundColor: Colors.red, textColor: Colors.white);
                                           }
                                         }
                                       }

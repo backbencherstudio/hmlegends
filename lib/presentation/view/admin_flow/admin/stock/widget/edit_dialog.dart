@@ -31,6 +31,10 @@ class EditDialog extends StatelessWidget {
       text: product.stock?.toString() ?? "",
     );
 
+    final taxController = TextEditingController(
+      text: product.tax?.toString() ?? "",
+    );
+
     File? image;
 
     await showDialog(
@@ -72,6 +76,11 @@ class EditDialog extends StatelessWidget {
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(labelText: "Stock"),
                     ),
+                    TextField(
+                      controller: taxController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: "Tax % (optional)"),
+                    ),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: pickImage,
@@ -101,6 +110,7 @@ class EditDialog extends StatelessWidget {
                       stock: stockController.text.trim(),
                       price: priceController.text.trim(),
                       stockStatus: product.stockStatus ?? 'IN_STOCK',
+                      tax: taxController.text.trim(),
                       image: image,
                     );
 

@@ -46,8 +46,12 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
   void _showSendInvoiceBottomSheet(
     BuildContext context, 
     String invoiceId, 
-    AdminInvoiceProvider provider
+    AdminInvoiceProvider provider,
+    {String? receiverEmail}
   ) {
+    if (receiverEmail != null && receiverEmail.isNotEmpty) {
+      _controller.text = receiverEmail;
+    }
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -370,7 +374,7 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
                             elevation: 0,
                           ),
                           onPressed: () {
-                            _showSendInvoiceBottomSheet(context, invoice.id, provider);
+                            _showSendInvoiceBottomSheet(context, invoice.id, provider, receiverEmail: invoice.receiver.email);
                           },
                           child: Text(
                             "Send Invoice",
