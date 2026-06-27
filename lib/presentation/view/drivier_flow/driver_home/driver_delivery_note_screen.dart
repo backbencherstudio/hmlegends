@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:signature/signature.dart';
+import 'package:provider/provider.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
+import 'package:hmlegends/presentation/view/drivier_flow/driver_home/viewmodel/driver_branch_detail_viewmodel.dart';
 
 class DriverDeliveryNoteScreen extends StatefulWidget {
   const DriverDeliveryNoteScreen({super.key});
@@ -14,6 +16,7 @@ class DriverDeliveryNoteScreen extends StatefulWidget {
 
 class _DriverDeliveryNoteScreenState extends State<DriverDeliveryNoteScreen> {
   late final SignatureController _signatureController;
+  final TextEditingController _noteController = TextEditingController();
   bool _hasSignature = false;
 
   void _showSuccessDialogAndNavigate(Map<String, dynamic>? args) {
@@ -103,6 +106,7 @@ class _DriverDeliveryNoteScreenState extends State<DriverDeliveryNoteScreen> {
   @override
   void dispose() {
     _signatureController.dispose();
+    _noteController.dispose();
     super.dispose();
   }
 
@@ -116,7 +120,7 @@ class _DriverDeliveryNoteScreenState extends State<DriverDeliveryNoteScreen> {
     final productsCount = args?["products"] ?? "216";
 
     return Scaffold(
-      appBar: const CustomAppBar(notificationCount: 0, backArrow: "true"),
+      appBar: const CustomAppBar(notificationCount: 0, backArrow: "true", isDriver: true),
       body: Column(
         children: [
           // Header Container (White background)
@@ -199,6 +203,7 @@ class _DriverDeliveryNoteScreenState extends State<DriverDeliveryNoteScreen> {
                         border: Border.all(color: Colors.grey.shade300),
                       ),
                       child: TextField(
+                        controller: _noteController,
                         maxLines: 4,
                         decoration: InputDecoration(
                           hintText: "Add any special notes about the delivery.",
@@ -361,29 +366,55 @@ class _DriverDeliveryNoteScreenState extends State<DriverDeliveryNoteScreen> {
                         ),
                         SizedBox(width: 16.w),
                         Expanded(
-                          child: ElevatedButton(
-                            onPressed: _hasSignature
-                                ? () {
-                                    _showSuccessDialogAndNavigate(args);
-                                  }
-                                : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFED5E68),
-                              disabledBackgroundColor: Colors.grey.shade400,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.r),
-                              ),
-                              padding: EdgeInsets.symmetric(vertical: 14.h),
-                              elevation: 0,
-                            ),
-                            child: Text(
-                              "Confirm Delivery",
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
+                          child: Consumer<DriverBranchDetailViewModel>(
+                            builder: (context, vm, child) {
+                              return ElevatedButton(
+                                onPressed: _hasSignature && !vm.isLoading
+                                    ? () async {
+                                        final signatureBytes = await _signatureController.toPngBytes();
+                                        if (signatureBytes != null && args != null) {
+                                          final deliveryId = args["deliveryId"];
+                                          final success = await vm.confirmDelivery(
+                                            deliveryId,
+                                            _noteController.text,
+                                            signatureBytes,
+                                          );
+                                          
+                                          if (success && mounted) {
+                                            _showSuccessDialogAndNavigate(args);
+                                          } else if (!success && mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text(vm.error ?? "Failed to confirm delivery")),
+                                            );
+                                          }
+                                        }
+                                      }
+                                    : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFED5E68),
+                                  disabledBackgroundColor: Colors.grey.shade400,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.r),
+                                  ),
+                                  padding: EdgeInsets.symmetric(vertical: 14.h),
+                                  elevation: 0,
+                                ),
+                                child: vm.isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                      )
+                                    : Text(
+                                        "Confirm Delivery",
+                                        style: TextStyle(
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                              );
+                            }
                           ),
                         ),
                       ],

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
+import 'package:hmlegends/presentation/view/drivier_flow/driver_home/viewmodel/driver_branch_detail_viewmodel.dart';
 
 class DriverBranchDetailScreen extends StatefulWidget {
   const DriverBranchDetailScreen({super.key});
@@ -11,21 +13,22 @@ class DriverBranchDetailScreen extends StatefulWidget {
 }
 
 class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
-  bool isDeliveryStarted = false;
-  Set<int> checkedIndexes = {};
+  bool _isInit = true;
 
-  final List<Map<String, dynamic>> products = [
-    {"name": "Peri Chicken Wrap", "quantity": "20"},
-    {"name": "The Khamzat Krunch", "quantity": "18"},
-    {"name": "Cheeseburger Meal", "quantity": "25"},
-    {"name": "Chicken Nugget Meal", "quantity": "21"},
-    {"name": "The Spicy Dip", "quantity": "15"},
-    {"name": "Chicken Nugget Meal", "quantity": "17"},
-    {"name": "The Honey & Brie Burger", "quantity": "32"},
-    {"name": "Billy's Special", "quantity": "28"},
-    {"name": "Fish Finger Meal", "quantity": "24"},
-    {"name": "Chicken Steak & Chips", "quantity": "16"},
-  ];
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final deliveryId = args?["deliveryId"];
+      if (deliveryId != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Provider.of<DriverBranchDetailViewModel>(context, listen: false).fetchSingleDelivery(deliveryId);
+        });
+      }
+      _isInit = false;
+    }
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +39,46 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
         args?["address"] ?? "4140 Parker Rd. Allentown, New Mexico 31134";
     final productsCount = args?["products"] ?? "216";
 
-    final isAllSelected = checkedIndexes.length == products.length;
-
     return Scaffold(
-      appBar: const CustomAppBar(notificationCount: 0, backArrow: "true"),
-      body: Column(
-        children: [
+      appBar: const CustomAppBar(notificationCount: 0, backArrow: "true", isDriver: true),
+      body: Consumer<DriverBranchDetailViewModel>(
+        builder: (context, vm, child) {
+          if (vm.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (vm.error != null) {
+            return Center(child: Text(vm.error!));
+          }
+
+          final orderItems = vm.deliveryData?.order?.orderItems ?? [];
+          final displayName = vm.deliveryData?.order?.user?.name ?? name;
+          final displayAddress = vm.deliveryData?.order?.user?.address ?? address;
+          final displayProductsCount = vm.deliveryData?.order?.totalQuantity?.toString() ?? productsCount;
+          final status = vm.deliveryData?.status?.toUpperCase() ?? "ASSIGNED";
+
+          String buttonText = "Delivery Done";
+          VoidCallback? onButtonPressed;
+
+          if (status == "ASSIGNED") {
+            buttonText = "Received";
+            onButtonPressed = () => vm.updateDeliveryStatus(args?["deliveryId"], "RECEIVED");
+          } else if (status == "RECEIVED") {
+            buttonText = "Started";
+            onButtonPressed = () => vm.updateDeliveryStatus(args?["deliveryId"], "STARTED");
+          } else if (status == "STARTED") {
+            buttonText = "Arrived";
+            onButtonPressed = () => vm.updateDeliveryStatus(args?["deliveryId"], "ARRIVED");
+          } else if (status == "ARRIVED") {
+            buttonText = "Proceed to delivery note";
+            onButtonPressed = () => Navigator.pushNamed(
+                  context,
+                  RouteNames.driverDeliveryNoteScreen,
+                  arguments: args,
+                );
+          }
+
+          return Column(
+            children: [
           // Header Container (White background)
           Container(
             color: Colors.white,
@@ -50,7 +87,7 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
             child: Column(
               children: [
                 Text(
-                  name,
+                  displayName,
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
@@ -60,7 +97,7 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  address,
+                  displayAddress,
                   style: TextStyle(fontSize: 14.sp, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
@@ -77,7 +114,7 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                       ),
                     ),
                     Text(
-                      productsCount,
+                      displayProductsCount,
                       style: TextStyle(
                         fontSize: 16.sp,
                         color: Colors.black87,
@@ -103,63 +140,13 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
               ),
               child: Column(
                 children: [
-                  // Select All Row
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          if (isAllSelected) {
-                            checkedIndexes.clear();
-                          } else {
-                            checkedIndexes.addAll(List.generate(products.length, (i) => i));
-                          }
-                        });
-                      },
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 20.w,
-                            height: 20.w,
-                            decoration: BoxDecoration(
-                              color: isAllSelected
-                                  ? const Color(0xFFED5E68)
-                                  : Colors.transparent,
-                              border: Border.all(
-                                color: const Color(0xFFED5E68),
-                                width: 1.5,
-                              ),
-                              borderRadius: BorderRadius.circular(4.r),
-                            ),
-                            child: isAllSelected
-                                ? Icon(
-                                    Icons.check,
-                                    size: 16.sp,
-                                    color: Colors.white,
-                                  )
-                                : null,
-                          ),
-                          SizedBox(width: 12.w),
-                          Text(
-                            "Select All",
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
                   Expanded(
                     child: ListView.separated(
                       padding: EdgeInsets.symmetric(
                         horizontal: 16.w,
                         vertical: 16.h,
                       ),
-                      itemCount: products.length,
+                      itemCount: orderItems.length,
                       separatorBuilder:
                           (context, index) => Divider(
                             color: Colors.grey.shade300,
@@ -167,79 +154,43 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                             thickness: 1,
                           ),
                       itemBuilder: (context, index) {
-                        final prod = products[index];
-                        final isChecked = checkedIndexes.contains(index);
-                        final isCrossedOut = isDeliveryStarted && isChecked;
+                        final prod = orderItems[index];
+                        final prodName = prod.product?.name ?? "Unknown Product";
+                        final prodQty = prod.quantity?.toString() ?? "0";
 
-                        return InkWell(
-                          onTap: () {
-                            setState(() {
-                              if (isChecked) {
-                                checkedIndexes.remove(index);
-                              } else {
-                                checkedIndexes.add(index);
-                              }
-                            });
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 4.h),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: 28.w,
-                                  child: Text(
-                                    "${index + 1}.",
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      color: Colors.black54,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4.h),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 28.w,
+                                child: Text(
+                                  "${index + 1}.",
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                Container(
-                                  width: 20.w,
-                                  height: 20.w,
-                                  decoration: BoxDecoration(
-                                    color: isChecked
-                                        ? const Color(0xFFED5E68)
-                                        : Colors.transparent,
-                                    border: Border.all(
-                                      color: const Color(0xFFED5E68),
-                                      width: 1.5,
-                                    ),
-                                    borderRadius: BorderRadius.circular(4.r),
-                                  ),
-                                  child: isChecked
-                                      ? Icon(
-                                          Icons.check,
-                                          size: 16.sp,
-                                          color: Colors.white,
-                                        )
-                                      : null,
-                                ),
-                                SizedBox(width: 12.w),
-                                Expanded(
-                                  child: Text(
-                                    prod["name"],
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: isCrossedOut
-                                          ? Colors.black38
-                                          : Colors.black87,
-                                      fontWeight: FontWeight.w600,
-                                      decoration: isCrossedOut
-                                          ? TextDecoration.lineThrough
-                                          : TextDecoration.none,
-                                    ),
+                              ),
+                              SizedBox(width: 8.w),
+                              Expanded(
+                                child: Text(
+                                  prodName,
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
+                              ),
                                 Row(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.baseline,
                                   textBaseline: TextBaseline.alphabetic,
                                   children: [
                                     Text(
-                                      prod["quantity"],
+                                      prodQty,
                                       style: TextStyle(
                                         fontSize: 15.sp,
                                         color: Colors.black54,
@@ -258,7 +209,6 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                                 ),
                               ],
                             ),
-                          ),
                         );
                       },
                     ),
@@ -277,22 +227,7 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                         width: double.infinity,
                         height: 52.h,
                         child: ElevatedButton(
-                          onPressed: isAllSelected
-                              ? () {
-                                  if (!isDeliveryStarted) {
-                                    setState(() {
-                                      isDeliveryStarted = true;
-                                      checkedIndexes.clear();
-                                    });
-                                  } else {
-                                    Navigator.pushNamed(
-                                      context,
-                                      RouteNames.driverDeliveryNoteScreen,
-                                      arguments: args,
-                                    );
-                                  }
-                                }
-                              : null,
+                          onPressed: onButtonPressed,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFED5E68),
                             disabledBackgroundColor: Colors.grey.shade400,
@@ -301,16 +236,16 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                             ),
                             elevation: 0,
                           ),
-                          child: Text(
-                            isDeliveryStarted
-                                ? "Proceed to delivery note"
-                                : "Start Delivery",
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
+                          child: vm.isLoading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : Text(
+                                  buttonText,
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                       ),
                     ),
@@ -320,7 +255,9 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
             ),
           ),
         ],
-      ),
-    );
+      );
+    },
+  ),
+);
   }
 }

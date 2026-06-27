@@ -78,8 +78,11 @@ class _CustomAppBarTwoState extends State<CustomAppBarTwo> {
                     children: [
                       if (widget.isIconPresent == true)
                         GestureDetector(
-                          onTap: () => _handleTap(widget.onBackTap ??
-                              () => _handleBackNavigation(context)),
+                          onTap:
+                              () => _handleTap(
+                                widget.onBackTap ??
+                                    () => _handleBackNavigation(context),
+                              ),
                           child: Icon(
                             Icons.arrow_back_ios,
                             size: 24.sp,
@@ -98,23 +101,29 @@ class _CustomAppBarTwoState extends State<CustomAppBarTwo> {
                       _buildNotificationIcon(context),
                       SizedBox(width: 20.w),
                       GestureDetector(
-                        onTap: () => _handleTap(widget.onProfileTap ??
-                            () => Navigator.pushNamed(
-                                  context,
-                                  RouteNames.headOfficeProfileScreen,
-                                )),
+                        onTap:
+                            () => _handleTap(
+                              widget.onProfileTap ??
+                                  () => Navigator.pushNamed(
+                                    context,
+                                    RouteNames.headOfficeProfileScreen,
+                                  ),
+                            ),
                         child: CircleAvatar(
                           radius: 18.r,
-                          backgroundImage: (widget.profileImage != null &&
-                                  widget.profileImage!.isNotEmpty &&
-                                  !widget.profileImage!.startsWith('assets/'))
-                              ? NetworkImage(
-                                  '${ApiEndpoints.baseUrl}/public/storage/avatar/${widget.profileImage}',
-                                )
-                              : const AssetImage(
-                                    'assets/icons/profile_icon.png',
+                          backgroundImage:
+                              (widget.profileImage != null &&
+                                      widget.profileImage!.isNotEmpty &&
+                                      !widget.profileImage!.startsWith(
+                                        'assets/',
+                                      ))
+                                  ? NetworkImage(
+                                    '${ApiEndpoints.baseUrl}/public/storage/avatar/${widget.profileImage}',
                                   )
-                                  as ImageProvider,
+                                  : const AssetImage(
+                                        'assets/icons/profile_icon.png',
+                                      )
+                                      as ImageProvider,
                         ),
                       ),
                     ],
@@ -149,10 +158,16 @@ class _CustomAppBarTwoState extends State<CustomAppBarTwo> {
 
   Widget _buildNotificationIcon(BuildContext context) {
     return GestureDetector(
-      onTap: () => _handleTap(widget.onNotificationTap ??
-          () {
-            Navigator.pushNamed(context, RouteNames.adminNotificationScreen);
-          }),
+      onTap:
+          () => _handleTap(
+            widget.onNotificationTap ??
+                () {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.adminNotificationScreen,
+                  );
+                },
+          ),
       child: Stack(
         clipBehavior: Clip.none,
         children: [

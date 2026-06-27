@@ -60,6 +60,8 @@ class ApiEndpoints {
 
   /// ------------------ Admin Delivery ---------------------------------------
   static const String adminAllDelivery = '$baseUrl/api/delivery';
+  static const String driverDelivery = '$baseUrl/api/delivery';
+  static String driverSingleDelivery(String id) => '$baseUrl/api/delivery/$id';
   static const String adminAllDrivers = '$baseUrl/api/auth/drivers';
   static const String adminAssignToDriver = '$baseUrl/api/delivery';
 

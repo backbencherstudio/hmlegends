@@ -24,6 +24,9 @@ import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_all_pro
 import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_my_orders_viewmodel.dart';
 import '../../presentation/view/branch_manager_flow/delivery_progress/viewmodel/delivery_progress_viewmodel.dart';
 import '../../presentation/view/drivier_flow/driver_bottom_nav/viewmodel/driver_bottom_nav_provider.dart';
+import '../../presentation/view/drivier_flow/driver_home/viewmodel/driver_home_viewmodel.dart';
+import '../../presentation/view/drivier_flow/driver_home/viewmodel/driver_branch_detail_viewmodel.dart';
+import '../../presentation/view/drivier_flow/driver_home/viewmodel/driver_notification_provider.dart';
 
 class AppProviders {
   static final List<SingleChildWidget> providers = [
@@ -56,6 +59,9 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => ManageBranchProvider()),
     ChangeNotifierProvider(create: (_) => DeliveryProgressViewModel()),
     ChangeNotifierProvider(create: (_) => DriverBottomNavProvider()),
+    ChangeNotifierProvider(create: (_) => DriverHomeViewModel()),
+    ChangeNotifierProvider(create: (_) => DriverBranchDetailViewModel()),
+    ChangeNotifierProvider(create: (_) => DriverNotificationProvider()),
   ];
 
   static List<SingleChildWidget> getProviders() {
