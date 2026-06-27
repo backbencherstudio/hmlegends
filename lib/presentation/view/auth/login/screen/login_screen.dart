@@ -194,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Navigator.pushReplacementNamed(
                     // ignore: use_build_context_synchronously
                     context,
-                    RouteNames.driverBranchParentScreen,
+                    RouteNames.driverBottomNavScreen,
                   );
                 } else {
                   // ignore: use_build_context_synchronously

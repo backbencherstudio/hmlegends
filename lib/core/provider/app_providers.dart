@@ -23,10 +23,8 @@ import '../../presentation/view/branch_manager_flow/Invoice/view_model/paid_paym
 import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_all_product_viewmodel.dart';
 import '../../presentation/view/branch_manager_flow/orders/viewmodel/get_my_orders_viewmodel.dart';
 import '../../presentation/view/branch_manager_flow/delivery_progress/viewmodel/delivery_progress_viewmodel.dart';
-import '../../presentation/view/driver_flow/driver_provider/branch_product_provider.dart';
-import '../../presentation/view/driver_flow/model_view/delivery_provideer_admin.dart';
-import '../../presentation/view/driver_flow/model_view/driver_profile_screen_provider.dart';
-import '../../presentation/view/driver_flow/tracking/tracking_provider.dart';
+import '../../presentation/view/drivier_flow/driver_bottom_nav/viewmodel/driver_bottom_nav_provider.dart';
+
 class AppProviders {
   static final List<SingleChildWidget> providers = [
     // ChangeNotifierProvider(create: (_) => getIt<ParentScreensProvider>()),
@@ -34,7 +32,6 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => SetNewPasswordViewModel()),
     ChangeNotifierProvider(create: (_) => BottomNavViewModel()),
     ChangeNotifierProvider(create: (_) => ChangePasswordProvider()),
-    ChangeNotifierProvider(create: (_) => BranchProductProvider()),
     ChangeNotifierProvider(create: (_) => ManageDeliveryViewModel()),
 
     //auth_api
@@ -54,13 +51,11 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => GetOrdersViewModel()),
     ChangeNotifierProvider(create: (_) => PayInvoiceViewModel()),
     ChangeNotifierProvider(create: (_) => AdminInvoiceProvider()),
-    ChangeNotifierProvider(create: (_) => DeliveryProviderAdmin()),
     ChangeNotifierProvider(create: (_) => DeliveryProvider()),
-    ChangeNotifierProvider(create: (_) => DriverProfileScreenProvider()),
     ChangeNotifierProvider(create: (_) => AdminNotificationProvider()),
-    ChangeNotifierProvider(create: (_) => TrackingProvider()),
     ChangeNotifierProvider(create: (_) => ManageBranchProvider()),
     ChangeNotifierProvider(create: (_) => DeliveryProgressViewModel()),
+    ChangeNotifierProvider(create: (_) => DriverBottomNavProvider()),
   ];
 
   static List<SingleChildWidget> getProviders() {

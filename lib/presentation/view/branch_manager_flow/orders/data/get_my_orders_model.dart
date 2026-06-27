@@ -28,7 +28,7 @@ class OrderResponse {
 
 class Data {
   String? id;
-  int? totalAmount;
+  double? totalAmount;
   int? totalQuantity;
   String? createdAt;
   List<OrderItems>? orderItems;
@@ -42,8 +42,8 @@ class Data {
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    totalAmount = json['total_amount'];
-    totalQuantity = json['total_quantity'];
+    totalAmount = (json['total_amount'] as num?)?.toDouble();
+    totalQuantity = (json['total_quantity'] as num?)?.toInt();
     createdAt = json['created_at'];
     if (json['order_items'] != null) {
       orderItems = <OrderItems>[];
@@ -69,7 +69,7 @@ class Data {
 class OrderItems {
   String? id;
   int? quantity;
-  int? price;
+  double? price;
   String? product;
   String? productImage;
 
@@ -78,8 +78,8 @@ class OrderItems {
 
   OrderItems.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    quantity = json['quantity'];
-    price = json['price'];
+    quantity = (json['quantity'] as num?)?.toInt();
+    price = (json['price'] as num?)?.toDouble();
     product = json['product'];
     productImage = json['product_image'];
   }

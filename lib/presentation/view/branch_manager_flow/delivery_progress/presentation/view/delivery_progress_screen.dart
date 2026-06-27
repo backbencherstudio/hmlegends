@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
-import 'package:hmlegends/presentation/view/branch_manager_flow/orders/viewmodel/get_my_orders_viewmodel.dart';
 import 'package:hmlegends/presentation/view/branch_manager_flow/delivery_progress/viewmodel/delivery_progress_viewmodel.dart';
 import 'package:hmlegends/presentation/view/branch_manager_flow/delivery_progress/data/delivery_progress_model.dart';
 
@@ -25,19 +24,7 @@ class _DeliveryProgressScreenState extends State<DeliveryProgressScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final progressVm = Provider.of<DeliveryProgressViewModel>(context, listen: false);
-      String? targetOrderId = widget.orderId;
-
-      if (targetOrderId == null) {
-        final ordersVm = Provider.of<GetOrdersViewModel>(context, listen: false);
-        await ordersVm.fetchOrders(period: 'week');
-        if (ordersVm.orders.isNotEmpty) {
-          targetOrderId = ordersVm.orders.first.id;
-        }
-      }
-
-      if (targetOrderId != null) {
-        progressVm.fetchDeliveryProgress(targetOrderId);
-      }
+      progressVm.fetchDeliveryProgress();
     });
   }
 

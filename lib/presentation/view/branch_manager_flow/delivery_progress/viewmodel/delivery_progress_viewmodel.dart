@@ -16,13 +16,13 @@ class DeliveryProgressViewModel extends ChangeNotifier {
 
   final ApiService _apiService = ApiService();
 
-  Future<void> fetchDeliveryProgress(String orderId) async {
+  Future<void> fetchDeliveryProgress() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final response = await _apiService.get(ApiEndpoints.deliveryProgress(orderId));
+      final response = await _apiService.get(ApiEndpoints.deliveryProgress);
       logger.d("=== DELIVERY PROGRESS RESPONSE: $response ===");
 
       if (response != null && response['success'] == true) {

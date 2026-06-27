@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CustomAppbar extends StatelessWidget {
+class CustomAppbar extends StatefulWidget {
   final String title;
   final IconData back;
   final IconData notification;
@@ -16,6 +16,23 @@ class CustomAppbar extends StatelessWidget {
   });
 
   @override
+  State<CustomAppbar> createState() => _CustomAppbarState();
+}
+
+class _CustomAppbarState extends State<CustomAppbar> {
+  bool _isTapped = false;
+
+  void _handleTap(VoidCallback action) async {
+    if (_isTapped) return;
+    setState(() => _isTapped = true);
+    action();
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      setState(() => _isTapped = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
@@ -25,13 +42,13 @@ class CustomAppbar extends StatelessWidget {
         child: Row(
           children: [
             IconButton(
-              onPressed: () {
+              onPressed: () => _handleTap(() {
                 Navigator.pop(context);
-              },
-              icon: Icon(back),
+              }),
+              icon: Icon(widget.back),
             ),
             Text(
-              title,
+              widget.title,
               style: TextStyle(
                 color: Color(0xff1D1F2C),
                 fontSize: 20,
@@ -44,7 +61,7 @@ class CustomAppbar extends StatelessWidget {
               clipBehavior: Clip.none,
 
               children: [
-                Icon(notification, size: 25),
+                Icon(widget.notification, size: 25),
                 Positioned(
                   right: -6,
                   top: -6,
@@ -62,7 +79,7 @@ class CustomAppbar extends StatelessWidget {
             SizedBox(width: 14.w),
             ClipOval(
               clipBehavior: Clip.antiAlias,
-              child: Image.asset(img, width: 40, height: 40, fit: BoxFit.cover),
+              child: Image.asset(widget.img, width: 40, height: 40, fit: BoxFit.cover),
             ),
           ],
         ),

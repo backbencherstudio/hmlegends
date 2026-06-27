@@ -56,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen>
       } else if (token != null && userType == "driver") {
         Navigator.pushReplacementNamed(
           context,
-          RouteNames.driverBranchParentScreen,
+          RouteNames.driverBottomNavScreen,
         );
       } else {
         Navigator.pushReplacementNamed(context, RouteNames.onboardingScreen);
