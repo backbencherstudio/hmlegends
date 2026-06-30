@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
@@ -85,6 +86,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
           colorSpace: const Color(0xffFFF6F7),
           onBackTap: () {
             context.read<BottomNavViewModel>().updateIndex(0);
+            Navigator.pop(context);
+          },
+          onProfileTap: () {
+            context.read<BottomNavViewModel>().updateIndex(3);
             Navigator.pop(context);
           },
         ),
@@ -623,20 +628,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
     Navigator.pop(context);
 
     if (!res.success) {
-      showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder:
-            (_) => AlertDialog(
-              title: const Text('Order Failed'),
-              content: Text(orderVM.errorMessage),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
+      Utils.showToast(
+        msg: res.message,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
       );
       return;
     }

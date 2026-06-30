@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/profile/change_pass_provider.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 import 'package:hmlegends/presentation/view/branch_manager_flow/delivery_progress/viewmodel/delivery_progress_viewmodel.dart';
 import 'package:hmlegends/presentation/view/branch_manager_flow/delivery_progress/data/delivery_progress_model.dart';
 
@@ -106,6 +107,10 @@ class _DeliveryProgressScreenState extends State<DeliveryProgressScreen> {
         notificationCount: notificationProvider.unreadCount,
         colorMain: Colors.white,
         colorSpace: AppColors.bgColor,
+        onProfileTap: () {
+          context.read<BottomNavViewModel>().updateIndex(3);
+          Navigator.pop(context);
+        },
       ),
       body: Consumer<DeliveryProgressViewModel>(
         builder: (context, vm, child) {

@@ -180,6 +180,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                               builder: (context, provider, child) {
                                 return GestureDetector(
                                   onTap: () async {
+                                    if (provider.isLoading) return;
                                     await provider.getDriverNotification();
                                     if (context.mounted) {
                                       Navigator.pushNamed(
@@ -221,6 +222,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                               builder: (context, provider, child) {
                                 return GestureDetector(
                                   onTap: () async {
+                                    if (provider.isLoading) return;
                                     await provider.getAdminNotification();
                                     if (context.mounted) {
                                       Navigator.pushNamed(
@@ -262,10 +264,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       GestureDetector(
                         onTap:
                             onProfileTap ??
-                            () => Navigator.pushNamed(
-                              context,
-                              RouteNames.headOfficeProfileScreen,
-                            ),
+                            () {
+                              if (ModalRoute.of(context)?.settings.name !=
+                                  RouteNames.headOfficeProfileScreen) {
+                                Navigator.pushNamed(
+                                  context,
+                                  RouteNames.headOfficeProfileScreen,
+                                );
+                              }
+                            },
                         child: CircleAvatar(
                           radius: 18.r,
                           backgroundImage:
