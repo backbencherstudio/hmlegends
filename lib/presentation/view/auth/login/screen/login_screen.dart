@@ -9,6 +9,8 @@ import 'package:hmlegends/presentation/widget/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
 import '../../../../../core/constant/app_colors.dart';
 import '../../../../../core/route/route_names.dart';
+import '../../../../../core/utlis/utils.dart';
+import 'package:flutter/services.dart';
 import '../../../admin_flow/view_model/auth/login_viewmodel.dart';
 import '../../widget/auth_button.dart';
 import '../../widget/level_text.dart';
@@ -23,11 +25,34 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  DateTime? _lastPressedAt;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+
+        final now = DateTime.now();
+        final backButtonHasNotBeenPressedOrMaxTimeHasPassed =
+            _lastPressedAt == null ||
+            now.difference(_lastPressedAt!) > const Duration(seconds: 2);
+
+        if (backButtonHasNotBeenPressedOrMaxTimeHasPassed) {
+          _lastPressedAt = now;
+          Utils.showToast(
+            msg: "Press back again to exit",
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+          );
+          return;
+        }
+
+        await SystemNavigator.pop();
+      },
+      child: Scaffold(
+        body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -118,6 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 
@@ -194,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Navigator.pushReplacementNamed(
                     // ignore: use_build_context_synchronously
                     context,
-                    RouteNames.driverBranchParentScreen,
+                    RouteNames.driverBottomNavScreen,
                   );
                 } else {
                   // ignore: use_build_context_synchronously

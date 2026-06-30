@@ -101,6 +101,9 @@ class _MyOrdersState extends State<MyOrders> {
           colorMain: Colors.white,
           colorSpace: const Color(0xffFFF6F7),
           onBackTap: () => _handleBack(context),
+          onProfileTap: () {
+            context.read<BottomNavViewModel>().updateIndex(3);
+          },
         ),
         body: Padding(
           padding: EdgeInsets.all(16.w),

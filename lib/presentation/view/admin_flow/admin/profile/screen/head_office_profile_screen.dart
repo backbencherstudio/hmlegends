@@ -51,6 +51,7 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
       appBar: CustomAppBar(
         profileImage: data?.avatar,
         notificationCount: notificationProvider.unreadCount,
+        onProfileTap: () {}, // Prevents navigating to profile screen again
       ),
 
       body: SingleChildScrollView(

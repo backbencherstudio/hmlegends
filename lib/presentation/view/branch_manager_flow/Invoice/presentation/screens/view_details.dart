@@ -8,6 +8,7 @@ import '../../../../admin_flow/view_model/profile/change_pass_provider.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import '../../view_model/get_invoices_details_viewmodel.dart';
 import '../../view_model/paid_payment_viewmodel.dart';
+import 'package:hmlegends/presentation/view/admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 
 class ViewDetails extends StatelessWidget {
   const ViewDetails({super.key});
@@ -32,6 +33,10 @@ class ViewDetails extends StatelessWidget {
         notificationCount: notificationProvider.unreadCount,
         colorMain: Colors.white,
         colorSpace: const Color(0xffFFF6F7),
+        onProfileTap: () {
+          context.read<BottomNavViewModel>().updateIndex(3);
+          Navigator.pop(context);
+        },
       ),
       body: SafeArea(
         child: Consumer2<GetInvoiceDetailViewmodel, PayInvoiceViewModel>(

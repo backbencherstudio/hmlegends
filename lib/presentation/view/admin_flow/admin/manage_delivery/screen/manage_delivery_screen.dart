@@ -92,28 +92,28 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
                   String buttonText;
 
                   if (isApproved) {
-                    buttonColor = Colors.blue;
-                    buttonText = 'Approved';
+                    buttonColor = Colors.red;
+                    buttonText = 'Assign to Driver';
                   } else if (isPending) {
-                    buttonColor = Colors.orange;
+                    buttonColor = Colors.grey;
                     buttonText = 'Pending';
                   } else if (isShipped) {
-                    buttonColor = Colors.purple;
+                    buttonColor = Colors.grey;
                     buttonText = 'Shipped';
                   } else if (isDelivered) {
-                    buttonColor = Colors.green;
+                    buttonColor = Colors.grey;
                     buttonText = 'Delivered';
                   } else if (isCancelled) {
-                    buttonColor = Colors.red;
+                    buttonColor = Colors.grey;
                     buttonText = 'Cancelled';
                   } else if (isCompleted) {
-                    buttonColor = Colors.teal;
+                    buttonColor = Colors.grey;
                     buttonText = 'Completed';
                   } else if (isProcessing) {
-                    buttonColor = Colors.green;
+                    buttonColor = Colors.grey;
                     buttonText = 'Processing';
                   } else {
-                    buttonColor = AppColors.primaryColor;
+                    buttonColor = Colors.grey;
                     buttonText = 'Assign to Driver';
                   }
 
@@ -122,29 +122,30 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
                     name: branch.user?.name ?? "N/A",
                     totalProducts: branch.totalQuantity ?? 0,
                     address: branch.user?.address ?? "N/A",
-                    backgroundColor: WidgetStateProperty.all<Color>(buttonColor),
+                    backgroundColor: WidgetStateProperty.all<Color>(
+                      buttonColor,
+                    ),
                     text: buttonText,
                     isLoading: provider.assigningOrderId == branch.id,
 
-                    onAssignTap: () async {
-                      // Only show assign driver sheet if not already processing
-                      if (!isProcessing) {
-                        /// ------------ Open bottom sheet ---------------
-                        await showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20.r),
-                            ),
-                          ),
-                          builder:
-                              (_) => AssignDriverSheet(deliveryId: branch.id),
-                        );
-                        log(branch.id ?? '');
-                      }
-                    },
+                    onAssignTap: isApproved
+                        ? () async {
+                            /// ------------ Open bottom sheet ---------------
+                            await showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20.r),
+                                ),
+                              ),
+                              builder:
+                                  (_) => AssignDriverSheet(deliveryId: branch.id),
+                            );
+                            log(branch.id ?? '');
+                          }
+                        : null,
                   );
                 },
               );

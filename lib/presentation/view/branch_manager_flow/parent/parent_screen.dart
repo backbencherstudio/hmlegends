@@ -59,7 +59,7 @@ class _BranchParentScreenState extends State<BranchParentScreen> {
             if (backButtonHasNotBeenPressedOrMaxTimeHasPassed) {
               _lastPressedAt = now;
               Utils.showToast(
-                msg: "Press back again to exit the app",
+                msg: "Press back again to exit",
                 backgroundColor: Colors.black,
                 textColor: Colors.white,
               );

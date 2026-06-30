@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hmlegends/core/constant/asset_path.dart';
-
 import '../../../widget/google_button.dart';
-import 'sign_up_form_button.dart';
 
 class SocialAuthButtons extends StatelessWidget {
   final VoidCallback? onApplePressed;
@@ -23,12 +19,12 @@ class SocialAuthButtons extends StatelessWidget {
       children: [
         GoogleButton(),
 
-        SizedBox(height: 10.h),
-        SignUpFormButton(
-          title: 'Continue With Apple',
-          image: AssetPaths.appleIcon,
-          onTap: onApplePressed,
-        ),
+        // SizedBox(height: 10.h),
+        // SignUpFormButton(
+        //   title: 'Continue With Apple',
+        //   image: AssetPaths.appleIcon,
+        //   onTap: onApplePressed,
+        // ),
       ],
     );
   }

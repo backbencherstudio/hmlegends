@@ -48,6 +48,9 @@ class _BranchHomeScreenState extends State<BranchHomeScreen> {
       appBar: CustomAppBar(
         profileImage: data?.avatar,
         notificationCount: notificationProvider.unreadCount,
+        onProfileTap: () {
+          context.read<BottomNavViewModel>().updateIndex(3);
+        },
       ),
       body: Stack(
         alignment: Alignment.bottomCenter,

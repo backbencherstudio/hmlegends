@@ -113,6 +113,7 @@ import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_a
 import 'package:provider/provider.dart';
 
 import '../../../core/constant/api_endpoint.dart';
+import '../drivier_flow/driver_home/viewmodel/driver_notification_provider.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? profileImage;
@@ -120,6 +121,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final int notificationCount;
   final VoidCallback? onProfileTap;
   final VoidCallback? onNotificationTap;
+  final VoidCallback? onBackTap;
+  final bool isDriver;
 
   const CustomAppBar({
     super.key,
@@ -128,6 +131,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.notificationCount,
     this.onProfileTap,
     this.onNotificationTap,
+    this.onBackTap,
+    this.isDriver = false,
   });
 
   @override
@@ -152,82 +157,131 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       backArrow != null && backArrow!.isNotEmpty
                           ? GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Image.asset(
-                                "assets/images/back_arrow.png",
-                                height: 38.h,
-                              ),
-                            )
-                          : Image.asset(
-                              AssetPaths.headOfficeLogo,
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Image.asset(
+                              "assets/images/back_arrow.png",
                               height: 38.h,
                             ),
+                          )
+                          : Image.asset(
+                            AssetPaths.headOfficeLogo,
+                            height: 38.h,
+                          ),
                       SizedBox(width: 8.w),
                     ],
                   ),
                   // Right Section
                   Row(
                     children: [
-                      Consumer<AdminNotificationProvider>(
-                        builder: (context,provider,child){
-                          return GestureDetector(
-                            onTap: () async{
-                              await provider.getAdminNotification();
-                              Navigator.pushNamed(
-                                // ignore: use_build_context_synchronously
-                                context,
-                                RouteNames.adminNotificationScreen,
-                              );
-                            },
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Icon(CupertinoIcons.bell, size: 28.sp),
-                                if (provider.unreadCount > 0)
-                                  Positioned(
-                                    right: 1.w,
-                                    top: -7.h,
-                                    child: Container(
-                                      padding: EdgeInsets.all(3.w),
-                                      decoration: const BoxDecoration(
-                                        color: Color(0xFFB5050F),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Text(
-                                        '${provider.unreadCount}',
-                                        style: TextStyle(
-                                          fontSize: 11.sp,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
+                      isDriver
+                          ? Consumer<DriverNotificationProvider>(
+                              builder: (context, provider, child) {
+                                return GestureDetector(
+                                  onTap: () async {
+                                    if (provider.isLoading) return;
+                                    await provider.getDriverNotification();
+                                    if (context.mounted) {
+                                      Navigator.pushNamed(
+                                        context,
+                                        RouteNames.adminNotificationScreen,
+                                      );
+                                    }
+                                  },
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Icon(CupertinoIcons.bell, size: 28.sp),
+                                      if (provider.unreadCount > 0)
+                                        Positioned(
+                                          right: 1.w,
+                                          top: -7.h,
+                                          child: Container(
+                                            padding: EdgeInsets.all(3.w),
+                                            decoration: const BoxDecoration(
+                                              color: Color(0xFFB5050F),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Text(
+                                              '${provider.unreadCount}',
+                                              style: TextStyle(
+                                                fontSize: 11.sp,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
+                                    ],
                                   ),
-                              ],
+                                );
+                              },
+                            )
+                          : Consumer<AdminNotificationProvider>(
+                              builder: (context, provider, child) {
+                                return GestureDetector(
+                                  onTap: () async {
+                                    if (provider.isLoading) return;
+                                    await provider.getAdminNotification();
+                                    if (context.mounted) {
+                                      Navigator.pushNamed(
+                                        context,
+                                        RouteNames.adminNotificationScreen,
+                                      );
+                                    }
+                                  },
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Icon(CupertinoIcons.bell, size: 28.sp),
+                                      if (provider.unreadCount > 0)
+                                        Positioned(
+                                          right: 1.w,
+                                          top: -7.h,
+                                          child: Container(
+                                            padding: EdgeInsets.all(3.w),
+                                            decoration: const BoxDecoration(
+                                              color: Color(0xFFB5050F),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Text(
+                                              '${provider.unreadCount}',
+                                              style: TextStyle(
+                                                fontSize: 11.sp,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
-
-                      ),
                       SizedBox(width: 20.w),
                       GestureDetector(
                         onTap:
                             onProfileTap ??
-                            () => Navigator.pushNamed(
-                              context,
-                              RouteNames.headOfficeProfileScreen,
-                            ),
+                            () {
+                              if (ModalRoute.of(context)?.settings.name !=
+                                  RouteNames.headOfficeProfileScreen) {
+                                Navigator.pushNamed(
+                                  context,
+                                  RouteNames.headOfficeProfileScreen,
+                                );
+                              }
+                            },
                         child: CircleAvatar(
                           radius: 18.r,
                           backgroundImage:
                               profileImage != null && profileImage!.isNotEmpty
-                              ? NetworkImage(
-                                  "${ApiEndpoints.baseUrl}/storage/avatar/$profileImage",
-                                )
-                              : AssetImage(AssetPaths.personIcon)
-                                    as ImageProvider,
+                                  ? NetworkImage(
+                                    "${ApiEndpoints.baseUrl}/storage/avatar/$profileImage",
+                                  )
+                                  : AssetImage(AssetPaths.personIcon)
+                                      as ImageProvider,
                         ),
                       ),
                     ],

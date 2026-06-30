@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
 import '../../auth/widget/onboarding_elevated_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -15,12 +17,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   late final PageController _pageController;
   int _currentPage = 0;
   bool _isInitialized = false;
+  DateTime? _lastPressedAt;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInitialized) {
-      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       if (args != null && args['showPage2'] == true) {
         _currentPage = 1;
       }
@@ -52,26 +56,57 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration:
-            _currentPage == 0
-                ? _buildPage1Decoration()
-                : _buildPage2Decoration(),
-        child: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  onPageChanged: (int page) {
-                    setState(() => _currentPage = page);
-                  },
-                  children: [_buildPage1(), _buildPage2()],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+
+        if (_currentPage == 1) {
+          _pageController.previousPage(
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+          return;
+        }
+
+        final now = DateTime.now();
+        final backButtonHasNotBeenPressedOrMaxTimeHasPassed =
+            _lastPressedAt == null ||
+            now.difference(_lastPressedAt!) > const Duration(seconds: 2);
+
+        if (backButtonHasNotBeenPressedOrMaxTimeHasPassed) {
+          _lastPressedAt = now;
+          Utils.showToast(
+            msg: "Press back again to exit",
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+          );
+          return;
+        }
+
+        await SystemNavigator.pop();
+      },
+      child: Scaffold(
+        body: Container(
+          decoration:
+              _currentPage == 0
+                  ? _buildPage1Decoration()
+                  : _buildPage2Decoration(),
+          child: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: PageView(
+                    controller: _pageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    onPageChanged: (int page) {
+                      setState(() => _currentPage = page);
+                    },
+                    children: [_buildPage1(), _buildPage2()],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -1,11 +1,11 @@
-class SingleDeliveryModelDriver {
+class SingleDeliveryModel {
   bool? success;
   String? message;
   Data? data;
 
-  SingleDeliveryModelDriver({this.success, this.message, this.data});
+  SingleDeliveryModel({this.success, this.message, this.data});
 
-  SingleDeliveryModelDriver.fromJson(Map<String, dynamic> json) {
+  SingleDeliveryModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;

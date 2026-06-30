@@ -35,6 +35,7 @@ class Data {
   String? image;
   int? stock;
   double? price;
+  double? tax;
   String? stockStatus;
   String? createdAt;
 
@@ -44,6 +45,7 @@ class Data {
     this.image,
     this.stock,
     this.price,
+    this.tax,
     this.stockStatus,
     this.createdAt,
   });
@@ -54,6 +56,7 @@ class Data {
     image = json['image'];
     stock = json['stock'];
     price = (json['price'] as num?)?.toDouble();
+    tax = (json['tax'] as num?)?.toDouble();
     stockStatus = json['stock_status'];
     createdAt = json['created_at'];
   }
@@ -66,6 +69,7 @@ class Data {
     data['image'] = image;
     data['stock'] = stock;
     data['price'] = price;
+    data['tax'] = tax;
     data['stock_status'] = stockStatus;
     data['created_at'] = createdAt;
 

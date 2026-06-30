@@ -26,6 +26,7 @@ class _EditStockScreenState extends State<EditStockScreen> {
   late final TextEditingController _nameController;
   late final TextEditingController _stockController;
   late final TextEditingController _priceController;
+  late final TextEditingController _taxController;
 
   String? _selectedStockStatus;
   File? _pickedImage;
@@ -48,6 +49,9 @@ class _EditStockScreenState extends State<EditStockScreen> {
     _priceController = TextEditingController(
       text: widget.product.price != null ? '${widget.product.price}' : '',
     );
+    _taxController = TextEditingController(
+      text: widget.product.tax != null ? '${widget.product.tax}' : '',
+    );
     _selectedStockStatus =
         _statusLabels.containsKey(widget.product.stockStatus)
             ? widget.product.stockStatus
@@ -59,6 +63,7 @@ class _EditStockScreenState extends State<EditStockScreen> {
     _nameController.dispose();
     _stockController.dispose();
     _priceController.dispose();
+    _taxController.dispose();
     super.dispose();
   }
 
@@ -90,6 +95,7 @@ class _EditStockScreenState extends State<EditStockScreen> {
       stock: _stockController.text.trim(),
       price: _priceController.text.trim(),
       stockStatus: _selectedStockStatus ?? 'IN_STOCK',
+      tax: _taxController.text.trim(),
       image: _pickedImage,
     );
 
@@ -137,6 +143,14 @@ class _EditStockScreenState extends State<EditStockScreen> {
             _textField(
               "Write price",
               controller: _priceController,
+              keyboardType: TextInputType.number,
+            ),
+
+            SizedBox(height: 16.h),
+            _label("Tax % (optional)"),
+            _textField(
+              "Write tax percentage",
+              controller: _taxController,
               keyboardType: TextInputType.number,
             ),
 

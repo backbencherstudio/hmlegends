@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/order/screen/order_summary_make_invoice_screen.dart';
-import 'package:hmlegends/presentation/view/driver_flow/profile_driver/change_info_driver.dart';
 import '../../presentation/view/admin_flow/admin/bottom_nav/screen/wrapper.dart';
 import '../../presentation/view/admin_flow/admin/home/screen/head_office_home_screen.dart';
 import '../../presentation/view/admin_flow/admin/home/screen/pending_user_list.dart';
@@ -37,12 +36,10 @@ import '../../presentation/view/branch_manager_flow/parent/parent_screen.dart';
 import '../../presentation/view/branch_manager_flow/profile/profile_screen.dart';
 import '../../presentation/view/branch_manager_flow/profile/screens/change_info.dart';
 import '../../presentation/view/branch_manager_flow/profile/screens/change_password.dart';
-import '../../presentation/view/driver_flow/driver_brance_detailScreen/confirm_delivery_screen.dart';
-import '../../presentation/view/driver_flow/driver_brance_detailScreen/delivery_summery_screen.dart';
-import '../../presentation/view/driver_flow/driver_brance_detailScreen/driver_brance_detail_screen.dart';
-import '../../presentation/view/driver_flow/driver_screen.dart';
-import '../../presentation/view/driver_flow/parent/parent_screen.dart';
-import '../../presentation/view/driver_flow/tracking/tracking_screen.dart';
+import '../../presentation/view/drivier_flow/driver_bottom_nav/view/driver_bottom_nav_screen.dart';
+import '../../presentation/view/drivier_flow/driver_home/driver_branch_detail_screen.dart';
+import '../../presentation/view/drivier_flow/driver_home/driver_delivery_note_screen.dart';
+import '../../presentation/view/drivier_flow/driver_home/driver_delivery_summary_screen.dart';
 import '../../presentation/view/onboarding/view/onboarding_screen.dart';
 import '../../presentation/view/splash/view/splash_screen.dart';
 
@@ -69,27 +66,24 @@ class AppRoutes {
     RouteNames.changePassword: (context) => ChangePassword(),
     RouteNames.changeInfo: (context) => ChangeInfo(),
     RouteNames.notificationScreen: (context) => const AdminNotificationScreen(),
-    RouteNames.driverScreen: (context) => DriverScreen(),
-    RouteNames.driverBottomNavBar: (context) => DriverBottomNavBar(),
-    RouteNames.driverBranchParentScreen:
-        (context) => DriverBranchParentScreen(),
+  
     RouteNames.editStockScreen: (context) {
       final product = ModalRoute.of(context)!.settings.arguments as Data;
       return EditStockScreen(product: product);
     },
-    RouteNames.driverBranseDetailScreen:
-        (context) => DriverBranchDetailScreen(),
+
     RouteNames.orderSummaryScreen:
         (context) => OrderSummaryScreen(fromBottomNav: false),
     RouteNames.orderSummaryViewScreen: (context) => OrderSummaryViewScreen(),
-    RouteNames.confirmDeliveryScreen: (context) => ConfirmDeliveryScreen(),
-    RouteNames.deliverySummeryScreen: (context) => DeliverySummeryScreen(),
     RouteNames.orderSummaryMakeInvoiceScreen:
         (context) => OrderSummaryMakeInvoiceScreen(),
     RouteNames.orderSummaryViewSuccessfulScreen:
         (context) => OrderSummaryViewSuccessfulScreen(),
     RouteNames.headOfficeInvoiceScreen:
         (context) => HeadOfficeInvoiceScreen(fromBottomNav: false),
+    RouteNames.driverBranseDetailScreen: (context) => const DriverBranchDetailScreen(),
+    RouteNames.driverDeliveryNoteScreen: (context) => const DriverDeliveryNoteScreen(),
+    RouteNames.deliverySummeryScreen: (context) => const DriverDeliverySummaryScreen(),
     RouteNames.manageBranchesScreen: (context) => ManageBranchesScreen(),
     RouteNames.addNewBranchesScreen: (context) => AddNewBranchesScreen(),
     RouteNames.invoiceStatusScreen: (context) => InvoiceStatusScreen(),
@@ -113,13 +107,12 @@ class AppRoutes {
 
       return EditBranchScreen(managerId: managerId);
     },
-    RouteNames.changeInfoDriver: (context) => ChangeInfoDriver(),
     RouteNames.adminNotificationScreen: (context) => AdminNotificationScreen(),
     RouteNames.pendingUserList: (context) => PendingUserList(),
-    RouteNames.trackingScreen: (context) => TrackingScreen(),
     RouteNames.deliveryProgressScreen: (context) {
       final orderId = ModalRoute.of(context)!.settings.arguments as String?;
       return DeliveryProgressScreen(orderId: orderId);
     },
+    RouteNames.driverBottomNavScreen: (context) => const DriverBottomNavScreen(),
   };
 }

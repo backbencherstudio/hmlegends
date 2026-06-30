@@ -9,7 +9,7 @@ import '../../../core/constant/api_endpoint.dart';
 import '../../../core/route/route_names.dart';
 import '../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 
-class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBarTwo extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final String? profileImage;
   final int notificationCount;
@@ -36,9 +36,29 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
+  Size get preferredSize => Size.fromHeight(64.h);
+
+  @override
+  State<CustomAppBarTwo> createState() => _CustomAppBarTwoState();
+}
+
+class _CustomAppBarTwoState extends State<CustomAppBarTwo> {
+  bool _isTapped = false;
+
+  void _handleTap(VoidCallback action) async {
+    if (_isTapped) return;
+    setState(() => _isTapped = true);
+    action();
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      setState(() => _isTapped = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Material(
-      color: colorMain,
+      color: widget.colorMain,
       elevation: 1,
       shadowColor: Colors.black26,
       child: Column(
@@ -56,10 +76,13 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (isIconPresent == true)
+                      if (widget.isIconPresent == true)
                         GestureDetector(
-                          onTap: onBackTap ??
-                              () => _handleBackNavigation(context),
+                          onTap:
+                              () => _handleTap(
+                                widget.onBackTap ??
+                                    () => _handleBackNavigation(context),
+                              ),
                           child: Icon(
                             Icons.arrow_back_ios,
                             size: 24.sp,
@@ -67,7 +90,7 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
                           ),
                         ),
                       SizedBox(width: 8.w),
-                      Text(title, style: AppTextStyles.appHeaderText),
+                      Text(widget.title, style: AppTextStyles.appHeaderText),
                     ],
                   ),
 
@@ -78,23 +101,29 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
                       _buildNotificationIcon(context),
                       SizedBox(width: 20.w),
                       GestureDetector(
-                        onTap: onProfileTap ??
-                            () => Navigator.pushNamed(
-                                  context,
-                                  RouteNames.headOfficeProfileScreen,
-                                ),
+                        onTap:
+                            () => _handleTap(
+                              widget.onProfileTap ??
+                                  () => Navigator.pushNamed(
+                                    context,
+                                    RouteNames.headOfficeProfileScreen,
+                                  ),
+                            ),
                         child: CircleAvatar(
                           radius: 18.r,
-                          backgroundImage: (profileImage != null &&
-                                  profileImage!.isNotEmpty &&
-                                  !profileImage!.startsWith('assets/'))
-                              ? NetworkImage(
-                                  '${ApiEndpoints.baseUrl}/public/storage/avatar/$profileImage',
-                                )
-                              : const AssetImage(
-                                    'assets/icons/profile_icon.png',
+                          backgroundImage:
+                              (widget.profileImage != null &&
+                                      widget.profileImage!.isNotEmpty &&
+                                      !widget.profileImage!.startsWith(
+                                        'assets/',
+                                      ))
+                                  ? NetworkImage(
+                                    '${ApiEndpoints.baseUrl}/public/storage/avatar/${widget.profileImage}',
                                   )
-                                  as ImageProvider,
+                                  : const AssetImage(
+                                        'assets/icons/profile_icon.png',
+                                      )
+                                      as ImageProvider,
                         ),
                       ),
                     ],
@@ -103,14 +132,14 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          Container(height: 8.h, color: colorSpace),
+          Container(height: 8.h, color: widget.colorSpace),
         ],
       ),
     );
   }
 
   void _handleBackNavigation(BuildContext context) {
-    if (useBottomNavBack) {
+    if (widget.useBottomNavBack) {
       // Navigate to home using bottom nav
       _navigateToHome(context);
     } else {
@@ -130,15 +159,20 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
   Widget _buildNotificationIcon(BuildContext context) {
     return GestureDetector(
       onTap:
-          onNotificationTap ??
-          () {
-            Navigator.pushNamed(context, RouteNames.adminNotificationScreen);
-          },
+          () => _handleTap(
+            widget.onNotificationTap ??
+                () {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.adminNotificationScreen,
+                  );
+                },
+          ),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           Icon(CupertinoIcons.bell, size: 28.sp),
-          if (notificationCount > 0)
+          if (widget.notificationCount > 0)
             Positioned(
               right: 1.w,
               top: -7.h,
@@ -149,7 +183,7 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Text(
-                  '$notificationCount',
+                  '${widget.notificationCount}',
                   style: TextStyle(
                     fontSize: 11.sp,
                     color: Colors.white,
@@ -162,7 +196,4 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
   }
-
-  @override
-  Size get preferredSize => Size.fromHeight(64.h);
 }

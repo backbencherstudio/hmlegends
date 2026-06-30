@@ -18,10 +18,11 @@ class RouteNames {
   static const String changePassword = '/changePassword';
   static const String changeInfo = '/changeInfo';
   static const String notificationScreen = '/notificationScreen';
-  static const String driverScreen = '/driverScreen';
+  static const String driverHomeScreen = '/driverScreen';
   static const String driverBottomNavBar = '/driverBottomNavBar';
   static const String driverBranchParentScreen = '/driverBranchParentScreen';
   static const String driverBranseDetailScreen = '/driverBranseDetailScreen';
+  static const String driverDeliveryNoteScreen = '/driverDeliveryNoteScreen';
   static const String editStockScreen = '/editStockScreen ';
   static const String orderSummaryScreen = '/orderSummaryScreen';
   static const String orderSummaryViewScreen = '/orderSummaryViewScreen';
@@ -51,4 +52,7 @@ class RouteNames {
   static const String pendingUserList = '/pendingUserList';
   static const String trackingScreen = '/trackingScreen';
   static const String deliveryProgressScreen = '/deliveryProgressScreen';
+
+  // Driver
+  static const String driverBottomNavScreen = '/DriverBottomNavScreen';
 }

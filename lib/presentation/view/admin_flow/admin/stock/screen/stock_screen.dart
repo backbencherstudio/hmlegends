@@ -34,6 +34,7 @@ class _StockScreenState extends State<StockScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
+  final TextEditingController _taxController = TextEditingController();
 
   /// ------------------------ Initialize State --------------------------------
   @override
@@ -48,6 +49,7 @@ class _StockScreenState extends State<StockScreen> {
     _nameController.clear();
     _priceController.clear();
     _stockController.clear();
+    _taxController.clear();
     image = null;
   }
 
@@ -321,6 +323,7 @@ class _StockScreenState extends State<StockScreen> {
                                   name: _nameController.text,
                                   stock: _stockController.text,
                                   price: _priceController.text,
+                                  tax: _taxController.text,
                                   image: image,
                                 );
 
@@ -592,7 +595,7 @@ class _StockScreenState extends State<StockScreen> {
                                                   Row(
                                                     children: [
                                                       Text(
-                                                        "\$${product.price}",
+                                                        "\$${product.price}${product.tax != null && product.tax! > 0 ? ' (${product.tax}%)' : ''}",
                                                         style: TextStyle(
                                                           fontSize: 14.sp,
                                                           color:
@@ -778,8 +781,15 @@ class _StockScreenState extends State<StockScreen> {
 
                       CustomTextField(
                         hint: "Stock",
-                        textInputAction: TextInputAction.done,
+                        textInputAction: TextInputAction.next,
                         controller: _stockController,
+                      ),
+                      SizedBox(height: 12.h),
+
+                      CustomTextField(
+                        hint: "Tax % (optional)",
+                        textInputAction: TextInputAction.done,
+                        controller: _taxController,
                       ),
 
                       SizedBox(height: 20.h),

@@ -61,7 +61,7 @@ class ProductCard extends StatelessWidget {
           SizedBox(height: 4.h),
           Text("Stock: ${product.stock} pcs", style: TextStyle(color: AppColors.authHeaderTextColor, fontSize: 13.sp)),
           SizedBox(height: 4.h),
-          Text("£${product.price}", style: TextStyle(color: AppColors.authHeaderTextColor, fontWeight: FontWeight.w600, fontSize: 15.sp)),
+          Text("£${product.price}${product.tax != null && product.tax! > 0 ? ' (${product.tax}%)' : ''}", style: TextStyle(color: AppColors.authHeaderTextColor, fontWeight: FontWeight.w600, fontSize: 15.sp)),
         ],
       ),
     );
