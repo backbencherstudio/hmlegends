@@ -9,6 +9,7 @@ import 'package:hmlegends/presentation/view/admin_flow/admin/profile/widget/prof
 import 'package:hmlegends/presentation/view/admin_flow/admin/profile/widget/label_input_field.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
 
 class HeadOfficeChangeInfoScreen extends StatefulWidget {
@@ -31,6 +32,7 @@ class _HeadOfficeChangeInfoScreenState
 
   File? _selectedImage;
   String? _existingImageUrl;
+  bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
   String _formatDateToUI(String? apiDate) {
@@ -300,47 +302,62 @@ class _HeadOfficeChangeInfoScreenState
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      final success = await context
-                          .read<ChangePasswordProvider>()
-                          .updateAdminProfile(
-                            fullName: _fullNameController.text,
-                            occupation: _occupationController.text,
-                            dateOfBirth: _formatDateToAPI(
-                              _dateOfBirthController.text,
-                            ),
-                            phoneNumber: _phoneController.text,
-                            city: _cityController.text,
-                            address: _addressController.text,
-                            image: _selectedImage,
-                          );
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                          if (_formKey.currentState!.validate()) {
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            try {
+                              final success = await context
+                                  .read<ChangePasswordProvider>()
+                                  .updateAdminProfile(
+                                    fullName: _fullNameController.text,
+                                    occupation: _occupationController.text,
+                                    dateOfBirth: _formatDateToAPI(
+                                      _dateOfBirthController.text,
+                                    ),
+                                    phoneNumber: _phoneController.text,
+                                    city: _cityController.text,
+                                    address: _addressController.text,
+                                    image: _selectedImage,
+                                  );
 
-                      if (success) {
-                        // ignore: use_build_context_synchronously
-                        await context
-                            .read<ChangePasswordProvider>()
-                            .adminCheckMe();
+                              if (success) {
+                                // ignore: use_build_context_synchronously
+                                await context
+                                    .read<ChangePasswordProvider>()
+                                    .adminCheckMe();
 
-                        logger.i(
-                          "Profile updated successfully, refreshing data...",
-                        );
-                      }
+                                logger.i(
+                                  "Profile updated successfully, refreshing data...",
+                                );
+                              }
 
-                      Utils.showToast(
-                        msg:
-                            success
-                                ? "Profile updated successfully"
-                                : "Failed to update profile",
-                        backgroundColor: success ? Colors.green : Colors.red,
-                        textColor: Colors.white,
-                      );
-                      Future.delayed(const Duration(seconds: 2), () {
-                        // ignore: use_build_context_synchronously
-                        Navigator.pop(context);
-                      });
-                    }
-                  },
+                              Utils.showToast(
+                                msg:
+                                    success
+                                        ? "Profile updated successfully"
+                                        : "Failed to update profile",
+                                backgroundColor: success ? Colors.green : Colors.red,
+                                textColor: Colors.white,
+                              );
+                              if (success) {
+                                Future.delayed(const Duration(seconds: 2), () {
+                                  // ignore: use_build_context_synchronously
+                                  if (mounted) Navigator.pop(context);
+                                });
+                              }
+                            } finally {
+                              if (mounted) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              }
+                            }
+                          }
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE20613),
                     padding: EdgeInsets.symmetric(
@@ -351,10 +368,15 @@ class _HeadOfficeChangeInfoScreenState
                       borderRadius: BorderRadius.circular(15.r),
                     ),
                   ),
-                  child: Text(
-                    "Save Changes",
-                    style: TextStyle(fontSize: 16.sp, color: Colors.white),
-                  ),
+                  child: _isLoading
+                      ? SpinKitSpinningLines(
+                          color: Colors.white,
+                          size: 24.sp,
+                        )
+                      : Text(
+                          "Save Changes",
+                          style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                        ),
                 ),
               ),
 

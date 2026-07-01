@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hmlegends/core/validator/validator.dart';
 import 'package:hmlegends/presentation/widget/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
@@ -138,9 +139,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return AuthButton(
         text:
             provider.isLoading
-                ? CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                )
+                ? SpinKitSpinningLines(
+                    color: Colors.white,
+                    size: 24.sp,
+                  )
                 : Text(
                   'Sign Up',
                   style: TextStyle(

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
@@ -46,7 +47,7 @@ class OtpVerifyScreen extends StatelessWidget {
                 /// EMAIL DISPLAY
                 Text(
                   'We sent a reset code to ${provider.email.isNotEmpty ? provider.email : "your email"}. '
-                  'Enter the 6-digit code below.',
+                  '\nEnter the 6-digit code below.',
                   style: AppTextStyles.authBodyText,
                   textAlign: TextAlign.center,
                 ),
@@ -60,17 +61,24 @@ class OtpVerifyScreen extends StatelessWidget {
 
                 /// VERIFY BUTTON
                 AuthButton(
-                  text: Text(
-                    'Verify Code',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  text:
+                      provider.isFPLoading
+                          ? Center(
+                            child: SpinKitSpinningLines(
+                              color: Colors.white,
+                              size: 24.sp,
+                            ),
+                          )
+                          : Text(
+                            'Verify Code',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                   color: AppColors.primaryColor,
                   onPressed: () async {
-                    
                     final enteredOtp = _otpController.text.trim();
 
                     if (enteredOtp.isEmpty) {
@@ -156,7 +164,8 @@ class OtpVerifyScreen extends StatelessWidget {
             TextSpan(
               text: provider.isFPLoading ? 'Sending...' : 'Resend Email',
               style: TextStyle(
-                color: provider.isFPLoading ? Colors.grey : AppColors.primaryColor,
+                color:
+                    provider.isFPLoading ? Colors.grey : AppColors.primaryColor,
                 letterSpacing: 0.2,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
@@ -165,7 +174,9 @@ class OtpVerifyScreen extends StatelessWidget {
                   TapGestureRecognizer()
                     ..onTap = () async {
                       if (provider.isFPLoading) return;
-                      final res = await provider.forgetPassword(email: provider.email);
+                      final res = await provider.forgetPassword(
+                        email: provider.email,
+                      );
                       if (res.success) {
                         Utils.showToast(
                           msg: res.message,

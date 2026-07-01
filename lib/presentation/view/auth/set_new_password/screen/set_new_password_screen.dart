@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
@@ -72,15 +73,20 @@ class SetNewPasswordScreen extends StatelessWidget {
 
                 Consumer<ForgetPasswordProvider>(
                   builder: (context, provider, _) {
-                    return provider.isFPLoading
-                        ? const CircularProgressIndicator(color: Colors.green)
-                        : AuthButton(
-                          text: Text(
-                            'Update Password',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          color: AppColors.primaryColor,
-                          onPressed: () async {
+                    return AuthButton(
+                      text: provider.isFPLoading
+                          ? Center(
+                              child: SpinKitSpinningLines(
+                                color: Colors.white,
+                                size: 24.sp,
+                              ),
+                            )
+                          : Text(
+                              'Update Password',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                      color: AppColors.primaryColor,
+                      onPressed: () async {
                             final password = _passwordController.text.trim();
                             final confirmPassword =
                                 _confirmPasswordController.text.trim();

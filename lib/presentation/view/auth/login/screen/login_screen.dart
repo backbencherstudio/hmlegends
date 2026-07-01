@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hmlegends/core/constant/app_text_styles.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/validator/validator.dart';
@@ -176,9 +177,10 @@ class _LoginScreenState extends State<LoginScreen> {
         return AuthButton(
           text:
               viewModel.isLoading
-                  ? CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                  )
+                  ? SpinKitSpinningLines(
+                      color: Colors.white,
+                      size: 24.sp,
+                    )
                   : Text(
                     'Sign In',
                     style: TextStyle(
