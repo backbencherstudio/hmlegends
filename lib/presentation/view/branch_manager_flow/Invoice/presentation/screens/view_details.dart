@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import '../../view_model/get_invoices_details_viewmodel.dart';
 import '../../view_model/paid_payment_viewmodel.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
+import 'package:hmlegends/presentation/view/admin_flow/admin/invoice/screen/invoice_web_view_screen.dart';
 
 class ViewDetails extends StatelessWidget {
   const ViewDetails({super.key});
@@ -166,14 +168,16 @@ class ViewDetails extends StatelessWidget {
                                     final product = item.product;
                                     final qty = item.quantity ?? 0;
                                     final price = item.price ?? 0.0;
+                                    final taxPercent = item.taxPercent ?? 0.0;
                                     return {
                                       'no':
                                           '${invoice.order!.orderItems!.indexOf(item) + 1}'
                                               .padLeft(2, '0'),
                                       'product_name':
-                                          product?.name ?? 'Unknown Product',
+                                          item.productName ?? product?.name ?? 'Unknown Product',
                                       'price': "$price",
                                       'quantity': qty,
+                                      'tax_percent': '$taxPercent%',
                                       'total': qty * price,
                                     };
                                   }).toList() ??
@@ -197,6 +201,7 @@ class ViewDetails extends StatelessWidget {
                 _BottomActionBar(
                   isPaid: isPaid,
                   isLoading: payVm.isLoading,
+                  exportUrl: invoice.url,
                   // Inside your Consumer2 builder, update the onPaid callback like this:
                   onPaid:
                       isPaid
@@ -326,58 +331,69 @@ class _InvoiceTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Table(
-      border: TableBorder.all(color: const Color(0xFFE0E0E0)),
-      columnWidths: const {
-        0: FlexColumnWidth(1.2),
-        1: FlexColumnWidth(4),
-        2: FlexColumnWidth(2),
-        3: FlexColumnWidth(1.5),
-        4: FlexColumnWidth(2),
-      },
-      children: [
-        TableRow(
-          decoration: const BoxDecoration(color: Color(0xFFF5F5F5)),
-          children:
-              ['No', 'Product Name', 'Price', 'Quantity', 'Total']
-                  .map(
-                    (header) => Padding(
-                      padding: EdgeInsets.all(8.w),
-                      child: Text(
-                        header,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 11.sp,
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Table(
+        border: TableBorder.all(color: const Color(0xFFE0E0E0)),
+        columnWidths: {
+          0: FixedColumnWidth(40.w),
+          1: FixedColumnWidth(180.w),
+          2: FixedColumnWidth(80.w),
+          3: FixedColumnWidth(90.w), // Increased space for Quantity
+          4: FixedColumnWidth(70.w),
+          5: FixedColumnWidth(80.w),
+        },
+        children: [
+          TableRow(
+            decoration: const BoxDecoration(color: Color(0xFFF5F5F5)),
+            children:
+                ['No', 'Product Name', 'Price', 'Quantity', 'Tax', 'Total']
+                    .map(
+                      (header) => Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                        child: Text(
+                          header,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12.sp,
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                  .toList(),
-        ),
-        ...items.map(
-          (item) => TableRow(
-            children: [
-              Padding(padding: EdgeInsets.all(8.w), child: Text(item['no'])),
-              Padding(
-                padding: EdgeInsets.all(8.w),
-                child: Text(item['product'] ?? 'N/A'),
-              ),
-              Padding(
-                padding: EdgeInsets.all(8.w),
-                child: Text('\$${item['price']}'),
-              ),
-              Padding(
-                padding: EdgeInsets.all(8.w),
-                child: Text('${item['quantity']}'),
-              ),
-              Padding(
-                padding: EdgeInsets.all(8.w),
-                child: Text('\$${item['total']}'),
-              ),
-            ],
+                    )
+                    .toList(),
           ),
-        ),
-      ],
+          ...items.map(
+            (item) => TableRow(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                  child: Text(item['no']),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                  child: Text(item['product_name'] ?? 'N/A'),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                  child: Text('\$${item['price']}'),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                  child: Text('${item['quantity']}'),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                  child: Text('${item['tax_percent']}'),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                  child: Text('\$${item['total']}'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -400,16 +416,25 @@ class _SubtotalRow extends StatelessWidget {
 }
 
 /// ---------------- Updated Bottom Action Bar with loading state --------------
-class _BottomActionBar extends StatelessWidget {
+class _BottomActionBar extends StatefulWidget {
   final bool isPaid;
   final bool isLoading;
   final VoidCallback? onPaid;
+  final String? exportUrl;
 
   const _BottomActionBar({
     required this.isPaid,
     required this.isLoading,
     required this.onPaid,
+    this.exportUrl,
   });
+
+  @override
+  State<_BottomActionBar> createState() => _BottomActionBarState();
+}
+
+class _BottomActionBarState extends State<_BottomActionBar> {
+  bool isExporting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -419,12 +444,12 @@ class _BottomActionBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (!isPaid)
+          if (!widget.isPaid)
             Expanded(
               child: SizedBox(
                 height: 50.h,
                 child: ElevatedButton(
-                  onPressed: isLoading ? null : onPaid,
+                  onPressed: widget.isLoading ? null : widget.onPaid,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(
@@ -432,7 +457,7 @@ class _BottomActionBar extends StatelessWidget {
                     ),
                   ),
                   child:
-                      isLoading
+                      widget.isLoading
                           ? const SizedBox(
                             height: 20,
                             width: 20,
@@ -453,14 +478,38 @@ class _BottomActionBar extends StatelessWidget {
               ),
             ),
 
-          if (!isPaid) SizedBox(width: 15.w),
+          if (!widget.isPaid) SizedBox(width: 15.w),
 
           // Export button always visible
           TextButton.icon(
-            onPressed: () => debugPrint('Exporting...'),
-            icon: Image.asset('assets/icons/export.png', scale: 3),
+            onPressed: isExporting
+                ? null
+                : () async {
+                    if (widget.exportUrl != null && widget.exportUrl!.isNotEmpty) {
+                      setState(() {
+                        isExporting = true;
+                      });
+                      await openInvoice(widget.exportUrl!);
+                      if (mounted) {
+                        setState(() {
+                          isExporting = false;
+                        });
+                      }
+                    }
+                  },
+            icon: isExporting
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: SpinKitThreeBounce(
+                      duration: Duration(milliseconds: 300),
+                      size: 10,
+                      color: Color(0xFF5BB450),
+                    ),
+                  )
+                : Image.asset('assets/icons/export.png', scale: 3),
             label: Text(
-              'Export',
+              isExporting ? 'Exporting...' : 'Export',
               style: TextStyle(
                 fontSize: 20.sp,
                 color: const Color(0xFF5BB450),
