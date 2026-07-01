@@ -32,10 +32,7 @@ class _DriverBottomNavScreenState extends State<DriverBottomNavScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> pages = [
-      DriverHomeScreen(),
-      HeadOfficeProfileScreen(),
-    ];
+    final List<Widget> pages = [DriverHomeScreen(), HeadOfficeProfileScreen()];
 
     return Consumer<DriverBottomNavProvider>(
       builder: (context, nav, child) {
@@ -57,7 +54,7 @@ class _DriverBottomNavScreenState extends State<DriverBottomNavScreen> {
             if (backButtonHasNotBeenPressedOrMaxTimeHasPassed) {
               _lastPressedAt = now;
               Utils.showToast(
-                msg: "Press back again to exit the app",
+                msg: "Press back again to exit",
                 backgroundColor: Colors.black,
                 textColor: Colors.white,
               );
@@ -109,33 +106,33 @@ class DriverBottomNavBar extends StatelessWidget {
             topRight: Radius.circular(24.r),
           ),
           child: Consumer<DriverBottomNavProvider>(
-              builder: (context, bottomProvider, child) {
-                return BottomNavigationBar(
-                  currentIndex: bottomProvider.currentIndex,
-                  onTap: bottomProvider.updateIndex,
-                  type: BottomNavigationBarType.fixed,
-                  backgroundColor: Colors.white,
-                  elevation: 0,
-                  selectedItemColor: AppColors.headOfficeRadiusColor,
-                  unselectedItemColor: AppColors.authBodyTextColor,
-                  selectedFontSize: 13.sp,
-                  unselectedFontSize: 13.sp,
-                  items: [
-                    _buildBottomNavItem(
-                      iconPath: 'assets/icons/mynaui_home.svg',
-                      activeIconPath: 'assets/icons/mynaui_home.svg',
-                      label: 'Home',
-                      isActive: bottomProvider.currentIndex == 0,
-                    ),
-                    _buildBottomNavItem(
-                      iconPath: 'assets/icons/user.svg',
-                      activeIconPath: 'assets/icons/user.svg',
-                      label: 'Profile',
-                      isActive: bottomProvider.currentIndex == 1,
-                    ),
-                  ],
-                );
-              }
+            builder: (context, bottomProvider, child) {
+              return BottomNavigationBar(
+                currentIndex: bottomProvider.currentIndex,
+                onTap: bottomProvider.updateIndex,
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.white,
+                elevation: 0,
+                selectedItemColor: AppColors.headOfficeRadiusColor,
+                unselectedItemColor: AppColors.authBodyTextColor,
+                selectedFontSize: 13.sp,
+                unselectedFontSize: 13.sp,
+                items: [
+                  _buildBottomNavItem(
+                    iconPath: 'assets/icons/mynaui_home.svg',
+                    activeIconPath: 'assets/icons/mynaui_home.svg',
+                    label: 'Home',
+                    isActive: bottomProvider.currentIndex == 0,
+                  ),
+                  _buildBottomNavItem(
+                    iconPath: 'assets/icons/user.svg',
+                    activeIconPath: 'assets/icons/user.svg',
+                    label: 'Profile',
+                    isActive: bottomProvider.currentIndex == 1,
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -159,7 +156,10 @@ class DriverBottomNavBar extends StatelessWidget {
         activeIconPath,
         width: 25.w,
         height: 25.h,
-        colorFilter: const ColorFilter.mode(AppColors.headOfficeRadiusColor, BlendMode.srcIn),
+        colorFilter: const ColorFilter.mode(
+          AppColors.headOfficeRadiusColor,
+          BlendMode.srcIn,
+        ),
       ),
       label: label,
     );

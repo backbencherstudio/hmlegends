@@ -146,8 +146,7 @@ class ChangePasswordProvider with ChangeNotifier {
 
   /// ---------------------- Update Admin Profile -----------------------------
   Future<bool> updateAdminProfile({
-    required String firstName,
-    required String lastName,
+    required String fullName,
     required String occupation,
     required String dateOfBirth,
     required String phoneNumber,
@@ -164,8 +163,7 @@ class ChangePasswordProvider with ChangeNotifier {
       request.headers['Accept'] = "application/json";
 
       // Add form fields
-      request.fields['first_name'] = firstName;
-      request.fields['last_name'] = lastName;
+      request.fields['name'] = fullName;
       request.fields['occupation'] = occupation;
       request.fields['date_of_birth'] = dateOfBirth;
       request.fields['phone_number'] = phoneNumber;

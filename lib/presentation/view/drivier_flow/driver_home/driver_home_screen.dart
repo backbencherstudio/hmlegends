@@ -4,6 +4,9 @@ import 'package:hmlegends/core/route/route_names.dart';
 import 'package:provider/provider.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
 import 'package:hmlegends/presentation/view/drivier_flow/driver_home/viewmodel/driver_home_viewmodel.dart';
+import '../../admin_flow/view_model/profile/change_pass_provider.dart';
+import 'viewmodel/driver_notification_provider.dart';
+import '../driver_bottom_nav/viewmodel/driver_bottom_nav_provider.dart';
 import 'widgets/driver_branch_card.dart';
 
 class DriverHomeScreen extends StatefulWidget {
@@ -19,13 +22,26 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<DriverHomeViewModel>(context, listen: false).fetchDeliveries();
+      context.read<ChangePasswordProvider>().adminCheckMe();
+      context.read<DriverNotificationProvider>().getDriverNotification();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<ChangePasswordProvider>(context);
+    final data = profileProvider.adminInfoModel?.data;
+    final notificationProvider = Provider.of<DriverNotificationProvider>(context);
+
     return Scaffold(
-      appBar: const CustomAppBar(notificationCount: 0, isDriver: true),
+      appBar: CustomAppBar(
+        profileImage: data?.avatar,
+        notificationCount: notificationProvider.unreadCount,
+        isDriver: true,
+        onProfileTap: () {
+          context.read<DriverBottomNavProvider>().updateIndex(1);
+        },
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

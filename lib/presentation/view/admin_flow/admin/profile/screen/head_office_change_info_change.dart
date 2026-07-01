@@ -21,8 +21,8 @@ class HeadOfficeChangeInfoScreen extends StatefulWidget {
 
 class _HeadOfficeChangeInfoScreenState
     extends State<HeadOfficeChangeInfoScreen> {
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _fullNameController = TextEditingController();
+  // final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _occupationController = TextEditingController();
   final TextEditingController _dateOfBirthController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -131,7 +131,7 @@ class _HeadOfficeChangeInfoScreenState
     final data = provider.adminInfoModel?.data;
 
     if (data != null) {
-      _firstNameController.text = data.name ?? "";
+      _fullNameController.text = data.name ?? "";
       _occupationController.text = data.occupation ?? "";
       _dateOfBirthController.text = _formatDateToUI(data.dateOfBirth);
       _phoneController.text = data.phoneNumber ?? "";
@@ -160,8 +160,7 @@ class _HeadOfficeChangeInfoScreenState
   @override
   void dispose() {
     super.dispose();
-    _firstNameController.dispose();
-    _lastNameController.dispose();
+    _fullNameController.dispose();
     _occupationController.dispose();
     _dateOfBirthController.dispose();
     _phoneController.dispose();
@@ -201,8 +200,7 @@ class _HeadOfficeChangeInfoScreenState
               ProfileHeader(
                 pickedImage: _selectedImage,
                 imageUrl: _existingImageUrl,
-                fname: _firstNameController.text,
-                lname: _lastNameController.text,
+                fname: _fullNameController.text,
                 onImagePick: _chooseImage,
                 occupation: _occupationController.text,
                 phoneController: _phoneController.text,
@@ -212,7 +210,7 @@ class _HeadOfficeChangeInfoScreenState
               LabeledInputField(
                 label: "Full Name",
                 placeholder: "",
-                controller: _firstNameController,
+                controller: _fullNameController,
                 validator: nameValidator,
               ),
               // LabeledInputField(
@@ -239,7 +237,10 @@ class _HeadOfficeChangeInfoScreenState
                 readOnly: true,
                 onTap: () => _selectDate(context),
                 suffixIcon: IconButton(
-                  icon: const Icon(Icons.calendar_month, color: Color(0xFFE20613)),
+                  icon: const Icon(
+                    Icons.calendar_month,
+                    color: Color(0xFFE20613),
+                  ),
                   onPressed: () => _selectDate(context),
                 ),
                 validator: (String? value) {
@@ -304,10 +305,11 @@ class _HeadOfficeChangeInfoScreenState
                       final success = await context
                           .read<ChangePasswordProvider>()
                           .updateAdminProfile(
-                            firstName: _firstNameController.text,
-                            lastName: _lastNameController.text,
+                            fullName: _fullNameController.text,
                             occupation: _occupationController.text,
-                            dateOfBirth: _formatDateToAPI(_dateOfBirthController.text),
+                            dateOfBirth: _formatDateToAPI(
+                              _dateOfBirthController.text,
+                            ),
                             phoneNumber: _phoneController.text,
                             city: _cityController.text,
                             address: _addressController.text,
