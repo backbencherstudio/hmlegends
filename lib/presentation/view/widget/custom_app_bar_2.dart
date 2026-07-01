@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../../core/constant/api_endpoint.dart';
 import '../../../core/route/route_names.dart';
 import '../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
+import '../admin_flow/view_model/notification_admin/admin_notification_provider.dart';
 
 class CustomAppBarTwo extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -44,6 +45,18 @@ class CustomAppBarTwo extends StatefulWidget implements PreferredSizeWidget {
 
 class _CustomAppBarTwoState extends State<CustomAppBarTwo> {
   bool _isTapped = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        try {
+          context.read<AdminNotificationProvider>().getAdminNotification();
+        } catch (_) {}
+      }
+    });
+  }
 
   void _handleTap(VoidCallback action) async {
     if (_isTapped) return;
@@ -161,11 +174,14 @@ class _CustomAppBarTwoState extends State<CustomAppBarTwo> {
       onTap:
           () => _handleTap(
             widget.onNotificationTap ??
-                () {
-                  Navigator.pushNamed(
+                () async {
+                  await Navigator.pushNamed(
                     context,
                     RouteNames.adminNotificationScreen,
                   );
+                  if (context.mounted) {
+                    context.read<AdminNotificationProvider>().getAdminNotification();
+                  }
                 },
           ),
       child: Stack(

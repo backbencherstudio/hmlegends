@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
@@ -628,16 +627,56 @@ class _OrdersScreenState extends State<OrdersScreen> {
     Navigator.pop(context);
 
     if (!res.success) {
-      Utils.showToast(
-        msg: res.message,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
+      // ignore: use_build_context_synchronously
+      _showErrorDialog(context, res.message);
       return;
     }
 
+    orderVM.clearCart();
+    orderVM.fetchTodayOrderStatus();
+
     // ignore: use_build_context_synchronously
     _showSuccessDialog(context);
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.r),
+        ),
+        title: Text(
+          'Submission Failed',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.red,
+            fontWeight: FontWeight.w600,
+            fontSize: 18.sp,
+          ),
+        ),
+        content: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w400,
+            fontSize: 16.sp,
+          ),
+        ),
+        actions: [
+          Center(
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xffE20613),
+              ),
+              child: const Text('OK', style: TextStyle(color: Colors.white)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showSuccessDialog(BuildContext context) {

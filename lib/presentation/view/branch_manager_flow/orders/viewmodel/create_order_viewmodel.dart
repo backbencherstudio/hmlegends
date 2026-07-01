@@ -54,6 +54,18 @@ class OrderViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearCart() {
+    _productList.clear();
+    notifyListeners();
+  }
+
+  void reset() {
+    _productList.clear();
+    _hasPlacedToday = false;
+    _orderData = OrderResponseModel();
+    notifyListeners();
+  }
+
   Future<ResponseModel> placeOrder() async {
     try {
       if (_productList.isEmpty) {
