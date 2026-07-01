@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:provider/provider.dart';
 import '../../../view_model/parent/bottom_nav_viewmodel.dart';
 import '../../home/screen/head_office_home_screen.dart';
@@ -16,6 +18,8 @@ class MainWrapper extends StatefulWidget {
 }
 
 class _MainWrapperState extends State<MainWrapper> {
+  DateTime? _lastPressedAt;
+
   @override
   void initState() {
     super.initState();
@@ -35,10 +39,38 @@ class _MainWrapperState extends State<MainWrapper> {
 
     return Consumer<BottomNavViewModel>(
       builder: (context, nav, child) {
-        return Scaffold(
-          backgroundColor: AppColors.bgColor,
-          body: pages[nav.currentIndex],
-          bottomNavigationBar: const CustomBottomNavBar(),
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) async {
+            if (didPop) return;
+
+            if (nav.currentIndex != 0) {
+              nav.updateIndex(0);
+              return;
+            }
+
+            final now = DateTime.now();
+            final backButtonHasNotBeenPressedOrMaxTimeHasPassed =
+                _lastPressedAt == null ||
+                now.difference(_lastPressedAt!) > const Duration(seconds: 2);
+
+            if (backButtonHasNotBeenPressedOrMaxTimeHasPassed) {
+              _lastPressedAt = now;
+              Utils.showToast(
+                msg: "Press back again to exit",
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+              );
+              return;
+            }
+
+            await SystemNavigator.pop();
+          },
+          child: Scaffold(
+            backgroundColor: AppColors.bgColor,
+            body: pages[nav.currentIndex],
+            bottomNavigationBar: const CustomBottomNavBar(),
+          ),
         );
       },
     );

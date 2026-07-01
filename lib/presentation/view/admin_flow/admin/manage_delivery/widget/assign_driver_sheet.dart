@@ -58,10 +58,7 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
           }
           log("===========Delivery Id : ${widget.deliveryId} ======");
           log("===========Total Quantity : $totalQuantity ========");
-          String productName =
-              orderItems.isNotEmpty
-                  ? orderItems.first.product?.name ?? "Unknown Product"
-                  : "Unknown Product";
+
 
           /// --------------------- SET DEFAULT DRIVER ------------------------
           if (drivers.isNotEmpty && provider.selectedDriverId == null) {
@@ -173,9 +170,16 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                       padding: EdgeInsets.all(20),
                       child: Text("Delivery Not Found"),
                     )
+                  else if (orderItems.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text("No items in this delivery"),
+                    )
                   else
-                    Builder(
-                      builder: (context) {
+                    Column(
+                      children: orderItems.map((item) {
+                        final pName = item.product?.name ?? "Unknown Product";
+                        final qty = item.quantity ?? 0;
                         return ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: Image.asset(
@@ -184,21 +188,21 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                             height: 24.h,
                           ),
                           title: Text(
-                            productName,
+                            pName,
                             style: TextStyle(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           trailing: Text(
-                            "$totalQuantity".toString().padLeft(2, '0'),
+                            "$qty".padLeft(2, '0'),
                             style: TextStyle(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         );
-                      },
+                      }).toList(),
                     ),
 
                   SizedBox(height: 16.h),
