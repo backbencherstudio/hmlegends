@@ -24,7 +24,10 @@ class _DeliveryProgressScreenState extends State<DeliveryProgressScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final progressVm = Provider.of<DeliveryProgressViewModel>(context, listen: false);
+      final progressVm = Provider.of<DeliveryProgressViewModel>(
+        context,
+        listen: false,
+      );
       progressVm.fetchDeliveryProgress();
     });
   }
@@ -75,11 +78,11 @@ class _DeliveryProgressScreenState extends State<DeliveryProgressScreen> {
       case 'processing':
       case 'shift_to_driver':
       case 'driver_received':
-        return 'Manchester, Kentucky 39495';
+        return '';
       case 'on_the_way':
-        return '8502 Preston Rd. Inglewood';
+        return '';
       default:
-        return dest?.address ?? '3517 W. Gray St. Utica';
+        return dest?.address ?? '';
     }
   }
 
@@ -97,7 +100,9 @@ class _DeliveryProgressScreenState extends State<DeliveryProgressScreen> {
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final profileData = profileProvider.adminInfoModel?.data;
-    final notificationProvider = Provider.of<AdminNotificationProvider>(context);
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
 
     return Scaffold(
       backgroundColor: AppColors.bgColor,
@@ -220,19 +225,30 @@ class _DeliveryProgressScreenState extends State<DeliveryProgressScreen> {
                         isNext = true;
                       }
 
-                      final circleColor = isCompleted
-                          ? AppColors.primaryColor
-                          : Colors.white;
-                      final borderColor = isCompleted
-                          ? AppColors.primaryColor
-                          : (isNext ? AppColors.primaryColor : Colors.grey.shade300);
-                      final iconColor = isCompleted
-                          ? Colors.white
-                          : (isNext ? AppColors.primaryColor : Colors.grey.shade400);
+                      final circleColor =
+                          isCompleted ? AppColors.primaryColor : Colors.white;
+                      final borderColor =
+                          isCompleted
+                              ? AppColors.primaryColor
+                              : (isNext
+                                  ? AppColors.primaryColor
+                                  : Colors.grey.shade300);
+                      final iconColor =
+                          isCompleted
+                              ? Colors.white
+                              : (isNext
+                                  ? AppColors.primaryColor
+                                  : Colors.grey.shade400);
 
                       final title = step.label ?? '';
-                      final subtitle = _getSubtitleTagForStep(step.key ?? '', data.destination);
-                      final address = _getAddressForStep(step.key ?? '', data.destination);
+                      final subtitle = _getSubtitleTagForStep(
+                        step.key ?? '',
+                        data.destination,
+                      );
+                      final address = _getAddressForStep(
+                        step.key ?? '',
+                        data.destination,
+                      );
                       final time = _formatTimestamp(step.timestamp);
 
                       return Row(
@@ -261,9 +277,10 @@ class _DeliveryProgressScreenState extends State<DeliveryProgressScreen> {
                                 Container(
                                   width: 2.w,
                                   height: 52.h,
-                                  color: isCompleted
-                                      ? AppColors.primaryColor
-                                      : Colors.grey.shade300,
+                                  color:
+                                      isCompleted
+                                          ? AppColors.primaryColor
+                                          : Colors.grey.shade300,
                                 ),
                             ],
                           ),
@@ -283,9 +300,10 @@ class _DeliveryProgressScreenState extends State<DeliveryProgressScreen> {
                                               style: TextStyle(
                                                 fontSize: 16.sp,
                                                 fontWeight: FontWeight.w600,
-                                                color: isCompleted || isNext
-                                                    ? Colors.black87
-                                                    : Colors.grey.shade500,
+                                                color:
+                                                    isCompleted || isNext
+                                                        ? Colors.black87
+                                                        : Colors.grey.shade500,
                                               ),
                                             ),
                                             if (subtitle.isNotEmpty) ...[

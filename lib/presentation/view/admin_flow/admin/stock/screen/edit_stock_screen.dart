@@ -373,7 +373,7 @@ class _EditStockScreenState extends State<EditStockScreen> {
         ),
         SizedBox(height: 16.h),
         Text(
-          "JPEG, PNG up to 50 MB",
+          "JPG, PNG, GIF up to 50 MB",
           style: TextStyle(color: Colors.grey[600], fontSize: 13.sp),
         ),
       ],

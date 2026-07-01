@@ -6,6 +6,7 @@ import 'package:hmlegends/core/validator/validator.dart';
 import 'package:hmlegends/presentation/view/auth/widget/auth_button.dart';
 import 'package:hmlegends/presentation/widget/custom_rich_text.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../../../../widget/custom_text_form_field.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
 
@@ -22,6 +23,7 @@ class _HeadOfficeChangePasswordScreenState
   bool _obscureCurrentPassword = true;
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -31,13 +33,18 @@ class _HeadOfficeChangePasswordScreenState
 
     Future<void> submitForm() async {
       if (_formKey.currentState?.validate() ?? false) {
-        final oldPassword = provider.currentPasswordController.text;
-        final newPassword = provider.newPasswordController.text;
+        setState(() {
+          _isLoading = true;
+        });
+        
+        try {
+          final oldPassword = provider.currentPasswordController.text;
+          final newPassword = provider.newPasswordController.text;
 
-        var res = await provider.changePassword(
-          oldPassword: oldPassword,
-          newPassword: newPassword,
-        );
+          var res = await provider.changePassword(
+            oldPassword: oldPassword,
+            newPassword: newPassword,
+          );
 
         if (res) {
           Utils.showToast(
@@ -59,6 +66,13 @@ class _HeadOfficeChangePasswordScreenState
             backgroundColor: Colors.red,
             textColor: Colors.white,
           );
+        }
+        } finally {
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+          }
         }
       }
     }
@@ -182,15 +196,20 @@ class _HeadOfficeChangePasswordScreenState
 
               ///--------------------- Submit Button ---------------------------
               AuthButton(
-                text: Text(
-                  "Change Password",
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                onPressed: submitForm,
+                text: _isLoading
+                    ? SpinKitSpinningLines(
+                        color: Colors.white,
+                        size: 24.sp,
+                      )
+                    : Text(
+                        "Change Password",
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                onPressed: _isLoading ? () {} : submitForm,
                 color: Color(0xffE20613),
               ),
               SizedBox(height: 10.h),
