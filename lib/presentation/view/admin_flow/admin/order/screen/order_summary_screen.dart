@@ -29,6 +29,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<OrderScreenProvider>().getAdminOrder();
+      context.read<AdminNotificationProvider>().getAdminNotification();
     });
     super.initState();
   }

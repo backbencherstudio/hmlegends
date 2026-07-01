@@ -115,7 +115,7 @@ import 'package:provider/provider.dart';
 import '../../../core/constant/api_endpoint.dart';
 import '../drivier_flow/driver_home/viewmodel/driver_notification_provider.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String? profileImage;
   final String? backArrow;
   final int notificationCount;
@@ -134,6 +134,30 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBackTap,
     this.isDriver = false,
   });
+
+  @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
+
+  @override
+  Size get preferredSize => Size.fromHeight(64.h);
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        try {
+          if (widget.isDriver) {
+            context.read<DriverNotificationProvider>().getDriverNotification();
+          } else {
+            context.read<AdminNotificationProvider>().getAdminNotification();
+          }
+        } catch (_) {}
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +179,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   Row(
                     children: [
-                      backArrow != null && backArrow!.isNotEmpty
+                      widget.backArrow != null && widget.backArrow!.isNotEmpty
                           ? GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
@@ -175,7 +199,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   // Right Section
                   Row(
                     children: [
-                      isDriver
+                      widget.isDriver
                           ? Consumer<DriverNotificationProvider>(
                               builder: (context, provider, child) {
                                 return GestureDetector(
@@ -183,10 +207,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                     if (provider.isLoading) return;
                                     await provider.getDriverNotification();
                                     if (context.mounted) {
-                                      Navigator.pushNamed(
+                                      await Navigator.pushNamed(
                                         context,
                                         RouteNames.adminNotificationScreen,
                                       );
+                                      provider.getDriverNotification();
                                     }
                                   },
                                   child: Stack(
@@ -225,10 +250,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                     if (provider.isLoading) return;
                                     await provider.getAdminNotification();
                                     if (context.mounted) {
-                                      Navigator.pushNamed(
+                                      await Navigator.pushNamed(
                                         context,
                                         RouteNames.adminNotificationScreen,
                                       );
+                                      provider.getAdminNotification();
                                     }
                                   },
                                   child: Stack(
@@ -263,7 +289,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       SizedBox(width: 20.w),
                       GestureDetector(
                         onTap:
-                            onProfileTap ??
+                            widget.onProfileTap ??
                             () {
                               if (ModalRoute.of(context)?.settings.name !=
                                   RouteNames.headOfficeProfileScreen) {
@@ -276,9 +302,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         child: CircleAvatar(
                           radius: 18.r,
                           backgroundImage:
-                              profileImage != null && profileImage!.isNotEmpty
+                              widget.profileImage != null && widget.profileImage!.isNotEmpty
                                   ? NetworkImage(
-                                    "${ApiEndpoints.baseUrl}/storage/avatar/$profileImage",
+                                    "${ApiEndpoints.baseUrl}/storage/avatar/${widget.profileImage}",
                                   )
                                   : AssetImage(AssetPaths.personIcon)
                                       as ImageProvider,
@@ -296,6 +322,4 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  @override
-  Size get preferredSize => Size.fromHeight(64.h);
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:hmlegends/core/route/route_names.dart';
+import '../../../view_model/notification_admin/admin_notification_provider.dart';
 
 class CustomAppbar extends StatefulWidget {
   final String title;
@@ -21,6 +24,18 @@ class CustomAppbar extends StatefulWidget {
 
 class _CustomAppbarState extends State<CustomAppbar> {
   bool _isTapped = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        try {
+          context.read<AdminNotificationProvider>().getAdminNotification();
+        } catch (_) {}
+      }
+    });
+  }
 
   void _handleTap(VoidCallback action) async {
     if (_isTapped) return;
@@ -57,24 +72,46 @@ class _CustomAppbarState extends State<CustomAppbar> {
             ),
             Spacer(),
 
-            Stack(
-              clipBehavior: Clip.none,
-
-              children: [
-                Icon(widget.notification, size: 25),
-                Positioned(
-                  right: -6,
-                  top: -6,
-                  child: Container(
-                    padding: EdgeInsets.all(1),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text("12", style: TextStyle(color: Colors.white)),
+            Consumer<AdminNotificationProvider>(
+              builder: (context, provider, child) {
+                return GestureDetector(
+                  onTap: () => _handleTap(() async {
+                    await Navigator.pushNamed(
+                      context,
+                      RouteNames.adminNotificationScreen,
+                    );
+                    if (context.mounted) {
+                      provider.getAdminNotification();
+                    }
+                  }),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Icon(widget.notification, size: 25),
+                      if (provider.unreadCount > 0)
+                        Positioned(
+                          right: -6,
+                          top: -6,
+                          child: Container(
+                            padding: EdgeInsets.all(3.w),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              "${provider.unreadCount}",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
             SizedBox(width: 14.w),
             ClipOval(

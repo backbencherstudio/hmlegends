@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/route/route_names.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
 import 'package:hmlegends/core/services/user_type_storage.dart';
+import 'package:provider/provider.dart';
+import '../../../../branch_manager_flow/orders/viewmodel/create_order_viewmodel.dart';
 
 void logoutShowSubmitDialog(BuildContext context) {
   final TokenStorage token = TokenStorage();
@@ -68,6 +70,9 @@ void logoutShowSubmitDialog(BuildContext context) {
                     height: 48.h,
                     child: OutlinedButton(
                       onPressed: () async {
+                        if (context.mounted) {
+                          context.read<OrderViewmodel>().reset();
+                        }
                         await token.clearToken();
                         await userType.clearUserType();
                         if (context.mounted) {

@@ -70,7 +70,8 @@ class _DriverDeliverySummaryScreenState
                   onNotificationTap: () async {
                     await provider.getDriverNotification();
                     if (context.mounted) {
-                      Navigator.pushNamed(context, RouteNames.adminNotificationScreen);
+                      await Navigator.pushNamed(context, RouteNames.adminNotificationScreen);
+                      provider.getDriverNotification();
                     }
                   },
                   onBackTap: () {
