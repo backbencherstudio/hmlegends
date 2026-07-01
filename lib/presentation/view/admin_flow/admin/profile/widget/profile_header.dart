@@ -11,17 +11,16 @@ class ProfileHeader extends StatelessWidget {
   final File? pickedImage;
   final String? imageUrl;
   final String fname;
-  final String lname;
   final String occupation;
   final String phoneController;
   final String addressController;
   final VoidCallback onImagePick;
 
-  const ProfileHeader({super.key, 
+  const ProfileHeader({
+    super.key,
     this.pickedImage,
     this.imageUrl,
     required this.fname,
-    required this.lname,
     required this.onImagePick,
     required this.occupation,
     required this.phoneController,
@@ -78,8 +77,7 @@ class ProfileHeader extends StatelessWidget {
       child: Center(
         child: Consumer<ChangePasswordProvider>(
           builder: (context, provider, child) {
-            final name =
-                "${provider.adminInfoModel?.data?.name ?? fname} ${provider.adminInfoModel?.data?.name ?? lname}";
+            final name = provider.adminInfoModel?.data?.name ?? 'N/A';
             final occupation =
                 provider.adminInfoModel?.data?.occupation ?? this.occupation;
             return Column(
