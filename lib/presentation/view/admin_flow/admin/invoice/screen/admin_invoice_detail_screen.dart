@@ -19,8 +19,6 @@ class AdminInvoiceDetailScreen extends StatefulWidget {
   @override
   State<AdminInvoiceDetailScreen> createState() =>
       _AdminInvoiceDetailScreenState();
-
-
 }
 
 class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
@@ -36,6 +34,7 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
 
   final _controller = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isExporting = false;
 
   @override
   void dispose() {
@@ -44,11 +43,11 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
   }
 
   void _showSendInvoiceBottomSheet(
-    BuildContext context, 
-    String invoiceId, 
-    AdminInvoiceProvider provider,
-    {String? receiverEmail}
-  ) {
+    BuildContext context,
+    String invoiceId,
+    AdminInvoiceProvider provider, {
+    String? receiverEmail,
+  }) {
     if (receiverEmail != null && receiverEmail.isNotEmpty) {
       _controller.text = receiverEmail;
     }
@@ -57,120 +56,140 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(24.r),
-                topRight: Radius.circular(24.r),
-              ),
+        return ChangeNotifierProvider.value(
+          value: provider,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-            child: Form(
-              key: _formKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Drag Handle
-                  Container(
-                    width: 48.w,
-                    height: 4.h,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD2D2D2),
-                      borderRadius: BorderRadius.circular(2.r),
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-                  
-                  // Title
-                  Text(
-                    "Type the email of the recipient.",
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: const Color(0xFF4A4C56),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-
-                  // Email Text Field
-                  TextFormField(
-                    controller: _controller,
-                    validator: emailValidator,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      hintText: "branch01@gmail.com",
-                      hintStyle: TextStyle(
-                        fontSize: 14.sp,
-                        color: const Color(0xFFA5A5AB),
-                      ),
-                      filled: true,
-                      fillColor: const Color(0xFFF6F6F6),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16.w, 
-                        vertical: 14.h
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-
-                  // Send Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50.h,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xffE20614),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.r),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24.r),
+                  topRight: Radius.circular(24.r),
+                ),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+              child: Form(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Consumer<AdminInvoiceProvider>(
+                  builder: (context, provider, _) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Drag Handle
+                        Container(
+                          width: 48.w,
+                          height: 4.h,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD2D2D2),
+                            borderRadius: BorderRadius.circular(2.r),
+                          ),
                         ),
-                        elevation: 0,
-                      ),
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          final navigator = Navigator.of(context);
-                          final res = await provider.adminSendInvoice(
-                            invoiceId,
-                            email: _controller.text,
-                          );
-                          navigator.pop(); // Close bottomsheet
-                          _controller.clear();
-                          Utils.showToast(
-                            msg: res.message,
-                            backgroundColor: res.success ? Colors.green : Colors.red,
-                            textColor: Colors.white,
-                          );
-                        }
-                      },
-                      child: Text(
-                        "Send",
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                        SizedBox(height: 24.h),
+
+                        // Title
+                        Text(
+                          "Type the email of the recipient.",
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            color: const Color(0xFF4A4C56),
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                ],
+                        SizedBox(height: 16.h),
+
+                        // Email Text Field
+                        TextFormField(
+                          controller: _controller,
+                          validator: emailValidator,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            hintText: "branch01@gmail.com",
+                            hintStyle: TextStyle(
+                              fontSize: 14.sp,
+                              color: const Color(0xFFA5A5AB),
+                            ),
+                            filled: true,
+                            fillColor: const Color(0xFFF6F6F6),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16.w,
+                              vertical: 14.h,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 24.h),
+
+                        // Send Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50.h,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xffE20614),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.r),
+                              ),
+                              elevation: 0,
+                            ),
+                            onPressed:
+                                provider.isLoading
+                                    ? null
+                                    : () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        final navigator = Navigator.of(context);
+                                        final res = await provider
+                                            .adminSendInvoice(
+                                              invoiceId,
+                                              email: _controller.text,
+                                            );
+                                        navigator.pop(); // Close bottomsheet
+                                        _controller.clear();
+                                        Utils.showToast(
+                                          msg: res.message,
+                                          backgroundColor:
+                                              res.success
+                                                  ? Colors.green
+                                                  : Colors.red,
+                                          textColor: Colors.white,
+                                        );
+                                      }
+                                    },
+                            child:
+                                provider.isLoading
+                                    ? const SpinKitSpinningLines(
+                                      color: Colors.white,
+                                      size: 30,
+                                    )
+                                    : Text(
+                                      "Send",
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                          ),
+                        ),
+                        SizedBox(height: 16.h),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -181,41 +200,67 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
 
   Widget _exportPdfButton(InvoiceData invoice) {
     return GestureDetector(
-      onTap: invoice.url.isEmpty
-          ? () {
-              Utils.showToast(
-                msg: "PDF URL is not available yet",
-                backgroundColor: Colors.orange,
-                textColor: Colors.white,
-              );
-            }
-          : () {
-              openInvoice(invoice.url);
-            },
+      onTap:
+          invoice.url.isEmpty || _isExporting
+              ? () {
+                if (invoice.url.isEmpty) {
+                  Utils.showToast(
+                    msg: "PDF URL is not available yet",
+                    backgroundColor: Colors.orange,
+                    textColor: Colors.white,
+                  );
+                }
+              }
+              : () async {
+                setState(() {
+                  _isExporting = true;
+                });
+                await openInvoice(invoice.url);
+                if (mounted) {
+                  setState(() {
+                    _isExporting = false;
+                  });
+                }
+              },
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 44.r,
-            height: 44.r,
-            decoration: const BoxDecoration(
-              color: Color(0xFFFCE8E6),
-              shape: BoxShape.circle,
+          if (_isExporting) ...[
+            const SizedBox(
+              height: 20,
+              width: 20,
+              child: SpinKitThreeBounce(
+                duration: Duration(milliseconds: 300),
+                size: 10,
+                color: Color(0xffE20614),
+              ),
             ),
-            child: const Icon(
-              Icons.picture_as_pdf,
-              color: Color(0xffE20614),
-              size: 22,
+            SizedBox(width: 8.w),
+          ] else ...[
+            Container(
+              width: 44.r,
+              height: 44.r,
+              decoration: const BoxDecoration(
+                color: Color(0xFFFCE8E6),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.picture_as_pdf,
+                color: Color(0xffE20614),
+                size: 22,
+              ),
             ),
-          ),
-          SizedBox(width: 8.w),
+            SizedBox(width: 8.w),
+          ],
           Text(
-            "Export pdf",
+            _isExporting ? 'Exporting...' : 'Export',
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 20.sp,
               color: const Color(0xffE20614),
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w800,
               decoration: TextDecoration.underline,
+              decorationColor: const Color(0xffE20614),
+              decorationThickness: 1,
             ),
           ),
         ],
@@ -286,7 +331,7 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
                       SizedBox(height: 4.h),
                       _addressCard(invoice.receiver),
                       SizedBox(height: 20.h),
-                      
+
                       const Divider(color: Color(0xFFE5E5E5), thickness: 1),
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 8.h),
@@ -314,10 +359,10 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
                       ),
                       const Divider(color: Color(0xFFE5E5E5), thickness: 1),
                       SizedBox(height: 16.h),
-                      
+
                       _itemsTable(invoice.order.orderItems),
                       const Divider(color: Color(0xFFE5E5E5), thickness: 1),
-                      
+
                       Padding(
                         padding: EdgeInsets.only(top: 12.h),
                         child: Row(
@@ -346,7 +391,7 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
                   ),
                 ),
                 SizedBox(height: 24.h),
-                
+
                 Text(
                   "${invoice.receiver.name}'s invoice is ready. Now you can\nsend/export it.",
                   textAlign: TextAlign.center,
@@ -358,7 +403,7 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
                   ),
                 ),
                 SizedBox(height: 24.h),
-                
+
                 Row(
                   children: [
                     Expanded(
@@ -374,12 +419,17 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
                             elevation: 0,
                           ),
                           onPressed: () {
-                            _showSendInvoiceBottomSheet(context, invoice.id, provider, receiverEmail: invoice.receiver.email);
+                            _showSendInvoiceBottomSheet(
+                              context,
+                              invoice.id,
+                              provider,
+                              receiverEmail: invoice.receiver.email,
+                            );
                           },
                           child: Text(
                             "Send Invoice",
                             style: TextStyle(
-                              fontSize: 16.sp, 
+                              fontSize: 16.sp,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -411,7 +461,7 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 14.sp, 
+        fontSize: 14.sp,
         fontWeight: FontWeight.bold,
         color: const Color(0xFF777980),
       ),
@@ -424,7 +474,7 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          person.name.toUpperCase(), 
+          person.name.toUpperCase(),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16.sp,
@@ -443,82 +493,137 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
         SizedBox(height: 4.h),
         Text(
           person.phoneNumber,
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: const Color(0xFF4A4C56),
-          ),
+          style: TextStyle(fontSize: 14.sp, color: const Color(0xFF4A4C56)),
         ),
       ],
-    );
-  }
-
-  // Helper Headers
-  static Widget _tableHeader(String text, {required int flex, TextAlign align = TextAlign.center}) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontWeight: FontWeight.bold, 
-          fontSize: 14.sp,
-          color: const Color(0xFF4A4C56),
-        ),
-        textAlign: align,
-      ),
-    );
-  }
-
-  static Widget _tableCell(String text, {required int flex, TextAlign align = TextAlign.center, FontWeight? fontWeight}) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 14.sp,
-          color: const Color(0xFF4A4C56),
-          fontWeight: fontWeight,
-        ),
-        textAlign: align,
-      ),
     );
   }
 
   // Items Table
   Widget _itemsTable(List<OrderItem> items) {
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 8.h),
-          child: Row(
-            children: [
-              _tableHeader("NO", flex: 1, align: TextAlign.left),
-              _tableHeader("Product Name", flex: 4, align: TextAlign.left),
-              _tableHeader("Price", flex: 2, align: TextAlign.center),
-              _tableHeader("Quantity", flex: 2, align: TextAlign.center),
-              _tableHeader("Total", flex: 2, align: TextAlign.right),
-            ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Table(
+        border: TableBorder.all(color: const Color(0xFFE5E5E5)),
+        columnWidths: {
+          0: FixedColumnWidth(50.w),
+          1: FixedColumnWidth(180.w),
+          2: FixedColumnWidth(80.w),
+          3: FixedColumnWidth(70.w), // Tax column beside Price
+          4: FixedColumnWidth(90.w), // Quantity
+          5: FixedColumnWidth(80.w), // Total
+        },
+        children: [
+          TableRow(
+            decoration: const BoxDecoration(color: Color(0xFFF6F6F6)),
+            children:
+                ['No', 'Product Name', 'Price', 'Tax', 'Quantity', 'Total'].map(
+                  (header) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 12.h,
+                      ),
+                      child: Text(
+                        header,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.sp,
+                          color: const Color(0xFF4A4C56),
+                        ),
+                      ),
+                    );
+                  },
+                ).toList(),
           ),
-        ),
-        const Divider(color: Color(0xFFE5E5E5), thickness: 1),
-        ...List.generate(items.length, (i) {
-          final item = items[i];
-          final total = item.price * item.quantity;
-
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 6.h),
-            child: Row(
+          ...List.generate(items.length, (i) {
+            final item = items[i];
+            final total = item.price * item.quantity;
+            return TableRow(
               children: [
-                _tableCell("${i + 1}".padLeft(2, '0'), flex: 1, align: TextAlign.left),
-                _tableCell(item.product ?? "Product Name", flex: 4, align: TextAlign.left),
-                _tableCell("£${item.price}", flex: 2, align: TextAlign.center),
-                _tableCell("${item.quantity}", flex: 2, align: TextAlign.center),
-                _tableCell("£$total", flex: 2, align: TextAlign.right),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
+                  child: Text(
+                    '${i + 1}'.padLeft(2, '0'),
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: const Color(0xFF4A4C56),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
+                  child: Text(
+                    item.product ?? item.productName ?? 'Product Name',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: const Color(0xFF4A4C56),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
+                  child: Text(
+                    '£${item.price}',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: const Color(0xFF4A4C56),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
+                  child: Text(
+                    '${item.taxPercent}%',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: const Color(0xFF4A4C56),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
+                  child: Text(
+                    '${item.quantity}',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: const Color(0xFF4A4C56),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
+                  child: Text(
+                    '£$total',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: const Color(0xFF4A4C56),
+                    ),
+                  ),
+                ),
               ],
-            ),
-          );
-        }),
-        SizedBox(height: 8.h),
-      ],
+            );
+          }),
+        ],
+      ),
     );
   }
 }
