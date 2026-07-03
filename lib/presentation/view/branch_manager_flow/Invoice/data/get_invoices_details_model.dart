@@ -170,14 +170,18 @@ class OrderItem {
   int? quantity;
   double? price;
   Product? product;
+  String? productName;
+  double? taxPercent;
 
-  OrderItem({this.quantity, this.price, this.product});
+  OrderItem({this.quantity, this.price, this.product, this.productName, this.taxPercent});
 
   OrderItem.fromJson(Map<String, dynamic> json) {
     quantity = json['quantity'];
     price = _toDouble(json['price']);
     product =
         json['product'] != null ? Product.fromJson(json['product']) : null;
+    productName = json['product_name'];
+    taxPercent = _toDouble(json['tax_percent']);
   }
 
   Map<String, dynamic> toJson() {
@@ -187,6 +191,8 @@ class OrderItem {
     if (product != null) {
       data['product'] = product!.toJson();
     }
+    data['product_name'] = productName;
+    data['tax_percent'] = taxPercent;
     return data;
   }
 
