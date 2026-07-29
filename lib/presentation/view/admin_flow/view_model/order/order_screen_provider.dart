@@ -136,7 +136,7 @@ class OrderScreenProvider extends ChangeNotifier {
   }
 
   ///----------------------- Approve Order --------------------------------
-  Future<void> approveOrder(String orderId) async {
+  Future<void> approveOrder(String orderId, List<String> approvedItemIds) async {
     try {
       final token = await _tokenStorage.getToken();
       final url = Uri.parse(ApiEndpoints.orderAccept(orderId));
@@ -148,7 +148,11 @@ class OrderScreenProvider extends ChangeNotifier {
         headers: {
           "Authorization": "Bearer $token",
           "Accept": "application/json",
+          "Content-Type": "application/json",
         },
+        body: jsonEncode({
+          "approved_item_ids": approvedItemIds,
+        }),
       );
 
       logger.i("Status Code: ${response.statusCode}");

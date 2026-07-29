@@ -10,8 +10,16 @@ import 'package:provider/provider.dart';
 import '../../../../widget/custom_app_bar_2.dart';
 import '../../../view_model/order/order_screen_provider.dart';
 
-class OrderSummaryViewScreen extends StatelessWidget {
+class OrderSummaryViewScreen extends StatefulWidget {
   const OrderSummaryViewScreen({super.key});
+
+  @override
+  State<OrderSummaryViewScreen> createState() => _OrderSummaryViewScreenState();
+}
+
+class _OrderSummaryViewScreenState extends State<OrderSummaryViewScreen> {
+  final Set<String> _selectedItemIds = {};
+  bool _isInitialized = true;
 
   Future<void> _showDialog(
     BuildContext context,
@@ -115,10 +123,25 @@ class OrderSummaryViewScreen extends StatelessWidget {
       context,
     );
 
+    // Initialize all items as selected once when singleOrder is loaded
+    if (!_isInitialized && singleOrder.isNotEmpty) {
+      for (var item in singleOrder) {
+        if (item.id != null) {
+          _selectedItemIds.add(item.id!);
+        }
+      }
+      _isInitialized = true;
+    }
+
     // Calculate total items
     final totalItems = singleOrder.fold<int>(
       0,
-      (sum, item) => sum + (item.quantity ?? 0),
+      (sum, item) {
+        if (_selectedItemIds.contains(item.id)) {
+          return sum + (item.quantity ?? 0);
+        }
+        return sum;
+      },
     );
     return Scaffold(
       backgroundColor: const Color(0xFFFFF5F5),
@@ -157,11 +180,22 @@ class OrderSummaryViewScreen extends StatelessWidget {
                   /// ------------------ Approve Button ----------------------
                   InkWell(
                     onTap: () {
+                      if (_selectedItemIds.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Please select at least one item to approve."),
+                          ),
+                        );
+                        return;
+                      }
                       _showDialog(
                         context,
                         "Are you sure you want to approve today's order?",
                         () async {
-                          await provider.approveOrder(orderId);
+                          await provider.approveOrder(
+                            orderId,
+                            _selectedItemIds.toList(),
+                          );
                           if (context.mounted) {
                             showDialog(
                               context: context,
@@ -269,7 +303,30 @@ class OrderSummaryViewScreen extends StatelessWidget {
                           ),
                         ),
 
-                        SizedBox(width: 12.w),
+                        SizedBox(width: 8.w),
+
+                        Checkbox(
+                          activeColor: const Color(0xFFE20613),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                          value: _selectedItemIds.contains(item.id),
+                          visualDensity: VisualDensity.compact,
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          onChanged: (bool? checked) {
+                            setState(() {
+                              if (checked == true) {
+                                if (item.id != null) {
+                                  _selectedItemIds.add(item.id!);
+                                }
+                              } else {
+                                _selectedItemIds.remove(item.id);
+                              }
+                            });
+                          },
+                        ),
+
+                        SizedBox(width: 8.w),
 
                         CustomNetworkImage(
                           imageUrl: item.product?.image ?? "",

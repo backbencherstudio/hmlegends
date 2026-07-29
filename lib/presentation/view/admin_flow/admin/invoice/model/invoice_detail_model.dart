@@ -38,6 +38,9 @@ class InvoiceData {
   final String status;
   final String createdAt;
   final String url;
+  final double subtotal;
+  final double taxAmount;
+  final double totalAmount;
 
   final Person creator;
   final Person receiver;
@@ -50,6 +53,9 @@ class InvoiceData {
     required this.status,
     required this.createdAt,
     required this.url,
+    required this.subtotal,
+    required this.taxAmount,
+    required this.totalAmount,
     required this.creator,
     required this.receiver,
     required this.order,
@@ -62,6 +68,9 @@ class InvoiceData {
     status: json["status"] ?? "",
     createdAt: json["created_at"] ?? "",
     url: json["url"] ?? "",
+    subtotal: (json["subtotal"] as num?)?.toDouble() ?? 0.0,
+    taxAmount: (json["tax_amount"] as num?)?.toDouble() ?? 0.0,
+    totalAmount: (json["total_amount"] as num?)?.toDouble() ?? 0.0,
     creator: Person.fromJson(json["creator"] ?? {}),
     receiver: Person.fromJson(json["receiver"] ?? {}),
     order: Order.fromJson(json["order"] ?? {}),
@@ -74,6 +83,9 @@ class InvoiceData {
     "status": status,
     "created_at": createdAt,
     "url": url,
+    "subtotal": subtotal,
+    "tax_amount": taxAmount,
+    "total_amount": totalAmount,
     "creator": creator.toJson(),
     "receiver": receiver.toJson(),
     "order": order.toJson(),
@@ -196,7 +208,9 @@ class OrderItem {
       taxPercent: (json["tax_percent"] as num?)?.toDouble() ?? 0.0,
       subtotal: (json["subtotal"] as num?)?.toDouble() ?? 0.0,
       taxAmount: (json["tax_amount"] as num?)?.toDouble() ?? 0.0,
-      itemTotal: (json["item_total"] as num?)?.toDouble() ?? 0.0,
+      itemTotal: (json["total"] as num?)?.toDouble() ??
+          (json["item_total"] as num?)?.toDouble() ??
+          0.0,
     );
   }
 

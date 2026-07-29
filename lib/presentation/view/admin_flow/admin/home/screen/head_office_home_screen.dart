@@ -59,19 +59,19 @@ class HeadOfficeHomeScreen extends StatelessWidget {
   }
 
   Widget _gridCards(BuildContext context, HomeScreenProvider provider) {
-    final data = provider.invoiceStatusModel?.data;
+    // final data = provider.invoiceStatusModel?.data;
 
-    final totalInvoice = data?.invoice?.totalInvoice ?? 0;
-    final paidInvoice = data?.invoice?.paidInvoice ?? 0;
+    // final totalInvoice = data?.invoice?.totalInvoice ?? 0;
+    // final paidInvoice = data?.invoice?.paidInvoice ?? 0;
 
-    final activeBranch = data?.branch?.activeBranch ?? 0;
-    final lockedBranch = data?.branch?.lockedBranch ?? 0;
+    // final activeBranch = data?.branch?.activeBranch ?? 0;
+    // final lockedBranch = data?.branch?.lockedBranch ?? 0;
 
-    final totalOrder = data?.order?.totalOrder ?? 0;
-    final completedOrder = data?.order?.totalCompletedOrder ?? 0;
+    // final totalOrder = data?.order?.totalOrder ?? 0;
+    // final completedOrder = data?.order?.totalCompletedOrder ?? 0;
 
-    final toDaysDelivery = data?.delivery?.todaysDelivery ?? 0;
-    final assignedDelivery = data?.delivery?.assignedDelivery ?? 0;
+    // final toDaysDelivery = data?.delivery?.todaysDelivery ?? 0;
+    // final assignedDelivery = data?.delivery?.assignedDelivery ?? 0;
 
     return GridView.builder(
       itemCount: 5,
@@ -94,8 +94,8 @@ class HeadOfficeHomeScreen extends StatelessWidget {
                   ),
               title: 'Invoices',
               subtitle: 'Status',
-              label1: 'Paid Invoices',
-              value1: "$paidInvoice/$totalInvoice",
+              // label1: 'Paid Invoices',
+              // value1: "$paidInvoice/$totalInvoice",
               iconPath: AssetPaths.invoiceIcon,
             );
 
@@ -108,10 +108,10 @@ class HeadOfficeHomeScreen extends StatelessWidget {
                   ),
               title: 'Manage',
               subtitle: 'Branches',
-              label1: 'Active',
-              value1: "$activeBranch",
-              label2: 'Locked',
-              value2: "$lockedBranch",
+              //label1: 'Active',
+              //value1: "$activeBranch",
+              // label2: 'Locked',
+              // value2: "$lockedBranch",
               iconPath: AssetPaths.branchIcon,
             );
 
@@ -122,8 +122,8 @@ class HeadOfficeHomeScreen extends StatelessWidget {
               },
               title: 'Orders',
               subtitle: 'Summary',
-              label1: 'Completed Orders',
-              value1: "$completedOrder/$totalOrder",
+              // label1: 'Completed Orders',
+              // value1: "$completedOrder/$totalOrder",
               iconPath: AssetPaths.orderIcon,
             );
           case 3:
@@ -135,10 +135,10 @@ class HeadOfficeHomeScreen extends StatelessWidget {
                   ),
               title: 'Manage',
               subtitle: 'Delivery',
-              label1: "Today's Delivery",
-              value1: "$toDaysDelivery",
-              label2: 'Assigned Delivery',
-              value2: "$assignedDelivery",
+              // label1: "Today's Delivery",
+              // value1: "$toDaysDelivery",
+              // label2: 'Assigned Delivery',
+              // value2: "$assignedDelivery",
               iconPath: AssetPaths.deliveryIcon,
             );
 
@@ -154,10 +154,10 @@ class HeadOfficeHomeScreen extends StatelessWidget {
 
                   title: 'User',
                   subtitle: 'Approval',
-                  label1: "Pending User",
-                  value1: "${provider.pendingUserModel?.data?.total}",
-                  label2: 'See All Pending',
-                  value2: "",
+                  // label1: "Pending User",
+                  //value1: "${provider.pendingUserModel?.data?.total}",
+                  // label2: 'See All Pending',
+                  // value2: "",
                   iconPath: "assets/icons/person.png",
                 );
               },
