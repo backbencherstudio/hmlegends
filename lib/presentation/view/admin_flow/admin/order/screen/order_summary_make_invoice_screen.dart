@@ -8,7 +8,6 @@ import 'package:hmlegends/presentation/view/widget/custom_app_bar_2.dart';
 import 'package:hmlegends/presentation/widget/custom_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:hmlegends/core/utlis/utils.dart';
 import '../../../../../../core/route/route_names.dart';
 import '../../../view_model/order/order_screen_provider.dart';
 
@@ -21,7 +20,9 @@ class OrderSummaryMakeInvoiceScreen extends StatelessWidget {
     final invoiceProvider = context.watch<AdminInvoiceProvider>();
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
-    final notificationProvider = Provider.of<AdminNotificationProvider>(context);
+    final notificationProvider = Provider.of<AdminNotificationProvider>(
+      context,
+    );
 
     /// ------------------- Check if adminSingleOrderModel exists --------------
     if (provider.adminSingleOrderModel == null) {
@@ -59,7 +60,7 @@ class OrderSummaryMakeInvoiceScreen extends StatelessWidget {
 
     /// ---------------- These are single values, not lists --------------------
     final userName = orders.user?.name ?? 'Unknown User';
-    final orderTotalItems = orders.totalQuantity ?? 0;
+    final orderTotalItems = orders.finalQuantity ?? 0;
 
     /// ---------------- Get order items list for ListView.builder -------------
     final orderItems = orders.orderItems ?? [];
@@ -163,61 +164,85 @@ class OrderSummaryMakeInvoiceScreen extends StatelessWidget {
 
           /// --------------- Order Items List -----------------------------
           Expanded(
-            child: orderItems.isEmpty
-                ? const Center(child: Text('No items in this order'))
-                : ListView.separated(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                    itemCount: orderItems.length,
-                    separatorBuilder: (context, index) => Divider(
-                      color: Colors.black12,
-                      thickness: 0.8,
-                      height: 16.h,
+            child:
+                orderItems.isEmpty
+                    ? const Center(child: Text('No items in this order'))
+                    : ListView.separated(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 8.h,
+                      ),
+                      itemCount: orderItems.length,
+                      separatorBuilder:
+                          (context, index) => Divider(
+                            color: Colors.black12,
+                            thickness: 0.8,
+                            height: 16.h,
+                          ),
+                      itemBuilder: (context, index) {
+                        final item = orderItems[index];
+                        final bool isUnavailable =
+                            item.itemStatus == "UNAVAILABLE";
+
+                        return IgnorePointer(
+                          ignoring: isUnavailable,
+                          child: Opacity(
+                            opacity: isUnavailable ? 0.5 : 1.0,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 4.h),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "${index + 1}.",
+                                    style: TextStyle(
+                                      color: AppColors.authBodyTextColor,
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  _buildStatusCheckbox(item.itemStatus),
+                                  SizedBox(width: 8.w),
+                                  CustomNetworkImage(
+                                    imageUrl: item.product?.image ?? "",
+                                    height: 32.h,
+                                    width: 50.w,
+                                    borderRadius: 6.r,
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  Expanded(
+                                    child: Text(
+                                      item.product?.name ?? "Unknown Product",
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black87,
+                                        decoration:
+                                            isUnavailable
+                                                ? TextDecoration.lineThrough
+                                                : null,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    "${(item.quantity ?? 0).toString().padLeft(2, '0')} pcs",
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                      decoration:
+                                          isUnavailable
+                                              ? TextDecoration.lineThrough
+                                              : null,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                    itemBuilder: (context, index) {
-                      final item = orderItems[index];
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 4.h),
-                        child: Row(
-                          children: [
-                            Text(
-                              "${index + 1}.",
-                              style: TextStyle(
-                                color: AppColors.authBodyTextColor,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(width: 12.w),
-                            CustomNetworkImage(
-                              imageUrl: item.product?.image ?? "",
-                              height: 32.h,
-                              width: 50.w,
-                              borderRadius: 6.r,
-                            ),
-                            SizedBox(width: 12.w),
-                            Expanded(
-                              child: Text(
-                                item.product?.name ?? "Unknown Product",
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              "${(item.quantity ?? 0).toString().padLeft(2, '0')} pcs",
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
           ),
 
           /// ----------------- Order Total Items ------------------------------
@@ -293,45 +318,87 @@ class OrderSummaryMakeInvoiceScreen extends StatelessWidget {
                   ),
                   elevation: 0,
                 ),
-                onPressed: invoiceProvider.isLoading
-                    ? null
-                    : () async {
-                        final navigator = Navigator.of(context);
-                        final res = await invoiceProvider.createInvoice(orders.id ?? "");
-                        if (!res.success) {
-                          Utils.showToast(
-                            msg: res.message,
-                            backgroundColor: Colors.red,
-                            textColor: Colors.white,
+                onPressed:
+                    invoiceProvider.isLoading
+                        ? null
+                        : () async {
+                          final navigator = Navigator.of(context);
+                          // final res = await invoiceProvider.createInvoice(
+                          //   orders.id ?? "",
+                          // );
+                          // if (!res.success) {
+                          //   Utils.showToast(
+                          //     msg: res.message,
+                          //     backgroundColor: Colors.red,
+                          //     textColor: Colors.white,
+                          //   );
+                          // } else {
+                          //   Utils.showToast(
+                          //     msg: "Invoice generated successfully",
+                          //     backgroundColor: Colors.green,
+                          //     textColor: Colors.white,
+                          //   );
+                          // }
+                          await invoiceProvider.fetchInvoiceDetail(
+                            orders.id ?? "",
                           );
-                        } else {
-                          Utils.showToast(
-                            msg: "Invoice generated successfully",
-                            backgroundColor: Colors.green,
-                            textColor: Colors.white,
+                          navigator.pushNamed(
+                            RouteNames.adminInvoiceDetailScreen,
                           );
-                        }
-                        await invoiceProvider.fetchInvoiceDetail(orders.id ?? "");
-                        navigator.pushNamed(RouteNames.adminInvoiceDetailScreen);
-                      },
-                child: invoiceProvider.isLoading
-                    ? const SpinKitSpinningLines(
-                        color: Colors.white,
-                        size: 24,
-                      )
-                    : Text(
-                        "Make Invoice",
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
+                        },
+                child:
+                    invoiceProvider.isLoading
+                        ? const SpinKitSpinningLines(
+                          color: Colors.white,
+                          size: 24,
+                        )
+                        : Text(
+                          "View Invoice",
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
               ),
             ),
           ),
           SizedBox(height: 32.h),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatusCheckbox(String? itemStatus) {
+    final bool isApproved = itemStatus == "APPROVED";
+    final bool isUnavailable = itemStatus == "UNAVAILABLE";
+
+    return Container(
+      width: 18.w,
+      height: 18.h,
+      decoration: BoxDecoration(
+        color:
+            isApproved
+                ? const Color(0xFF5BB450)
+                : isUnavailable
+                ? const Color(0xFFFFF0F0)
+                : Colors.transparent,
+        border: Border.all(
+          color:
+              isApproved
+                  ? const Color(0xFF5BB450)
+                  : isUnavailable
+                  ? const Color(0xFFE20613)
+                  : Colors.grey,
+          width: 1.5,
+        ),
+        borderRadius: BorderRadius.circular(4.r),
+      ),
+      child:
+          isApproved
+              ? const Icon(Icons.check, size: 13, color: Colors.white)
+              : isUnavailable
+              ? const Icon(Icons.close, size: 13, color: Color(0xFFE20613))
+              : null,
     );
   }
 }

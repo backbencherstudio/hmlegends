@@ -365,24 +365,75 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
 
                       Padding(
                         padding: EdgeInsets.only(top: 12.h),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(
-                              "Subtotal:   ",
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                color: const Color(0xFF777980),
-                                fontWeight: FontWeight.w500,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  "Subtotal:   ",
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: const Color(0xFF777980),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  "£${invoice.subtotal}",
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              "£${invoice.order.totalAmount}",
-                              style: TextStyle(
-                                fontSize: 18.sp,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            SizedBox(height: 4.h),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  "Tax Amount:   ",
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: const Color(0xFF777980),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  "£${invoice.taxAmount}",
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8.h),
+                            const Divider(color: Color(0xFFE5E5E5), thickness: 1),
+                            SizedBox(height: 8.h),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  "Total Amount:   ",
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    color: const Color(0xFF777980),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  "£${invoice.totalAmount}",
+                                  style: TextStyle(
+                                    fontSize: 18.sp,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

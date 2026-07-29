@@ -13,7 +13,7 @@ class AdminSingleOrderModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['success'] = success;
+    data['success'] = success;  
     data['message'] = message;
     if (order != null) {
       data['order'] = order!.toJson();
@@ -28,18 +28,17 @@ class Order {
   String? createdAt;
   String? status;
   List<OrderItems>? orderItems;
-  Product? product;
   User? user;
+  int? finalQuantity;
 
-  Order({
-    this.id,
-    this.totalQuantity,
-    this.createdAt,
-    this.status,
-    this.orderItems,
-    this.product,
-    this.user,
-  });
+  Order(
+      {this.id,
+      this.totalQuantity,
+      this.createdAt,
+      this.status,
+      this.orderItems,
+      this.user,
+      this.finalQuantity});
 
   Order.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -52,9 +51,8 @@ class Order {
         orderItems!.add(OrderItems.fromJson(v));
       });
     }
-    product =
-        json['product'] != null ? Product.fromJson(json['product']) : null;
     user = json['user'] != null ? User.fromJson(json['user']) : null;
+    finalQuantity = json['final_quantity'];
   }
 
   Map<String, dynamic> toJson() {
@@ -66,12 +64,10 @@ class Order {
     if (orderItems != null) {
       data['order_items'] = orderItems!.map((v) => v.toJson()).toList();
     }
-    if (product != null) {
-      data['product'] = product!.toJson();
-    }
     if (user != null) {
       data['user'] = user!.toJson();
     }
+    data['final_quantity'] = finalQuantity;
     return data;
   }
 }
@@ -79,13 +75,34 @@ class Order {
 class OrderItems {
   String? id;
   int? quantity;
+  int? price;
+  int? tax;
+  String? itemStatus;
+  String? approvedAt;
+  String? pickedAt;
+  String? deliveredAt;
   Product? product;
 
-  OrderItems({this.id, this.quantity, this.product});
+  OrderItems(
+      {this.id,
+      this.quantity,
+      this.price,
+      this.tax,
+      this.itemStatus,
+      this.approvedAt,
+      this.pickedAt,
+      this.deliveredAt,
+      this.product});
 
   OrderItems.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     quantity = json['quantity'];
+    price = json['price'];
+    tax = json['tax'];
+    itemStatus = json['item_status'];
+    approvedAt = json['approved_at'];
+    pickedAt = json['picked_at'];
+    deliveredAt = json['delivered_at'];
     product =
         json['product'] != null ? Product.fromJson(json['product']) : null;
   }
@@ -94,6 +111,12 @@ class OrderItems {
     final Map<String, dynamic> data = {};
     data['id'] = id;
     data['quantity'] = quantity;
+    data['price'] = price;
+    data['tax'] = tax;
+    data['item_status'] = itemStatus;
+    data['approved_at'] = approvedAt;
+    data['picked_at'] = pickedAt;
+    data['delivered_at'] = deliveredAt;
     if (product != null) {
       data['product'] = product!.toJson();
     }
@@ -102,38 +125,36 @@ class OrderItems {
 }
 
 class Product {
-  String? image;
+  String? id;
   String? name;
-  double? price;
+  String? image;
 
-  Product({this.image, this.name, this.price});
+  Product({this.id, this.name, this.image});
 
   Product.fromJson(Map<String, dynamic> json) {
-    image = json['image'];
+    id = json['id'];
     name = json['name'];
-    price = json['price'] != null
-        ? (json['price'] is int
-            ? (json['price'] as int).toDouble()
-            : (json['price'] as num).toDouble())
-        : null;
+    image = json['image'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['image'] = image;
+    data['id'] = id;
     data['name'] = name;
-    data['price'] = price;
+    data['image'] = image;
     return data;
   }
 }
 
 class User {
-  final String id;
-  final String name;
+  String? id;
+  String? name;
 
-  User({required this.id, required this.name});
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(id: json['id'] ?? '', name: json['name'] ?? '');
+  User({this.id, this.name});
+
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
   }
 
   Map<String, dynamic> toJson() {
