@@ -5,12 +5,12 @@ import 'package:hmlegends/core/constant/app_colors.dart';
 class InfoCard extends StatelessWidget {
   final String title;
   final String subtitle;
-  final String label1;
-  final String value1;
+  // final String label1;
+  // final String value1;
   final String iconPath;
 
-  final String? label2;
-  final String? value2;
+  // final String? label2;
+  // final String? value2;
 
   final VoidCallback? onTaps;
 
@@ -18,17 +18,17 @@ class InfoCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.subtitle,
-    required this.label1,
-    required this.value1,
+    // required this.label1,
+    // required this.value1,
     required this.iconPath,
-    this.label2,
-    this.value2,
+    // this.label2,
+    // this.value2,
     this.onTaps,
   });
 
   @override
   Widget build(BuildContext context) {
-    final bool hasSecondLine = label2 != null && value2 != null;
+    //final bool hasSecondLine = label2 != null && value2 != null;
 
     return GestureDetector(
       onTap: onTaps,
@@ -47,6 +47,7 @@ class InfoCard extends StatelessWidget {
           ],
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -104,46 +105,45 @@ class InfoCard extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: 12.h),
+            // SizedBox(height: 12.h),
 
             /// LABEL + VALUES
-            _row(label1, value1, true),
-
-            if (hasSecondLine) ...[
-              SizedBox(height: 6.h),
-              _row(label2!, value2!, false),
-            ],
+            // _row(label1, value1, true),
+            // if (hasSecondLine) ...[
+            //   SizedBox(height: 6.h),
+            //   _row(label2!, value2!, false),
+            // ],
           ],
         ),
       ),
     );
   }
 
-  Widget _row(String label, String value, bool bold) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color:
-                label == "See All Pending"
-                    ? Colors.black
-                    : AppColors.authBodyTextColor,
-            fontSize: 12.sp,
-            fontWeight:
-                label == "See All Pending" ? FontWeight.bold : FontWeight.w400,
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            color: AppColors.authBodyTextColor,
-            fontSize: 14.sp,
-            fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _row(String label, String value, bool bold) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //     children: [
+  //       Text(
+  //         label,
+  //         style: TextStyle(
+  //           color:
+  //               label == "See All Pending"
+  //                   ? Colors.black
+  //                   : AppColors.authBodyTextColor,
+  //           fontSize: 12.sp,
+  //           fontWeight:
+  //               label == "See All Pending" ? FontWeight.bold : FontWeight.w400,
+  //         ),
+  //       ),
+  //       Text(
+  //         value,
+  //         style: TextStyle(
+  //           color: AppColors.authBodyTextColor,
+  //           fontSize: 14.sp,
+  //           fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 }
