@@ -2,9 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/app_colors.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:provider/provider.dart';
+import '../../admin_flow/view_model/parent/bottom_nav_viewmodel.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
+  void _handleBack(BuildContext context) {
+    try {
+      final nav = context.read<BottomNavViewModel>();
+      if (nav.currentIndex != 0) {
+        nav.updateIndex(0);
+      }
+    } catch (_) {}
+
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+  }
 
   void _showSubmitDialog(BuildContext context) {
     showDialog(
@@ -86,21 +101,32 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bgColor,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          'Profile',
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.sp),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings_outlined, size: 24.w),
-            onPressed: () {},
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _handleBack(context);
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.bgColor,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () => _handleBack(context),
           ),
-        ],
-      ),
+          centerTitle: true,
+          title: Text(
+            'Profile',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.sp),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.settings_outlined, size: 24.w),
+              onPressed: () {},
+            ),
+          ],
+        ),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(bottom: 20.h),
         child: Column(
@@ -156,7 +182,8 @@ class ProfileScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }
 

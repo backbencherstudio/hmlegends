@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../widget/logout_dialog.dart';
 import '../../../../../../core/constant/api_endpoint.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
+import '../../../view_model/parent/bottom_nav_viewmodel.dart';
 
 class HeadOfficeProfileScreen extends StatefulWidget {
   const HeadOfficeProfileScreen({super.key});
@@ -27,6 +28,19 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
     super.initState();
   }
 
+  void _handleBack(BuildContext context) {
+    try {
+      final nav = context.read<BottomNavViewModel>();
+      if (nav.currentIndex != 0) {
+        nav.updateIndex(0);
+      }
+    } catch (_) {}
+
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ChangePasswordProvider>(context);
@@ -39,27 +53,31 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
     final String address = data?.address ?? "Not Found Address";
     final String? avatar = data?.avatar;
 
-    return Scaffold(
-      backgroundColor: const Color(0xffFFF6F7),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _handleBack(context);
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xffFFF6F7),
 
-      /// --------------------- App Bar ------------------------------------
-      appBar: AppBar(
-        title: Text(
-          "Profile",
-          style: TextStyle(
-            fontSize: 20.sp,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xffE20613),
+        /// --------------------- App Bar ------------------------------------
+        appBar: AppBar(
+          title: Text(
+            "Profile",
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xffE20613),
+            ),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () => _handleBack(context),
           ),
         ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
 
       body: SingleChildScrollView(
         padding: EdgeInsets.only(bottom: 20.h, left: 2.w, right: 2.w),
@@ -130,7 +148,8 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }
 
