@@ -120,57 +120,84 @@ class _DriverDeliveryNoteScreenState extends State<DriverDeliveryNoteScreen> {
         args?["address"] ?? "4140 Parker Rd. Allentown, New Mexico 31134";
     final productsCount = args?["products"] ?? "216";
 
-    return Scaffold(
-      appBar: const CustomAppBar(notificationCount: 0, backArrow: "true", isDriver: true),
-      body: Column(
-        children: [
-          // Header Container (White background)
-          Container(
-            color: Colors.white,
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
-            child: Column(
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  address,
-                  style: TextStyle(fontSize: 14.sp, color: Colors.black54),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 12.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return Consumer<DriverBranchDetailViewModel>(
+      builder: (context, vm, child) {
+        final data = vm.deliveryData;
+        final displayName = data?.order?.user?.name ?? name;
+        final displayAddress = data?.order?.user?.address ?? address;
+
+        final pickedItems = data?.order?.orderItems?.where((item) {
+          final status = item.itemStatus?.toUpperCase();
+          return status == 'DELIVERED' ||
+              status == 'PICKED' ||
+              (status != 'NOT_PICKED' &&
+                  (item.deliveredAt != null || item.pickedAt != null));
+        }).toList() ?? [];
+
+        final totalPickedQuantity = pickedItems.fold<int>(
+          0,
+          (sum, item) => sum + (item.quantity ?? 0),
+        );
+
+        final displayProductsCount = totalPickedQuantity > 0
+            ? totalPickedQuantity.toString()
+            : (data?.order?.totalQuantity?.toString() ?? productsCount);
+
+        return Scaffold(
+          appBar: const CustomAppBar(
+            notificationCount: 0,
+            backArrow: "true",
+            isDriver: true,
+          ),
+          body: Column(
+            children: [
+              // Header Container (White background)
+              Container(
+                color: Colors.white,
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+                child: Column(
                   children: [
                     Text(
-                      "Total Products:   ",
+                      displayName,
                       style: TextStyle(
-                        fontSize: 14.sp,
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Text(
-                      productsCount,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.black87,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      displayAddress,
+                      style: TextStyle(fontSize: 14.sp, color: Colors.black54),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 12.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Total Products:   ",
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          displayProductsCount,
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
+              ),
 
           // Main form area
           Expanded(
@@ -426,6 +453,8 @@ class _DriverDeliveryNoteScreenState extends State<DriverDeliveryNoteScreen> {
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

@@ -120,14 +120,30 @@ class User {
 
 class OrderItems {
   String? id;
+  String? itemStatus;
   int? quantity;
+  String? approvedAt;
+  String? pickedAt;
+  String? deliveredAt;
   Product? product;
 
-  OrderItems({this.id, this.quantity, this.product});
+  OrderItems({
+    this.id,
+    this.itemStatus,
+    this.quantity,
+    this.approvedAt,
+    this.pickedAt,
+    this.deliveredAt,
+    this.product,
+  });
 
   OrderItems.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    itemStatus = json['item_status'];
     quantity = json['quantity'];
+    approvedAt = json['approved_at'];
+    pickedAt = json['picked_at'];
+    deliveredAt = json['delivered_at'];
     product =
         json['product'] != null ? Product.fromJson(json['product']) : null;
   }
@@ -135,7 +151,11 @@ class OrderItems {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
     data['id'] = id;
+    data['item_status'] = itemStatus;
     data['quantity'] = quantity;
+    data['approved_at'] = approvedAt;
+    data['picked_at'] = pickedAt;
+    data['delivered_at'] = deliveredAt;
     if (product != null) {
       data['product'] = product!.toJson();
     }

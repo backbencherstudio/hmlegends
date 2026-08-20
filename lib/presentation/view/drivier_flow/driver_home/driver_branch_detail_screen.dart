@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:hmlegends/core/route/route_names.dart';
+import 'package:hmlegends/core/utlis/utils.dart';
 import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
 import 'package:hmlegends/presentation/view/drivier_flow/driver_home/viewmodel/driver_branch_detail_viewmodel.dart';
 
@@ -9,20 +10,27 @@ class DriverBranchDetailScreen extends StatefulWidget {
   const DriverBranchDetailScreen({super.key});
 
   @override
-  State<DriverBranchDetailScreen> createState() => _DriverBranchDetailScreenState();
+  State<DriverBranchDetailScreen> createState() =>
+      _DriverBranchDetailScreenState();
 }
 
 class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
   bool _isInit = true;
+  final Set<String> _selectedItemIds = {};
+  bool _hasInitializedSelection = false;
 
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       final deliveryId = args?["deliveryId"];
       if (deliveryId != null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          Provider.of<DriverBranchDetailViewModel>(context, listen: false).fetchSingleDelivery(deliveryId);
+          Provider.of<DriverBranchDetailViewModel>(
+            context,
+            listen: false,
+          ).fetchSingleDelivery(deliveryId);
         });
       }
       _isInit = false;
@@ -40,224 +48,423 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
     final productsCount = args?["products"] ?? "216";
 
     return Scaffold(
-      appBar: const CustomAppBar(notificationCount: 0, backArrow: "true", isDriver: true),
+      appBar: const CustomAppBar(
+        notificationCount: 0,
+        backArrow: "true",
+        isDriver: true,
+      ),
       body: Consumer<DriverBranchDetailViewModel>(
         builder: (context, vm, child) {
-          if (vm.isLoading) {
+          if (vm.isLoading && vm.deliveryData == null) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (vm.error != null) {
+          if (vm.error != null && vm.deliveryData == null) {
             return Center(child: Text(vm.error!));
           }
 
           final orderItems = vm.deliveryData?.order?.orderItems ?? [];
           final displayName = vm.deliveryData?.order?.user?.name ?? name;
-          final displayAddress = vm.deliveryData?.order?.user?.address ?? address;
-          final displayProductsCount = vm.deliveryData?.order?.totalQuantity?.toString() ?? productsCount;
-          final status = vm.deliveryData?.status?.toUpperCase() ?? "ASSIGNED";
+          final displayAddress =
+              vm.deliveryData?.order?.user?.address ?? address;
+          final status =
+              vm.deliveryData?.status?.toUpperCase() ?? "ASSIGNED";
+          final deliveryId = args?["deliveryId"] as String?;
+
+          // Initialize selected item IDs if in ASSIGNED status
+          if (status == "ASSIGNED" && !_hasInitializedSelection && orderItems.isNotEmpty) {
+            _selectedItemIds.clear();
+            for (var item in orderItems) {
+              if (item.id != null) {
+                // If item is not explicitly marked NOT_PICKED, pre-select it
+                if (item.itemStatus?.toUpperCase() != "NOT_PICKED") {
+                  _selectedItemIds.add(item.id!);
+                }
+              }
+            }
+            // If all were empty or none matched, select all by default
+            if (_selectedItemIds.isEmpty) {
+              for (var item in orderItems) {
+                if (item.id != null) _selectedItemIds.add(item.id!);
+              }
+            }
+            _hasInitializedSelection = true;
+          }
+
+          final isAssignedStatus = status == "ASSIGNED";
+
+          // Calculate dynamic picked/selected product quantity
+          final dynamicPickedItems = orderItems.where((item) {
+            if (isAssignedStatus) {
+              return _selectedItemIds.contains(item.id);
+            } else {
+              final itemStatus = item.itemStatus?.toUpperCase();
+              return itemStatus == "PICKED" ||
+                  itemStatus == "DELIVERED" ||
+                  (itemStatus != "NOT_PICKED" && item.pickedAt != null);
+            }
+          }).toList();
+
+          final totalPickedQuantity = dynamicPickedItems.fold<int>(
+            0,
+            (sum, item) => sum + (item.quantity ?? 0),
+          );
+
+          final displayProductsCount = totalPickedQuantity > 0
+              ? totalPickedQuantity.toString()
+              : (vm.deliveryData?.order?.totalQuantity?.toString() ??
+                  productsCount);
 
           String buttonText = "Delivery Done";
           VoidCallback? onButtonPressed;
 
           if (status == "ASSIGNED") {
             buttonText = "Received";
-            onButtonPressed = () => vm.updateDeliveryStatus(args?["deliveryId"], "RECEIVED");
+            onButtonPressed = () async {
+              if (deliveryId == null) return;
+              if (_selectedItemIds.isEmpty) {
+                Utils.showToast(
+                  msg: "Please select at least one item to receive",
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                );
+                return;
+              }
+              final success = await vm.updateDeliveryStatus(
+                deliveryId,
+                "RECEIVED",
+                itemIds: _selectedItemIds.toList(),
+              );
+              if (!success && mounted && vm.error != null) {
+                Utils.showToast(
+                  msg: vm.error!,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                );
+              }
+            };
           } else if (status == "RECEIVED") {
             buttonText = "Started";
-            onButtonPressed = () => vm.updateDeliveryStatus(args?["deliveryId"], "STARTED");
+            onButtonPressed = () async {
+              if (deliveryId == null) return;
+              final success = await vm.updateDeliveryStatus(
+                deliveryId,
+                "STARTED",
+              );
+              if (!success && mounted && vm.error != null) {
+                Utils.showToast(
+                  msg: vm.error!,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                );
+              }
+            };
           } else if (status == "STARTED") {
             buttonText = "Arrived";
-            onButtonPressed = () => vm.updateDeliveryStatus(args?["deliveryId"], "ARRIVED");
+            onButtonPressed = () async {
+              if (deliveryId == null) return;
+              final success = await vm.updateDeliveryStatus(
+                deliveryId,
+                "ARRIVED",
+              );
+              if (!success && mounted && vm.error != null) {
+                Utils.showToast(
+                  msg: vm.error!,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                );
+              }
+            };
           } else if (status == "ARRIVED") {
             buttonText = "Proceed to delivery note";
             onButtonPressed = () => Navigator.pushNamed(
-                  context,
-                  RouteNames.driverDeliveryNoteScreen,
-                  arguments: args,
-                );
+              context,
+              RouteNames.driverDeliveryNoteScreen,
+              arguments: args,
+            );
           }
 
           return Column(
             children: [
-          // Header Container (White background)
-          Container(
-            color: Colors.white,
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
-            child: Column(
-              children: [
-                Text(
-                  displayName,
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  displayAddress,
-                  style: TextStyle(fontSize: 14.sp, color: Colors.black54),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 12.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              // Header Container (White background)
+              Container(
+                color: Colors.white,
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+                child: Column(
                   children: [
                     Text(
-                      "Total Products:   ",
+                      displayName,
                       style: TextStyle(
-                        fontSize: 14.sp,
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Text(
-                      displayProductsCount,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.black87,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      displayAddress,
+                      style: TextStyle(fontSize: 14.sp, color: Colors.black54),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 12.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Total Products:   ",
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          displayProductsCount,
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-
-          // Gradient Background for List and Button
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10.h),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xFFFDECEE), Color(0xFFF6B7B7)],
-                ),
               ),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: ListView.separated(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16.w,
-                        vertical: 16.h,
-                      ),
-                      itemCount: orderItems.length,
-                      separatorBuilder:
-                          (context, index) => Divider(
-                            color: Colors.grey.shade300,
-                            height: 24.h,
-                            thickness: 1,
-                          ),
-                      itemBuilder: (context, index) {
-                        final prod = orderItems[index];
-                        final prodName = prod.product?.name ?? "Unknown Product";
-                        final prodQty = prod.quantity?.toString() ?? "0";
 
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 4.h),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 28.w,
-                                child: Text(
-                                  "${index + 1}.",
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    color: Colors.black54,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 8.w),
-                              Expanded(
-                                child: Text(
-                                  prodName,
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                                Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.baseline,
-                                  textBaseline: TextBaseline.alphabetic,
-                                  children: [
-                                    Text(
-                                      prodQty,
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Colors.black54,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(width: 4.w),
-                                    Text(
-                                      "Pcs",
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color: Colors.black38,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                        );
-                      },
+              // Gradient Background for List and Button
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xFFFDECEE), Color(0xFFF6B7B7)],
                     ),
                   ),
-
-                  // Start Delivery Button
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 16.h,
-                    ),
-                    color: Colors.transparent,
-                    child: SafeArea(
-                      top: false,
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 52.h,
-                        child: ElevatedButton(
-                          onPressed: onButtonPressed,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFED5E68),
-                            disabledBackgroundColor: Colors.grey.shade400,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.r),
-                            ),
-                            elevation: 0,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.separated(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 16.h,
                           ),
-                          child: vm.isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : Text(
-                                  buttonText,
-                                  style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
+                          itemCount: orderItems.length,
+                          separatorBuilder:
+                              (context, index) => Divider(
+                                color: Colors.grey.shade300,
+                                height: 24.h,
+                                thickness: 1,
+                              ),
+                          itemBuilder: (context, index) {
+                            final prod = orderItems[index];
+                            final itemId = prod.id ?? "";
+                            final prodName =
+                                prod.product?.name ?? "Unknown Product";
+                            final prodQty = prod.quantity?.toString() ?? "0";
+
+                            // Determine if item is selected or disabled based on status
+                            bool isChecked = false;
+                            bool isDisabled = false;
+
+                            if (isAssignedStatus) {
+                              // In ASSIGNED step: Driver can toggle selection
+                              isChecked = _selectedItemIds.contains(itemId);
+                              isDisabled = false;
+                            } else {
+                              // In subsequent steps (RECEIVED, STARTED, ARRIVED):
+                              // Check status from API response
+                              final itemStatus = prod.itemStatus?.toUpperCase();
+                              final isPicked = itemStatus == "PICKED" ||
+                                  (itemStatus != "NOT_PICKED" && prod.pickedAt != null);
+
+                              if (isPicked) {
+                                isChecked = true;
+                                isDisabled = false;
+                              } else {
+                                // Not selected / not picked -> disabled for next steps
+                                isChecked = false;
+                                isDisabled = true;
+                              }
+                            }
+
+                            return Opacity(
+                              opacity: isDisabled ? 0.45 : 1.0,
+                              child: GestureDetector(
+                                onTap: isAssignedStatus
+                                    ? () {
+                                        setState(() {
+                                          if (_selectedItemIds.contains(itemId)) {
+                                            _selectedItemIds.remove(itemId);
+                                          } else {
+                                            _selectedItemIds.add(itemId);
+                                          }
+                                        });
+                                      }
+                                    : null,
+                                child: Container(
+                                  color: Colors.transparent,
+                                  padding: EdgeInsets.symmetric(vertical: 4.h),
+                                  child: Row(
+                                    children: [
+                                      // Index
+                                      SizedBox(
+                                        width: 28.w,
+                                        child: Text(
+                                          "${index + 1}.",
+                                          style: TextStyle(
+                                            fontSize: 15.sp,
+                                            color: isDisabled
+                                                ? Colors.grey
+                                                : Colors.black54,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 4.w),
+
+                                      // Checkbox
+                                      AnimatedContainer(
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        width: 24.w,
+                                        height: 24.w,
+                                        decoration: BoxDecoration(
+                                          color: isDisabled
+                                              ? Colors.grey.shade200
+                                              : (isChecked
+                                                  ? const Color(0xFFE20613)
+                                                  : Colors.white),
+                                          border: Border.all(
+                                            color: isDisabled
+                                                ? Colors.grey.shade400
+                                                : const Color(0xFFE20613),
+                                            width: 2,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(5.r),
+                                        ),
+                                        child: isChecked
+                                            ? Icon(
+                                                Icons.check,
+                                                size: 16.sp,
+                                                color: Colors.white,
+                                              )
+                                            : null,
+                                      ),
+                                      SizedBox(width: 10.w),
+
+                                      // Product Name
+                                      Expanded(
+                                        child: Text(
+                                          prodName,
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            color: isDisabled
+                                                ? Colors.grey.shade600
+                                                : (isChecked
+                                                    ? Colors.black38
+                                                    : Colors.black87),
+                                            fontWeight: FontWeight.w600,
+                                            decoration: (isChecked && !isDisabled)
+                                                ? TextDecoration.lineThrough
+                                                : TextDecoration.none,
+                                            decorationColor: Colors.black38,
+                                            decorationThickness: 2,
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Quantity
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.baseline,
+                                        textBaseline: TextBaseline.alphabetic,
+                                        children: [
+                                          Text(
+                                            prodQty,
+                                            style: TextStyle(
+                                              fontSize: 15.sp,
+                                              color: isDisabled
+                                                  ? Colors.grey
+                                                  : (isChecked
+                                                      ? Colors.black38
+                                                      : Colors.black54),
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          SizedBox(width: 4.w),
+                                          Text(
+                                            "Pcs",
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              color: isDisabled
+                                                  ? Colors.grey
+                                                  : Colors.black38,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
+                              ),
+                            );
+                          },
                         ),
                       ),
-                    ),
+
+                      // Action Button
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 16.h,
+                        ),
+                        color: Colors.transparent,
+                        child: SafeArea(
+                          top: false,
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 52.h,
+                            child: ElevatedButton(
+                              onPressed: vm.isLoading ? null : onButtonPressed,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFED5E68),
+                                disabledBackgroundColor: Colors.grey.shade400,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.r),
+                                ),
+                                elevation: 0,
+                              ),
+                              child:
+                                  vm.isLoading
+                                      ? const CircularProgressIndicator(
+                                        color: Colors.white,
+                                      )
+                                      : Text(
+                                        buttonText,
+                                        style: TextStyle(
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ],
-      );
-    },
-  ),
-);
+            ],
+          );
+        },
+      ),
+    );
   }
 }
+
