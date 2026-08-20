@@ -1,7 +1,8 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'https://api.zhfoods.cloud';
+  // static const String baseUrl = 'https://api.zhfoods.cloud';
+  static const String baseUrl = 'http://10.10.9.49:4000';
 //   static const String baseUrl =
 //       'https://elliot-haemic-biuniquely.ngrok-free.dev';
   static const String googleLogin = '$baseUrl/api/auth/google/signin';
@@ -127,6 +128,11 @@ class ApiEndpoints {
   static String toggleBranchStatus(String userId) =>
       '$baseUrl/api/auth/toggle-status/$userId';
 
-  static String managerInvoice({String period = 'week'}) =>
-      '$baseUrl/api/invoice?period=$period';
+  static String managerInvoice({String period = 'week', String? status}) {
+    String url = '$baseUrl/api/invoice?period=$period';
+    if (status != null && status.isNotEmpty && status.toLowerCase() != 'all') {
+      url += '&status=${status.toLowerCase()}';
+    }
+    return url;
+  }
 }

@@ -55,54 +55,85 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         ),
         child: Consumer<DriverHomeViewModel>(
           builder: (context, vm, child) {
-            if (vm.isLoading) {
+            if (vm.isLoading && vm.deliveries.isEmpty) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (vm.error != null) {
-              return Center(child: Text(vm.error!));
+            if (vm.error != null && vm.deliveries.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(vm.error!),
+                    SizedBox(height: 12.h),
+                    ElevatedButton(
+                      onPressed: () => vm.fetchDeliveries(),
+                      child: const Text("Retry"),
+                    ),
+                  ],
+                ),
+              );
             }
             if (vm.deliveries.isEmpty) {
-              return const Center(child: Text("No deliveries available"));
+              return RefreshIndicator(
+                onRefresh: () => vm.fetchDeliveries(),
+                child: ListView(
+                  children: [
+                    SizedBox(height: 200.h),
+                    const Center(child: Text("No deliveries available")),
+                  ],
+                ),
+              );
             }
 
-            return ListView.separated(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-              itemCount: vm.deliveries.length,
-              separatorBuilder: (context, index) => SizedBox(height: 12.h),
-              itemBuilder: (context, index) {
-                final item = vm.deliveries[index];
-                final name = item.user?.name ?? "Unknown Branch";
-                final address = item.user?.address ?? "Unknown Address";
-                final productsCount = item.totalQuantity?.toString() ?? "0";
+            return RefreshIndicator(
+              onRefresh: () => vm.fetchDeliveries(),
+              child: ListView.separated(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                itemCount: vm.deliveries.length,
+                separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                itemBuilder: (context, index) {
+                  final item = vm.deliveries[index];
+                  final name = item.user?.name ?? "Unknown Branch";
+                  final address = item.user?.address ?? "Unknown Address";
+                  final productsCount = item.totalQuantity?.toString() ?? "0";
 
-                return InkWell(
-                  onTap: () {
-                    final status = item.delivery?.status;
-                    final isCompleted = status == "COMPLETED" || status == "DELIVERED";
-                    
-                    Navigator.pushNamed(
-                      context,
-                      isCompleted 
-                          ? RouteNames.deliverySummeryScreen 
-                          : RouteNames.driverBranseDetailScreen,
-                      arguments: {
-                        "name": name,
-                        "address": address,
-                        "products": productsCount,
-                        "deliveryId": item.delivery?.id,
-                        "orderId": item.id,
-                      },
-                    );
-                  },
-                  child: BranchCard(
-                    name: name,
-                    address: address,
-                    products: productsCount,
-                    backgroundColor: Colors.white,
-                    status: item.delivery?.status,
-                  ),
-                );
-              },
+                  return InkWell(
+                    onTap: () async {
+                      final status = item.delivery?.status;
+                      final isCompleted =
+                          status == "COMPLETED" || status == "DELIVERED";
+
+                      await Navigator.pushNamed(
+                        context,
+                        isCompleted
+                            ? RouteNames.deliverySummeryScreen
+                            : RouteNames.driverBranseDetailScreen,
+                        arguments: {
+                          "name": name,
+                          "address": address,
+                          "products": productsCount,
+                          "deliveryId": item.delivery?.id,
+                          "orderId": item.id,
+                        },
+                      );
+
+                      if (context.mounted) {
+                        Provider.of<DriverHomeViewModel>(
+                          context,
+                          listen: false,
+                        ).fetchDeliveries();
+                      }
+                    },
+                    child: BranchCard(
+                      name: name,
+                      address: address,
+                      products: productsCount,
+                      backgroundColor: Colors.white,
+                      status: item.delivery?.status,
+                    ),
+                  );
+                },
+              ),
             );
           },
         ),

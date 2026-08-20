@@ -16,7 +16,7 @@ class OrderResponseModel {
 
 class OrderData {
   final String? id;
-  final int? totalAmount;
+  final double? totalAmount;
   final int? totalQuantity;
   final String? createdAt;
   final List<OrderItem>? orderItems;
@@ -32,8 +32,8 @@ class OrderData {
   factory OrderData.fromJson(Map<String, dynamic> json) {
     return OrderData(
       id: json["id"],
-      totalAmount: json["total_amount"],
-      totalQuantity: json["total_quantity"],
+      totalAmount: (json["total_amount"] as num?)?.toDouble(),
+      totalQuantity: (json["total_quantity"] as num?)?.toInt(),
       createdAt: json["created_at"],
       orderItems: json["order_items"] == null
           ? []
@@ -47,7 +47,7 @@ class OrderData {
 class OrderItem {
   final String? id;
   final int? quantity;
-  final int? price;
+  final double? price;
   final ProductInfo? product;
 
   OrderItem({this.id, this.quantity, this.price, this.product});
@@ -55,8 +55,8 @@ class OrderItem {
   factory OrderItem.fromJson(Map<String, dynamic> json) {
     return OrderItem(
       id: json["id"],
-      quantity: json["quantity"],
-      price: json["price"],
+      quantity: (json["quantity"] as num?)?.toInt(),
+      price: (json["price"] as num?)?.toDouble(),
       product: json["product"] == null
           ? null
           : ProductInfo.fromJson(json["product"]),
@@ -67,7 +67,7 @@ class OrderItem {
 class ProductInfo {
   final String? userId;
   final String? name;
-  final int? price;
+  final double? price;
 
   ProductInfo({this.userId, this.name, this.price});
 
@@ -75,7 +75,7 @@ class ProductInfo {
     return ProductInfo(
       userId: json["user_id"],
       name: json["name"],
-      price: json["price"],
+      price: (json["price"] as num?)?.toDouble(),
     );
   }
 }

@@ -44,7 +44,30 @@ class _DriverDeliverySummaryScreenState
     return Consumer<DriverBranchDetailViewModel>(
       builder: (context, vm, child) {
         final data = vm.deliveryModel?.data;
-        final orderItems = data?.order?.orderItems ?? [];
+        final allOrderItems = data?.order?.orderItems ?? [];
+        final displayName = data?.order?.user?.name ?? name;
+
+        // Filter only items that were actually picked / delivered
+        final deliveredItems = allOrderItems.where((item) {
+          final status = item.itemStatus?.toUpperCase();
+          return status == 'DELIVERED' ||
+              status == 'PICKED' ||
+              (status != 'NOT_PICKED' &&
+                  (item.deliveredAt != null || item.pickedAt != null));
+        }).toList();
+
+        // If deliveredItems is empty (e.g. backend did not flag item_status), fallback to allOrderItems
+        final displayItems =
+            deliveredItems.isNotEmpty ? deliveredItems : allOrderItems;
+
+        final totalDeliveredQuantity = displayItems.fold<int>(
+          0,
+          (sum, item) => sum + (item.quantity ?? 0),
+        );
+
+        final displayProductsCount = totalDeliveredQuantity > 0
+            ? totalDeliveredQuantity.toString()
+            : (data?.order?.totalQuantity?.toString() ?? productsCount);
 
         String completedTime = "--:--";
         if (data?.deliveredAt != null) {
@@ -70,185 +93,190 @@ class _DriverDeliverySummaryScreenState
                   onNotificationTap: () async {
                     await provider.getDriverNotification();
                     if (context.mounted) {
-                      await Navigator.pushNamed(context, RouteNames.adminNotificationScreen);
+                      await Navigator.pushNamed(
+                        context,
+                        RouteNames.adminNotificationScreen,
+                      );
                       provider.getDriverNotification();
                     }
                   },
                   onBackTap: () {
-              final bottomNavProvider = Provider.of<DriverBottomNavProvider>(
-                context,
-                listen: false,
-              );
-              bottomNavProvider.updateIndex(0);
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    RouteNames.driverBottomNavScreen,
-                    (route) => false,
-                  );
-                },
+                    final bottomNavProvider =
+                        Provider.of<DriverBottomNavProvider>(
+                      context,
+                      listen: false,
+                    );
+                    bottomNavProvider.updateIndex(0);
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      RouteNames.driverBottomNavScreen,
+                      (route) => false,
+                    );
+                  },
                 );
               },
             ),
           ),
-          body:
-              vm.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 16.h),
+          body: vm.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 16.h),
 
-                        // Header Card
-                        Container(
-                          padding: EdgeInsets.all(16.w),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                name,
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              SizedBox(height: 8.h),
-                              Row(
-                                children: [
-                                  Text(
-                                    "Total Products:   ",
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: Colors.black54,
-                                    ),
-                                  ),
-                                  Text(
-                                    productsCount,
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 8.h),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.access_time,
-                                    color: const Color(0xFFED5E68),
-                                    size: 18.sp,
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Text(
-                                    "Completed at:   ",
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: Colors.black54,
-                                    ),
-                                  ),
-                                  Text(
-                                    completedTime,
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                      // Header Card
+                      Container(
+                        padding: EdgeInsets.all(16.w),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
-                        SizedBox(height: 24.h),
-
-                        // Items Delivered Header
-                        Row(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.inventory_2_outlined,
-                              color: const Color(0xFFED5E68),
-                              size: 24.sp,
-                            ),
-                            SizedBox(width: 8.w),
                             Text(
-                              "Items Delivered",
+                              displayName,
                               style: TextStyle(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black87,
                               ),
                             ),
+                            SizedBox(height: 8.h),
+                            Row(
+                              children: [
+                                Text(
+                                  "Total Products:   ",
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                Text(
+                                  displayProductsCount,
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8.h),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  color: const Color(0xFFED5E68),
+                                  size: 18.sp,
+                                ),
+                                SizedBox(width: 8.w),
+                                Text(
+                                  "Completed at:   ",
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                Text(
+                                  completedTime,
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
-                        SizedBox(height: 8.h),
-                        Divider(color: Colors.grey.shade300, thickness: 1),
+                      ),
+                      SizedBox(height: 24.h),
 
-                        // Products List
-                        Expanded(
-                          child: ListView.separated(
-                            padding: EdgeInsets.only(top: 8.h, bottom: 20.h),
-                            itemCount: orderItems.length,
-                            separatorBuilder:
-                                (context, index) => SizedBox(height: 12.h),
-                            itemBuilder: (context, index) {
-                              final item = orderItems[index];
-                              final productName =
-                                  item.product?.name ?? "Unknown Product";
-                              final quantity = item.quantity?.toString() ?? "0";
-                              return Row(
-                                children: [
-                                  Container(
-                                    width: 20.w,
-                                    height: 20.w,
-                                    decoration: BoxDecoration(
-                                      color: Colors.transparent,
-                                      borderRadius: BorderRadius.circular(4.r),
-                                      border: Border.all(
-                                        color: const Color(0xFFED5E68),
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.check,
+                      // Items Delivered Header
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.inventory_2_outlined,
+                            color: const Color(0xFFED5E68),
+                            size: 24.sp,
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            "Items Delivered",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8.h),
+                      Divider(color: Colors.grey.shade300, thickness: 1),
+
+                      // Products List
+                      Expanded(
+                        child: ListView.separated(
+                          padding: EdgeInsets.only(top: 8.h, bottom: 20.h),
+                          itemCount: displayItems.length,
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: 12.h),
+                          itemBuilder: (context, index) {
+                            final item = displayItems[index];
+                            final productName =
+                                item.product?.name ?? "Unknown Product";
+                            final quantity =
+                                item.quantity?.toString() ?? "0";
+                            return Row(
+                              children: [
+                                Container(
+                                  width: 20.w,
+                                  height: 20.w,
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    borderRadius:
+                                        BorderRadius.circular(4.r),
+                                    border: Border.all(
                                       color: const Color(0xFFED5E68),
-                                      size: 14.sp,
+                                      width: 1.5,
                                     ),
                                   ),
-                                  SizedBox(width: 12.w),
-                                  Expanded(
-                                    child: Text(
-                                      productName,
-                                      style: TextStyle(
-                                        fontSize: 14.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
+                                  child: Icon(
+                                    Icons.check,
+                                    color: const Color(0xFFED5E68),
+                                    size: 14.sp,
                                   ),
-                                  Text(
-                                    "($quantity)",
+                                ),
+                                SizedBox(width: 12.w),
+                                Expanded(
+                                  child: Text(
+                                    productName,
                                     style: TextStyle(
                                       fontSize: 14.sp,
-                                      color: Colors.black87,
                                       fontWeight: FontWeight.w500,
+                                      color: Colors.black87,
                                     ),
                                   ),
-                                ],
-                              );
-                            },
-                          ),
+                                ),
+                                Text(
+                                  "($quantity)",
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
         );
       },
     );

@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
-import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
-import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../widget/logout_dialog.dart';
 import '../../../../../../core/constant/api_endpoint.dart';
 import '../../../view_model/profile/change_pass_provider.dart';
+import '../../../view_model/parent/bottom_nav_viewmodel.dart';
 
 class HeadOfficeProfileScreen extends StatefulWidget {
   const HeadOfficeProfileScreen({super.key});
@@ -29,14 +28,24 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
     super.initState();
   }
 
+  void _handleBack(BuildContext context) {
+    try {
+      final nav = context.read<BottomNavViewModel>();
+      if (nav.currentIndex != 0) {
+        nav.updateIndex(0);
+      }
+    } catch (_) {}
+
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ChangePasswordProvider>(context);
 
     final data = provider.adminInfoModel?.data;
-    final notificationProvider = Provider.of<AdminNotificationProvider>(
-      context,
-    );
 
     final String name = data?.name ?? "Not Found Name";
     final String occupation = data?.occupation ?? "Not Found Occupation";
@@ -44,15 +53,31 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
     final String address = data?.address ?? "Not Found Address";
     final String? avatar = data?.avatar;
 
-    return Scaffold(
-      backgroundColor: const Color(0xffFFF6F7),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _handleBack(context);
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xffFFF6F7),
 
-      /// --------------------- App Bar ------------------------------------
-      appBar: CustomAppBar(
-        profileImage: data?.avatar,
-        notificationCount: notificationProvider.unreadCount,
-        onProfileTap: () {}, // Prevents navigating to profile screen again
-      ),
+        /// --------------------- App Bar ------------------------------------
+        appBar: AppBar(
+          title: Text(
+            "Profile",
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xffE20613),
+            ),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () => _handleBack(context),
+          ),
+        ),
 
       body: SingleChildScrollView(
         padding: EdgeInsets.only(bottom: 20.h, left: 2.w, right: 2.w),
@@ -123,7 +148,8 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }
 

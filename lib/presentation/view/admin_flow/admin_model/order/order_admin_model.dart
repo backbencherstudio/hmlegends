@@ -114,15 +114,22 @@ class Stats {
         this.totalUnitOrdered});
 
   Stats.fromJson(Map<String, dynamic> json) {
-    total = json['total'];
-    pending = json['pending'];
-    invoiced = json['invoiced'];
-    delivered = json['delivered'];
-    totalUnitOrdered = json['total_unit_ordered'];
+    total = (json['total'] as num?)?.toInt() ??
+        (json['total_orders'] as num?)?.toInt();
+    pending = (json['pending'] as num?)?.toInt() ??
+        (json['pending_orders'] as num?)?.toInt();
+    invoiced = (json['invoiced'] as num?)?.toInt() ??
+        (json['invoiced_orders'] as num?)?.toInt();
+    delivered = (json['delivered'] as num?)?.toInt() ??
+        (json['delivered_orders'] as num?)?.toInt() ??
+        (json['completed'] as num?)?.toInt();
+    totalUnitOrdered = (json['total_unit_ordered'] as num?)?.toInt() ??
+        (json['total_units'] as num?)?.toInt() ??
+        (json['totalUnitOrdered'] as num?)?.toInt();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  {};
+    final Map<String, dynamic> data = {};
     data['total'] = total;
     data['pending'] = pending;
     data['invoiced'] = invoiced;

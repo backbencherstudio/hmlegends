@@ -338,20 +338,26 @@ class _AdminInvoiceDetailScreenState extends State<AdminInvoiceDetailScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              "DATE: ${_formatDate(invoice.createdAt)}",
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF4A4C56),
+                            Expanded(
+                              child: Text(
+                                "DATE: ${_formatDate(invoice.createdAt)}",
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF4A4C56),
+                                ),
                               ),
                             ),
-                            Text(
-                              "INVOICE NO: ${invoice.sku.toUpperCase()}",
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF4A4C56),
+                            SizedBox(width: 8.w),
+                            Expanded(
+                              child: Text(
+                                "INVOICE NO: ${invoice.sku.toUpperCase()}",
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF4A4C56),
+                                ),
                               ),
                             ),
                           ],

@@ -42,7 +42,7 @@ class GetInvoiceDetailViewmodel extends ChangeNotifier {
 
         debugPrint("Invoice SKU: ${_invoiceDetail?.data?.sku}");
         debugPrint("success message ${decodeData['message']}");
-        debugPrint("Order Total: ${_invoiceDetail?.data?.order?.totalAmount}");
+        debugPrint("Order Total: ${_invoiceDetail?.data?.totalAmount}");
         debugPrint(
           "Items Count: ${_invoiceDetail?.data?.order?.orderItems?.length}",
         );
@@ -55,7 +55,7 @@ class GetInvoiceDetailViewmodel extends ChangeNotifier {
 
         debugPrint("Invoice SKU: ${_invoiceDetail?.data?.sku}");
         debugPrint("failed message ${decodeData['message']}");
-        debugPrint("Order Total: ${_invoiceDetail?.data?.order?.totalAmount}");
+        debugPrint("Order Total: ${_invoiceDetail?.data?.totalAmount}");
         debugPrint(
           "Items Count: ${_invoiceDetail?.data?.order?.orderItems?.length}",
         );

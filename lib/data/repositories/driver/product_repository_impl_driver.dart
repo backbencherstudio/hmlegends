@@ -1,4 +1,4 @@
-import '../../../domain/entities/drier/product_entity_driver.dart';
+import '../../../domain/entities/driver/product_entity_driver.dart';
 import '../../../domain/repositories/driver/product_repository_driver.dart';
 import '../../datasources/driver/product_data_source_driver.dart';
 

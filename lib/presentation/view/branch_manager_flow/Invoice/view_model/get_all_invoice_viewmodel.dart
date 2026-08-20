@@ -34,6 +34,16 @@ class GetAllInvoiceProvider extends ChangeNotifier {
     fetchAllInvoices();
   }
 
+  String _selectedStatus = 'all'; // 'all', 'paid', 'pending'
+  String get selectedStatus => _selectedStatus;
+
+  void updateStatus(String status) {
+    final newStatus = status.toLowerCase();
+    _selectedStatus = newStatus;
+    notifyListeners();
+    fetchAllInvoices();
+  }
+
   String _query = '';
   String get query => _query;
 
@@ -63,7 +73,10 @@ class GetAllInvoiceProvider extends ChangeNotifier {
               : 'month';
 
       final response = await _apiService.get(
-        ApiEndpoints.managerInvoice(period: apiPeriod),
+        ApiEndpoints.managerInvoice(
+          period: apiPeriod,
+          status: _selectedStatus == 'all' ? null : _selectedStatus,
+        ),
       );
 
       debugPrint("=== INVOICE API RESPONSE ===");

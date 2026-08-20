@@ -144,14 +144,17 @@ class ApiService {
   }) async {
     try {
       final token = await _tokenStorage.getToken();
+      final headers = <String, dynamic>{
+        'Authorization': 'Bearer $token',
+      };
+      if (formData == null) {
+        headers['Content-Type'] = 'application/json';
+      }
       final response = await _dio.patch(
         path,
         data: data ?? formData,
         options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
+          headers: headers,
         ),
       );
       return ResponseHandle.handleResponse(response);
