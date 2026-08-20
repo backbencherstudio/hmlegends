@@ -51,6 +51,17 @@ class ViewDetails extends StatelessWidget {
               );
             }
 
+            if (invoiceVm.invoiceDetail?.data == null) {
+              return Center(
+                child: Text(
+                  invoiceVm.errorMessage.isNotEmpty
+                      ? invoiceVm.errorMessage
+                      : 'Invoice not found',
+                  style: TextStyle(fontSize: 16.sp),
+                ),
+              );
+            }
+
             final invoice = invoiceVm.invoiceDetail!.data!;
             final invoiceId = invoice.id ?? '';
             final isCurrentlyPaid = invoice.status?.toUpperCase() == 'PAID';
@@ -165,20 +176,21 @@ class ViewDetails extends StatelessWidget {
                             _InvoiceTable(
                               items:
                                   invoice.order?.orderItems?.map((item) {
-                                    final product = item.product;
                                     final qty = item.quantity ?? 0;
                                     final price = item.price ?? 0.0;
                                     final taxPercent = item.taxPercent ?? 0.0;
+                                    final itemTotal = item.total ?? (qty * price);
                                     return {
                                       'no':
                                           '${invoice.order!.orderItems!.indexOf(item) + 1}'
                                               .padLeft(2, '0'),
                                       'product_name':
-                                          item.productName ?? product?.name ?? 'Unknown Product',
-                                      'price': "$price",
+                                          item.productName ??
+                                          'Unknown Product',
+                                      'price': _formatNum(price),
                                       'quantity': qty,
-                                      'tax_percent': '$taxPercent%',
-                                      'total': qty * price,
+                                      'tax_percent': '${_formatNum(taxPercent)}%',
+                                      'total': _formatNum(itemTotal),
                                     };
                                   }).toList() ??
                                   [],
@@ -186,9 +198,20 @@ class ViewDetails extends StatelessWidget {
 
                             SizedBox(height: 20.h),
 
-                            _SubtotalRow(
-                              subtotal:
-                                  '\$${invoice.order?.totalAmount?.toStringAsFixed(2) ?? '0.00'}',
+                            _InvoiceSummaryBreakdown(
+                              subtotal: invoice.subtotal ??
+                                  (invoice.order?.orderItems?.fold<double>(
+                                        0.0,
+                                        (sum, it) =>
+                                            sum +
+                                            ((it.quantity ?? 0) *
+                                                (it.price ?? 0.0)),
+                                      ) ??
+                                      0.0),
+                              taxAmount: invoice.taxAmount ?? 0.0,
+                              totalAmount: invoice.totalAmount ??
+                                  ((invoice.subtotal ?? 0.0) +
+                                      (invoice.taxAmount ?? 0.0)),
                             ),
                           ],
                         ),
@@ -350,7 +373,10 @@ class _InvoiceTable extends StatelessWidget {
                 ['No', 'Product Name', 'Price', 'Quantity', 'Tax', 'Total']
                     .map(
                       (header) => Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 12.h,
+                        ),
                         child: Text(
                           header,
                           style: TextStyle(
@@ -366,27 +392,45 @@ class _InvoiceTable extends StatelessWidget {
             (item) => TableRow(
               children: [
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
                   child: Text(item['no']),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
                   child: Text(item['product_name'] ?? 'N/A'),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
                   child: Text('\$${item['price']}'),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
                   child: Text('${item['quantity']}'),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
                   child: Text('${item['tax_percent']}'),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 12.h,
+                  ),
                   child: Text('\$${item['total']}'),
                 ),
               ],
@@ -398,21 +442,108 @@ class _InvoiceTable extends StatelessWidget {
   }
 }
 
-class _SubtotalRow extends StatelessWidget {
-  final String subtotal;
+class _InvoiceSummaryBreakdown extends StatelessWidget {
+  final double subtotal;
+  final double taxAmount;
+  final double totalAmount;
 
-  const _SubtotalRow({required this.subtotal});
+  const _InvoiceSummaryBreakdown({
+    required this.subtotal,
+    required this.taxAmount,
+    required this.totalAmount,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Text(
-        'Subtotal: $subtotal',
-        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              "Subtotal:   ",
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: const Color(0xFF777980),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Text(
+              "\$${_formatNum(subtotal)}",
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        if (taxAmount > 0) ...[
+          SizedBox(height: 4.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                "Tax Amount:   ",
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: const Color(0xFF777980),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                "\$${_formatNum(taxAmount)}",
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ],
+        SizedBox(height: 8.h),
+        const Divider(color: Color(0xFFE5E5E5), thickness: 1),
+        SizedBox(height: 8.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              "Total Amount:   ",
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: const Color(0xFF1D1F2C),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              "\$${_formatNum(totalAmount)}",
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: const Color(0xFFE20613),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
+}
+
+String _formatNum(double value) {
+  if (value == value.roundToDouble()) {
+    return value.toInt().toString();
+  }
+  final str = value.toStringAsFixed(2);
+  if (str.endsWith('.00')) {
+    return str.substring(0, str.length - 3);
+  }
+  if (str.endsWith('0') && str.contains('.')) {
+    return str.substring(0, str.length - 1);
+  }
+  return str;
 }
 
 /// ---------------- Updated Bottom Action Bar with loading state --------------
@@ -482,32 +613,35 @@ class _BottomActionBarState extends State<_BottomActionBar> {
 
           // Export button always visible
           TextButton.icon(
-            onPressed: isExporting
-                ? null
-                : () async {
-                    if (widget.exportUrl != null && widget.exportUrl!.isNotEmpty) {
-                      setState(() {
-                        isExporting = true;
-                      });
-                      await openInvoice(widget.exportUrl!);
-                      if (mounted) {
+            onPressed:
+                isExporting
+                    ? null
+                    : () async {
+                      if (widget.exportUrl != null &&
+                          widget.exportUrl!.isNotEmpty) {
                         setState(() {
-                          isExporting = false;
+                          isExporting = true;
                         });
+                        await openInvoice(widget.exportUrl!);
+                        if (mounted) {
+                          setState(() {
+                            isExporting = false;
+                          });
+                        }
                       }
-                    }
-                  },
-            icon: isExporting
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: SpinKitThreeBounce(
-                      duration: Duration(milliseconds: 300),
-                      size: 10,
-                      color: Color(0xFF5BB450),
-                    ),
-                  )
-                : Image.asset('assets/icons/export.png', scale: 3),
+                    },
+            icon:
+                isExporting
+                    ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: SpinKitThreeBounce(
+                        duration: Duration(milliseconds: 300),
+                        size: 10,
+                        color: Color(0xFF5BB450),
+                      ),
+                    )
+                    : Image.asset('assets/icons/export.png', scale: 3),
             label: Text(
               isExporting ? 'Exporting...' : 'Export',
               style: TextStyle(

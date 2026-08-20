@@ -40,15 +40,50 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
       case 0: // All orders
         return allOrders;
       case 1: // Pending orders
-        return allOrders.where((order) => order.status == "PENDING").toList();
+        return allOrders
+            .where((order) => order.status?.trim().toUpperCase() == "PENDING")
+            .toList();
       case 2: // Invoiced orders
         return allOrders
-            .where((order) => order.status == "PROCESSING")
+            .where((order) {
+              final status = order.status?.trim().toUpperCase();
+              return status == "APPROVED" ||
+                  status == "INVOICED" ||
+                  status == "PROCESSING" ||
+                  status == "INVOICE" ||
+                  status == "INVOICE_GENERATED" ||
+                  status == "PAID";
+            })
             .toList();
       case 3: // Delivered orders
-        return allOrders.where((order) => order.status == "APPROVED").toList();
+        return allOrders
+            .where((order) {
+              final status = order.status?.trim().toUpperCase();
+              return status == "DELIVERED" ||
+                  status == "COMPLETED" ||
+                  status == "RECEIVED" ||
+                  status == "DELIVERY_COMPLETED";
+            })
+            .toList();
+      case 4: // Units of items ordered
+        return allOrders;
       default:
         return allOrders;
+    }
+  }
+
+  String _getFilterTitle(int filter) {
+    switch (filter) {
+      case 1:
+        return "Pending Orders";
+      case 2:
+        return "Invoiced Orders";
+      case 3:
+        return "Delivered Orders";
+      case 4:
+        return "Units Ordered";
+      default:
+        return "Total Orders";
     }
   }
 
@@ -79,14 +114,46 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   Widget build(BuildContext context) {
     /// ------------- Dependency Injection OrderScreenProvider -----------------
     final provider = Provider.of<OrderScreenProvider>(context);
-    final totalOrder = provider.orderAdminModel?.data?.stats?.total ?? 0;
-    final pendingOrder = provider.orderAdminModel?.data?.stats?.pending ?? 0;
-    final invoicedOrder = provider.orderAdminModel?.data?.stats?.invoiced ?? 0;
-    final deliveredOrder =
-        provider.orderAdminModel?.data?.stats?.delivered ?? 0;
-    final totalUnitOrdered =
-        provider.orderAdminModel?.data?.stats?.totalUnitOrdered ?? 0;
-    // final orders = provider.orderAdminModel?.data?.orders ?? [];
+    final allOrders = provider.orderAdminModel?.data?.orders ?? [];
+
+    final pendingCount = allOrders
+        .where((order) => order.status?.trim().toUpperCase() == "PENDING")
+        .length;
+    final invoicedCount = allOrders
+        .where((order) {
+          final status = order.status?.trim().toUpperCase();
+          return status == "APPROVED" ||
+              status == "INVOICED" ||
+              status == "PROCESSING" ||
+              status == "INVOICE" ||
+              status == "INVOICE_GENERATED" ||
+              status == "PAID";
+        })
+        .length;
+    final deliveredCount = allOrders
+        .where((order) {
+          final status = order.status?.trim().toUpperCase();
+          return status == "DELIVERED" ||
+              status == "COMPLETED" ||
+              status == "RECEIVED" ||
+              status == "DELIVERY_COMPLETED";
+        })
+        .length;
+
+    final stats = provider.orderAdminModel?.data?.stats;
+    final totalOrder = stats?.total ?? allOrders.length;
+    final pendingOrder = (stats?.pending != null && stats!.pending! > 0)
+        ? stats.pending!
+        : pendingCount;
+    final invoicedOrder = (stats?.invoiced != null && stats!.invoiced! > 0)
+        ? stats.invoiced!
+        : invoicedCount;
+    final deliveredOrder = (stats?.delivered != null && stats!.delivered! > 0)
+        ? stats.delivered!
+        : deliveredCount;
+    final totalUnitOrdered = stats?.totalUnitOrdered ??
+        allOrders.fold<int>(0, (sum, o) => sum + (o.totalQuantity ?? 0));
+
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
     final notificationProvider = Provider.of<AdminNotificationProvider>(
@@ -141,6 +208,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     title: "Total Orders",
                     value: "$totalOrder",
                     isHighlighted: provider.selectedFilterOrder == 0,
+                    onTap: () {
+                      provider.setSelectedFilterOrder(0);
+                    },
                   ),
                 ),
                 SizedBox(width: 10.w),
@@ -149,6 +219,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     title: "Pending Orders",
                     value: "$pendingOrder",
                     isHighlighted: provider.selectedFilterOrder == 1,
+                    onTap: () {
+                      provider.setSelectedFilterOrder(
+                        provider.selectedFilterOrder == 1 ? 0 : 1,
+                      );
+                    },
                   ),
                 ),
                 SizedBox(width: 10.w),
@@ -157,6 +232,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     title: "Invoiced Orders",
                     value: "$invoicedOrder",
                     isHighlighted: provider.selectedFilterOrder == 2,
+                    onTap: () {
+                      provider.setSelectedFilterOrder(
+                        provider.selectedFilterOrder == 2 ? 0 : 2,
+                      );
+                    },
                   ),
                 ),
               ],
@@ -172,6 +252,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     value: "$deliveredOrder",
                     isWidth: true,
                     isHighlighted: provider.selectedFilterOrder == 3,
+                    onTap: () {
+                      provider.setSelectedFilterOrder(
+                        provider.selectedFilterOrder == 3 ? 0 : 3,
+                      );
+                    },
                   ),
                 ),
                 SizedBox(width: 10.w),
@@ -180,6 +265,12 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     title: "Units of items ordered",
                     value: "$totalUnitOrdered",
                     isWidth: true,
+                    isHighlighted: provider.selectedFilterOrder == 4,
+                    onTap: () {
+                      provider.setSelectedFilterOrder(
+                        provider.selectedFilterOrder == 4 ? 0 : 4,
+                      );
+                    },
                   ),
                 ),
               ],
@@ -192,7 +283,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Total Orders",
+                  _getFilterTitle(provider.selectedFilterOrder),
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -378,8 +469,17 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                                                     item.id ?? "",
                                                   );
                                                   if (mounted) {
-                                                    final status = provider.adminSingleOrderModel?.order?.status;
-                                                    final route = status == "APPROVED"
+                                                    final status = provider
+                                                        .adminSingleOrderModel
+                                                        ?.order
+                                                        ?.status
+                                                        ?.trim()
+                                                        .toUpperCase();
+                                                    final route = (status == "APPROVED" ||
+                                                            status == "INVOICED" ||
+                                                            status == "PROCESSING" ||
+                                                            status == "DELIVERED" ||
+                                                            status == "COMPLETED")
                                                         ? RouteNames.orderSummaryMakeInvoiceScreen
                                                         : RouteNames.orderSummaryViewScreen;
                                                     navigator.pushNamed(

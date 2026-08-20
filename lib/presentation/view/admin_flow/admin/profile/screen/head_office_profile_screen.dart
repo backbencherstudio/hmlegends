@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/core/constant/asset_path.dart';
 import 'package:hmlegends/core/route/route_names.dart';
-import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
-import 'package:hmlegends/presentation/view/widget/custom_app_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -34,9 +32,6 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
     final provider = Provider.of<ChangePasswordProvider>(context);
 
     final data = provider.adminInfoModel?.data;
-    final notificationProvider = Provider.of<AdminNotificationProvider>(
-      context,
-    );
 
     final String name = data?.name ?? "Not Found Name";
     final String occupation = data?.occupation ?? "Not Found Occupation";
@@ -48,10 +43,22 @@ class _HeadOfficeProfileScreenState extends State<HeadOfficeProfileScreen> {
       backgroundColor: const Color(0xffFFF6F7),
 
       /// --------------------- App Bar ------------------------------------
-      appBar: CustomAppBar(
-        profileImage: data?.avatar,
-        notificationCount: notificationProvider.unreadCount,
-        onProfileTap: () {}, // Prevents navigating to profile screen again
+      appBar: AppBar(
+        title: Text(
+          "Profile",
+          style: TextStyle(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xffE20613),
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
 
       body: SingleChildScrollView(

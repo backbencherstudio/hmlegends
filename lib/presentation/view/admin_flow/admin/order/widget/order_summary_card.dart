@@ -7,7 +7,7 @@ class OrderSummaryCard extends StatelessWidget {
   final String value; // Value to display (e.g., "12")
   final bool isHighlighted; // If true, card gets a red border
   final bool isWidth; // If true, card stretches full width
-
+  final VoidCallback? onTap;
 
   const OrderSummaryCard({
     super.key,
@@ -15,7 +15,7 @@ class OrderSummaryCard extends StatelessWidget {
     required this.value,
     this.isHighlighted = false,
     this.isWidth = false,
-
+    this.onTap,
   });
 
   @override
@@ -23,9 +23,7 @@ class OrderSummaryCard extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {
-        
-        },
+        onTap: onTap,
         borderRadius: BorderRadius.circular(10.r),
         child: Container(
           width: isWidth ? double.infinity : null, // Full width if wide
