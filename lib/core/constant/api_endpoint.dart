@@ -1,7 +1,8 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'https://api.zhfoods.cloud';
+  // static const String baseUrl = 'https://api.zhfoods.cloud';
+  static const String baseUrl = 'http://10.10.9.49:4000';
 //   static const String baseUrl =
 //       'https://elliot-haemic-biuniquely.ngrok-free.dev';
   static const String googleLogin = '$baseUrl/api/auth/google/signin';

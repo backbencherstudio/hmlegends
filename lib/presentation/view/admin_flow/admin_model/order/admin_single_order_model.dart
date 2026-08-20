@@ -42,7 +42,7 @@ class Order {
 
   Order.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    totalQuantity = json['total_quantity'];
+    totalQuantity = (json['total_quantity'] as num?)?.toInt();
     createdAt = json['created_at'];
     status = json['status'];
     if (json['order_items'] != null) {
@@ -52,7 +52,7 @@ class Order {
       });
     }
     user = json['user'] != null ? User.fromJson(json['user']) : null;
-    finalQuantity = json['final_quantity'];
+    finalQuantity = (json['final_quantity'] as num?)?.toInt();
   }
 
   Map<String, dynamic> toJson() {
@@ -75,8 +75,8 @@ class Order {
 class OrderItems {
   String? id;
   int? quantity;
-  int? price;
-  int? tax;
+  double? price;
+  double? tax;
   String? itemStatus;
   String? approvedAt;
   String? pickedAt;
@@ -96,9 +96,9 @@ class OrderItems {
 
   OrderItems.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    quantity = json['quantity'];
-    price = json['price'];
-    tax = json['tax'];
+    quantity = (json['quantity'] as num?)?.toInt();
+    price = (json['price'] as num?)?.toDouble();
+    tax = (json['tax'] as num?)?.toDouble();
     itemStatus = json['item_status'];
     approvedAt = json['approved_at'];
     pickedAt = json['picked_at'];

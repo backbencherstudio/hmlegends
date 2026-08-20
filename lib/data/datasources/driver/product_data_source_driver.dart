@@ -1,4 +1,4 @@
-import '../../../domain/entities/drier/product_entity_driver.dart'
+import '../../../domain/entities/driver/product_entity_driver.dart'
     show ProductEntity;
 
 class ProductDataSource {

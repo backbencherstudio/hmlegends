@@ -6,7 +6,7 @@ import 'package:hmlegends/core/services/token_storage.dart';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:logger/web.dart';
-import '../../admin_model/order/admin_singl_order_model.dart';
+import '../../admin_model/order/admin_single_order_model.dart';
 import '../../admin_model/order/order_admin_model.dart';
 
 class OrderScreenProvider extends ChangeNotifier {
