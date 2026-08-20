@@ -117,17 +117,27 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               SizedBox(height: 20.h),
 
               /// ----------------- Stats Cards ------------------------------
-              Column(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _periodCard(paid),
-                      _summaryCard('Pending\nInvoice', pending),
-                      _summaryCard('Total\nInvoice', total),
-                    ].withSpace(15.w),
+                  
+                   _statusCard(
+                    title: 'Total\nInvoice',
+                    count: total,
+                    statusKey: 'all',
                   ),
-                ],
+                  _statusCard(
+                    title: 'Paid\nInvoices',
+                    count: paid,
+                    statusKey: 'paid',
+                  ),
+                  _statusCard(
+                    title: 'Pending\nInvoice',
+                    count: pending,
+                    statusKey: 'pending',
+                  ),
+                 
+                ].withSpace(15.w),
               ),
 
               SizedBox(height: 20.h),
@@ -137,11 +147,15 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Total Invoices',
+                    getAllInvoices.selectedStatus == 'paid'
+                        ? 'Paid Invoices'
+                        : getAllInvoices.selectedStatus == 'pending'
+                            ? 'Pending Invoices'
+                            : 'Total Invoices',
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xff1D1F2C),
+                      color: const Color(0xff1D1F2C),
                     ),
                   ),
                   Row(
@@ -413,49 +427,18 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
-  Widget _summaryCard(String title, String count) {
-    return Container(
-      height: 90.h,
-      width: 100.w,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            count,
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color(0xff1D1F2C),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 13, color: Color(0xff4A4C56)),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _statusCard({
+    required String title,
+    required String count,
+    required String statusKey,
+  }) {
+    final selectedStatus =
+        context.watch<GetAllInvoiceProvider>().selectedStatus;
+    final isSelected = selectedStatus == statusKey;
 
-  Widget _periodCard(String count) {
-    final isSelected =
-        context.watch<GetAllInvoiceProvider>().selectedPeriod == 'Today';
     return GestureDetector(
       onTap: () {
-        context.read<GetAllInvoiceProvider>().updatedPeriod('today');
+        context.read<GetAllInvoiceProvider>().updateStatus(statusKey);
       },
       child: Container(
         height: 90.h,
@@ -487,10 +470,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Paid\nInvoices',
+            Text(
+              title,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: Color(0xff4A4C56)),
+              style: const TextStyle(fontSize: 13, color: Color(0xff4A4C56)),
             ),
           ],
         ),

@@ -128,6 +128,11 @@ class ApiEndpoints {
   static String toggleBranchStatus(String userId) =>
       '$baseUrl/api/auth/toggle-status/$userId';
 
-  static String managerInvoice({String period = 'week'}) =>
-      '$baseUrl/api/invoice?period=$period';
+  static String managerInvoice({String period = 'week', String? status}) {
+    String url = '$baseUrl/api/invoice?period=$period';
+    if (status != null && status.isNotEmpty && status.toLowerCase() != 'all') {
+      url += '&status=${status.toLowerCase()}';
+    }
+    return url;
+  }
 }
