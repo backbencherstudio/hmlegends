@@ -21,7 +21,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<DriverHomeViewModel>(context, listen: false).fetchDeliveries();
+      Provider.of<DriverHomeViewModel>(
+        context,
+        listen: false,
+      ).fetchDeliveries();
       context.read<ChangePasswordProvider>().adminCheckMe();
       context.read<DriverNotificationProvider>().getDriverNotification();
     });
@@ -31,7 +34,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ChangePasswordProvider>(context);
     final data = profileProvider.adminInfoModel?.data;
-    final notificationProvider = Provider.of<DriverNotificationProvider>(context);
+    final notificationProvider = Provider.of<DriverNotificationProvider>(
+      context,
+    );
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -47,10 +52,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFFDECEE), 
-              Color(0xFFF6B7B7),
-            ],
+            colors: [Color(0xFFFDECEE), Color(0xFFF6B7B7)],
           ),
         ),
         child: Consumer<DriverHomeViewModel>(
@@ -95,7 +97,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   final item = vm.deliveries[index];
                   final name = item.user?.name ?? "Unknown Branch";
                   final address = item.user?.address ?? "Unknown Address";
-                  final productsCount = item.totalQuantity?.toString() ?? "0";
+                  final productsCount =
+                      item.confirmedQuantity?.toString() ?? "0";
 
                   return InkWell(
                     onTap: () async {
@@ -141,4 +144,3 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     );
   }
 }
-

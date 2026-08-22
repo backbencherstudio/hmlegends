@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hmlegends/presentation/view/admin_flow/admin/widget/search_filter.dart';
 import 'package:hmlegends/presentation/view/admin_flow/view_model/notification_admin/admin_notification_provider.dart';
@@ -36,16 +37,50 @@ class _OrdersScreenState extends State<OrdersScreen> {
     _isSynced = true;
   }
 
+  void _clearState() {
+    _confirmedProductIds.clear();
+    _isSynced = false;
+    for (var notifier in _quantityNotifiers.values) {
+      notifier.value = 1;
+    }
+    _quantityNotifiers.clear();
+    if (mounted) {
+      context.read<GetProductsViewmodel>().clearSelection();
+      context.read<OrderViewmodel>().clearCart();
+    }
+  }
+
+  void _handleBack({int targetIndex = 0}) {
+    _clearState();
+    context.read<BottomNavViewModel>().updateIndex(targetIndex);
+    Navigator.pop(context);
+  }
+
   @override
   void initState() {
-    Future.microtask(() {
-      // ignore: use_build_context_synchronously
-      context.read<GetProductsViewmodel>().fetchProducts();
-    });
     super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        final productsVm = context.read<GetProductsViewmodel>();
+        productsVm.clearSelection();
+        productsVm.fetchProducts();
+        context.read<OrderViewmodel>().clearCart();
+      }
+    });
   }
 
   final Map<String, ValueNotifier<int>> _quantityNotifiers = {};
+
+  @override
+  void deactivate() {
+    final productsVm = context.read<GetProductsViewmodel>();
+    final orderVm = context.read<OrderViewmodel>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      productsVm.clearSelection();
+      orderVm.clearCart();
+    });
+    super.deactivate();
+  }
 
   @override
   void dispose() {
@@ -72,8 +107,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        context.read<BottomNavViewModel>().updateIndex(0);
-        Navigator.pop(context);
+        _handleBack(targetIndex: 0);
       },
       child: Scaffold(
         backgroundColor: const Color(0xffFFF6F7),
@@ -83,14 +117,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
           notificationCount: notificationProvider.unreadCount,
           colorMain: Colors.white,
           colorSpace: const Color(0xffFFF6F7),
-          onBackTap: () {
-            context.read<BottomNavViewModel>().updateIndex(0);
-            Navigator.pop(context);
-          },
-          onProfileTap: () {
-            context.read<BottomNavViewModel>().updateIndex(3);
-            Navigator.pop(context);
-          },
+          onBackTap: () => _handleBack(targetIndex: 0),
+          onProfileTap: () => _handleBack(targetIndex: 3),
         ),
       body: Padding(
         padding: EdgeInsets.all(16.w),
@@ -124,13 +152,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Total items Selected: $total',
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600,
+                          Expanded(
+                            child: Text(
+                              'Total items Selected: $total',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
+                          SizedBox(width: 8.w),
                           ElevatedButton(
                             onPressed:
                                 total > 0 ? () => _showSubmitDialog(context) : null,
@@ -140,6 +172,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                       ? const Color(0xffE20613)
                                       : Colors.grey.shade100,
                               foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 14.w,
+                                vertical: 10.h,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25.r),
                               ),
@@ -253,12 +289,18 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         itemBuilder: (context, index) {
                           final product = productsToDisplay[index];
                           final qty = selectProvider.getQuantity(product.id);
+                          final notifier = _quantityNotifiers.putIfAbsent(
+                            product.id,
+                            () => ValueNotifier<int>(qty > 0 ? qty : 1),
+                          );
 
-                          return _buildProductCard(
-                            product,
-                            qty,
-                            _confirmedProductIds.contains(product.id),
-                            () {
+                          return _ProductCardItem(
+                            key: ValueKey(product.id),
+                            product: product,
+                            quantity: qty,
+                            quantityNotifier: notifier,
+                            isConfirmed: _confirmedProductIds.contains(product.id),
+                            onConfirmTapped: () {
                               // Confirm/Selected button tapped
                               final isCurrentlyConfirmed = _confirmedProductIds.contains(product.id);
                               if (isCurrentlyConfirmed) {
@@ -285,11 +327,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 );
                               }
                             },
-                            (newQty) {
-                              // Quantity changed (+ or - tapped)
+                            onQuantityChanged: (newQty) {
+                              // Quantity changed
                               final isCurrentlyConfirmed = _confirmedProductIds.contains(product.id);
                               if (isCurrentlyConfirmed) {
-                                // Update provider in real-time if it's already confirmed
                                 selectProvider.updateQuantity(product.id, newQty);
                                 if (newQty > 0) {
                                   context.read<OrderViewmodel>().addProduct(
@@ -299,10 +340,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     ),
                                   );
                                 } else {
-                                  // If they decremented to 0, unconfirm it too
+                                  // If decremented to 0, unconfirm it
                                   setState(() {
                                     _confirmedProductIds.remove(product.id);
-                                    _quantityNotifiers[product.id]?.value = 1; // reset local UI to 1
+                                    _quantityNotifiers[product.id]?.value = 1;
                                   });
                                   context.read<OrderViewmodel>().removeProduct(product.id);
                                 }
@@ -321,229 +362,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
       ),
     ),
    );
-  }
-
-  /// ---------------------- PRODUCT CARD --------------------------------------
-  Widget _buildProductCard(
-    Products product,
-    int quantity,
-    bool isConfirmed,
-    VoidCallback onConfirmTapped,
-    Function(int) onQuantityChanged,
-  ) {
-    /// -------------- Get or create ValueNotifier for this product ------------
-    final quantityNotifier = _quantityNotifiers.putIfAbsent(
-      product.id,
-      () => ValueNotifier<int>(quantity > 0 ? quantity : 1),
-    );
-
-    /// Update notifier if quantity changed externally
-    if (isConfirmed && quantityNotifier.value != quantity) {
-      quantityNotifier.value = quantity;
-    }
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8.h),
-      elevation: 0,
-      shadowColor: Colors.grey.shade400,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
-      child: Padding(
-        padding: EdgeInsets.all(8.w),
-        child: Row(
-          children: [
-            /// ----------------------- Image ----------------------------------
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10.r),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 92.w,
-                    height: 100.h,
-                    color: Colors.grey[200],
-                    child: const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  ),
-                  FadeInImage.assetNetwork(
-                    placeholder: 'assets/images/main_logo.png',
-                    image: product.image ?? "N/A",
-                    width: 92.w,
-                    height: 100.h,
-                    fit: BoxFit.cover,
-                    imageErrorBuilder:
-                        (_, __, ___) => Container(
-                          width: 92.w,
-                          height: 100.h,
-                          color: Colors.grey[100],
-                          child: Icon(
-                            Icons.broken_image,
-                            color: Colors.red,
-                            size: 36.sp,
-                          ),
-                        ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(width: 12.w),
-
-            /// ------------------------ Info ----------------------------------
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        product.name,
-                        style: TextStyle(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8.w,
-                          vertical: 4.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              product.stockStatus == 'IN_STOCK'
-                                  ? Colors.green.shade100
-                                  : product.stockStatus == 'LOW_STOCK'
-                                  ? Colors.orange.shade100
-                                  : Colors.red.shade100,
-                          borderRadius: BorderRadius.circular(15.r),
-                        ),
-                        child: Text(
-                          product.stockStatus,
-                          style: TextStyle(
-                            color:
-                                product.stockStatus == 'IN_STOCK'
-                                    ? Colors.green
-                                    : Colors.red,
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 6.h),
-
-                  Text(
-                    ' Stock: ${product.stock} pcs',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Color(0xFF5C5C5C),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-
-                  SizedBox(height: 8.h),
-
-                  /// ----------------------- Quantity + Button ----------------
-                  Row(
-                    children: [
-                      Container(
-                        width: 110.w,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: IconButton(
-                                onPressed: () {
-                                  if (quantityNotifier.value > 0) {
-                                    final newQty = quantityNotifier.value - 1;
-                                    if (newQty == 0 && !isConfirmed) {
-                                      // Don't allow decrementing below 1 if not confirmed
-                                      return;
-                                    }
-                                    quantityNotifier.value = newQty;
-                                    onQuantityChanged(newQty);
-                                  }
-                                },
-                                icon: Icon(Icons.remove, size: 17.w),
-                              ),
-                            ),
-                            Expanded(
-                              child: ValueListenableBuilder(
-                                valueListenable: quantityNotifier,
-                                builder: (context, value, child) {
-                                  return SizedBox(
-                                    width: 15.w,
-                                    child: Text(
-                                      '$value',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 15.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: IconButton(
-                                onPressed: () {
-                                  if (quantityNotifier.value < product.stock) {
-                                    final newQty = quantityNotifier.value + 1;
-                                    quantityNotifier.value = newQty;
-                                    onQuantityChanged(newQty);
-                                  }
-                                },
-                                icon: Icon(Icons.add, size: 17.w),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      SizedBox(width: 10.w),
-
-                      /// ----------------- Add / Selected Button --------------
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: onConfirmTapped,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                isConfirmed
-                                    ? Colors.green
-                                    : const Color(0xffE20613),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: Text(
-                            isConfirmed ? 'Selected' : 'Confirm',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   /// -------------------- CONFIRM SUBMISSION DIALOG ---------------------------
@@ -587,7 +405,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xffE20613),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Yes',
                       style: TextStyle(color: Colors.white, fontSize: 15),
                     ),
@@ -743,6 +561,341 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+/// ---------------------- PRODUCT CARD ITEM ----------------------------------
+class _ProductCardItem extends StatefulWidget {
+  final Products product;
+  final int quantity;
+  final bool isConfirmed;
+  final ValueNotifier<int> quantityNotifier;
+  final VoidCallback onConfirmTapped;
+  final Function(int) onQuantityChanged;
+
+  const _ProductCardItem({
+    super.key,
+    required this.product,
+    required this.quantity,
+    required this.isConfirmed,
+    required this.quantityNotifier,
+    required this.onConfirmTapped,
+    required this.onQuantityChanged,
+  });
+
+  @override
+  State<_ProductCardItem> createState() => _ProductCardItemState();
+}
+
+class _ProductCardItemState extends State<_ProductCardItem> {
+  late TextEditingController _controller;
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: widget.quantityNotifier.value.toString(),
+    );
+    _focusNode = FocusNode();
+    widget.quantityNotifier.addListener(_onNotifierChanged);
+    _focusNode.addListener(_onFocusChanged);
+  }
+
+  void _onNotifierChanged() {
+    final currentText = _controller.text;
+    final notifierVal = widget.quantityNotifier.value.toString();
+    if (currentText != notifierVal && !_focusNode.hasFocus) {
+      _controller.text = notifierVal;
+    }
+  }
+
+  void _onFocusChanged() {
+    if (!_focusNode.hasFocus) {
+      final parsed = int.tryParse(_controller.text);
+      if (parsed == null || parsed <= 0) {
+        final fallback = widget.isConfirmed ? 0 : 1;
+        widget.quantityNotifier.value = fallback;
+        _controller.text = fallback.toString();
+        widget.onQuantityChanged(fallback);
+      }
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _ProductCardItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.quantityNotifier != widget.quantityNotifier) {
+      oldWidget.quantityNotifier.removeListener(_onNotifierChanged);
+      widget.quantityNotifier.addListener(_onNotifierChanged);
+    }
+    if (widget.isConfirmed && widget.quantityNotifier.value != widget.quantity) {
+      widget.quantityNotifier.value = widget.quantity;
+    }
+    if (!_focusNode.hasFocus &&
+        _controller.text != widget.quantityNotifier.value.toString()) {
+      _controller.text = widget.quantityNotifier.value.toString();
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.quantityNotifier.removeListener(_onNotifierChanged);
+    _focusNode.removeListener(_onFocusChanged);
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _handleManualInput(String text) {
+    if (text.isEmpty) {
+      return;
+    }
+    int? parsed = int.tryParse(text);
+    if (parsed != null) {
+      if (parsed > widget.product.stock) {
+        parsed = widget.product.stock;
+        _controller.text = parsed.toString();
+        _controller.selection = TextSelection.fromPosition(
+          TextPosition(offset: _controller.text.length),
+        );
+      }
+      widget.quantityNotifier.value = parsed;
+      widget.onQuantityChanged(parsed);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8.h),
+      elevation: 0,
+      shadowColor: Colors.grey.shade400,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
+      child: Padding(
+        padding: EdgeInsets.all(8.w),
+        child: Row(
+          children: [
+            /// ----------------------- Image ----------------------------------
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10.r),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 92.w,
+                    height: 100.h,
+                    color: Colors.grey[200],
+                    child: const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                  FadeInImage.assetNetwork(
+                    placeholder: 'assets/images/main_logo.png',
+                    image: widget.product.image ?? "N/A",
+                    width: 92.w,
+                    height: 100.h,
+                    fit: BoxFit.cover,
+                    imageErrorBuilder:
+                        (_, __, ___) => Container(
+                          width: 92.w,
+                          height: 100.h,
+                          color: Colors.grey[100],
+                          child: Icon(
+                            Icons.broken_image,
+                            color: Colors.red,
+                            size: 36.sp,
+                          ),
+                        ),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(width: 12.w),
+
+            /// ------------------------ Info ----------------------------------
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.product.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 17.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              widget.product.stockStatus == 'IN_STOCK'
+                                  ? Colors.green.shade100
+                                  : widget.product.stockStatus == 'LOW_STOCK'
+                                  ? Colors.orange.shade100
+                                  : Colors.red.shade100,
+                          borderRadius: BorderRadius.circular(15.r),
+                        ),
+                        child: Text(
+                          widget.product.stockStatus,
+                          style: TextStyle(
+                            color:
+                                widget.product.stockStatus == 'IN_STOCK'
+                                    ? Colors.green
+                                    : Colors.red,
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 6.h),
+
+                  Text(
+                    ' Stock: ${widget.product.stock} pcs',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: const Color(0xFF5C5C5C),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+
+                  SizedBox(height: 8.h),
+
+                  /// ----------------------- Quantity + Button ----------------
+                  Row(
+                    children: [
+                      Container(
+                        width: 102.w,
+                        height: 38.h,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 30.w,
+                              child: IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () {
+                                  if (widget.quantityNotifier.value > 0) {
+                                    final newQty = widget.quantityNotifier.value - 1;
+                                    if (newQty == 0 && !widget.isConfirmed) {
+                                      return;
+                                    }
+                                    widget.quantityNotifier.value = newQty;
+                                    _controller.text = newQty.toString();
+                                    widget.onQuantityChanged(newQty);
+                                  }
+                                },
+                                icon: Icon(Icons.remove, size: 16.w),
+                              ),
+                            ),
+                            Expanded(
+                              child: TextField(
+                                controller: _controller,
+                                focusNode: _focusNode,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                                onChanged: _handleManualInput,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 30.w,
+                              child: IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () {
+                                  if (widget.quantityNotifier.value < widget.product.stock) {
+                                    final newQty = widget.quantityNotifier.value + 1;
+                                    widget.quantityNotifier.value = newQty;
+                                    _controller.text = newQty.toString();
+                                    widget.onQuantityChanged(newQty);
+                                  }
+                                },
+                                icon: Icon(Icons.add, size: 16.w),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(width: 8.w),
+
+                      /// ----------------- Add / Selected Button --------------
+                      Expanded(
+                        child: SizedBox(
+                          height: 38.h,
+                          child: ElevatedButton(
+                            onPressed: widget.onConfirmTapped,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  widget.isConfirmed
+                                      ? Colors.green
+                                      : const Color(0xffE20613),
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(horizontal: 4.w),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.r),
+                              ),
+                            ),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                widget.isConfirmed ? 'Selected' : 'Confirm',
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -24,7 +24,7 @@ class OrderViewmodel extends ChangeNotifier {
 
   OrderResponseModel? get orderData => _orderData;
 
-  bool _hasPlacedToday = false; // ✅ new flag
+  bool _hasPlacedToday = false;
   bool get hasPlacedToday => _hasPlacedToday;
 
   final List<ProductSelectModel> _productList = [];

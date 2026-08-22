@@ -120,7 +120,7 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
                   log("======== status : ${branch.status}");
                   return BranchCard(
                     name: branch.user?.name ?? "N/A",
-                    totalProducts: branch.totalQuantity ?? 0,
+                    totalProducts: branch.confirmedQuantity ?? 0,
                     address: branch.user?.address ?? "N/A",
                     backgroundColor: WidgetStateProperty.all<Color>(
                       buttonColor,
@@ -128,24 +128,27 @@ class _ManageDeliveryScreenState extends State<ManageDeliveryScreen> {
                     text: buttonText,
                     isLoading: provider.assigningOrderId == branch.id,
 
-                    onAssignTap: isApproved
-                        ? () async {
-                            /// ------------ Open bottom sheet ---------------
-                            await showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20.r),
+                    onAssignTap:
+                        isApproved
+                            ? () async {
+                              /// ------------ Open bottom sheet ---------------
+                              await showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20.r),
+                                  ),
                                 ),
-                              ),
-                              builder:
-                                  (_) => AssignDriverSheet(deliveryId: branch.id),
-                            );
-                            log(branch.id ?? '');
-                          }
-                        : null,
+                                builder:
+                                    (_) => AssignDriverSheet(
+                                      deliveryId: branch.id,
+                                    ),
+                              );
+                              log(branch.id ?? '');
+                            }
+                            : null,
                   );
                 },
               );
