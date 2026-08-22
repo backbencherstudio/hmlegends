@@ -1,5 +1,7 @@
 {
     "recommendations": [
-        "colourafredi.vscode-deepseek"
+        "myml.vscode-markdown-plantuml-preview",
+        "esbenp.prettier-vscode",
+        "jebbs.plantuml"
     ]
 }
