@@ -67,6 +67,11 @@ class GetProductsViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearSelection() {
+    _selectedQuantities.clear();
+    _query = '';
+    notifyListeners();
+  }
 
   int getQuantity(String productId) => _selectedQuantities[productId] ?? 0;
   /// ----------------------------- Fetch Products -----------------------------

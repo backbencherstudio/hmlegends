@@ -33,29 +33,49 @@ class DriverDeliveryModel {
 class Data {
   String? id;
   int? totalQuantity;
+  int? confirmedQuantity;
   User? user;
   Delivery? delivery;
+  List<OrderItems>? orderItems;
 
-  Data({this.id, this.totalQuantity, this.user, this.delivery});
+  Data({
+    this.id,
+    this.totalQuantity,
+    this.confirmedQuantity,
+    this.user,
+    this.delivery,
+    this.orderItems,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     totalQuantity = json['total_quantity'];
+    confirmedQuantity = json['confirmed_quantity'];
     user = json['user'] != null ? User.fromJson(json['user']) : null;
     delivery = json['delivery'] != null
         ? Delivery.fromJson(json['delivery'])
         : null;
+    if (json['order_items'] != null) {
+      orderItems = <OrderItems>[];
+      json['order_items'].forEach((v) {
+        orderItems!.add(OrderItems.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
     data['id'] = id;
     data['total_quantity'] = totalQuantity;
+    data['confirmed_quantity'] = confirmedQuantity;
     if (user != null) {
       data['user'] = user!.toJson();
     }
     if (delivery != null) {
       data['delivery'] = delivery!.toJson();
+    }
+    if (orderItems != null) {
+      data['order_items'] = orderItems!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -106,7 +126,53 @@ class Delivery {
     data['id'] = id;
     data['status'] = status;
     data['signature_url'] = signatureUrl;
-    data['created_at'] =createdAt;
+    data['created_at'] = createdAt;
+    return data;
+  }
+}
+
+class OrderItems {
+  String? id;
+  String? itemStatus;
+  int? quantity;
+  Product? product;
+
+  OrderItems({this.id, this.itemStatus, this.quantity, this.product});
+
+  OrderItems.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    itemStatus = json['item_status'];
+    quantity = json['quantity'];
+    product = json['product'] != null ? Product.fromJson(json['product']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['item_status'] = itemStatus;
+    data['quantity'] = quantity;
+    if (product != null) {
+      data['product'] = product!.toJson();
+    }
+    return data;
+  }
+}
+
+class Product {
+  String? id;
+  String? name;
+
+  Product({this.id, this.name});
+
+  Product.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['name'] = name;
     return data;
   }
 }

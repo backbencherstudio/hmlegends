@@ -65,13 +65,20 @@ class Data {
 class Order {
   User? user;
   int? totalQuantity;
+  int? confirmedQuantity;
   List<OrderItems>? orderItems;
 
-  Order({this.user, this.totalQuantity, this.orderItems});
+  Order({
+    this.user,
+    this.totalQuantity,
+    this.confirmedQuantity,
+    this.orderItems,
+  });
 
   Order.fromJson(Map<String, dynamic> json) {
     user = json['user'] != null ? User.fromJson(json['user']) : null;
     totalQuantity = json['total_quantity'];
+    confirmedQuantity = json['confirmed_quantity'];
     if (json['order_items'] != null) {
       orderItems = <OrderItems>[];
       json['order_items'].forEach((v) {
@@ -86,6 +93,7 @@ class Order {
       data['user'] = user!.toJson();
     }
     data['total_quantity'] = totalQuantity;
+    data['confirmed_quantity'] = confirmedQuantity;
     if (orderItems != null) {
       data['order_items'] = orderItems!.map((v) => v.toJson()).toList();
     }
