@@ -33,6 +33,7 @@ class AllDeliveriesModel {
 class Data {
   String? id;
   int? totalQuantity;
+  int? confirmedQuantity;
   User? user;
   String? status;
   List<OrderItems>? orderItems;
@@ -41,6 +42,7 @@ class Data {
   Data({
     this.id,
     this.totalQuantity,
+    this.confirmedQuantity,
     this.user,
     this.status,
     this.orderItems,
@@ -50,6 +52,7 @@ class Data {
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     totalQuantity = json['total_quantity'];
+    confirmedQuantity = json['confirmed_quantity'];
     user = json['user'] != null ? User.fromJson(json['user']) : null;
     status = json['status'];
     if (json['order_items'] != null) {
@@ -65,6 +68,7 @@ class Data {
     final Map<String, dynamic> data = {};
     data['id'] = id;
     data['total_quantity'] = totalQuantity;
+    data['confirmed_quantity'] = confirmedQuantity;
     if (user != null) {
       data['user'] = user!.toJson();
     }
@@ -80,8 +84,8 @@ class Data {
 class User {
   String? id;
   String? name;
-  dynamic city;
-  dynamic address;
+  String? city;
+  String? address;
 
   User({this.id, this.name, this.city, this.address});
 
@@ -104,13 +108,15 @@ class User {
 
 class OrderItems {
   String? id;
+  String? itemStatus;
   int? quantity;
   Product? product;
 
-  OrderItems({this.id, this.quantity, this.product});
+  OrderItems({this.id, this.itemStatus, this.quantity, this.product});
 
   OrderItems.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    itemStatus = json['item_status'];
     quantity = json['quantity'];
     product = json['product'] != null ? Product.fromJson(json['product']) : null;
   }
@@ -118,10 +124,12 @@ class OrderItems {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
     data['id'] = id;
+    data['item_status'] = itemStatus;
     data['quantity'] = quantity;
-    data['product'] = product;
     if(product != null){
       data['product'] = product!.toJson();
+    } else {
+      data['product'] = product;
     }
     return data;
   }
