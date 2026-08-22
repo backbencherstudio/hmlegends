@@ -54,7 +54,9 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
 
           int totalQuantity = 0;
           for (var item in orderItems) {
-            totalQuantity += item.quantity ?? 0;
+            if ((item.itemStatus ?? '').toUpperCase() != 'UNAVAILABLE') {
+              totalQuantity += item.quantity ?? 0;
+            }
           }
           log("===========Delivery Id : ${widget.deliveryId} ======");
           log("===========Total Quantity : $totalQuantity ========");
@@ -157,11 +159,11 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                     "Total Products: ${totalQuantity.toString().padLeft(2, '0')}",
                     style: TextStyle(
                       fontSize: 14.sp,
-                      color: Color(0xFF4A4C56),
+                      color: const Color(0xFF4A4C56),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Divider(color: Color(0xFFE9E9EA), thickness: 1),
+                  Divider(color: const Color(0xFFE9E9EA), thickness: 1),
                   SizedBox(height: 10.h),
 
                   /// ----------------------- DELIVERY DATA --------------------
@@ -180,18 +182,42 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                       children: orderItems.map((item) {
                         final pName = item.product?.name ?? "Unknown Product";
                         final qty = item.quantity ?? 0;
+                        final isUnavailable =
+                            (item.itemStatus ?? '').toUpperCase() == 'UNAVAILABLE';
+
                         return ListTile(
                           contentPadding: EdgeInsets.zero,
-                          leading: Image.asset(
-                            AssetPaths.thikIcon,
-                            width: 24.w,
-                            height: 24.h,
-                          ),
+                          leading: isUnavailable
+                              ? Container(
+                                  width: 22.w,
+                                  height: 22.h,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(6.r),
+                                    border: Border.all(
+                                      color: const Color(0xFFB0B0B0),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                )
+                              : Image.asset(
+                                  AssetPaths.thikIcon,
+                                  width: 24.w,
+                                  height: 24.h,
+                                ),
                           title: Text(
                             pName,
                             style: TextStyle(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w600,
+                              color: isUnavailable
+                                  ? const Color(0xFF616161)
+                                  : Colors.black,
+                              decoration:
+                                  isUnavailable
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                              decorationColor: const Color(0xFF616161),
+                              decorationThickness: 1.8,
                             ),
                           ),
                           trailing: Text(
@@ -199,6 +225,15 @@ class _AssignDriverSheetState extends State<AssignDriverSheet> {
                             style: TextStyle(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.bold,
+                              color: isUnavailable
+                                  ? const Color(0xFF616161)
+                                  : Colors.black,
+                              decoration:
+                                  isUnavailable
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                              decorationColor: const Color(0xFF616161),
+                              decorationThickness: 1.8,
                             ),
                           ),
                         );

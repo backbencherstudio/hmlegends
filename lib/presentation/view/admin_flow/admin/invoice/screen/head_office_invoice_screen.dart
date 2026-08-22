@@ -102,27 +102,58 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
             SizedBox(height: 16.h),
 
             /// ---------------Total / Paid / Pending Invoice ------------------
-            if (stats != null)
-              Wrap(
-                spacing: 12.w,
-                runSpacing: 12.h,
-                children: [
-                  _buildStatCard("Total Invoice", stats.totalInvoice ?? 0),
-                  _buildStatCard("Paid Invoice", stats.paidInvoice ?? 0),
-                  _buildStatCard("Pending Invoice", stats.pendingInvoice ?? 0),
-                ],
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    title: "Total\nInvoice",
+                    value: stats?.totalInvoice ?? 0,
+                    isSelected: provider.selectedStatus == 'all',
+                    onTap: () {
+                      provider.setSelectedStatus('all');
+                    },
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: _buildStatCard(
+                    title: "Paid\nInvoices",
+                    value: stats?.paidInvoice ?? 0,
+                    isSelected: provider.selectedStatus == 'paid',
+                    onTap: () {
+                      provider.setSelectedStatus('paid');
+                    },
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: _buildStatCard(
+                    title: "Pending\nInvoice",
+                    value: stats?.pendingInvoice ?? 0,
+                    isSelected: provider.selectedStatus == 'pending',
+                    onTap: () {
+                      provider.setSelectedStatus('pending');
+                    },
+                  ),
+                ),
+              ],
+            ),
             SizedBox(height: 24.h),
 
-            /// ------------------ Total Orders List -------------------
+            /// ------------------ Total Invoices List Title & Period Filter -------------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Total Orders",
+                  provider.selectedStatus == 'paid'
+                      ? "Paid Invoices"
+                      : provider.selectedStatus == 'pending'
+                          ? "Pending Invoices"
+                          : "Total Invoices",
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
+                    color: const Color(0xFF1F2937),
                   ),
                 ),
 
@@ -148,10 +179,19 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
                   child: Row(
                     children: [
                       Text(
-                        context.read<AdminInvoiceProvider>().selectedPeriod,
-                        style: TextStyle(fontSize: 14.sp),
+                        provider.selectedPeriod,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: const Color(0xFF4A4C56),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      Icon(Icons.keyboard_arrow_down_rounded, size: 20.sp),
+                      SizedBox(width: 4.w),
+                      Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 20.sp,
+                        color: const Color(0xFF4A4C56),
+                      ),
                     ],
                   ),
                 ),
@@ -351,48 +391,61 @@ class _HeadOfficeInvoiceScreenState extends State<HeadOfficeInvoiceScreen> {
     );
   }
 
-  Widget _buildStatCard(String title, int value) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 10.h),
-      height: 100.h,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 3,
-            offset: const Offset(1, 1),
+  Widget _buildStatCard({
+    required String title,
+    required int value,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 12.h),
+        height: 100.h,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14.r),
+          border: Border.all(
+            color: isSelected ? const Color(0xFFE20613) : Colors.transparent,
+            width: 1.5,
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            value.toString(),
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 4,
+              offset: Offset(0, 2),
             ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          SizedBox(height: 4.h),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: AppColors.authBodyTextColor,
-              fontWeight: FontWeight.w500,
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              value.toString(),
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+            SizedBox(height: 6.h),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 13.sp,
+                color: const Color(0xFF6B7280),
+                fontWeight: FontWeight.w500,
+                height: 1.2,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
