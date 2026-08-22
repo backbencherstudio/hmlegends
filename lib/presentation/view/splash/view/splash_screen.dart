@@ -36,30 +36,47 @@ class _SplashScreenState extends State<SplashScreen>
       final userType = await UserTypeStorage().getUserType();
       debugPrint("User type in splash screen: $userType");
 
-      if (token != null && userType == "admin") {
-        // ignore: use_build_context_synchronously
-        await context.read<ChangePasswordProvider>().adminCheckMe();
+      bool isAuthorized = false;
+
+      if (token != null && token.isNotEmpty && mounted) {
+        final checkResult =
+            await context.read<ChangePasswordProvider>().adminCheckMe();
+        if (checkResult.success == true) {
+          isAuthorized = true;
+        } else {
+          debugPrint("User unauthorized in splash: ${checkResult.message}");
+          await TokenStorage().clearToken();
+          await UserTypeStorage().clearUserType();
+        }
       }
 
       final elapsed = DateTime.now().difference(startTime);
-      final remaining = const Duration(seconds: 5) - elapsed;
+      final remaining = const Duration(seconds: 3) - elapsed;
       if (remaining > Duration.zero) {
         await Future.delayed(remaining);
       }
 
       if (!mounted) return;
 
-      if (token != null && userType == "admin") {
-        Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
-      } else if (token != null && userType == 'manager') {
-        Navigator.pushReplacementNamed(context, RouteNames.branchParentScreen);
-      } else if (token != null && userType == "driver") {
-        Navigator.pushReplacementNamed(
-          context,
-          RouteNames.driverBottomNavScreen,
-        );
+      if (isAuthorized) {
+        if (userType == "admin") {
+          Navigator.pushReplacementNamed(context, RouteNames.mainWrapper);
+        } else if (userType == 'manager') {
+          Navigator.pushReplacementNamed(context, RouteNames.branchParentScreen);
+        } else if (userType == "driver") {
+          Navigator.pushReplacementNamed(
+            context,
+            RouteNames.driverBottomNavScreen,
+          );
+        } else {
+          Navigator.pushReplacementNamed(context, RouteNames.loginScreen);
+        }
       } else {
-        Navigator.pushReplacementNamed(context, RouteNames.onboardingScreen);
+        if (token != null) {
+          Navigator.pushReplacementNamed(context, RouteNames.loginScreen);
+        } else {
+          Navigator.pushReplacementNamed(context, RouteNames.onboardingScreen);
+        }
       }
     });
 

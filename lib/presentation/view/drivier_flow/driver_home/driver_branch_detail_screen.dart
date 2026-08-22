@@ -17,7 +17,6 @@ class DriverBranchDetailScreen extends StatefulWidget {
 class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
   bool _isInit = true;
   final Set<String> _selectedItemIds = {};
-  bool _hasInitializedSelection = false;
 
   @override
   void didChangeDependencies() {
@@ -66,53 +65,16 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
           final displayName = vm.deliveryData?.order?.user?.name ?? name;
           final displayAddress =
               vm.deliveryData?.order?.user?.address ?? address;
-          final status =
-              vm.deliveryData?.status?.toUpperCase() ?? "ASSIGNED";
+          final status = vm.deliveryData?.status?.toUpperCase() ?? "ASSIGNED";
           final deliveryId = args?["deliveryId"] as String?;
-
-          // Initialize selected item IDs if in ASSIGNED status
-          if (status == "ASSIGNED" && !_hasInitializedSelection && orderItems.isNotEmpty) {
-            _selectedItemIds.clear();
-            for (var item in orderItems) {
-              if (item.id != null) {
-                // If item is not explicitly marked NOT_PICKED, pre-select it
-                if (item.itemStatus?.toUpperCase() != "NOT_PICKED") {
-                  _selectedItemIds.add(item.id!);
-                }
-              }
-            }
-            // If all were empty or none matched, select all by default
-            if (_selectedItemIds.isEmpty) {
-              for (var item in orderItems) {
-                if (item.id != null) _selectedItemIds.add(item.id!);
-              }
-            }
-            _hasInitializedSelection = true;
-          }
-
           final isAssignedStatus = status == "ASSIGNED";
 
-          // Calculate dynamic picked/selected product quantity
-          final dynamicPickedItems = orderItems.where((item) {
-            if (isAssignedStatus) {
-              return _selectedItemIds.contains(item.id);
-            } else {
-              final itemStatus = item.itemStatus?.toUpperCase();
-              return itemStatus == "PICKED" ||
-                  itemStatus == "DELIVERED" ||
-                  (itemStatus != "NOT_PICKED" && item.pickedAt != null);
-            }
-          }).toList();
-
-          final totalPickedQuantity = dynamicPickedItems.fold<int>(
-            0,
-            (sum, item) => sum + (item.quantity ?? 0),
-          );
-
-          final displayProductsCount = totalPickedQuantity > 0
-              ? totalPickedQuantity.toString()
-              : (vm.deliveryData?.order?.totalQuantity?.toString() ??
-                  productsCount);
+          final totalQuantity =
+              vm.deliveryData?.order?.totalQuantity?.toString() ??
+              productsCount;
+          final availableQuantity =
+              vm.deliveryData?.order?.confirmedQuantity?.toString() ??
+              totalQuantity;
 
           String buttonText = "Delivery Done";
           VoidCallback? onButtonPressed;
@@ -176,11 +138,12 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
             };
           } else if (status == "ARRIVED") {
             buttonText = "Proceed to delivery note";
-            onButtonPressed = () => Navigator.pushNamed(
-              context,
-              RouteNames.driverDeliveryNoteScreen,
-              arguments: args,
-            );
+            onButtonPressed =
+                () => Navigator.pushNamed(
+                  context,
+                  RouteNames.driverDeliveryNoteScreen,
+                  arguments: args,
+                );
           }
 
           return Column(
@@ -220,7 +183,29 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                           ),
                         ),
                         Text(
-                          displayProductsCount,
+                          totalQuantity,
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    12.verticalSpace,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Available Products:   ",
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          availableQuantity,
                           style: TextStyle(
                             fontSize: 16.sp,
                             color: Colors.black87,
@@ -265,27 +250,36 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                             final prodName =
                                 prod.product?.name ?? "Unknown Product";
                             final prodQty = prod.quantity?.toString() ?? "0";
+                            final itemStatus = prod.itemStatus?.toUpperCase();
+                            final isUnavailable =
+                                itemStatus == "UNAVAILABLE";
 
                             // Determine if item is selected or disabled based on status
                             bool isChecked = false;
                             bool isDisabled = false;
 
                             if (isAssignedStatus) {
-                              // In ASSIGNED step: Driver can toggle selection
-                              isChecked = _selectedItemIds.contains(itemId);
-                              isDisabled = false;
+                              if (isUnavailable) {
+                                isDisabled = true;
+                                isChecked = false;
+                              } else {
+                                // APPROVED / Available item: selectable, initially unchecked
+                                isDisabled = false;
+                                isChecked = _selectedItemIds.contains(itemId);
+                              }
                             } else {
                               // In subsequent steps (RECEIVED, STARTED, ARRIVED):
-                              // Check status from API response
-                              final itemStatus = prod.itemStatus?.toUpperCase();
-                              final isPicked = itemStatus == "PICKED" ||
-                                  (itemStatus != "NOT_PICKED" && prod.pickedAt != null);
+                              final isPicked =
+                                  itemStatus == "PICKED" ||
+                                  itemStatus == "DELIVERED" ||
+                                  (itemStatus != "NOT_PICKED" &&
+                                      !isUnavailable &&
+                                      prod.pickedAt != null);
 
                               if (isPicked) {
                                 isChecked = true;
                                 isDisabled = false;
                               } else {
-                                // Not selected / not picked -> disabled for next steps
                                 isChecked = false;
                                 isDisabled = true;
                               }
@@ -294,17 +288,20 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                             return Opacity(
                               opacity: isDisabled ? 0.45 : 1.0,
                               child: GestureDetector(
-                                onTap: isAssignedStatus
-                                    ? () {
-                                        setState(() {
-                                          if (_selectedItemIds.contains(itemId)) {
-                                            _selectedItemIds.remove(itemId);
-                                          } else {
-                                            _selectedItemIds.add(itemId);
-                                          }
-                                        });
-                                      }
-                                    : null,
+                                onTap:
+                                    (isAssignedStatus && !isDisabled)
+                                        ? () {
+                                          setState(() {
+                                            if (_selectedItemIds.contains(
+                                              itemId,
+                                            )) {
+                                              _selectedItemIds.remove(itemId);
+                                            } else {
+                                              _selectedItemIds.add(itemId);
+                                            }
+                                          });
+                                        }
+                                        : null,
                                 child: Container(
                                   color: Colors.transparent,
                                   padding: EdgeInsets.symmetric(vertical: 4.h),
@@ -317,9 +314,10 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                                           "${index + 1}.",
                                           style: TextStyle(
                                             fontSize: 15.sp,
-                                            color: isDisabled
-                                                ? Colors.grey
-                                                : Colors.black54,
+                                            color:
+                                                isDisabled
+                                                    ? Colors.grey
+                                                    : Colors.black54,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -328,32 +326,37 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
 
                                       // Checkbox
                                       AnimatedContainer(
-                                        duration:
-                                            const Duration(milliseconds: 200),
+                                        duration: const Duration(
+                                          milliseconds: 200,
+                                        ),
                                         width: 24.w,
                                         height: 24.w,
                                         decoration: BoxDecoration(
-                                          color: isDisabled
-                                              ? Colors.grey.shade200
-                                              : (isChecked
-                                                  ? const Color(0xFFE20613)
-                                                  : Colors.white),
+                                          color:
+                                              isDisabled
+                                                  ? Colors.grey.shade200
+                                                  : (isChecked
+                                                      ? const Color(0xFFE20613)
+                                                      : Colors.white),
                                           border: Border.all(
-                                            color: isDisabled
-                                                ? Colors.grey.shade400
-                                                : const Color(0xFFE20613),
+                                            color:
+                                                isDisabled
+                                                    ? Colors.grey.shade400
+                                                    : const Color(0xFFE20613),
                                             width: 2,
                                           ),
-                                          borderRadius:
-                                              BorderRadius.circular(5.r),
+                                          borderRadius: BorderRadius.circular(
+                                            5.r,
+                                          ),
                                         ),
-                                        child: isChecked
-                                            ? Icon(
-                                                Icons.check,
-                                                size: 16.sp,
-                                                color: Colors.white,
-                                              )
-                                            : null,
+                                        child:
+                                            isChecked
+                                                ? Icon(
+                                                  Icons.check,
+                                                  size: 16.sp,
+                                                  color: Colors.white,
+                                                )
+                                                : null,
                                       ),
                                       SizedBox(width: 10.w),
 
@@ -363,16 +366,17 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                                           prodName,
                                           style: TextStyle(
                                             fontSize: 14.sp,
-                                            color: isDisabled
-                                                ? Colors.grey.shade600
-                                                : (isChecked
-                                                    ? Colors.black38
-                                                    : Colors.black87),
+                                            color:
+                                                isDisabled
+                                                    ? Colors.grey.shade600
+                                                    : Colors.black87,
                                             fontWeight: FontWeight.w600,
-                                            decoration: (isChecked && !isDisabled)
-                                                ? TextDecoration.lineThrough
-                                                : TextDecoration.none,
-                                            decorationColor: Colors.black38,
+                                            decoration:
+                                                isUnavailable
+                                                    ? TextDecoration.lineThrough
+                                                    : TextDecoration.none,
+                                            decorationColor:
+                                                Colors.grey.shade600,
                                             decorationThickness: 2,
                                           ),
                                         ),
@@ -388,12 +392,18 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                                             prodQty,
                                             style: TextStyle(
                                               fontSize: 15.sp,
-                                              color: isDisabled
-                                                  ? Colors.grey
-                                                  : (isChecked
-                                                      ? Colors.black38
-                                                      : Colors.black54),
+                                              color:
+                                                  isDisabled
+                                                      ? Colors.grey
+                                                      : Colors.black54,
                                               fontWeight: FontWeight.bold,
+                                              decoration:
+                                                  isUnavailable
+                                                      ? TextDecoration.lineThrough
+                                                      : TextDecoration.none,
+                                              decorationColor:
+                                                  Colors.grey.shade600,
+                                              decorationThickness: 2,
                                             ),
                                           ),
                                           SizedBox(width: 4.w),
@@ -401,9 +411,10 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
                                             "Pcs",
                                             style: TextStyle(
                                               fontSize: 12.sp,
-                                              color: isDisabled
-                                                  ? Colors.grey
-                                                  : Colors.black38,
+                                              color:
+                                                  isDisabled
+                                                      ? Colors.grey
+                                                      : Colors.black38,
                                             ),
                                           ),
                                         ],
@@ -467,4 +478,3 @@ class _DriverBranchDetailScreenState extends State<DriverBranchDetailScreen> {
     );
   }
 }
-

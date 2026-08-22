@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
+import 'package:hmlegends/core/services/auth_helper.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
 import 'package:hmlegends/data/model/response_model.dart';
 
@@ -86,6 +87,15 @@ class AdminInvoiceProvider extends ChangeNotifier {
     getAllInvoice(period: value);
   }
 
+  String _selectedStatus = 'all'; // 'all', 'paid', 'pending'
+  String get selectedStatus => _selectedStatus;
+
+  void setSelectedStatus(String value) {
+    _selectedStatus = value;
+    notifyListeners();
+    getAllInvoice(status: value);
+  }
+
   String _query = '';
   String get query => _query;
 
@@ -96,22 +106,38 @@ class AdminInvoiceProvider extends ChangeNotifier {
 
 
   /// ------------------------ Get All Invoices --------------------------------
-  Future<void> getAllInvoice({String? period}) async {
+  Future<void> getAllInvoice({String? period, String? status}) async {
     _errorMessage = null;
+    _setLoading(true);
 
-    final apiPeriod = (period ?? _selectedPeriod) == 'Today'
+    final currentPeriod = period ?? _selectedPeriod;
+    final currentStatus = status ?? _selectedStatus;
+
+    final apiPeriod = currentPeriod == 'Today'
         ? 'today'
-        : (period ?? _selectedPeriod) == 'This week'
+        : currentPeriod == 'This week'
             ? 'week'
             : 'month';
+
+    final Map<String, String> queryParams = {
+      "period": apiPeriod,
+    };
+
+    if (currentStatus.toLowerCase() == 'paid') {
+      queryParams["status"] = "paid";
+    } else if (currentStatus.toLowerCase() == 'pending') {
+      queryParams["status"] = "pending";
+    }
 
     try {
       final token = await _tokenStorage.getToken();
 
+      final uri = Uri.parse(
+        ApiEndpoints.getAllInvoice,
+      ).replace(queryParameters: queryParams);
+
       final response = await http.get(
-        Uri.parse(
-          ApiEndpoints.getAllInvoice,
-        ).replace(queryParameters: {"period": apiPeriod}),
+        uri,
         headers: {"Authorization": "Bearer $token"},
       );
 
@@ -127,6 +153,9 @@ class AdminInvoiceProvider extends ChangeNotifier {
         final invoices = _allInvoiceModel?.data?.invoices ?? [];
         logger.i("Total invoices fetched: ${invoices.length}");
       } else {
+        if (response.statusCode == 401 || response.statusCode == 403) {
+          AuthHelper.handleUnauthorized();
+        }
         _errorMessage =
             "Failed to fetch invoices • Status: ${response.statusCode}";
         logger.e(_errorMessage);
@@ -137,6 +166,8 @@ class AdminInvoiceProvider extends ChangeNotifier {
       _errorMessage = "Exception occurred: $e";
       logger.e(_errorMessage);
       notifyListeners();
+    } finally {
+      _setLoading(false);
     }
   }
 
