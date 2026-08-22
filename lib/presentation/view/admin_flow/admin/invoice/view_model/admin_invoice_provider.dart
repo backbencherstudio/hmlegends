@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:hmlegends/core/constant/api_endpoint.dart';
+import 'package:hmlegends/core/services/auth_helper.dart';
 import 'package:hmlegends/core/services/token_storage.dart';
 import 'package:hmlegends/data/model/response_model.dart';
 
@@ -152,6 +153,9 @@ class AdminInvoiceProvider extends ChangeNotifier {
         final invoices = _allInvoiceModel?.data?.invoices ?? [];
         logger.i("Total invoices fetched: ${invoices.length}");
       } else {
+        if (response.statusCode == 401 || response.statusCode == 403) {
+          AuthHelper.handleUnauthorized();
+        }
         _errorMessage =
             "Failed to fetch invoices • Status: ${response.statusCode}";
         logger.e(_errorMessage);
