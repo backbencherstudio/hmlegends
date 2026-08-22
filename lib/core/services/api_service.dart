@@ -6,17 +6,46 @@ import 'package:hmlegends/core/services/token_storage.dart';
 
 import '../network/network_service.dart';
 
-class ApiService {
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: ApiEndpoints.baseUrl,
-      connectTimeout: const Duration(seconds: 30),
-      sendTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
-    ),
-  );
+import 'auth_helper.dart';
 
+class ApiService {
+  late final Dio _dio;
   final _tokenStorage = TokenStorage();
+
+  ApiService() {
+    _dio = Dio(
+      BaseOptions(
+        baseUrl: ApiEndpoints.baseUrl,
+        connectTimeout: const Duration(seconds: 30),
+        sendTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    );
+
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (DioException e, handler) async {
+          final statusCode = e.response?.statusCode;
+          final path = e.requestOptions.path;
+          final isAuthEndpoint = path.contains('/auth/login') ||
+              path.contains('/auth/register') ||
+              path.contains('/auth/forgot-password') ||
+              path.contains('/auth/verify-reset-token') ||
+              path.contains('/auth/reset-password');
+
+          if ((statusCode == 401 || statusCode == 403) && !isAuthEndpoint) {
+            String? errorMsg;
+            final data = e.response?.data;
+            if (data is Map<String, dynamic> && data['message'] != null) {
+              errorMsg = data['message'].toString();
+            }
+            AuthHelper.handleUnauthorized(message: errorMsg);
+          }
+          return handler.next(e);
+        },
+      ),
+    );
+  }
 
   /// --------------------- Function to get data (GET request) -----------------
   Future<dynamic> get(
